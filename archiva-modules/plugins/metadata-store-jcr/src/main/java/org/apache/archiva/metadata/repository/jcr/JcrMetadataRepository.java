@@ -42,7 +42,10 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsProvider;
 import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.commons.cnd.CndImporter;
+import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +66,9 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -77,6 +83,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import static javax.jcr.Property.JCR_LAST_MODIFIED;
+import static org.apache.archiva.metadata.repository.jcr.JcrConstants.DEPENDENCY_NODE_TYPE;
+import static org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_VERSION_PROPERTIES;
+
 /**
  * TODO below: revise storage format for project version metadata
  * TODO revise reference storage
@@ -85,34 +95,23 @@ public class JcrMetadataRepository
     implements MetadataRepository, RepositoryStatisticsProvider
 {
 
-    private static final String JCR_LAST_MODIFIED = "jcr:lastModified";
 
-    static final String NAMESPACE_NODE_TYPE = "archiva:namespace";
+    private static final String QUERY_ARTIFACT_1 = "SELECT * FROM [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE + "] AS artifact WHERE ISDESCENDANTNODE(artifact,'/";
 
-    static final String PROJECT_NODE_TYPE = "archiva:project";
-
-    static final String PROJECT_VERSION_NODE_TYPE = "archiva:projectVersion";
-
-    static final String ARTIFACT_NODE_TYPE = "archiva:artifact";
-    private static final String QUERY_ARTIFACT_1 = "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact WHERE ISDESCENDANTNODE(artifact,'/";
-
-    static final String FACET_NODE_TYPE = "archiva:facet";
-
-    static final String QUERY_ARTIFACTS_BY_PROJECT_VERSION_1 = "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion INNER JOIN [" + ARTIFACT_NODE_TYPE
-        + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) INNER JOIN [" + FACET_NODE_TYPE
+    static final String QUERY_ARTIFACTS_BY_PROJECT_VERSION_1 = "SELECT * FROM [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE + "] AS projectVersion INNER JOIN [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE
+        + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) INNER JOIN [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.FACET_NODE_TYPE
         + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE ([facet].[";
     static final String QUERY_ARTIFACTS_BY_PROJECT_VERSION_2= "] = $value)";
 
-    static final String QUERY_ARTIFACTS_BY_METADATA_1 = "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact INNER JOIN [" + FACET_NODE_TYPE
+    static final String QUERY_ARTIFACTS_BY_METADATA_1 = "SELECT * FROM [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE + "] AS artifact INNER JOIN [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.FACET_NODE_TYPE
         + "] AS facet ON ISCHILDNODE(facet, artifact) WHERE ([facet].[";
     static final String QUERY_ARTIFACTS_BY_METADATA_2 = "] = $value)";
 
-    static final String QUERY_ARTIFACTS_BY_PROPERTY_1 = "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion INNER JOIN [" + ARTIFACT_NODE_TYPE
+    static final String QUERY_ARTIFACTS_BY_PROPERTY_1 = "SELECT * FROM [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE + "] AS projectVersion INNER JOIN [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE
            + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) WHERE ([projectVersion].[";
     static final String QUERY_ARTIFACTS_BY_PROPERTY_2 = "] = $value)";
 
 
-    private static final String DEPENDENCY_NODE_TYPE = "archiva:dependency";
     private static final String QUERY_ARTIFACT_2 = "')";
 
     private final Map<String, MetadataFacetFactory> metadataFacetFactories;
@@ -148,12 +147,29 @@ public class JcrMetadataRepository
         }
 
         NodeTypeManager nodeTypeManager = workspace.getNodeTypeManager();
-        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.NAMESPACE_NODE_TYPE );
-        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.PROJECT_NODE_TYPE );
-        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.PROJECT_VERSION_NODE_TYPE );
-        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.ARTIFACT_NODE_TYPE );
-        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.FACET_NODE_TYPE );
-        registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.DEPENDENCY_NODE_TYPE );
+        try(
+            Reader cndReader = new InputStreamReader(
+                Thread.currentThread( ).getContextClassLoader( ).getResourceAsStream( "org/apache/archiva/metadata/repository/jcr/jcr-schema.cnd" ) ))
+        {
+            CndImporter.registerNodeTypes( cndReader, session );
+        }
+        catch ( ParseException e )
+        {
+            e.printStackTrace( );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace( );
+        }
+
+
+//        registerMixinNodeType( nodeTypeManager, REPOSITORY_NODE_TYPE );
+//        registerMixinNodeType( nodeTypeManager, NAMESPACE_NODE_TYPE );
+//        registerMixinNodeType( nodeTypeManager, PROJECT_NODE_TYPE );
+//        registerMixinNodeType( nodeTypeManager, PROJECT_VERSION_NODE_TYPE );
+//        registerMixinNodeType( nodeTypeManager, ARTIFACT_NODE_TYPE );
+//        registerMixinNodeType( nodeTypeManager, FACET_NODE_TYPE );
+//        registerMixinNodeType( nodeTypeManager, DEPENDENCY_NODE_TYPE );
 
 
     }
@@ -168,13 +184,14 @@ public class JcrMetadataRepository
             NodeTypeTemplate nodeType = nodeTypeManager.createNodeTypeTemplate();
             nodeType.setMixin( true );
             nodeType.setName( name );
+            nodeType.setQueryable( true );
             nodeTypeManager.registerNodeType( nodeType, false );
         }
     }
 
     private Session getSession(RepositorySession repositorySession) throws MetadataRepositoryException {
-        if (repositorySession instanceof JcrSession) {
-            return ( (JcrSession) repositorySession ).getJcrSession();
+        if (repositorySession instanceof JcrRepositorySession ) {
+            return ( (JcrRepositorySession) repositorySession ).getJcrSession();
         } else {
             throw new MetadataRepositoryException( "The given session object is not a JcrSession instance: " + repositorySession.getClass( ).getName( ) );
         }
@@ -216,6 +233,7 @@ public class JcrMetadataRepository
             Node node =
                 getOrAddArtifactNode( jcrSession, repositoryId, namespace, projectId, projectVersion, artifactMeta.getId() );
 
+            node.setProperty( "id", artifactMeta.getId( ) );
             Calendar cal = Calendar.getInstance();
             cal.setTime( artifactMeta.getFileLastModified() );
             node.setProperty( JCR_LAST_MODIFIED, cal );
@@ -245,8 +263,8 @@ public class JcrMetadataRepository
                 if ( metadataFacet != null )
                 {
                     // recreate, to ensure properties are removed
-                    Node n = node.addNode( facetId );
-                    n.addMixin( FACET_NODE_TYPE );
+                    Node n = node.addNode( facetId);
+                    n.addMixin( org.apache.archiva.metadata.repository.jcr.JcrConstants.FACET_NODE_TYPE );
 
                     for ( Map.Entry<String, String> entry : metadataFacet.toProperties().entrySet() )
                     {
@@ -273,9 +291,9 @@ public class JcrMetadataRepository
         {
             Node versionNode =
                 getOrAddProjectVersionNode( jcrSession, repositoryId, namespace, projectId, versionMetadata.getId() );
-
-            versionNode.setProperty( "name", versionMetadata.getName() );
-            versionNode.setProperty( "description", versionMetadata.getDescription() );
+            versionNode.setProperty( "id", versionMetadata.getId( ) );
+            versionNode.setProperty( "name", StringUtils.isEmpty( versionMetadata.getName() ) ? "" : versionMetadata.getName() );
+            versionNode.setProperty( "description", StringUtils.isEmpty( versionMetadata.getDescription() ) ? "" : versionMetadata.getDescription() );
             versionNode.setProperty( "url", versionMetadata.getUrl() );
             versionNode.setProperty( "incomplete", versionMetadata.isIncomplete() );
 
@@ -343,8 +361,8 @@ public class JcrMetadataRepository
                     }
                     id += "." + dependency.getType();
 
-                    Node n = JcrUtils.getOrAddNode( dependenciesNode, id );
-                    n.addMixin( DEPENDENCY_NODE_TYPE );
+                    Node n = JcrUtils.getOrAddNode( dependenciesNode, id, DEPENDENCY_NODE_TYPE );
+                    n.setProperty( "id", id );
 
                     // FIXME: remove temp code just to make it keep working
                     n.setProperty( "groupId", dependency.getGroupId() );
@@ -379,7 +397,7 @@ public class JcrMetadataRepository
                     versionNode.getNode( facet.getFacetId() ).remove();
                 }
                 Node n = versionNode.addNode( facet.getFacetId() );
-                n.addMixin( FACET_NODE_TYPE );
+                n.addMixin( org.apache.archiva.metadata.repository.jcr.JcrConstants.FACET_NODE_TYPE );
 
                 for ( Map.Entry<String, String> entry : facet.toProperties().entrySet() )
                 {
@@ -398,6 +416,7 @@ public class JcrMetadataRepository
         try
         {
             Node node = getOrAddNamespaceNode( jcrSession, repositoryId, namespace );
+            node.setProperty( "id", namespace );
             node.setProperty( "namespace", namespace );
         }
         catch ( RepositoryException e )
@@ -429,7 +448,7 @@ public class JcrMetadataRepository
                 while ( nodeIterator.hasNext() )
                 {
                     Node node = nodeIterator.next();
-                    if ( node.isNodeType( PROJECT_NODE_TYPE ) && projectId.equals( node.getName() ) )
+                    if ( node.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_NODE_TYPE ) && projectId.equals( node.getName() ) )
                     {
                         node.remove();
                     }
@@ -593,7 +612,7 @@ public class JcrMetadataRepository
             if ( root.hasNode( path ) )
             {
                 Node node = root.getNode( path );
-                if ( node.isNodeType( NAMESPACE_NODE_TYPE ) )
+                if ( node.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.NAMESPACE_NODE_TYPE ) )
                 {
                     node.remove();
                 }
@@ -729,11 +748,20 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
-    private List<ArtifactMetadata> runJcrQuery( Session jcrSession, String repositoryId, String q, Map<String, String> bindings )
+    public List<ArtifactMetadata> runJcrQuery( Session jcrSession, String repositoryId, String q, Map<String, String> bindingParam)
         throws MetadataRepositoryException
     {
+        return runJcrQuery( jcrSession, repositoryId, q, bindingParam, true );
+    }
+
+    public List<ArtifactMetadata> runJcrQuery( final Session jcrSession, final String repositoryId, final String qParam,
+                                               final Map<String, String> bindingParam, final boolean checkPath )
+        throws MetadataRepositoryException
+    {
+
+        String q = qParam;
         List<ArtifactMetadata> artifacts;
-        if ( repositoryId != null )
+        if ( repositoryId != null && checkPath )
         {
             q += " AND ISDESCENDANTNODE(artifact,'/" + getRepositoryContentPath( repositoryId ) + "')";
         }
@@ -742,17 +770,7 @@ public class JcrMetadataRepository
 
         try
         {
-            Query query = jcrSession.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
-            ValueFactory valueFactory = jcrSession.getValueFactory();
-            for ( Entry<String, String> entry : bindings.entrySet() )
-            {
-                query.bindValue( entry.getKey(), valueFactory.createValue( entry.getValue() ) );
-            }
-            long start = Calendar.getInstance().getTimeInMillis();
-            QueryResult result = query.execute();
-            long end = Calendar.getInstance().getTimeInMillis();
-            log.info( "JCR Query ran in {} milliseconds: {}", end - start, q );
-
+            QueryResult result = runNativeJcrQuery( jcrSession, q, bindingParam );
             artifacts = new ArrayList<>();
             RowIterator rows = result.getRows();
             while ( rows.hasNext() )
@@ -772,6 +790,36 @@ public class JcrMetadataRepository
             log.info( "Artifact: " + meta.getVersion() + " " + meta.getFacetList() );
         }
         return artifacts;
+    }
+
+    public QueryResult runNativeJcrQuery( final Session jcrSession, final String q, final Map<String, String> bindingParam)
+        throws MetadataRepositoryException
+    {
+        Map<String, String> bindings;
+        if (bindingParam==null) {
+            bindings = new HashMap<>( );
+        } else {
+            bindings = bindingParam;
+        }
+
+        try
+        {
+            Query query = jcrSession.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            ValueFactory valueFactory = jcrSession.getValueFactory();
+            for ( Entry<String, String> entry : bindings.entrySet() )
+            {
+                query.bindValue( entry.getKey(), valueFactory.createValue( entry.getValue() ) );
+            }
+            long start = System.currentTimeMillis( );
+            QueryResult result = query.execute();
+            long end = System.currentTimeMillis( );
+            log.info( "JCR Query ran in {} milliseconds: {}", end - start, q );
+            return result;
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
     @Override
@@ -841,7 +889,7 @@ public class JcrMetadataRepository
             artifacts = new ArrayList<>();
             for ( Node n : JcrUtils.getNodes( result ) )
             {
-                if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
+                if ( n.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE ) )
                 {
                     artifacts.add( getArtifactFromNode( repositoryId, n ) );
                 }
@@ -1061,7 +1109,7 @@ public class JcrMetadataRepository
     {
         for ( Node n : JcrUtils.getChildNodes( node ) )
         {
-            if ( n.isNodeType( FACET_NODE_TYPE ) )
+            if ( n.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.FACET_NODE_TYPE ) )
             {
                 String name = n.getName();
                 MetadataFacetFactory factory = metadataFacetFactories.get( name );
@@ -1202,7 +1250,7 @@ public class JcrMetadataRepository
 
         try
         {
-            return getNodeNames( getSession(session), path, NAMESPACE_NODE_TYPE );
+            return getNodeNames( getSession(session), path, org.apache.archiva.metadata.repository.jcr.JcrConstants.NAMESPACE_NODE_TYPE );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -1216,7 +1264,7 @@ public class JcrMetadataRepository
     {
         try
         {
-            return getNodeNames( getSession(session), getNamespacePath( repositoryId, namespace ), PROJECT_NODE_TYPE );
+            return getNodeNames( getSession(session), getNamespacePath( repositoryId, namespace ), org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_NODE_TYPE );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -1230,7 +1278,7 @@ public class JcrMetadataRepository
     {
         try
         {
-            return getNodeNames( getSession(session), getProjectPath( repositoryId, namespace, projectId ), PROJECT_VERSION_NODE_TYPE );
+            return getNodeNames( getSession(session), getProjectPath( repositoryId, namespace, projectId ), org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -1258,7 +1306,7 @@ public class JcrMetadataRepository
 
                 for ( Node n : JcrUtils.getChildNodes( node ) )
                 {
-                    if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
+                    if ( n.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE ) )
                     {
                         if ( n.hasProperty( "version" ) )
                         {
@@ -1297,7 +1345,7 @@ public class JcrMetadataRepository
 
             for ( Node node : JcrUtils.getChildNodes( nodeAtPath ) )
             {
-                if ( node.isNodeType( PROJECT_VERSION_NODE_TYPE ) && StringUtils.equals( projectVersion,
+                if ( node.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE ) && StringUtils.equals( projectVersion,
                                                                                          node.getName() ) )
                 {
                     node.remove();
@@ -1333,7 +1381,7 @@ public class JcrMetadataRepository
 
             for ( Node node : JcrUtils.getChildNodes( nodeAtPath ) )
             {
-                if ( node.isNodeType( PROJECT_VERSION_NODE_TYPE ) //
+                if ( node.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE ) //
                     && StringUtils.equals( node.getName(), projectVersion ) )
                 {
                     node.remove();
@@ -1363,7 +1411,7 @@ public class JcrMetadataRepository
 
                 for ( Node n : JcrUtils.getChildNodes( node ) )
                 {
-                    if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
+                    if ( n.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE ) )
                     {
                         ArtifactMetadata artifactMetadata = getArtifactFromNode( repositoryId, n );
                         log.debug( "artifactMetadata: {}", artifactMetadata );
@@ -1409,7 +1457,7 @@ public class JcrMetadataRepository
 
                 for ( Node n : JcrUtils.getChildNodes( node ) )
                 {
-                    if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
+                    if ( n.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE ) )
                     {
                         artifacts.add( getArtifactFromNode( repositoryId, n ) );
                     }
@@ -1462,20 +1510,34 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String key, String text, boolean e )
+    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String key, String text, boolean exact )
         throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
         String theKey = key == null ? "*" : "[" + key + "]";
         String projectVersionCondition =
-            e ? "(projectVersion." + theKey + " = $value)" : "contains([projectVersion]." + theKey + ", $value)";
-        String facetCondition = e ? "(facet." + theKey + " = $value)" : "contains([facet]." + theKey + ", $value)";
-        String q =
-            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion LEFT OUTER JOIN [" + ARTIFACT_NODE_TYPE
-                + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) LEFT OUTER JOIN [" + FACET_NODE_TYPE
-                + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE (" + projectVersionCondition + " OR "
-                + facetCondition + ")";
-        return runJcrQuery( jcrSession, repositoryId, q, ImmutableMap.of( "value", text ) );
+            exact ? "(projectVersion." + theKey + " = $value)" : "contains([projectVersion]." + theKey + ", $value)";
+        String facetCondition = exact ? "(facet." + theKey + " = $value)" : "contains([facet]." + theKey + ", $value)";
+        String descendantCondition = repositoryId == null ?
+            " AND [projectVersion].[jcr:path] LIKE '/repositories/%/content/%'" :
+            " AND ISDESCENDANTNODE(projectVersion,'/" + getRepositoryContentPath( repositoryId ) + "')";
+        List<ArtifactMetadata> result = new ArrayList<>( );
+        if (key!=null && Arrays.binarySearch( PROJECT_VERSION_VERSION_PROPERTIES, key )>=0)
+        {
+            // We search only for project version properties if the key is a valid property name
+            String q1 =
+                "SELECT * FROM [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE
+                    + "] AS projectVersion LEFT OUTER JOIN [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE
+                    + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) WHERE " + projectVersionCondition + descendantCondition;
+             result.addAll(runJcrQuery( jcrSession, repositoryId, q1, ImmutableMap.of( "value", text ), false ));
+        }
+        String q2 =
+            "SELECT * FROM [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE
+                + "] AS projectVersion LEFT OUTER JOIN [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE
+                + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) LEFT OUTER JOIN [" + org.apache.archiva.metadata.repository.jcr.JcrConstants.FACET_NODE_TYPE
+                + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE " + facetCondition + descendantCondition;
+        result.addAll( runJcrQuery( jcrSession, repositoryId, q2, ImmutableMap.of( "value", text ), false ) );
+        return result;
     }
 
     private ArtifactMetadata getArtifactFromNode( String repositoryId, Node artifactNode )
@@ -1611,14 +1673,17 @@ public class JcrMetadataRepository
     private Node getOrAddNodeByPath( Node baseNode, String name, String nodeType )
         throws RepositoryException
     {
-        log.debug( "getOrAddNodeByPath" + baseNode + " " + name + " " + nodeType );
+        log.debug( "getOrAddNodeByPath " + baseNode + " " + name + " " + nodeType );
         Node node = baseNode;
         for ( String n : name.split( "/" ) )
         {
             node = JcrUtils.getOrAddNode( node, n );
-            if ( nodeType != null )
+            if ( nodeType != null && !node.isNodeType( nodeType ))
             {
                 node.addMixin( nodeType );
+            }
+            if (!node.hasProperty( "id" )) {
+                node.setProperty( "id", n );
             }
         }
         return node;
@@ -1636,7 +1701,13 @@ public class JcrMetadataRepository
         Node root = jcrSession.getRootNode();
         Node node = JcrUtils.getOrAddNode( root, "repositories" );
         log.debug( "Repositories " + node );
-        node = JcrUtils.getOrAddNode( node, repositoryId );
+        node = JcrUtils.getOrAddNode( node, repositoryId, JcrConstants.NT_UNSTRUCTURED );
+        if (!node.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.REPOSITORY_NODE_TYPE )) {
+            node.addMixin( org.apache.archiva.metadata.repository.jcr.JcrConstants.REPOSITORY_NODE_TYPE );
+        }
+        if (!node.hasProperty( "id" )) {
+            node.setProperty( "id", repositoryId );
+        }
         return node;
     }
 
@@ -1651,7 +1722,7 @@ public class JcrMetadataRepository
         throws RepositoryException
     {
         Node repo = getOrAddRepositoryContentNode( jcrSession, repositoryId );
-        return getOrAddNodeByPath( repo, namespace.replace( '.', '/' ), NAMESPACE_NODE_TYPE );
+        return getOrAddNodeByPath( repo, namespace.replace( '.', '/' ), org.apache.archiva.metadata.repository.jcr.JcrConstants.NAMESPACE_NODE_TYPE );
     }
 
     private Node getOrAddProjectNode( Session jcrSession, String repositoryId, String namespace, String projectId )
@@ -1659,7 +1730,14 @@ public class JcrMetadataRepository
     {
         Node namespaceNode = getOrAddNamespaceNode( jcrSession, repositoryId, namespace );
         Node node = JcrUtils.getOrAddNode( namespaceNode, projectId );
-        node.addMixin( PROJECT_NODE_TYPE );
+        if (!node.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_NODE_TYPE ))
+        {
+            node.addMixin( org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_NODE_TYPE );
+        }
+        if (!node.hasProperty( "id" ))
+        {
+            node.setProperty( "id", projectId );
+        }
         return node;
     }
 
@@ -1668,9 +1746,19 @@ public class JcrMetadataRepository
         throws RepositoryException
     {
         Node projectNode = getOrAddProjectNode( jcrSession, repositoryId, namespace, projectId );
-        Node node = JcrUtils.getOrAddNode( projectNode, projectVersion );
-        node.addMixin( PROJECT_VERSION_NODE_TYPE );
-        return node;
+        log.debug( "Project node {}", projectNode );
+        Node projectVersionNode = JcrUtils.getOrAddNode( projectNode, projectVersion, JcrConstants.NT_UNSTRUCTURED);
+        if (!projectVersionNode.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE ))
+        {
+            projectVersionNode.addMixin( org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE );
+        }
+        if (!projectVersionNode.hasProperty( "id" ))
+        {
+            projectVersionNode.setProperty( "id", projectVersion );
+        }
+
+        log.debug( "Project version node {}", projectVersionNode );
+        return projectVersionNode;
     }
 
     private Node getOrAddArtifactNode( Session jcrSession, String repositoryId, String namespace, String projectId, String projectVersion,
@@ -1678,8 +1766,14 @@ public class JcrMetadataRepository
         throws RepositoryException
     {
         Node versionNode = getOrAddProjectVersionNode( jcrSession, repositoryId, namespace, projectId, projectVersion );
-        Node node = JcrUtils.getOrAddNode( versionNode, id );
-        node.addMixin( ARTIFACT_NODE_TYPE );
+        Node node = JcrUtils.getOrAddNode( versionNode, id);
+        if (!node.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE ))
+        {
+            node.addMixin( org.apache.archiva.metadata.repository.jcr.JcrConstants.ARTIFACT_NODE_TYPE );
+        }
+        if (!node.hasProperty( "id" )) {
+            node.setProperty( "id", id );
+        }
         return node;
     }
 

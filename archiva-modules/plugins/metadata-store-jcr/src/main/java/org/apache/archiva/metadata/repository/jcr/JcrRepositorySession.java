@@ -34,15 +34,15 @@ import javax.jcr.Session;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class JcrSession extends RepositorySession implements AutoCloseable
+public class JcrRepositorySession extends RepositorySession implements AutoCloseable
 {
 
-    private static final Logger log = LoggerFactory.getLogger( JcrSession.class );
+    private static final Logger log = LoggerFactory.getLogger( JcrRepositorySession.class );
 
     private Session jcrSession;
     private JcrMetadataRepository repository;
 
-    public JcrSession( JcrMetadataRepository metadataRepository, MetadataResolver resolver) throws RepositoryException
+    public JcrRepositorySession( JcrMetadataRepository metadataRepository, MetadataResolver resolver) throws RepositoryException
     {
         super( metadataRepository, resolver );
         this.repository = metadataRepository;

@@ -21,6 +21,8 @@ package org.apache.archiva.metadata.repository.cassandra;
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.junit.After;
 import org.junit.Before;
@@ -47,6 +49,18 @@ public class CassandraMetadataRepositoryTest
 
     CassandraMetadataRepository cmr;
 
+    @Override
+    protected RepositorySessionFactory getSessionFactory( )
+    {
+        return null;
+    }
+
+    @Override
+    protected MetadataRepository getRepository( )
+    {
+        return cmr;
+    }
+
     @Before
     @Override
     public void setUp()
@@ -63,7 +77,6 @@ public class CassandraMetadataRepositoryTest
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
         this.cmr = new CassandraMetadataRepository( factories, null, cassandraArchivaManager );
-        this.repository = this.cmr;
 
         clearReposAndNamespace( cassandraArchivaManager );
     }
@@ -90,7 +103,7 @@ public class CassandraMetadataRepositoryTest
         this.cmr.removeProjectVersion( null, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
 
         assertThat(
-            repository.getProjectVersion( null , TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ).isNull();
+            cmr.getProjectVersion( null , TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ).isNull();
 
         assertThat( cmr.getMailingLists( key ) ).isNotNull().isEmpty();
 

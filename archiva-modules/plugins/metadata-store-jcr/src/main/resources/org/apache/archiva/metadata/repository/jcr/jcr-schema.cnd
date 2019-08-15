@@ -1,0 +1,108 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+<archiva = 'http://archiva.apache.org/jcr'>
+[archiva:base] abstract mixin
+  - id (string)
+  - jcr:lastModified (date)
+
+[archiva:repository] > archiva:base mixin
+ + content (archiva:content) primary
+
+[archiva:content] > archiva:base mixin
+ + * (archiva:namespace) multiple
+
+[archiva:namespace] > archiva:base mixin
+ - namespace (string)
+ + * (archiva:namespace) multiple
+ + * (archiva:project) multiple
+
+[archiva:project] > archiva:base mixin
+ - name (string)
+ + * (archiva:projectVersion) multiple
+
+[archiva:meta_scm] mixin
+  - scm.connection (string)
+  - scm.developerConnection (string)
+  - scm.url (uri)
+
+[archiva:meta_ci] mixin
+  - ci.system (string)
+  - ci.url (uri)
+
+[archiva:meta_issue] mixin
+ - issue.system (string)
+ - issue.url (uri)
+
+[archiva:meta_organization] mixin
+ - org.name (string)
+ - org.url (uri)
+
+[archiva:meta_license] > archiva:base mixin
+ - index (long)
+ - license.name (string)
+ - license.url (uri)
+
+[archiva:meta_mailinglist] > archiva:base
+ - index (long)
+ - name (string)
+ - archive (string)
+ - post (string)
+ - unsubscribe (string)
+ - subscribe (string)
+ - otherArchives (string) multiple
+
+[archiva:dependency] > archiva:base
+ - groupId (string)
+ - artifactId (string)
+ - version (string)
+ - type (string)
+ - classifier (string)
+ - scope (string)
+ - systemPath (string)
+ - optional (boolean)
+
+[archiva:dependencies] mixin
+ + * (archiva:dependency) multiple
+
+[archiva:checksum]
+ - type (string)
+ - value (string)
+
+[archiva:projectVersion] > archiva:base, archiva:meta_scm, archiva:meta_ci, archiva:meta_issue, archiva:meta_organization mixin
+ - name (string)
+ - description (string)
+ - url (uri)
+ - incomplete (boolean)
+ + * (archiva:artifact) multiple
+ + license (archiva:meta_license) multiple
+ + mailinglist (archiva:meta_mailinglist) multiple
+ + dependencies (archiva:dependencies)
+ + * (archiva:facet) multiple
+
+[archiva:artifact] > archiva:base mixin
+ - whenGathered (date)
+ - size (long)
+ - md5 (string)
+ - sha1 (string)
+ - version (string)
+ + checksum (archiva:checksum) multiple
+ + * (archiva:facet) multiple
+
+[archiva:facet] > archiva:base mixin

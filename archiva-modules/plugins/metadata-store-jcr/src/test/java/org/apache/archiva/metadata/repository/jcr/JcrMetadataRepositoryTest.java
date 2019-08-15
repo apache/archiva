@@ -19,99 +19,164 @@ package org.apache.archiva.metadata.repository.jcr;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.DefaultMetadataResolver;
-import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataSessionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.springframework.context.ApplicationContext;
+import org.junit.Test;
 
-import javax.inject.Inject;
-import javax.jcr.Repository;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.Map;
 
+import static org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE;
+import static org.assertj.core.api.Assertions.assertThat;
+
+/**
+ * Using static sessionFactory and repository, because initialization is expensive if we rebuild the whole repository for
+ * each test.
+ */
 public class JcrMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
 {
 
-    @Inject
-    private ApplicationContext applicationContext;
+    private static JcrRepositorySessionFactory sessionFactory;
+    private static JcrMetadataRepository repository;
 
-    private static Repository jcrRepository;
+    @Override
+    public JcrMetadataRepository getRepository( )
+    {
+        return repository;
+    }
+
+    @Override
+    public JcrRepositorySessionFactory getSessionFactory( )
+    {
+        return sessionFactory;
+    }
 
     @BeforeClass
-    public static void setupSpec() throws IOException, InvalidFileStoreVersionException
+    public static void setupSpec( ) throws IOException, InvalidFileStoreVersionException
     {
         Path directory = Paths.get( "target/test-repositories" );
-        if (Files.exists(directory) )
+        if ( Files.exists( directory ) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
-        RepositoryFactory factory = new RepositoryFactory();
-        factory.setRepositoryPath( directory.toString());
-        jcrRepository = factory.createRepository();
+
+        Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories( );
+        JcrRepositorySessionFactory jcrSessionFactory = new JcrRepositorySessionFactory( );
+        jcrSessionFactory.setMetadataResolver( new DefaultMetadataResolver( ) );
+        jcrSessionFactory.setMetadataFacetFactories( factories );
+
+        jcrSessionFactory.open( );
+        sessionFactory = jcrSessionFactory;
+        repository = jcrSessionFactory.getMetadataRepository( );
+
     }
 
     @Before
-    @Override
-    public void setUp()
+    public void setup() throws MetadataRepositoryException, RepositoryException, MetadataSessionException
+    {
+        try( JcrRepositorySession session = (JcrRepositorySession) getSessionFactory().createSession() ) {
+            Session jcrSession = session.getJcrSession( );
+            if (jcrSession.itemExists( "/repositories/test" ))
+            {
+                jcrSession.removeItem( "/repositories/test" );
+                session.save( );
+            }
+        }
+    }
+
+    @AfterClass
+    public static void stopSpec( )
         throws Exception
     {
-        super.setUp();
+        if ( repository != null )
+        {
+            try
+            {
+                repository.close( );
+            }
+            catch ( Throwable e )
+            {
+                //
+            }
+        }
+        if ( sessionFactory != null )
+        {
+            try
+            {
+                sessionFactory.close( );
+            }
+            catch ( Throwable e )
+            {
+                //
+            }
+        }
+    }
 
 
-        Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
+    @Test
+    public void testSearchArtifactsByKey( )
+        throws Exception
+    {
+        try ( RepositorySession session = sessionFactory.createSession( ) )
+        {
+            createArtifactWithData( session );
+        }
 
-//        // TODO: probably don't need to use Spring for this
-//        jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
-//
-//        try
-//        {
-//            Session session = jcrMetadataRepository.login();
-//
-//            // set up namespaces, etc.
-//            JcrMetadataRepository.initializeNodeTypes( session );
-//
-//            // removing content is faster than deleting and re-copying the files from target/jcr
-//            session.getRootNode().getNode( "repositories" ).remove();
-//            session.save();
-//        }
-//        catch ( RepositoryException e )
-//        {
-//            // ignore
-//        }
 
-        // this.repository = jcrMetadataRepository;
-        JcrRepositorySessionFactory jcrSessionFactory = new JcrRepositorySessionFactory();
-        jcrSessionFactory.setMetadataResolver(new DefaultMetadataResolver());
-        jcrSessionFactory.setMetadataFacetFactories(factories);
+        tryAssert( ( ) -> {
+            try ( RepositorySession session = sessionFactory.createSession( ) )
+            {
+                session.refreshAndDiscard( );
+                Session jcrSession = ( (JcrRepositorySession) session ).getJcrSession( );
+                assertThat(jcrSession.propertyExists( "/repositories/test/content/mytest/myproject/1.0/url" )).isTrue();
 
-        jcrSessionFactory.open();
-        this.sessionFactory = jcrSessionFactory;
-        this.repository = jcrSessionFactory.getMetadataRepository();
+                Collection<ArtifactMetadata> artifactsByProperty = repository.searchArtifacts( session, TEST_REPO_ID, "url", TEST_URL, false );
+                assertThat( artifactsByProperty ).isNotNull( ).isNotEmpty( );
+            }
+        } );
 
     }
 
 
-    @After
-    @Override
-    public void tearDown()
-        throws Exception
-    {
-        repository.close();
-        sessionFactory.close();
-
-        super.tearDown();
+    @Test
+    public void testSearchArtifactsByKeyExact()
+        throws Exception {
+        try (RepositorySession session = sessionFactory.createSession())
+        {
+            createArtifactWithData( session );
+        }
+        try (RepositorySession session = sessionFactory.createSession())
+        {
+            session.refreshAndDiscard();
+            tryAssert(() -> {
+                Session jcrSession = ( (JcrRepositorySession) session ).getJcrSession( );
+                assertThat(jcrSession.propertyExists( "/repositories/test/content/mytest/myproject/1.0/url" )).isTrue();
+                Collection<ArtifactMetadata> artifactsByProperty = repository.searchArtifacts( session, TEST_REPO_ID, "url", TEST_URL, true);
+                assertThat(artifactsByProperty).describedAs( "Artifact search by url=%s must give a result.", TEST_URL ).isNotNull().isNotEmpty();
+                artifactsByProperty = repository.searchArtifacts( session, TEST_REPO_ID, "org.name", "pache", true );
+                assertThat( artifactsByProperty ).describedAs( "Artifact search by text org.name='pache' must be empty" ).isNotNull( ).isEmpty( );
+            } );
+        }
     }
-
-
 }

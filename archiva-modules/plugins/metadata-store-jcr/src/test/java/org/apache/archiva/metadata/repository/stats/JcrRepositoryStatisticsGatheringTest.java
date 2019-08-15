@@ -22,26 +22,25 @@ package org.apache.archiva.metadata.repository.stats;
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
+import org.apache.archiva.metadata.repository.DefaultMetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.jcr.JcrMetadataRepository;
 import org.apache.archiva.metadata.repository.jcr.JcrRepositorySessionFactory;
-import org.apache.archiva.metadata.repository.jcr.RepositoryFactory;
+import org.apache.archiva.metadata.repository.jcr.JcrRepositorySession;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.inject.Inject;
 import javax.jcr.ImportUUIDBehavior;
 import javax.jcr.Node;
 import javax.jcr.Repository;
@@ -69,15 +68,8 @@ public class JcrRepositoryStatisticsGatheringTest
 
     private static final String TEST_REPO = "test-repo";
 
-    JcrMetadataRepository repository;
-    JcrRepositorySessionFactory sessionFactory;
-
-
-    @Inject
-    private RepositorySessionFactory repositorySessionFactory;
-
-    @Inject
-    private ApplicationContext applicationContext;
+    static JcrMetadataRepository repository;
+    static JcrRepositorySessionFactory sessionFactory;
 
     Session jcrSession;
 
@@ -94,44 +86,37 @@ public class JcrRepositoryStatisticsGatheringTest
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
-        RepositoryFactory factory = new RepositoryFactory();
-        factory.setRepositoryPath( directory.toString() );
-        factory.setStoreType( RepositoryFactory.StoreType.IN_MEMORY_TYPE );
-        jcrRepository = factory.createRepository();
-    }
-
-
-    @Before
-    public void setUp()
-        throws Exception
-    {
+        directory = Paths.get( "target/jcr" );
+        if (Files.exists( directory )) {
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
+        }
 
         Map<String, MetadataFacetFactory> factories = AbstractMetadataRepositoryTest.createTestMetadataFacetFactories();
 
-        assertNotNull( jcrRepository );
-        // TODO: probably don't need to use Spring for this
-        JcrMetadataRepository jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
 
-        jcrSession = jcrMetadataRepository.login();
+        JcrRepositorySessionFactory jcrSessionFactory = new JcrRepositorySessionFactory();
+        jcrSessionFactory.setMetadataResolver(new DefaultMetadataResolver());
+        jcrSessionFactory.setMetadataFacetFactories(factories);
 
+        jcrSessionFactory.open();
+        sessionFactory = jcrSessionFactory;
+        repository = jcrSessionFactory.getMetadataRepository();
+    }
+
+
+    @AfterClass
+    public static void stopSpec() {
         try
         {
-            jcrSession = jcrMetadataRepository.login();
-
-            // set up namespaces, etc.
-            JcrMetadataRepository.initializeNodeTypes(jcrSession);
-
-            // removing content is faster than deleting and re-copying the files from target/jcr
-            jcrSession.getRootNode().getNode( "repositories" ).remove();
+            repository.close();
         }
-        catch ( RepositoryException e )
+        catch ( MetadataRepositoryException e )
         {
-            // ignore
+            e.printStackTrace( );
         }
-
-        this.repository = jcrMetadataRepository;
-        this.sessionFactory = new JcrRepositorySessionFactory();
+        sessionFactory.close();
     }
+
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String type )
         throws RepositoryException
@@ -148,8 +133,22 @@ public class JcrRepositoryStatisticsGatheringTest
     {
         if ( repository != null )
         {
-            repository.close();
+            try
+            {
+                repository.close( );
+            } catch (Throwable e) {
+                //
+            }
         }
+        if (sessionFactory!=null) {
+            try
+            {
+                sessionFactory.close( );
+            } catch (Throwable e) {
+                //
+            }
+        }
+        super.tearDown();
 
     }
 
@@ -163,8 +162,8 @@ public class JcrRepositoryStatisticsGatheringTest
             cal.add(Calendar.HOUR, -1);
             Date startTime = cal.getTime();
 
-            loadContentIntoRepo(TEST_REPO);
-            loadContentIntoRepo("another-repo");
+            loadContentIntoRepo(repSession, TEST_REPO);
+            loadContentIntoRepo( repSession, "another-repo");
 
             DefaultRepositoryStatistics testedStatistics = new DefaultRepositoryStatistics();
             testedStatistics.setNewFileCount(NEW_FILE_COUNT);
@@ -214,17 +213,18 @@ public class JcrRepositoryStatisticsGatheringTest
         }
     }
 
-    private void loadContentIntoRepo( String repoId )
-        throws RepositoryException, IOException
+    private void loadContentIntoRepo( RepositorySession repoSession, String repoId )
+        throws RepositoryException, IOException, MetadataRepositoryException
     {
-        Node n = JcrUtils.getOrAddNode( jcrSession.getRootNode(), "repositories" );
+            jcrSession = ((JcrRepositorySession) repoSession).getJcrSession();
+        Node n = JcrUtils.getOrAddNode( jcrSession.getRootNode( ), "repositories" );
         n = JcrUtils.getOrAddNode( n, repoId );
         n = JcrUtils.getOrAddNode( n, "content" );
         n = JcrUtils.getOrAddNode( n, "org" );
         n = JcrUtils.getOrAddNode( n, "apache" );
 
-        GZIPInputStream inputStream = new GZIPInputStream( getClass().getResourceAsStream( "/artifacts.xml.gz" ) );
-        jcrSession.importXML( n.getPath(), inputStream, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW );
-        jcrSession.save();
+        GZIPInputStream inputStream = new GZIPInputStream( getClass( ).getResourceAsStream( "/artifacts.xml.gz" ) );
+        jcrSession.importXML( n.getPath( ), inputStream, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW );
+        jcrSession.save( );
     }
 }

@@ -24,6 +24,8 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.junit.Before;
 import org.junit.Ignore;
 
@@ -38,6 +40,21 @@ import static org.mockito.Mockito.when;
 public class FileMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
 {
+
+    private FileMetadataRepository repository;
+    private RepositorySessionFactory sessionFactory = null;
+
+    @Override
+    protected MetadataRepository getRepository( )
+    {
+        return this.repository;
+    }
+
+    @Override
+    protected RepositorySessionFactory getSessionFactory( )
+    {
+        return this.sessionFactory;
+    }
 
     @Before
     @Override

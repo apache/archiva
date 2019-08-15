@@ -62,7 +62,7 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
     @Inject
     private RepositorySessionFactoryBean repositorySessionFactoryBean;
 
-    private RepositoryFactory repositoryFactory;
+    private OakRepositoryFactory repositoryFactory;
 
     private JcrMetadataRepository jcrMetadataRepository;
 
@@ -71,7 +71,7 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
     {
         try
         {
-            return new JcrSession( jcrMetadataRepository, getMetadataResolver() );
+            return new JcrRepositorySession( jcrMetadataRepository, getMetadataResolver() );
         }
         catch ( RepositoryException e )
         {
@@ -83,7 +83,7 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
     // Lazy evaluation to avoid problems with circular dependencies during initialization
     private MetadataResolver getMetadataResolver()
     {
-        if ( this.metadataResolver == null )
+        if ( this.metadataResolver == null && applicationContext!=null)
         {
             this.metadataResolver = applicationContext.getBean( MetadataResolver.class );
         }
@@ -126,7 +126,7 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
         try
         {
 
-            repositoryFactory = new RepositoryFactory();
+            repositoryFactory = new OakRepositoryFactory();
             // FIXME this need to be configurable
             Path directoryPath = Paths.get( System.getProperty( "appserver.base" ), "data/jcr" );
             repositoryFactory.setRepositoryPath( directoryPath );
@@ -137,7 +137,7 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
                 throw new RuntimeException("Fatal error. Could not create metadata repository.");
             }
             jcrMetadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
-            try (JcrSession session = new JcrSession( jcrMetadataRepository, metadataResolver )) {
+            try ( JcrRepositorySession session = new JcrRepositorySession( jcrMetadataRepository, metadataResolver )) {
                 JcrMetadataRepository.initializeNodeTypes( session.getJcrSession() );
                 // Saves automatically with close
             }
@@ -153,6 +153,7 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
 
     @Override
     protected void shutdown() {
+        logger.info( "Shutting down JcrRepositorySessionFactory" );
         repositoryFactory.close();
     }
 
