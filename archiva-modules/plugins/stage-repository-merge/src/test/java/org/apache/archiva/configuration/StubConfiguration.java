@@ -33,7 +33,7 @@ import java.util.Locale;
 public class StubConfiguration
     implements ArchivaConfiguration
 {
-    private Configuration configuration;
+    private Configuration configuration = new Configuration();
 
     @Override
     public Configuration getConfiguration()
@@ -57,7 +57,7 @@ public class StubConfiguration
     @Override
     public void addListener( ConfigurationListener listener )
     {
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class StubConfiguration
     @Override
     public void addChangeListener( RegistryListener listener )
     {
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
     }
 
     @Override
@@ -123,7 +123,7 @@ public class StubConfiguration
 
     @Override
     public Path getDataDirectory() {
-        if (configuration!=null && StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
+        if (configuration!=null && configuration.getArchivaRuntimeConfiguration()!=null && StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
             Path dataDir = Paths.get(configuration.getArchivaRuntimeConfiguration().getDataDirectory());
             if (dataDir.isAbsolute()) {
                 return dataDir;

@@ -22,8 +22,11 @@ package org.apache.archiva.metadata.repository.cassandra;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,10 +52,18 @@ public class CassandraMetadataRepositoryTest
 
     CassandraMetadataRepository cmr;
 
+    IMocksControl sessionFactoryControl;
+    RepositorySessionFactory sessionFactory;
+
+    IMocksControl sessionControl;
+    RepositorySession session;
+
+
+
     @Override
     protected RepositorySessionFactory getSessionFactory( )
     {
-        return null;
+        return sessionFactory;
     }
 
     @Override
@@ -77,6 +88,15 @@ public class CassandraMetadataRepositoryTest
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
         this.cmr = new CassandraMetadataRepository( factories, null, cassandraArchivaManager );
+
+        sessionFactoryControl = EasyMock.createControl( );
+        sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
+        sessionControl = EasyMock.createControl( );
+        session = sessionControl.createMock( RepositorySession.class );
+
+        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( session );
+
+        sessionFactoryControl.replay();
 
         clearReposAndNamespace( cassandraArchivaManager );
     }

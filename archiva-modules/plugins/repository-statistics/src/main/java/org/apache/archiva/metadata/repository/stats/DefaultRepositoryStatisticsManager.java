@@ -55,25 +55,30 @@ public class DefaultRepositoryStatisticsManager
 
     private RepositoryWalkingStatisticsProvider walkingProvider = new RepositoryWalkingStatisticsProvider();
 
+
+
     @Inject
     RepositorySessionFactory repositorySessionFactory;
 
     @Override
-    public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
+    public boolean hasStatistics( String repositoryId )
         throws MetadataRepositoryException
     {
         try(RepositorySession session = repositorySessionFactory.createSession()) {
+            final MetadataRepository metadataRepository = session.getRepository( );
             return metadataRepository.hasMetadataFacet(session, repositoryId, DefaultRepositoryStatistics.FACET_ID);
         }
     }
 
     @Override
-    public RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
+    public RepositoryStatistics getLastStatistics( String repositoryId )
         throws MetadataRepositoryException
     {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         try(RepositorySession session = repositorySessionFactory.createSession()) {
+            final MetadataRepository metadataRepository = session.getRepository( );
+
             // TODO: consider a more efficient implementation that directly gets the last one from the content repository
             List<String> scans = metadataRepository.getMetadataFacets(session, repositoryId, DefaultRepositoryStatistics.FACET_ID);
             if (scans == null) {
@@ -95,11 +100,13 @@ public class DefaultRepositoryStatisticsManager
     }
 
     @Override
-    public void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
+    public void addStatisticsAfterScan( String repositoryId, Date startTime,
                                         Date endTime, long totalFiles, long newFiles )
         throws MetadataRepositoryException
     {
         try(RepositorySession session = repositorySessionFactory.createSession()) {
+            final MetadataRepository metadataRepository = session.getRepository( );
+
             DefaultRepositoryStatistics repositoryStatistics = new DefaultRepositoryStatistics();
             repositoryStatistics.setRepositoryId(repositoryId);
             repositoryStatistics.setScanStartTime(startTime);
@@ -130,20 +137,22 @@ public class DefaultRepositoryStatisticsManager
     }
 
     @Override
-    public void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
+    public void deleteStatistics( String repositoryId )
         throws MetadataRepositoryException
     {
         try(RepositorySession session = repositorySessionFactory.createSession()) {
+            final MetadataRepository metadataRepository = session.getRepository( );
             metadataRepository.removeMetadataFacets(session, repositoryId, DefaultRepositoryStatistics.FACET_ID);
         }
     }
 
     @Override
-    public List<RepositoryStatistics> getStatisticsInRange( MetadataRepository metadataRepository, String repositoryId,
+    public List<RepositoryStatistics> getStatisticsInRange( String repositoryId,
                                                             Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
         try(RepositorySession session = repositorySessionFactory.createSession()) {
+            final MetadataRepository metadataRepository = session.getRepository( );
             List<RepositoryStatistics> results = new ArrayList<>();
             List<String> list = metadataRepository.getMetadataFacets(session, repositoryId, DefaultRepositoryStatistics.FACET_ID);
             Collections.sort(list, Collections.reverseOrder());
@@ -172,5 +181,15 @@ public class DefaultRepositoryStatisticsManager
         SimpleDateFormat fmt = new SimpleDateFormat( DefaultRepositoryStatistics.SCAN_TIMESTAMP_FORMAT );
         fmt.setTimeZone( UTC_TIME_ZONE );
         return fmt;
+    }
+
+    public RepositorySessionFactory getRepositorySessionFactory( )
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
     }
 }

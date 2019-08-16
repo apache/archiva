@@ -66,7 +66,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         // check correctness of new stats
         RepositoryStatistics newStats =
-            repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
+            repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertEquals( 0, newStats.getNewFileCount() );
         assertEquals( 31, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
@@ -99,7 +99,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         // check correctness of new stats
         RepositoryStatistics updatedStats =
-            repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
+            repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertEquals( 2, updatedStats.getNewFileCount() );
         assertEquals( 33, updatedStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
@@ -146,7 +146,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         // check correctness of new stats
         RepositoryStatistics newStats =
-            repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
+            repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertEquals( 2, newStats.getNewFileCount() );
         assertEquals( 33, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
@@ -193,7 +193,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         // check correctness of new stats
         RepositoryStatistics newStats =
-            repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
+            repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertEquals( 2, newStats.getNewFileCount() );
         assertEquals( 33, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
@@ -213,7 +213,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         repoTask.setScanAll( true );
 
         Date date = Calendar.getInstance().getTime();
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, //
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, //
                                                             new Date( date.getTime() - 1234567 ), //
                                                             date, 8, 8 ); //
 
@@ -239,7 +239,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         stats.setTotalProjectCount( 5 );
         stats.setTotalArtifactFileSize( 38545 );
 
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, //
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, //
                                                             new Date( date.getTime() - 1234567 ), //
                                                             date, 31, 31 );
     }

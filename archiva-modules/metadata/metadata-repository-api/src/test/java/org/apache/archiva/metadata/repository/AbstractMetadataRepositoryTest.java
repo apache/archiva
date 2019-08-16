@@ -494,8 +494,8 @@ public abstract class AbstractMetadataRepositoryTest
                 assertNull( metadata1.getScm( ) );
                 assertNull( metadata1.getIssueManagement( ) );
                 assertNull( metadata1.getOrganization( ) );
-                assertEquals( "", metadata1.getDescription( ) );
-                assertEquals( "", metadata1.getName( ) );
+                assertTrue( metadata1.getDescription( )==null || "".equals(metadata1.getDescription()) );
+                assertTrue( metadata1.getName( )==null || "".equals(metadata1.getName()) );
                 assertEquals( TEST_PROJECT_VERSION, metadata1.getId( ) );
                 assertEquals( TEST_PROJECT_VERSION, metadata1.getVersion( ) );
                 assertTrue( metadata1.getMailingLists( ).isEmpty( ) );

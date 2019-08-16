@@ -141,7 +141,7 @@ public class ArchivaRepositoryScanningTaskExecutor
                     if ( !task.isScanAll() )
                     {
                         RepositoryStatistics previousStats =
-                            repositoryStatisticsManager.getLastStatistics( metadataRepository, repoId );
+                            repositoryStatisticsManager.getLastStatistics( repoId );
                         if ( previousStats != null )
                         {
                             sinceWhen = previousStats.getScanStartTime().getTime();
@@ -166,7 +166,7 @@ public class ArchivaRepositoryScanningTaskExecutor
 
                     log.info( "Gathering repository statistics" );
 
-                    repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, repoId,
+                    repositoryStatisticsManager.addStatisticsAfterScan( repoId,
                                                                         stats.getWhenGathered(), endTime,
                                                                         stats.getTotalFileCount(),
                                                                         stats.getTotalFileCount() - previousFileCount );

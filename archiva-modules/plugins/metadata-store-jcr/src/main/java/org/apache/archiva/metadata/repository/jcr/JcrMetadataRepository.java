@@ -1522,7 +1522,7 @@ public class JcrMetadataRepository
             " AND [projectVersion].[jcr:path] LIKE '/repositories/%/content/%'" :
             " AND ISDESCENDANTNODE(projectVersion,'/" + getRepositoryContentPath( repositoryId ) + "')";
         List<ArtifactMetadata> result = new ArrayList<>( );
-        if (key!=null && Arrays.binarySearch( PROJECT_VERSION_VERSION_PROPERTIES, key )>=0)
+        if (key==null || (key!=null && Arrays.binarySearch( PROJECT_VERSION_VERSION_PROPERTIES, key )>=0))
         {
             // We search only for project version properties if the key is a valid property name
             String q1 =

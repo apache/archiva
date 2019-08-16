@@ -315,7 +315,7 @@ public class DefaultRepositoryArchivaTaskScheduler
     {
         long start = System.currentTimeMillis();
 
-        boolean res = repositoryStatisticsManager.hasStatistics( metadataRepository, repoConfig.getId() );
+        boolean res = repositoryStatisticsManager.hasStatistics( repoConfig.getId() );
 
         long end = System.currentTimeMillis();
 

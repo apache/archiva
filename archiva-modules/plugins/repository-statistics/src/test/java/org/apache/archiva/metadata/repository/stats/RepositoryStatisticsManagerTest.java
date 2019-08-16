@@ -43,8 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static org.easymock.EasyMock.createControl;
-import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.*;
 
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryStatisticsManagerTest
@@ -68,6 +67,8 @@ public class RepositoryStatisticsManagerTest
 
     private RepositorySessionFactory repositorySessionFactory;
     private IMocksControl factoryControl;
+    private IMocksControl sessionControl;
+    private RepositorySession session;
 
     private static SimpleDateFormat createTimestampFormat()
     {
@@ -90,6 +91,12 @@ public class RepositoryStatisticsManagerTest
 
         factoryControl = createControl();
         repositorySessionFactory = factoryControl.createMock(RepositorySessionFactory.class);
+
+        repositoryStatisticsManager.setRepositorySessionFactory( repositorySessionFactory );
+
+        sessionControl = createControl( );
+        session = sessionControl.createMock( RepositorySession.class );
+
     }
 
     @Test
@@ -111,16 +118,23 @@ public class RepositoryStatisticsManagerTest
         stats.setTotalFileCount( 56229 );
 
 
-        try(RepositorySession session = repositorySessionFactory.createSession()) {
-            expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID)).andReturn(
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
+
+        expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID)).andReturn(
                     Arrays.asList(FIRST_TEST_SCAN, SECOND_TEST_SCAN));
 
-            expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+        expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
                     DefaultRepositoryStatistics.FACET_ID, SECOND_TEST_SCAN)).andReturn(stats);
-        }
         metadataRepositoryControl.replay();
 
-        stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
+        stats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertNotNull( stats );
         assertEquals( 1314527915L, stats.getTotalArtifactFileSize() );
         assertEquals( 123, stats.getNewFileCount() );
@@ -140,12 +154,20 @@ public class RepositoryStatisticsManagerTest
         throws Exception
     {
 
-        RepositorySession session = repositorySessionFactory.createSession();
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
+
         expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() );
         metadataRepositoryControl.replay();
 
-        RepositoryStatistics stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
+        RepositoryStatistics stats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertNull( stats );
 
         metadataRepositoryControl.verify();
@@ -161,8 +183,15 @@ public class RepositoryStatisticsManagerTest
         RepositoryStatistics stats = createTestStats( startTime, current );
 
         walkRepository( 1 );
-        RepositorySession session = repositorySessionFactory.createSession();
 
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
 
         metadataRepository.addMetadataFacet(session , TEST_REPO_ID, stats );
 
@@ -174,10 +203,10 @@ public class RepositoryStatisticsManagerTest
 
         metadataRepositoryControl.replay();
 
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, startTime, current, 56345,
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime, current, 56345,
                                                             45 );
 
-        stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
+        stats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertNotNull( stats );
         assertEquals( 246900, stats.getTotalArtifactFileSize() );
         assertEquals( 45, stats.getNewFileCount() );
@@ -201,7 +230,15 @@ public class RepositoryStatisticsManagerTest
 
         Date startTime1 = new Date( current.getTime() - 12345 );
         DefaultRepositoryStatistics stats1 = createTestStats( startTime1, new Date( current.getTime() - 6000 ) );
-        RepositorySession session = repositorySessionFactory.createSession();
+
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
 
         metadataRepository.addMetadataFacet(session , TEST_REPO_ID, stats1 );
 
@@ -222,16 +259,16 @@ public class RepositoryStatisticsManagerTest
 
         metadataRepositoryControl.replay();
 
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, startTime1,
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime1,
                                                             stats1.getScanEndTime(), 56345, 45 );
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, startTime2,
+        repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime2,
                                                             stats2.getScanEndTime(), 56345, 45 );
 
-        assertNotNull( repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID ) );
+        assertNotNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
 
-        repositoryStatisticsManager.deleteStatistics( metadataRepository, TEST_REPO_ID );
+        repositoryStatisticsManager.deleteStatistics( TEST_REPO_ID );
 
-        assertNull( repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID ) );
+        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
 
         metadataRepositoryControl.verify();
     }
@@ -240,7 +277,14 @@ public class RepositoryStatisticsManagerTest
     public void testDeleteStatsWhenEmpty()
         throws Exception
     {
-        RepositorySession session = repositorySessionFactory.createSession();
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
 
         expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() ).times( 2 );
@@ -248,11 +292,11 @@ public class RepositoryStatisticsManagerTest
 
         metadataRepositoryControl.replay();
 
-        assertNull( repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID ) );
+        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
 
-        repositoryStatisticsManager.deleteStatistics( metadataRepository, TEST_REPO_ID );
+        repositoryStatisticsManager.deleteStatistics( TEST_REPO_ID );
 
-        assertNull( repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID ) );
+        assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
 
         metadataRepositoryControl.verify();
     }
@@ -265,13 +309,21 @@ public class RepositoryStatisticsManagerTest
 
         Date current = new Date();
 
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
+
+
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
-
-        RepositorySession session = repositorySessionFactory.createSession();
 
         expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
@@ -286,13 +338,13 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID,
                                                                 stats.getScanStartTime(), stats.getScanEndTime(), 56345,
                                                                 45 );
         }
 
         List<RepositoryStatistics> list =
-            repositoryStatisticsManager.getStatisticsInRange( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID,
                                                               new Date( current.getTime() - 4000 ),
                                                               new Date( current.getTime() - 2000 ) );
 
@@ -310,13 +362,20 @@ public class RepositoryStatisticsManagerTest
 
         Date current = new Date();
 
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
+
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
         List<String> keys = new ArrayList<>( statsCreated.keySet() );
-
-        RepositorySession session = repositorySessionFactory.createSession();
 
         expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
@@ -336,13 +395,13 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID,
                                                                 stats.getScanStartTime(), stats.getScanEndTime(), 56345,
                                                                 45 );
         }
 
         List<RepositoryStatistics> list =
-            repositoryStatisticsManager.getStatisticsInRange( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID,
                                                               new Date( current.getTime() - 4000 ), current );
 
         assertEquals( 2, list.size() );
@@ -360,13 +419,20 @@ public class RepositoryStatisticsManagerTest
 
         Date current = new Date();
 
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
+
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
         List<String> keys = new ArrayList<>( statsCreated.keySet() );
-
-        RepositorySession session = repositorySessionFactory.createSession();
 
         expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
@@ -383,13 +449,13 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID,
                                                                 stats.getScanStartTime(), stats.getScanEndTime(), 56345,
                                                                 45 );
         }
 
         List<RepositoryStatistics> list =
-            repositoryStatisticsManager.getStatisticsInRange( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID,
                                                               new Date( current.getTime() - 20000 ),
                                                               new Date( current.getTime() - 2000 ) );
 
@@ -408,13 +474,20 @@ public class RepositoryStatisticsManagerTest
 
         Date current = new Date();
 
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
+
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
-
-        RepositorySession session = repositorySessionFactory.createSession();
 
         expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
@@ -435,13 +508,13 @@ public class RepositoryStatisticsManagerTest
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID,
                                                                 stats.getScanStartTime(), stats.getScanEndTime(), 56345,
                                                                 45 );
         }
 
         List<RepositoryStatistics> list =
-            repositoryStatisticsManager.getStatisticsInRange( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID,
                                                               new Date( current.getTime() - 20000 ), current );
 
         assertEquals( 3, list.size() );
@@ -459,6 +532,14 @@ public class RepositoryStatisticsManagerTest
         walkRepository( 3 );
 
         Date current = new Date();
+        sessionControl.reset();
+        factoryControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        session.close();
+        expectLastCall( ).anyTimes( );
+        factoryControl.replay();
+        sessionControl.replay();
 
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
@@ -466,21 +547,19 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        RepositorySession session = repositorySessionFactory.createSession();
-
         expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         metadataRepositoryControl.replay();
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
-            repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID,
                                                                 stats.getScanStartTime(), stats.getScanEndTime(), 56345,
                                                                 45 );
         }
 
         List<RepositoryStatistics> list =
-            repositoryStatisticsManager.getStatisticsInRange( metadataRepository, TEST_REPO_ID,
+            repositoryStatisticsManager.getStatisticsInRange( TEST_REPO_ID,
                                                               new Date( current.getTime() - 20000 ),
                                                               new Date( current.getTime() - 16000 ) );
 
@@ -537,7 +616,9 @@ public class RepositoryStatisticsManagerTest
     private void walkRepository( int count )
         throws Exception
     {
-        RepositorySession session = repositorySessionFactory.createSession();
+        sessionControl.reset();
+        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
+        factoryControl.replay();
 
         for ( int i = 0; i < count; i++ )
         {

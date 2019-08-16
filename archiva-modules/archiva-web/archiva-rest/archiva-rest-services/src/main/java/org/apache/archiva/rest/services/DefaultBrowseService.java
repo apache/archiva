@@ -1110,16 +1110,7 @@ public class DefaultBrowseService
     public List<Artifact> searchArtifacts( String text, String repositoryId, Boolean exact )
         throws ArchivaRestServiceException
     {
-        RepositorySession repositorySession = null;
-        try
-        {
-            repositorySession = repositorySessionFactory.createSession();
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            e.printStackTrace( );
-        }
-        try
+        try(RepositorySession repositorySession = repositorySessionFactory.createSession())
         {
             List<ArtifactMetadata> artifactMetadatas =
                 repositorySession.getRepository().searchArtifacts(repositorySession , repositoryId, text, exact == null ? false : exact );
@@ -1128,10 +1119,6 @@ public class DefaultBrowseService
         catch ( MetadataRepositoryException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
-        finally
-        {
-            repositorySession.close();
         }
     }
 

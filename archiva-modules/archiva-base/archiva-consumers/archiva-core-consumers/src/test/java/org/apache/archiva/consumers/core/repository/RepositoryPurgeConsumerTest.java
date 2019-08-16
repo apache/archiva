@@ -31,6 +31,7 @@ import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,8 +72,6 @@ public class RepositoryPurgeConsumerTest
     {
         super.setUp();
 
-        MockRepositorySessionFactory factory = applicationContext.getBean( MockRepositorySessionFactory.class );
-        factory.setRepository( metadataRepository );
     }
 
     @After
@@ -163,15 +162,24 @@ public class RepositoryPurgeConsumerTest
     public void testConsumerByRetentionCount()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer =
+        RepositoryPurgeConsumer repoPurgeConsumer =
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-retention-count",
-                                        KnownRepositoryContentConsumer.class );
-
+                                        RepositoryPurgeConsumer.class );
+        repoPurgeConsumer.setRepositorySessionFactory( sessionFactory );
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
         atf.setRetentionPeriod( Period.ofDays( 0 ) ); // force days older off to allow retention count purge to execute.
         atf.setRetentionCount( TEST_RETENTION_COUNT );
         addRepoToConfiguration( "retention-count", repoConfiguration );
+
+        sessionControl.reset();
+        sessionFactoryControl.reset();
+        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
+        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        repositorySession.save();
+        EasyMock.expectLastCall().anyTimes();
+        sessionFactoryControl.replay();
+        sessionControl.replay();
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
@@ -188,6 +196,9 @@ public class RepositoryPurgeConsumerTest
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir( TEST_REPO_ID, projectName, repo, vDir );
+
+
+
         when(metadataRepository.getArtifacts( repositorySession, TEST_REPO_ID,
             projectNs, projectName, projectVersion )).thenReturn(ml);
         Set<String> deletedVersions = new HashSet<>();
@@ -197,9 +208,9 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.processFile( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
 
         // Verify the metadataRepository invocations
-        verify(metadataRepository, never()).removeProjectVersion( repositorySession, eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(2)).removeArtifact( repositorySession, metadataArg.capture(), eq(projectVersion) );
+        verify(metadataRepository, times(2)).removeArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
         for (ArtifactMetadata meta : metaL) {
             assertTrue(meta.getId().startsWith(projectName));
@@ -265,15 +276,25 @@ public class RepositoryPurgeConsumerTest
     public void testConsumerByDaysOld()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer =
+        RepositoryPurgeConsumer repoPurgeConsumer =
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-days-old",
-                                        KnownRepositoryContentConsumer.class );
+                RepositoryPurgeConsumer.class );
+
+        repoPurgeConsumer.setRepositorySessionFactory( sessionFactory );
 
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
         atf.setRetentionPeriod( Period.ofDays( TEST_DAYS_OLDER ) );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
+        sessionControl.reset();
+        sessionFactoryControl.reset();
+        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
+        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        repositorySession.save();
+        EasyMock.expectLastCall().anyTimes();
+        sessionFactoryControl.replay();
+        sessionControl.replay();
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepos();
@@ -300,10 +321,11 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.processFile( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
         // Verify the metadataRepository invocations
-        verify(metadataRepository, never()).removeProjectVersion( repositorySession, eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(2)).removeArtifact( repositorySession, metadataArg.capture(), eq(projectVersion) );
+        verify(metadataRepository, times(2)).removeArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        assertTrue( metaL.size( ) > 0 );
         for (ArtifactMetadata meta : metaL) {
             assertTrue(meta.getId().startsWith(projectName));
             assertTrue(deletedVersions.contains(meta.getVersion()));
@@ -379,10 +401,10 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.processFile(
             CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
-        verify(metadataRepository, never()).removeProjectVersion( repositorySession, eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, never()).removeArtifact( repositorySession, any(), any() );
-        verify(metadataRepository, never()).removeArtifact( repositorySession, any(), any(), any(), any(), any(MetadataFacet.class) );
+        verify(metadataRepository, never()).removeArtifact( eq(repositorySession), any(), any() );
+        verify(metadataRepository, never()).removeArtifact( eq(repositorySession), any(), any(), any(), any(), any(MetadataFacet.class) );
 
         // check if the snapshot wasn't removed
 
@@ -413,16 +435,23 @@ public class RepositoryPurgeConsumerTest
     public void testReleasedSnapshotsWereCleaned()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer =
+        RepositoryPurgeConsumer repoPurgeConsumer =
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-days-old",
-                                        KnownRepositoryContentConsumer.class );
-
+                                        RepositoryPurgeConsumer.class );
+        repoPurgeConsumer.setRepositorySessionFactory( sessionFactory );
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
         acf.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
-
+        sessionControl.reset();
+        sessionFactoryControl.reset();
+        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
+        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        repositorySession.save();
+        EasyMock.expectLastCall().anyTimes();
+        sessionFactoryControl.replay();
+        sessionControl.replay();
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepos();
@@ -442,9 +471,9 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.processFile(
             CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
-        verify(metadataRepository, times(1)).removeProjectVersion( repositorySession, eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, times(1)).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, never()).removeArtifact( repositorySession, any(), any() );
+        verify(metadataRepository, never()).removeArtifact( eq(repositorySession), any(), any() );
 
         // check if the snapshot was removed
         assertDeleted( projectRoot + "/2.3-SNAPSHOT" );

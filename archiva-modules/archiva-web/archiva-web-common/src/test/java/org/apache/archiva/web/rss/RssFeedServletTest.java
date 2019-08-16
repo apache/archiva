@@ -21,7 +21,11 @@ package org.apache.archiva.web.rss;
 
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;
@@ -54,6 +58,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Map;
 
@@ -70,6 +75,9 @@ public class RssFeedServletTest
 
     @Inject
     protected ApplicationContext applicationContext;
+
+    @Inject
+    protected RepositoryRegistry repositoryRegistry;
 
     @BeforeClass
     public static void initConfigurationPath()
@@ -110,6 +118,9 @@ public class RssFeedServletTest
             }
         };
 
+        repositoryRegistry.reload();
+        repositoryRegistry.putRepository( new BasicManagedRepository( "internal", "internal",
+            new FilesystemStorage( Paths.get( "target/appserver-base/repositories/internal" ), new DefaultFileLockManager( ) ) ) );
         rssFeedServlet.init( mockServletConfig );
     }
 

@@ -25,8 +25,11 @@ import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +52,12 @@ public class NewArtifactsRssFeedProcessorTest
 
     private MetadataRepositoryMock metadataRepository;
 
+    private IMocksControl sessionFactoryControl;
+    private RepositorySessionFactory sessionFactory;
+
+    private IMocksControl sessionControl;
+    private RepositorySession session;
+
     @Before
     @Override
     public void setUp()
@@ -60,6 +69,22 @@ public class NewArtifactsRssFeedProcessorTest
         newArtifactsProcessor.setGenerator( new RssFeedGenerator() );
 
         metadataRepository = new MetadataRepositoryMock();
+
+        sessionFactoryControl = EasyMock.createControl();
+        sessionControl = EasyMock.createControl();
+        sessionControl.resetToNice();
+
+        sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
+        session = sessionControl.createMock( RepositorySession.class );
+
+        EasyMock.expect( sessionFactory.createSession() ).andStubReturn( session );
+        EasyMock.expect( session.getRepository( ) ).andStubReturn( metadataRepository );
+
+        sessionFactoryControl.replay();
+        sessionControl.replay();
+
+        newArtifactsProcessor.setRepositorySessionFactory( sessionFactory );
+
     }
 
     @SuppressWarnings ("unchecked")
@@ -81,10 +106,11 @@ public class NewArtifactsRssFeedProcessorTest
 
         metadataRepository.setArtifactsByDateRange( newArtifacts );
 
+
         Map<String, String> reqParams = new HashMap<>();
         reqParams.put( RssFeedProcessor.KEY_REPO_ID, TEST_REPO );
 
-        SyndFeed feed = newArtifactsProcessor.process( reqParams, metadataRepository );
+        SyndFeed feed = newArtifactsProcessor.process( reqParams );
 
         // check that the date used in the call is close to the one passed (5 seconds difference at most)
         Calendar cal = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );

@@ -42,7 +42,7 @@ public class FileMetadataRepositoryTest
 {
 
     private FileMetadataRepository repository;
-    private RepositorySessionFactory sessionFactory = null;
+    private RepositorySessionFactory sessionFactory = new FileRepositorySessionFactory();
 
     @Override
     protected MetadataRepository getRepository( )

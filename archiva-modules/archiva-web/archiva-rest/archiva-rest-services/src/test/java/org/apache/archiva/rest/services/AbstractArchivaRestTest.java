@@ -62,6 +62,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * @author Olivier Lamy
@@ -85,7 +86,60 @@ public abstract class AbstractArchivaRestTest
         return this.reuseServer;
     }
 
+    /*
+     * Used by tryAssert to allow to throw exceptions in the lambda expression.
+     */
+    @FunctionalInterface
+    protected interface AssertFunction
+    {
+        void accept( ) throws Exception;
+    }
 
+    protected void tryAssert( AssertFunction func ) throws Exception
+    {
+        tryAssert( func, 10, 500 );
+    }
+
+    /*
+     * Runs the assert method until the assert is successful or the number of retries
+     * is reached. This is needed because the JCR Oak index update is asynchronous, so updates
+     * may not be visible immediately after the modification.
+     */
+    private void tryAssert( AssertFunction func, int retries, int sleepMillis ) throws Exception
+    {
+        Throwable t = null;
+        int retry = retries;
+        while ( retry-- > 0 )
+        {
+            try
+            {
+                func.accept( );
+                return;
+            }
+            catch ( Exception | AssertionError e )
+            {
+                t = e;
+                Thread.currentThread( ).sleep( sleepMillis );
+                log.warn( "Retrying assert {}: {}", retry, e.getMessage( ) );
+            }
+        }
+        log.warn( "Retries: {}, Exception: {}", retry, t.getMessage( ) );
+        if ( retry <= 0 && t != null )
+        {
+            if ( t instanceof RuntimeException )
+            {
+                throw (RuntimeException) t;
+            }
+            else if ( t instanceof Exception )
+            {
+                throw (Exception) t;
+            }
+            else if ( t instanceof Error )
+            {
+                throw (Error) t;
+            }
+        }
+    }
 
     // START SNIPPET: authz-header
     // guest with an empty password

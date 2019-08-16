@@ -62,6 +62,11 @@ public class FileTypes
     @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
+
+    public FileTypes() {
+
+    }
+
     /**
      * Map of default values for the file types.
      */

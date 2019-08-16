@@ -175,15 +175,8 @@ public class RssFeedServlet
                 return;
             }
 
-            RepositorySession repositorySession = repositorySessionFactory.createSession();
-            try
-            {
-                feed = processor.process( map, repositorySession.getRepository() );
-            }
-            finally
-            {
-                repositorySession.close();
-            }
+            feed = processor.process( map );
+
             if ( feed == null )
             {
                 res.sendError( HttpServletResponse.SC_NO_CONTENT, "No information available." );
@@ -241,10 +234,6 @@ public class RssFeedServlet
             }
 
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, USER_NOT_AUTHORIZED );
-        }
-        catch ( org.apache.archiva.metadata.repository.MetadataRepositoryException e )
-        {
-            e.printStackTrace( );
         }
     }
 

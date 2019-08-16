@@ -25,6 +25,7 @@ import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.model.ArtifactReference;
@@ -100,7 +101,13 @@ public class SimpleArtifactConsumer
         this.repository = repository;
         log.info( "Beginning scan of repository [{}]", this.repository.getId() );
 
-        repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession( );
+        } catch (MetadataRepositoryException e) {
+            log.error("Could not create repository session {}", e.getMessage());
+            throw new ConsumerException( "Could not create repository session: " + e.getMessage( ), e );
+        }
     }
 
     public void processFile( String path )
@@ -119,10 +126,10 @@ public class SimpleArtifactConsumer
             ManagedRepositoryContent repositoryContent = repository.getContent();
             ArtifactReference artifact = repositoryContent.toArtifactReference( path );
 
-            repositorySession.getRepository().getArtifacts( repository.getId(), artifact.getGroupId(),
+            repositorySession.getRepository().getArtifacts( repositorySession, repository.getId(), artifact.getGroupId(),
                                                             artifact.getArtifactId(), artifact.getVersion() );
         }
-        catch ( LayoutException | MetadataResolutionException e )
+        catch ( LayoutException | MetadataResolutionException  e )
         {
             throw new ConsumerException( e.getLocalizedMessage(), e );
         }

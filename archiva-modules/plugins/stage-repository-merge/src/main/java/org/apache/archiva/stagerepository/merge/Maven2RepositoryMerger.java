@@ -417,5 +417,13 @@ public class Maven2RepositoryMerger
         }
     }
 
+    public RepositorySessionFactory getRepositorySessionFactory( )
+    {
+        return repositorySessionFactory;
+    }
 
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
+    }
 }

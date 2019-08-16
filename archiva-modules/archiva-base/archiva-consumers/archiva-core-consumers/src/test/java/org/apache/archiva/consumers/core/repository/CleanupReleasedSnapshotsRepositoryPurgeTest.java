@@ -91,6 +91,15 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         listener = listenerControl.createMock( RepositoryListener.class );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
+
+        sessionControl.reset();
+        sessionFactoryControl.reset();
+        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
+        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        repositorySession.save();
+        EasyMock.expectLastCall().anyTimes();
+        sessionFactoryControl.replay();
+        sessionControl.replay();
         repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools,
                                                                  applicationContext.getBean(
                                                                      RepositoryRegistry.class ),
@@ -137,8 +146,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Verify the metadataRepository invocations
         // complete snapshot version removal for released
-        verify(metadataRepository, times(1)).removeProjectVersion(repositorySession , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
-        verify(metadataRepository, never()).removeProjectVersion(repositorySession , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.3") );
+        verify(metadataRepository, times(1)).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.3") );
 
         // check if the snapshot was removed
         assertDeleted( projectRoot + "/2.3-SNAPSHOT" );
@@ -260,8 +269,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Verify the metadataRepository invocations
         // Complete version removal for cleanup
-        verify(metadataRepository, times(1)).removeProjectVersion(repositorySession , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
-        verify(metadataRepository, never()).removeProjectVersion(repositorySession , eq(RELEASES_TEST_REPO_ID), eq(projectNs), eq(projectName), eq(releaseVersion) );
+        verify(metadataRepository, times(1)).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(RELEASES_TEST_REPO_ID), eq(projectNs), eq(projectName), eq(releaseVersion) );
 
 
         // check if the snapshot was removed
@@ -333,11 +342,11 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Verify the metadataRepository invocations
         // No removal
-        verify(metadataRepository, never()).removeProjectVersion(repositorySession , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
-        verify(metadataRepository, never()).removeProjectVersion(repositorySession , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.3-SNAPSHOT") );
-        verify(metadataRepository, never()).removeProjectVersion(repositorySession , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.4-SNAPSHOT") );
-        verify(metadataRepository, never()).removeArtifact(repositorySession , any(ArtifactMetadata.class), any(String.class) );
-        verify(metadataRepository, never()).removeArtifact(repositorySession , any(String.class), any(String.class), any(String.class), any(String.class), any( MetadataFacet.class) );
+        verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.3-SNAPSHOT") );
+        verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.4-SNAPSHOT") );
+        verify(metadataRepository, never()).removeArtifact(eq(repositorySession) , any(ArtifactMetadata.class), any(String.class) );
+        verify(metadataRepository, never()).removeArtifact(eq(repositorySession) , any(String.class), any(String.class), any(String.class), any(String.class), any( MetadataFacet.class) );
 
 
 

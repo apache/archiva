@@ -334,11 +334,13 @@ public class BrowseServiceTest
 
         browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
 
-        List<Artifact> artifactDownloadInfos =
-            browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", TEST_REPO_ID );
+        tryAssert( ( ) -> {
+            List<Artifact> artifactDownloadInfos =
+                browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", TEST_REPO_ID );
 
-        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
-        // END SNIPPET: get-artifacts-by-project-version-metadata
+            assertThat( artifactDownloadInfos ).isNotNull( ).isNotEmpty( ).hasSize( 3 );
+            // END SNIPPET: get-artifacts-by-project-version-metadata
+        } );
     }
 
 
@@ -346,14 +348,24 @@ public class BrowseServiceTest
     public void getArtifactsByProjectVersionMetadataWithNoRepository()
         throws Exception
     {
-        BrowseService browseService = getBrowseService( authorizationHeader, true );
+        final BrowseService browseService = getBrowseService( authorizationHeader, true );
 
         browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
 
-        List<Artifact> artifactDownloadInfos =
-            browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", null );
 
-        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
+        tryAssert( ( ) -> {
+            List<Artifact> artifactDownloadInfos =
+                null;
+            try
+            {
+                artifactDownloadInfos = browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", null );
+            }
+            catch ( ArchivaRestServiceException e )
+            {
+                throw new AssertionError( "ArchivaRestServiceException", e );
+            }
+            assertThat( artifactDownloadInfos ).isNotNull( ).isNotEmpty( ).hasSize( 3 );
+        });
     }
 
 
@@ -379,10 +391,12 @@ public class BrowseServiceTest
         // START SNIPPET: search-artifacts
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-        List<Artifact> artifactDownloadInfos =
-            browseService.searchArtifacts( "The Apache Software Foundation", TEST_REPO_ID, true );
+        tryAssert( ( ) -> {
+            List<Artifact> artifactDownloadInfos =
+                browseService.searchArtifacts( "The Apache Software Foundation", TEST_REPO_ID, true );
 
-        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 7 );
+            assertThat( artifactDownloadInfos ).isNotNull( ).isNotEmpty( ).hasSize( 7 );
+        } );
         // END SNIPPET: search-artifacts
     }
 

@@ -19,7 +19,6 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
@@ -39,14 +38,14 @@ public class TestRepositoryStatisticsManager
     private Map<String, List<RepositoryStatistics>> repoStats = new HashMap<>();
 
     @Override
-    public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
+    public boolean hasStatistics( String repositoryId )
         throws MetadataRepositoryException
     {
         return !repoStats.isEmpty();
     }
 
     @Override
-    public RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
+    public RepositoryStatistics getLastStatistics( String repositoryId )
     {
         List<RepositoryStatistics> repositoryStatisticsList = getStatsList( repositoryId );
         return !repositoryStatisticsList.isEmpty()
@@ -55,7 +54,7 @@ public class TestRepositoryStatisticsManager
     }
 
     @Override
-    public void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
+    public void addStatisticsAfterScan( String repositoryId, Date startTime,
                                         Date endTime, long totalFiles, long newFiles )
     {
         List<RepositoryStatistics> stats = getStatsList( repositoryId );
@@ -71,13 +70,13 @@ public class TestRepositoryStatisticsManager
     }
 
     @Override
-    public void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
+    public void deleteStatistics( String repositoryId )
     {
         repoStats.remove( repositoryId );
     }
 
     @Override
-    public List<RepositoryStatistics> getStatisticsInRange( MetadataRepository metadataRepository, String repositoryId,
+    public List<RepositoryStatistics> getStatisticsInRange( String repositoryId,
                                                             Date startDate, Date endDate )
     {
         throw new UnsupportedOperationException();

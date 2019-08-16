@@ -87,7 +87,7 @@ public class DefaultReportRepositoriesService
             {
                 try
                 {
-                    stats.add( repositoryStatisticsManager.getLastStatistics( metadataRepository, repo ) );
+                    stats.add( repositoryStatisticsManager.getLastStatistics( repo ) );
                 }
                 catch ( MetadataRepositoryException e )
                 {
@@ -121,7 +121,7 @@ public class DefaultReportRepositoriesService
             List<RepositoryStatistics> stats = null;
             try
             {
-                stats = repositoryStatisticsManager.getStatisticsInRange( metadataRepository, repositoryId, startDate,
+                stats = repositoryStatisticsManager.getStatisticsInRange( repositoryId, startDate,
                                                                           endDate );
             }
             catch ( MetadataRepositoryException e )

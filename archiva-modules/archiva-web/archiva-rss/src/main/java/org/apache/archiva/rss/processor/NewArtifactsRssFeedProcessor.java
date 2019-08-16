@@ -22,7 +22,6 @@ package org.apache.archiva.rss.processor;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
@@ -75,7 +74,7 @@ public class NewArtifactsRssFeedProcessor
      * new versions of artifact.
      */
     @Override
-    public SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
+    public SyndFeed process( Map<String, String> reqParams )
         throws FeedException
     {
         log.debug( "Process new artifacts into rss feeds." );
@@ -83,13 +82,13 @@ public class NewArtifactsRssFeedProcessor
         String repoId = reqParams.get( RssFeedProcessor.KEY_REPO_ID );
         if ( repoId != null )
         {
-            return processNewArtifactsInRepo( repoId, metadataRepository );
+            return processNewArtifactsInRepo( repoId );
         }
 
         return null;
     }
 
-    private SyndFeed processNewArtifactsInRepo( String repoId, MetadataRepository metadataRepository )
+    private SyndFeed processNewArtifactsInRepo( String repoId )
         throws FeedException
     {
         Calendar greaterThanThisDate = Calendar.getInstance( GMT_TIME_ZONE );
@@ -99,7 +98,7 @@ public class NewArtifactsRssFeedProcessor
         List<ArtifactMetadata> artifacts;
         try(RepositorySession session = repositorySessionFactory.createSession())
         {
-            artifacts = metadataRepository.getArtifactsByDateRange(session , repoId, greaterThanThisDate.getTime(), null );
+            artifacts = session.getRepository().getArtifactsByDateRange(session , repoId, greaterThanThisDate.getTime(), null );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -182,5 +181,15 @@ public class NewArtifactsRssFeedProcessor
     public void setNumberOfDaysBeforeNow( int numberOfDaysBeforeNow )
     {
         this.numberOfDaysBeforeNow = numberOfDaysBeforeNow;
+    }
+
+    public RepositorySessionFactory getRepositorySessionFactory( )
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
     }
 }

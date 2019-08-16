@@ -22,6 +22,7 @@ package org.apache.archiva.consumers.core.repository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +54,16 @@ public class RetentionCountRepositoryPurgeTest
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
         ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+
+        sessionControl.reset();
+        sessionFactoryControl.reset();
+        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
+        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        repositorySession.save();
+        EasyMock.expectLastCall().anyTimes();
+        sessionFactoryControl.replay();
+        sessionControl.replay();
+
         repoPurge = new RetentionCountRepositoryPurge( getRepository(), acf.getRetentionCount(),
                                                        repositorySession, listeners );
     }
@@ -124,9 +135,9 @@ public class RetentionCountRepositoryPurgeTest
         listenerControl.verify();
 
         // Verify the metadataRepository invocations
-        verify(metadataRepository, never()).removeProjectVersion( repositorySession, eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(deletedVersions.size())).removeArtifact( repositorySession, metadataArg.capture(), eq(projectVersion) );
+        verify(metadataRepository, times(deletedVersions.size())).removeArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
         for (ArtifactMetadata meta : metaL) {
             assertTrue(meta.getId().startsWith(projectName));
@@ -210,9 +221,9 @@ public class RetentionCountRepositoryPurgeTest
         listenerControl.verify();
 
         // Verify the metadataRepository invocations
-        verify(metadataRepository, never()).removeProjectVersion( repositorySession, eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(deletedVersions.size())).removeArtifact( repositorySession, metadataArg.capture(), eq(projectVersion) );
+        verify(metadataRepository, times(deletedVersions.size())).removeArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
         for (ArtifactMetadata meta : metaL) {
             assertTrue(meta.getId().startsWith(projectName));
@@ -298,9 +309,9 @@ public class RetentionCountRepositoryPurgeTest
         listenerControl.verify();
 
         // Verify the metadataRepository invocations
-        verify(metadataRepository, never()).removeProjectVersion( repositorySession, eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(deletedVersions.size())).removeArtifact( repositorySession, metadataArg.capture(), eq(projectVersion) );
+        verify(metadataRepository, times(deletedVersions.size())).removeArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
         for (ArtifactMetadata meta : metaL) {
             assertTrue(meta.getId().startsWith(projectName));

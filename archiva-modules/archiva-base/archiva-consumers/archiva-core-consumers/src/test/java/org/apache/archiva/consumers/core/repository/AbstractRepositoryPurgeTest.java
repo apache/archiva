@@ -22,6 +22,7 @@ package org.apache.archiva.consumers.core.repository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -101,7 +102,11 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected RepositoryListener listener;
 
+    protected IMocksControl sessionControl;
     protected RepositorySession repositorySession;
+
+    protected IMocksControl sessionFactoryControl;
+    protected RepositorySessionFactory sessionFactory;
 
     protected MetadataRepository metadataRepository;
 
@@ -118,10 +123,14 @@ public abstract class AbstractRepositoryPurgeTest
 
         listener = listenerControl.createMock( RepositoryListener.class );
 
-        repositorySession = mock( RepositorySession.class );
-        metadataRepository = mock( MetadataRepository.class );
-        when( repositorySession.getRepository() ).thenReturn( metadataRepository );
+        sessionControl = EasyMock.createControl();
+        sessionFactoryControl = EasyMock.createControl( );
 
+        repositorySession = sessionControl.createMock( RepositorySession.class );
+        metadataRepository = mock( MetadataRepository.class );
+        sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
+        EasyMock.expect( repositorySession.getRepository() ).andStubReturn( metadataRepository );
+        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
 
     }
 

@@ -26,10 +26,13 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -60,7 +63,31 @@ public class Maven2RepositoryMergerTest
 
     private MetadataRepository metadataRepository;
 
-    private RepositorySessionFactory repositorySessionFactory;
+    private static RepositorySessionFactory repositorySessionFactory;
+
+    private static RepositorySession session;
+
+    static
+    {
+        repositorySessionFactory = mock(RepositorySessionFactory.class);
+        session = mock( RepositorySession.class );
+
+        try
+        {
+            when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new RuntimeException( e );
+        }
+
+    }
+
+    public static RepositorySessionFactory getRepositorySessionFactory() {
+        return repositorySessionFactory;
+    }
+
+
 
     @Before
     @Override
@@ -70,7 +97,8 @@ public class Maven2RepositoryMergerTest
         super.setUp();
         MockitoAnnotations.initMocks( this );
         metadataRepository = mock( MetadataRepository.class );
-        repositorySessionFactory = mock(RepositorySessionFactory.class);
+        repositoryMerger.setRepositorySessionFactory( repositorySessionFactory );
+
     }
 
     private List<ArtifactMetadata> getArtifacts()
@@ -125,11 +153,10 @@ public class Maven2RepositoryMergerTest
         c.addManagedRepository( targetRepo );
         configuration.save( c );
 
-        try(RepositorySession session = repositorySessionFactory.createSession()) {
+
             when(metadataRepository.getArtifacts(session, TEST_REPO_ID)).thenReturn(getArtifacts());
             repositoryMerger.merge(metadataRepository, TEST_REPO_ID, "target-rep");
             verify(metadataRepository).getArtifacts(session, TEST_REPO_ID);
-        }
         assertTrue( Files.exists(mergedArtifact) );
         assertTrue( Files.exists(mavenMetadata) );
         assertTrue( Files.exists(pom) );
@@ -176,14 +203,12 @@ public class Maven2RepositoryMergerTest
             "/target/test-repository/com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" );
         targetRepoFile.toFile().setReadOnly();
 
-        try(RepositorySession session = repositorySessionFactory.createSession()) {
             when(metadataRepository.getArtifacts(session, sourceRepoId)).thenReturn(sourceRepoArtifactsList);
             when(metadataRepository.getArtifacts(session, TEST_REPO_ID)).thenReturn(targetRepoArtifactsList);
 
             assertEquals(1, repositoryMerger.getConflictingArtifacts(metadataRepository, sourceRepoId,
                     TEST_REPO_ID).size());
             verify(metadataRepository).getArtifacts(session, TEST_REPO_ID);
-        }
     }
 
 }

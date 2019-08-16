@@ -282,4 +282,14 @@ public class DuplicateArtifactsConsumer
         initIncludes();
         configuration.addChangeListener( this );
     }
+
+    public RepositorySessionFactory getRepositorySessionFactory( )
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
+    }
 }

@@ -67,7 +67,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
      * Process all versions of the artifact which had a rss feed request.
      */
     @Override
-    public SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
+    public SyndFeed process( Map<String, String> reqParams )
         throws FeedException
     {
         String groupId = reqParams.get( RssFeedProcessor.KEY_GROUP_ID );
@@ -75,19 +75,19 @@ public class NewVersionsOfArtifactRssFeedProcessor
 
         if ( groupId != null && artifactId != null )
         {
-            return processNewVersionsOfArtifact( groupId, artifactId, metadataRepository );
+            return processNewVersionsOfArtifact( groupId, artifactId );
         }
 
         return null;
     }
 
-    private SyndFeed processNewVersionsOfArtifact( String groupId, String artifactId,
-                                                   MetadataRepository metadataRepository )
+    private SyndFeed processNewVersionsOfArtifact( String groupId, String artifactId )
         throws FeedException
     {
         List<ArtifactMetadata> artifacts = new ArrayList<>();
         try(RepositorySession session = repositorySessionFactory.createSession())
         {
+            final MetadataRepository metadataRepository = session.getRepository( );
             for ( Repository repo : repositoryRegistry.getRepositories() )
             {
                 final String repoId = repo.getId();
@@ -176,5 +176,25 @@ public class NewVersionsOfArtifactRssFeedProcessor
     public void setGenerator( RssFeedGenerator generator )
     {
         this.generator = generator;
+    }
+
+    public RepositorySessionFactory getRepositorySessionFactory( )
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
+    }
+
+    public RepositoryRegistry getRepositoryRegistry( )
+    {
+        return repositoryRegistry;
+    }
+
+    public void setRepositoryRegistry( RepositoryRegistry repositoryRegistry )
+    {
+        this.repositoryRegistry = repositoryRegistry;
     }
 }

@@ -143,7 +143,7 @@ public class RepositoryPurgeConsumer
         }
         catch ( org.apache.archiva.metadata.repository.MetadataRepositoryException e )
         {
-            e.printStackTrace( );
+            throw new ConsumerException( "Could not create session: " + e.getMessage( ), e );
         }
 
         if (repository.supportsFeature( ArtifactCleanupFeature.class ))
@@ -332,13 +332,4 @@ public class RepositoryPurgeConsumer
         this.repositorySessionFactory = repositorySessionFactory;
     }
 
-    public RepositorySession getRepositorySession( )
-    {
-        return repositorySession;
-    }
-
-    public void setRepositorySession( RepositorySession repositorySession )
-    {
-        this.repositorySession = repositorySession;
-    }
 }

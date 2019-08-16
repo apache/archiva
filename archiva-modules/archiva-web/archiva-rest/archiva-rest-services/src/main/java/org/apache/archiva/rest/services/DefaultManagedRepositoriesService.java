@@ -180,7 +180,7 @@ public class DefaultManagedRepositoriesService
             RepositoryStatistics stats = null;
             try
             {
-                stats = repositoryStatisticsManager.getLastStatistics( metadataRepository, repositoryId );
+                stats = repositoryStatisticsManager.getLastStatistics( repositoryId );
             }
             catch ( MetadataRepositoryException e )
             {

@@ -337,35 +337,38 @@ public class DefaultManagedRepositoryAdmin
 
         if ( !stagedOne )
         {
-            RepositorySession repositorySession = null;
-            try
-            {
-                repositorySession = getRepositorySessionFactory().createSession();
-            }
-            catch ( MetadataRepositoryException e )
-            {
-                e.printStackTrace( );
-            }
-            try
+            boolean success=false;
+            try(RepositorySession repositorySession = getRepositorySessionFactory().createSession())
             {
                 MetadataRepository metadataRepository = repositorySession.getRepository();
                 metadataRepository.removeRepository(repositorySession , repository.getId() );
                 //invalidate cache
                 namespacesCache.remove( repository.getId() );
-                log.debug( "call repositoryStatisticsManager.deleteStatistics" );
-                getRepositoryStatisticsManager().deleteStatistics( metadataRepository, repository.getId() );
                 repositorySession.save();
+                success=true;
             }
             catch ( MetadataRepositoryException e )
             {
                 //throw new RepositoryAdminException( e.getMessage(), e );
                 log.warn( "skip error during removing repository from MetadataRepository:{}", e.getMessage(), e );
+                success = false;
             } catch (MetadataSessionException e) {
                 log.warn( "skip error during removing repository from MetadataRepository:{}", e.getMessage(), e );
-            } finally
-            {
-                repositorySession.close();
+                success = false;
             }
+            if (success)
+            {
+                log.debug( "call repositoryStatisticsManager.deleteStatistics" );
+                try
+                {
+                    getRepositoryStatisticsManager( ).deleteStatistics( repository.getId( ) );
+                }
+                catch ( MetadataRepositoryException e )
+                {
+                    e.printStackTrace( );
+                }
+            }
+
         }
 
         if ( deleteContent )
@@ -514,8 +517,8 @@ public class DefaultManagedRepositoryAdmin
             if ( resetStats )
             {
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
-                getRepositoryStatisticsManager().deleteStatistics( repositorySession.getRepository(),
-                                                                   managedRepository.getId() );
+                getRepositoryStatisticsManager().deleteStatistics(
+                    managedRepository.getId() );
                 repositorySession.save();
             }
 

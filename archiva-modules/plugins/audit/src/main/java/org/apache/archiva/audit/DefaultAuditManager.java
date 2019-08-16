@@ -178,4 +178,14 @@ public class DefaultAuditManager
             return other.name.compareTo( name );
         }
     }
+
+    public RepositorySessionFactory getRepositorySessionFactory( )
+    {
+        return repositorySessionFactory;
+    }
+
+    public void setRepositorySessionFactory( RepositorySessionFactory repositorySessionFactory )
+    {
+        this.repositorySessionFactory = repositorySessionFactory;
+    }
 }
