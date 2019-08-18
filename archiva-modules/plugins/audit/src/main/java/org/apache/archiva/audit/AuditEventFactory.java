@@ -19,8 +19,8 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.facets.AbstractMetadataFacetFactory;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.springframework.stereotype.Service;
 
@@ -29,17 +29,33 @@ import org.springframework.stereotype.Service;
  */
 @Service("metadataFacetFactory#org.apache.archiva.audit")
 public class AuditEventFactory
-    implements MetadataFacetFactory
+    extends AbstractMetadataFacetFactory<AuditEvent>
 {
+    public AuditEventFactory() {
+        super( AuditEvent.class );
+    }
+
     @Override
-    public MetadataFacet createMetadataFacet()
+    public AuditEvent createMetadataFacet()
     {
         throw new UnsupportedOperationException( "Must construct an audit event with a name" );
     }
 
     @Override
-    public MetadataFacet createMetadataFacet( String repositoryId, String name )
+    public AuditEvent createMetadataFacet( String repositoryId, String name )
     {
         return new AuditEvent( name, repositoryId );
+    }
+
+    @Override
+    public boolean assignsFacet( Class<?> clazz )
+    {
+        return false;
+    }
+
+    @Override
+    public Class<AuditEvent> getFacetClass( )
+    {
+        return null;
     }
 }

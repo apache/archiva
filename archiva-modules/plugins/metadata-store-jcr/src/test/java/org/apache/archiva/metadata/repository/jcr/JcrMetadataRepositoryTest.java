@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.DefaultMetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.MetadataSessionException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
@@ -32,21 +33,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.QueryResult;
-import javax.jcr.query.Row;
-import javax.jcr.query.RowIterator;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
-import static org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_VERSION_NODE_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -81,10 +76,12 @@ public class JcrMetadataRepositoryTest
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
 
-        Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories( );
+        List<MetadataFacetFactory> factories = createTestMetadataFacetFactories( );
+        MetadataService metadataService = new MetadataService();
+        metadataService.setMetadataFacetFactories( factories );
         JcrRepositorySessionFactory jcrSessionFactory = new JcrRepositorySessionFactory( );
         jcrSessionFactory.setMetadataResolver( new DefaultMetadataResolver( ) );
-        jcrSessionFactory.setMetadataFacetFactories( factories );
+        jcrSessionFactory.setMetadataService( metadataService );
 
         jcrSessionFactory.open( );
         sessionFactory = jcrSessionFactory;

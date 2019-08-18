@@ -419,7 +419,6 @@ public class OakRepositoryFactory
 
             private IndexDefinitionBuilder.PropertyRule initBaseRule( IndexDefinitionBuilder.IndexRule rule ) {
                 return rule
-                    .sync()
                     .indexNodeName( )
                     .property(JCR_CREATED).propertyIndex().type("Date").ordered()
                     .property(JCR_LASTMODIFIED ).propertyIndex().type( "Date" ).ordered()
@@ -486,7 +485,8 @@ public class OakRepositoryFactory
                         .property( "whenGathered" ).type("Date").propertyIndex().analyzed().ordered()
                         .property("size").type("Long").propertyIndex().analyzed().ordered()
                         .property("version").propertyIndex().analyzed().ordered();
-                    initRegexAll( idxBuilder.indexRule( FACET_NODE_TYPE ) );
+                    initRegexAll( idxBuilder.indexRule( FACET_NODE_TYPE ) )
+                        .property("facetId").propertyIndex().analyzed().ordered();
                     idxBuilder.indexRule( MIXIN_META_SCM )
                         .property( "scm.connection" ).propertyIndex()
                         .property( "scm.developerConnection" ).propertyIndex()

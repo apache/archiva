@@ -19,9 +19,9 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.facets.AbstractMetadataFacetFactory;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,16 +29,21 @@ import org.springframework.stereotype.Service;
  */
 @Service( "metadataFacetFactory#org.apache.archiva.metadata.repository.stats" )
 public class RepositoryStatisticsFactory
-    implements MetadataFacetFactory
+    extends AbstractMetadataFacetFactory<RepositoryStatistics>
 {
+    protected RepositoryStatisticsFactory( )
+    {
+        super( RepositoryStatistics.class );
+    }
+
     @Override
-    public MetadataFacet createMetadataFacet()
+    public RepositoryStatistics createMetadataFacet()
     {
         return new DefaultRepositoryStatistics();
     }
 
     @Override
-    public MetadataFacet createMetadataFacet( String repositoryId, String name )
+    public RepositoryStatistics createMetadataFacet( String repositoryId, String name )
     {
         return new DefaultRepositoryStatistics();
     }

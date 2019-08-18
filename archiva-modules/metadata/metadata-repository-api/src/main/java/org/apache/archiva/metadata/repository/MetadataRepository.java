@@ -24,60 +24,186 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.maven.index_shaded.lucene.util.packed.DirectMonotonicReader;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
+/**
+ * A Metadata repository provides information about artifact metadata. It does not provide the artifact data itself.
+ * It may be possible to use the same backend for metadata and storage, but this depends on the backends and they are
+ * provided by different APIs.
+ *
+ * The motivation for this API is to provide fast access to the repository metadata and fulltext search. Also dependencies
+ * are stored in this repository.
+ *
+ * The methods here do not update the artifacts itself. They are only updating the data in the metadata repository.
+ * That means, if you want to update some artifact, you should make sure to update the artifact itself and the metadata
+ * repository (either directly or by repository scanning).
+ *
+ * Currently we are providing JCR, File based and Cassandra as backend for the metadata.
+ *
+ * The metadata repository uses sessions for accessing the data. Please make sure to always close the sessions after using it.
+ * Best idiom for using the sessions:
+ * <code>
+ * try(RepositorySession session = sessionFactory.createSession() {
+ *     // do your stuff
+ * }
+ * </code>
+ *
+ * It is implementation dependent, if the sessions are really used by the backend. E.g. the file based implementation ignores
+ * the sessions completely.
+ *
+ * Sessions should be closed immediately after usage. If it is expensive to open a session for a given backend. The backend
+ * should provide a session pool if possible. There are methods for refreshing a session if needed.
+ *
+ * You should avoid stacking sessions, that means, do not create a new session in the same thread, when a session is opened already.
+ *
+ * Some backend implementations (JCR) update the metadata in the background, that means update of the metadata is not reflected
+ * immediately.
+ *
+ * The base metadata coordinates are:
+ * <ul>
+ *     <li>Repository ID: The identifier of the repository, where the artifact resides</li>
+ *     <li>Namespace: This is a hierarchical coordinate for locating the projects. E.g. this corresponds to the groupId in maven. </li>
+ *     <li>Project ID: The project itself</li>
+ *     <li>Version: Each project may have different versions.</li>
+ *     <li>Artifact: Artifacts correspond to files / blob data. Each artifact has additional metadata, like name, version, modification time, ...</li>
+ * </ul>
+ *
+ * As the repository connects to some backend either locally or remote, the access to the repository may fail. The methods capsule the
+ * backend errors into <code>{@link MetadataRepositoryException}</code>.
+ *
+ * Facets are the way to provide additional metadata that is not part of the base API. It depends on the repository type (e.g. Maven, NPM,
+ * not the metadata backend) what facets are stored in addition to the standard metadata.
+ * Facets have a specific facet ID that represents the schema for the data stored. For creating specific objects for a given
+ * facet id the <code>{@link org.apache.archiva.metadata.model.MetadataFacetFactory}</code> is used.
+ * For each facet id there may exist multiple facet instances on each level. Facet instances are identified by their name, which may be
+ * a hierarchical path.
+ * The data in each facet instance is stored in properties (key-value pairs). The properties are converted into / from the specific
+ * facet object.
+ *
+ * Facets can be stored on repository, project, version and artifact level.
+ *
+ */
 public interface MetadataRepository
 {
     /**
-     * Update metadata for a particular project in the metadata repository, or create it if it does not already exist.
+     * Update metadata for a particular project in the metadata repository, or create it, if it does not already exist.
      *
-     * @param session
+     * @param session The session used for updating.
      * @param repositoryId the repository the project is in
      * @param project      the project metadata to create or update
+     * @throws MetadataRepositoryException if the update fails
      */
     void updateProject( RepositorySession session, String repositoryId, ProjectMetadata project )
         throws MetadataRepositoryException;
 
+    /**
+     * Update the metadata of a given artifact. If the artifact, namespace, version, project does not exist in the repository it will be created.
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param namespace The namespace ('.' separated)
+     * @param projectId The project id
+     * @param projectVersion The project version
+     * @param artifactMeta Information about the artifact itself.
+     * @throws MetadataRepositoryException if something goes wrong during update.
+     */
     void updateArtifact( RepositorySession session, String repositoryId, String namespace, String projectId, String projectVersion,
                          ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException;
 
+    /**
+     * Updates the metadata for a specific version of a given project. If the namespace, project, version does not exist,
+     * it will be created.
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param namespace The namespace ('.' separated)
+     * @param projectId The project id
+     * @param versionMetadata The metadata for the version
+     * @throws MetadataRepositoryException if something goes wrong during update
+     */
     void updateProjectVersion( RepositorySession session, String repositoryId, String namespace, String projectId,
                                ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException;
 
     /**
-     * create the namespace in the repository. (if not exist)
+     * Create the namespace in the repository, if it does not exist.
+     * Namespaces do not have specific metadata attached.
      *
-     *
-     * @param session
-     * @param repositoryId
-     * @param namespace
-     * @throws MetadataRepositoryException
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param namespace The namespace ('.' separated)
+     * @throws MetadataRepositoryException if something goes wrong during update
      */
     void updateNamespace( RepositorySession session, String repositoryId, String namespace )
         throws MetadataRepositoryException;
 
+    /**
+     * Return the facet names stored for the given facet id on the repository level.
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param facetId The facet id
+     * @return The list of facet names, or an empty list, if there are no facets stored on this repository for the given facet id.
+     * @throws MetadataRepositoryException if something goes wrong
+     */
     List<String> getMetadataFacets( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException;
 
+    <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz)
+        throws MetadataRepositoryException;
+
+    <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries)
+        throws MetadataRepositoryException;
+
     /**
+     * Returns true, if there is facet data stored for the given id on the repository. The facet data itself
+     * may be empty. It's just checking if there is data stored for the given facet id.
      *
-     * @param session
-     * @param repositoryId
-     * @param facetId
-     * @return true if the repository datas for this facetId
-     * @throws MetadataRepositoryException
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param facetId The facet id
+     * @return true if there is data stored this facetId on repository level.
+     * @throws MetadataRepositoryException if something goes wrong
      * @since 1.4-M4
      */
     boolean hasMetadataFacet( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException;
 
+    /**
+     * Returns the facet data stored on the repository level. The facet instance is identified by the facet id and the
+     * facet name. The returned object is a instance created by using <code>{@link org.apache.archiva.metadata.model.MetadataFacetFactory}</code>.
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param facetId The facet id
+     * @param name The attribute name
+     * @return The facet values
+     * @throws MetadataRepositoryException if something goes wrong.
+     */
     MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
         throws MetadataRepositoryException;
+
+    /**
+     * Returns the facet instance using the proper class.
+     *
+     * @param session The repository session
+     * @param repositoryId The repository
+     * @param clazz The facet object class
+     * @param name The name of the facet
+     * @param <T> The facet object
+     * @return The facet instance if it exists.
+     * @throws MetadataRepositoryException
+     */
+    <T extends MetadataFacet> T getMetadataFacet(RepositorySession session, String repositoryId, Class<T> clazz, String name)
+    throws MetadataRepositoryException;
 
     void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException;
@@ -100,6 +226,13 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException
      */
     List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repositoryId, Date startTime, Date endTime )
+        throws MetadataRepositoryException;
+
+    Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
+        throws MetadataRepositoryException;
+
+    Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId,
+                                                            ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries )
         throws MetadataRepositoryException;
 
     Collection<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, String repositoryId, String checksum )

@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.generic.GenericMetadataFacetFactory;
 import org.apache.archiva.metadata.model.*;
+import org.apache.archiva.metadata.model.facets.AbstractMetadataFacetFactory;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
@@ -35,6 +36,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -139,45 +142,42 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
 
-    public static Map<String, MetadataFacetFactory> createTestMetadataFacetFactories( )
+    public static List<MetadataFacetFactory> createTestMetadataFacetFactories( )
     {
-        Map<String, MetadataFacetFactory> factories = new HashMap<>( );
-        factories.put( TEST_FACET_ID, new MetadataFacetFactory( )
+        List<MetadataFacetFactory> factories = new ArrayList<>( );
+        factories.add( new MetadataFacetFactory<TestMetadataFacet>( )
         {
             @Override
-            public MetadataFacet createMetadataFacet( )
+            public TestMetadataFacet createMetadataFacet( )
             {
                 return new TestMetadataFacet( TEST_METADATA_VALUE );
             }
 
             @Override
-            public MetadataFacet createMetadataFacet( String repositoryId, String name )
+            public TestMetadataFacet createMetadataFacet( String repositoryId, String name )
             {
                 return new TestMetadataFacet( TEST_METADATA_VALUE );
             }
-        } );
 
-        // add to ensure we don't accidentally create an empty facet ID.
-        factories.put( "", new MetadataFacetFactory( )
-        {
             @Override
-            public MetadataFacet createMetadataFacet( )
+            public Class<TestMetadataFacet> getFacetClass( )
             {
-                return new TestMetadataFacet( "", TEST_VALUE );
+                return TestMetadataFacet.class;
             }
 
             @Override
-            public MetadataFacet createMetadataFacet( String repositoryId, String name )
+            public String getFacetId( )
             {
-                return new TestMetadataFacet( "", TEST_VALUE );
+                return TEST_FACET_ID;
             }
         } );
 
         // for the getArtifactsByProjectVersionMetadata tests
-        factories.put( GenericMetadataFacet.FACET_ID, new GenericMetadataFacetFactory( ) );
+        factories.add( new GenericMetadataFacetFactory( ) );
 
         return factories;
     }
+
 
     @Test
     public void testRootNamespaceWithNoMetadataRepository( )
@@ -794,6 +794,22 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     @Test
+    public void testGetMetadataFacetByClass( )
+        throws Exception
+    {
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            getRepository( ).addMetadataFacet( session, TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
+
+            TestMetadataFacet test =
+                (TestMetadataFacet) getRepository( ).getMetadataFacet( session, TEST_REPO_ID, TestMetadataFacet.class, TEST_NAME );
+
+            assertEquals( new TestMetadataFacet( TEST_VALUE ), test );
+
+        }
+    }
+
+    @Test
     public void testGetMetadataFacetWhenEmpty( )
         throws Exception
     {
@@ -853,6 +869,28 @@ public abstract class AbstractMetadataRepositoryTest
 
             assertEquals( Collections.singletonList( TEST_NAME ),
                 getRepository( ).getMetadataFacets( session, TEST_REPO_ID, TEST_FACET_ID ) );
+
+        }
+    }
+
+    @Test
+    public void testGetMetadataFacetsStream( )
+        throws Exception
+    {
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            getRepository( ).addMetadataFacet( session, TEST_REPO_ID, new TestMetadataFacet( TEST_VALUE ) );
+        }
+
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            tryAssert( ( ) -> {
+                Stream<TestMetadataFacet> str = getRepository( ).getMetadataFacetStream( session, TEST_REPO_ID, TestMetadataFacet.class );
+                assertNotNull( str );
+                List<TestMetadataFacet> result = str.collect( Collectors.toList( ) );
+                assertEquals( 1, result.size( ) );
+                assertEquals( TEST_NAME, result.get( 0 ).getName( ) );
+            } );
 
         }
     }
@@ -1617,7 +1655,7 @@ public abstract class AbstractMetadataRepositoryTest
                 assertThat( artifactMetadata.getRepositoryId( ) ).isEqualTo( TEST_REPO_ID );
                 MetadataFacet facet = artifactMetadata.getFacet( TEST_FACET_ID );
                 assertThat( facet ).isNotNull( );
-                assertThat( facet.toProperties( ) ).isEqualTo( Collections.singletonMap( "foo", TEST_METADATA_VALUE ) );
+                assertThat( facet.toProperties( ).get("foo").equals(TEST_METADATA_VALUE) );
             } );
         }
     }

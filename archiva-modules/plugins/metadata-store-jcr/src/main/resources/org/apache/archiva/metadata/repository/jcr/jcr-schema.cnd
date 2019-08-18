@@ -106,3 +106,4 @@
  + * (archiva:facet) multiple
 
 [archiva:facet] > archiva:base mixin
+ - facetId

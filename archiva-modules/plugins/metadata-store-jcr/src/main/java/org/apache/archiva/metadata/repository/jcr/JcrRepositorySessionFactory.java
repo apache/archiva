@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.jcr;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.*;
 import org.apache.commons.lang.StringUtils;
@@ -49,11 +50,6 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
 
     private Logger logger = LoggerFactory.getLogger( getClass() );
 
-    @Inject
-    private ApplicationContext applicationContext;
-
-    private Map<String, MetadataFacetFactory> metadataFacetFactories;
-
     private Repository repository;
 
     // Lazy evaluation to avoid problems with circular dependencies during initialization
@@ -61,6 +57,9 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
 
     @Inject
     private RepositorySessionFactoryBean repositorySessionFactoryBean;
+
+    @Inject
+    private MetadataService metadataService;
 
     private OakRepositoryFactory repositoryFactory;
 
@@ -80,14 +79,8 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
         }
     }
 
-    // Lazy evaluation to avoid problems with circular dependencies during initialization
-    private MetadataResolver getMetadataResolver()
-    {
-        if ( this.metadataResolver == null && applicationContext!=null)
-        {
-            this.metadataResolver = applicationContext.getBean( MetadataResolver.class );
-        }
-        return this.metadataResolver;
+    private MetadataResolver getMetadataResolver() {
+        return metadataService.getMetadataResolver( );
     }
 
     protected void initialize()
@@ -102,27 +95,6 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        if (applicationContext!=null) {
-            metadataFacetFactories = applicationContext.getBeansOfType(MetadataFacetFactory.class);
-        }
-        // olamy with spring the "id" is now "metadataFacetFactory#hint"
-        // whereas was only hint with plexus so let remove  metadataFacetFactory#
-        Map<String, MetadataFacetFactory> cleanedMetadataFacetFactories =
-            new HashMap<>( metadataFacetFactories.size() );
-
-        for ( Map.Entry<String, MetadataFacetFactory> entry : metadataFacetFactories.entrySet() )
-        {
-            if (entry.getKey().contains("#")) {
-                cleanedMetadataFacetFactories.put( StringUtils.substringAfterLast( entry.getKey(), "#" ),
-                        entry.getValue() );
-
-            } else {
-                cleanedMetadataFacetFactories.put(entry.getKey(), entry.getValue());
-            }
-        }
-
-        metadataFacetFactories = cleanedMetadataFacetFactories;
-
         try
         {
 
@@ -136,7 +108,7 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
                 logger.error("Repository creation failed {}", e.getMessage());
                 throw new RuntimeException("Fatal error. Could not create metadata repository.");
             }
-            jcrMetadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
+            jcrMetadataRepository = new JcrMetadataRepository( metadataService, repository );
             try ( JcrRepositorySession session = new JcrRepositorySession( jcrMetadataRepository, metadataResolver )) {
                 JcrMetadataRepository.initializeNodeTypes( session.getJcrSession() );
                 // Saves automatically with close
@@ -171,8 +143,14 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
         return jcrMetadataRepository;
     }
 
-    public void setMetadataFacetFactories(Map<String, MetadataFacetFactory> metadataFacetFactories) {
-        this.metadataFacetFactories = metadataFacetFactories;
+
+    public MetadataService getMetadataService( )
+    {
+        return metadataService;
     }
 
+    public void setMetadataService( MetadataService metadataService )
+    {
+        this.metadataService = metadataService;
+    }
 }

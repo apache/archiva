@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.DefaultMetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.jcr.JcrMetadataRepository;
 import org.apache.archiva.metadata.repository.jcr.JcrRepositorySessionFactory;
@@ -54,6 +55,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
@@ -91,12 +93,14 @@ public class JcrRepositoryStatisticsGatheringTest
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
 
-        Map<String, MetadataFacetFactory> factories = AbstractMetadataRepositoryTest.createTestMetadataFacetFactories();
+        List<MetadataFacetFactory> factories = AbstractMetadataRepositoryTest.createTestMetadataFacetFactories();
 
+        MetadataService metadataService = new MetadataService( );
+        metadataService.setMetadataFacetFactories( factories );
 
         JcrRepositorySessionFactory jcrSessionFactory = new JcrRepositorySessionFactory();
         jcrSessionFactory.setMetadataResolver(new DefaultMetadataResolver());
-        jcrSessionFactory.setMetadataFacetFactories(factories);
+        jcrSessionFactory.setMetadataService(metadataService);
 
         jcrSessionFactory.open();
         sessionFactory = jcrSessionFactory;

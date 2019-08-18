@@ -22,11 +22,19 @@ package org.apache.archiva.metadata.repository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryType;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public interface MetadataResolver
 {
+    default List<RepositoryType> supportsRepositoryTypes() {
+        return Arrays.asList( RepositoryType.MAVEN );
+    }
+
     ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
                                                   String projectId, String projectVersion )
         throws MetadataResolutionException;

@@ -19,8 +19,8 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.facets.AbstractMetadataFacetFactory;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.springframework.stereotype.Service;
 
@@ -29,16 +29,20 @@ import org.springframework.stereotype.Service;
  */
 @Service("metadataFacetFactory#org.apache.archiva.metadata.repository.storage.maven2.artifact")
 public class MavenArtifactFacetFactory
-    implements MetadataFacetFactory
+    extends AbstractMetadataFacetFactory<MavenArtifactFacet>
 {
+    public MavenArtifactFacetFactory() {
+        super( MavenArtifactFacet.class);
+    }
+
     @Override
-    public MetadataFacet createMetadataFacet()
+    public MavenArtifactFacet createMetadataFacet()
     {
         return new MavenArtifactFacet();
     }
 
     @Override
-    public MetadataFacet createMetadataFacet( String repositoryId, String name )
+    public MavenArtifactFacet createMetadataFacet( String repositoryId, String name )
     {
         throw new UnsupportedOperationException( "There is no valid name for artifact facets" );
     }

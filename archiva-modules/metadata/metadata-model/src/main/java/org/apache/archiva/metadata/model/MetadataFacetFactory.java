@@ -19,9 +19,17 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-public interface MetadataFacetFactory
+public interface MetadataFacetFactory<T extends MetadataFacet>
 {
-    MetadataFacet createMetadataFacet();
+    T createMetadataFacet();
 
-    MetadataFacet createMetadataFacet( String repositoryId, String name );
+    T createMetadataFacet( String repositoryId, String name );
+
+    default boolean assignsFacet( Class<?> clazz ) {
+        return getFacetClass( ).isAssignableFrom( clazz );
+    }
+
+    Class<T> getFacetClass( );
+
+    String getFacetId();
 }

@@ -19,25 +19,28 @@ package org.apache.archiva.metadata.generic;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.facets.AbstractMetadataFacetFactory;
 import org.springframework.stereotype.Service;
 
 /**
  */
 @Service("metadataFacetFactory#org.apache.archiva.metadata.generic")
 public class GenericMetadataFacetFactory
-    implements MetadataFacetFactory
+    extends AbstractMetadataFacetFactory<GenericMetadataFacet>
 {
 
+    public GenericMetadataFacetFactory() {
+        super( GenericMetadataFacet.class );
+    }
+
     @Override
-    public MetadataFacet createMetadataFacet()
+    public GenericMetadataFacet createMetadataFacet()
     {
         return new GenericMetadataFacet();
     }
 
     @Override
-    public MetadataFacet createMetadataFacet( String repositoryId, String name )
+    public GenericMetadataFacet createMetadataFacet( String repositoryId, String name )
     {
         throw new UnsupportedOperationException( "There is no valid name for project version facets" );
     }
