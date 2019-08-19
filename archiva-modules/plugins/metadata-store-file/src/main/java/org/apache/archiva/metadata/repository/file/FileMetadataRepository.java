@@ -34,9 +34,11 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -68,9 +71,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FileMetadataRepository
-    implements MetadataRepository
+    extends AbstractMetadataRepository implements MetadataRepository
 {
-    private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
     private final ArchivaConfiguration configuration;
 
@@ -84,25 +86,33 @@ public class FileMetadataRepository
 
     private static final String METADATA_KEY = "metadata";
 
-    public FileMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
+    private Map<String, Path> baseDirectory = new HashMap<>(  );
+
+    public FileMetadataRepository( MetadataService metadataService,
                                    ArchivaConfiguration configuration )
     {
-        this.metadataFacetFactories = metadataFacetFactories;
+        super( metadataService );
         this.configuration = configuration;
     }
 
     private Path getBaseDirectory(String repoId )
         throws IOException
     {
-        // TODO: should be configurable, like the index
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            configuration.getConfiguration().getManagedRepositoriesAsMap().get( repoId );
-        if ( managedRepositoryConfiguration == null )
+        if (!baseDirectory.containsKey( repoId ))
         {
-            return Files.createTempDirectory( repoId );
+            Path baseDir;
+            ManagedRepositoryConfiguration managedRepositoryConfiguration =
+                configuration.getConfiguration( ).getManagedRepositoriesAsMap( ).get( repoId );
+            if ( managedRepositoryConfiguration == null )
+            {
+                baseDir = Files.createTempDirectory( repoId );
+            } else
+            {
+                baseDir = Paths.get( managedRepositoryConfiguration.getLocation( ) );
+            }
+            baseDirectory.put(repoId, baseDir.resolve( ".archiva" ));
         }
-        String basedir = managedRepositoryConfiguration.getLocation();
-        return Paths.get( basedir, ".archiva" );
+        return baseDirectory.get(repoId);
     }
 
     private Path getDirectory( String repoId )
@@ -340,6 +350,30 @@ public class FileMetadataRepository
     }
 
     @Override
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries ) throws MetadataRepositoryException
+    {
+        final MetadataFacetFactory<T> metadataFacetFactory = getFacetFactory( facetClazz );
+        if (metadataFacetFactory==null) {
+            return null;
+        }
+        final String facetId = metadataFacetFactory.getFacetId( );
+        final String searchFile = METADATA_KEY + ".properties";
+        try
+        {
+            Path directory = getMetadataDirectory( repositoryId, facetId );
+            return Files.walk( directory, FileVisitOption.FOLLOW_LINKS ).filter( Files::isDirectory )
+                .filter( path -> Files.exists( path.resolve( searchFile ) ) )
+                .map(path -> directory.relativize(path).toString())
+                .sorted()
+                .skip( offset )
+                .limit(maxEntries)
+                .map(name -> getMetadataFacet( session, repositoryId, facetClazz, name ));
+        } catch (IOException e) {
+            throw new MetadataRepositoryException( e.getMessage( ), e );
+        }
+    }
+
+    @Override
     public boolean hasMetadataFacet( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
@@ -362,8 +396,14 @@ public class FileMetadataRepository
 
 
     @Override
-    public MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
+    public <T extends MetadataFacet>  T getMetadataFacet( RepositorySession session, String repositoryId, Class<T> facetClazz, String name )
     {
+        final MetadataFacetFactory<T> metadataFacetFactory = getFacetFactory( facetClazz );
+        if (metadataFacetFactory==null) {
+            return null;
+        }
+        final String facetId = metadataFacetFactory.getFacetId( );
+
         Properties properties;
         try
         {
@@ -379,8 +419,7 @@ public class FileMetadataRepository
             log.error( "Could not read properties from {}, {}: {}", repositoryId, facetId, e.getMessage(), e );
             return null;
         }
-        MetadataFacet metadataFacet = null;
-        MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
+        T metadataFacet = null;
         if ( metadataFacetFactory != null )
         {
             metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
@@ -394,6 +433,8 @@ public class FileMetadataRepository
         }
         return metadataFacet;
     }
+
+
 
     @Override
     public void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
@@ -465,6 +506,18 @@ public class FileMetadataRepository
         {
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime ) throws MetadataRepositoryException
+    {
+        return null;
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries ) throws MetadataRepositoryException
+    {
+        return null;
     }
 
     private void getArtifactsByDateRange( RepositorySession session, List<ArtifactMetadata> artifacts, String repoId, String ns, Date startTime,
@@ -568,7 +621,7 @@ public class FileMetadataRepository
                             String propertyPrefix = "artifact:facet:" + id + ":";
                             for ( String facetId : value.split( "," ) )
                             {
-                                MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
+                                MetadataFacetFactory factory = getFacetFactory( facetId );
                                 if ( factory == null )
                                 {
                                     log.error( "Attempted to load unknown artifact metadata facet: {}", facetId );
@@ -1132,7 +1185,7 @@ public class FileMetadataRepository
                 {
                     for ( String facetId : facetIds.split( "," ) )
                     {
-                        MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
+                        MetadataFacetFactory factory = getFacetFactory( facetId );
                         if ( factory == null )
                         {
                             log.error( "Attempted to load unknown project version metadata facet: {}", facetId );

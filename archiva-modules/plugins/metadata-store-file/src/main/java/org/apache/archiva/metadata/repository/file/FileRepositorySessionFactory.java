@@ -25,6 +25,7 @@ import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
@@ -43,8 +44,6 @@ import java.util.Map;
 public class FileRepositorySessionFactory extends AbstractRepositorySessionFactory
     implements RepositorySessionFactory
 {
-    private Map<String, MetadataFacetFactory> metadataFacetFactories;
-
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
@@ -55,20 +54,13 @@ public class FileRepositorySessionFactory extends AbstractRepositorySessionFacto
     @Inject
     private ApplicationContext applicationContext;
 
+    @Inject
+    private MetadataService metadataService;
+
     public void initialize()
     {
         Map<String, MetadataFacetFactory> tmpMetadataFacetFactories =
             applicationContext.getBeansOfType( MetadataFacetFactory.class );
-        // olamy with spring the "id" is now "metadataFacetFactory#hint"
-        // whereas was only hint with plexus so let remove  metadataFacetFactory#
-        metadataFacetFactories = new HashMap<>( tmpMetadataFacetFactories.size() );
-
-        for ( Map.Entry<String, MetadataFacetFactory> entry : tmpMetadataFacetFactories.entrySet() )
-        {
-            metadataFacetFactories.put( StringUtils.substringAfterLast( entry.getKey(), "#" ), entry.getValue() );
-        }
-
-
     }
 
     @Override
@@ -79,7 +71,7 @@ public class FileRepositorySessionFactory extends AbstractRepositorySessionFacto
     @Override
     public RepositorySession createSession() throws MetadataRepositoryException
     {
-        MetadataRepository metadataRepository = new FileMetadataRepository( metadataFacetFactories, configuration );
+        MetadataRepository metadataRepository = new FileMetadataRepository( metadataService, configuration );
 
         return new RepositorySession( metadataRepository, metadataResolver );
     }

@@ -23,7 +23,9 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.rss.RssFeedGenerator;
@@ -34,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Stream;
 
 @RunWith (ArchivaBlockJUnit4ClassRunner.class)
 public class NewArtifactsRssFeedProcessorTest
@@ -155,6 +159,8 @@ public class NewArtifactsRssFeedProcessorTest
 
         private List<ArtifactMetadata> artifactsByDateRange;
 
+
+
         @Override
         public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repoId, Date from, Date to )
         {
@@ -163,7 +169,6 @@ public class NewArtifactsRssFeedProcessorTest
             setTo( to );
             return artifactsByDateRange;
         }
-
 
         public void setFrom( Date from )
         {

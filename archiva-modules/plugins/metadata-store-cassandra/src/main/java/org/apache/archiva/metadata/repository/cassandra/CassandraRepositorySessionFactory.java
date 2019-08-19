@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.commons.lang.StringUtils;
@@ -44,8 +45,6 @@ public class CassandraRepositorySessionFactory extends AbstractRepositorySession
     implements RepositorySessionFactory
 {
 
-    private Map<String, MetadataFacetFactory> metadataFacetFactories;
-
     @Inject
     @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration configuration;
@@ -59,18 +58,11 @@ public class CassandraRepositorySessionFactory extends AbstractRepositorySession
     @Inject
     private CassandraArchivaManager cassandraArchivaManager;
 
+    @Inject
+    private MetadataService metadataService;
+
     public void initialize()
     {
-        Map<String, MetadataFacetFactory> tmpMetadataFacetFactories =
-            applicationContext.getBeansOfType( MetadataFacetFactory.class );
-        // olamy with spring the ID.toString() is now "metadataFacetFactory#hint"
-        // whereas was only hint with plexus so let remove  metadataFacetFactory#
-        metadataFacetFactories = new HashMap<>( tmpMetadataFacetFactories.size() );
-
-        for ( Map.Entry<String, MetadataFacetFactory> entry : tmpMetadataFacetFactories.entrySet() )
-        {
-            metadataFacetFactories.put( StringUtils.substringAfterLast( entry.getKey(), "#" ), entry.getValue() );
-        }
     }
 
     @Override
@@ -83,7 +75,7 @@ public class CassandraRepositorySessionFactory extends AbstractRepositorySession
     public RepositorySession createSession() throws MetadataRepositoryException
     {
         CassandraMetadataRepository metadataRepository =
-            new CassandraMetadataRepository( metadataFacetFactories, configuration, cassandraArchivaManager );
+            new CassandraMetadataRepository( metadataService, configuration, cassandraArchivaManager );
         return new RepositorySession( metadataRepository, metadataResolver );
     }
 

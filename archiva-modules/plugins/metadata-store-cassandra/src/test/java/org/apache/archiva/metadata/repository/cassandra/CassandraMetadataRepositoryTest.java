@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository.cassandra;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
@@ -36,6 +37,7 @@ import javax.inject.Named;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,9 +87,11 @@ public class CassandraMetadataRepositoryTest
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
 
-        Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
+        List<MetadataFacetFactory> factories = createTestMetadataFacetFactories();
+        MetadataService metadataService = new MetadataService( );
+        metadataService.setMetadataFacetFactories( factories );
 
-        this.cmr = new CassandraMetadataRepository( factories, null, cassandraArchivaManager );
+        this.cmr = new CassandraMetadataRepository( metadataService, null, cassandraArchivaManager );
 
         sessionFactoryControl = EasyMock.createControl( );
         sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );

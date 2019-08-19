@@ -156,7 +156,7 @@ public abstract class AbstractMetadataRepositoryTest
             @Override
             public TestMetadataFacet createMetadataFacet( String repositoryId, String name )
             {
-                return new TestMetadataFacet( TEST_METADATA_VALUE );
+                return new TestMetadataFacet( TEST_FACET_ID, TEST_METADATA_VALUE, name );
             }
 
             @Override
@@ -896,6 +896,34 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     @Test
+    public void testGetMetadataFacetsStreamWithLimit( )
+        throws Exception
+    {
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            for (int i = 0; i<500; i++)
+            {
+                getRepository( ).addMetadataFacet( session, TEST_REPO_ID, new TestMetadataFacet( TEST_FACET_ID, TEST_VALUE, TEST_NAME+"/"+i ) );
+            }
+        }
+
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            tryAssert( ( ) -> {
+                Stream<TestMetadataFacet> str = getRepository( ).getMetadataFacetStream( session, TEST_REPO_ID, TestMetadataFacet.class, 0, 100 );
+                assertNotNull( str );
+                List<TestMetadataFacet> result = str.collect( Collectors.toList( ) );
+                assertEquals( 100, result.size( ) );
+                for (int i=0; i<10; i++) {
+                    log.info( "Result {}", result.get( i ).getName( ) );
+                }
+                assertEquals( TEST_NAME+"/"+0, result.get( 0 ).getName( ) );
+            }, 2, 500 );
+
+        }
+    }
+
+    @Test
     public void testGetMetadataFacetsWhenEmpty( )
         throws Exception
     {
@@ -1320,8 +1348,11 @@ public abstract class AbstractMetadataRepositoryTest
             session.save( );
 
             // test it restricts to the appropriate repository
-            tryAssert( ( ) -> assertEquals( Collections.singletonList( artifact ), getRepository( ).getArtifacts( session, TEST_REPO_ID ) ) );
-            tryAssert( ( ) -> assertEquals( Collections.singletonList( secondArtifact ), getRepository( ).getArtifacts( session, OTHER_REPO_ID ) ) );
+            tryAssert( ( ) -> {
+                List<ArtifactMetadata> artifact1 = getRepository( ).getArtifacts( session, TEST_REPO_ID );
+                assertEquals( Collections.singletonList( artifact ), artifact1 );
+                assertEquals( Collections.singletonList( secondArtifact ), getRepository( ).getArtifacts( session, OTHER_REPO_ID ) );
+            });
 
         }
     }
@@ -2254,16 +2285,34 @@ public abstract class AbstractMetadataRepositoryTest
 
         private String value;
 
+        private String name = TEST_NAME;
+
         private TestMetadataFacet( String value )
         {
             this.value = value;
             testFacetId = TEST_FACET_ID;
         }
 
+
+
         private TestMetadataFacet( String facetId, String value )
         {
             this.value = value;
             testFacetId = facetId;
+        }
+
+        private TestMetadataFacet( String facetId, String value, String name)
+        {
+            this.value = value;
+            testFacetId = facetId;
+            this.name = name;
+        }
+
+        private TestMetadataFacet( String facetId, String value, String name, Map<String, String> additionalProps )
+        {
+            this( facetId, value, name );
+            this.additionalProps = additionalProps;
+
         }
 
         private TestMetadataFacet( String facetId, String value, Map<String, String> additionalProps )
@@ -2281,7 +2330,7 @@ public abstract class AbstractMetadataRepositoryTest
         @Override
         public String getName( )
         {
-            return TEST_NAME;
+            return name;
         }
 
         @Override
@@ -2341,7 +2390,7 @@ public abstract class AbstractMetadataRepositoryTest
         @Override
         public String toString( )
         {
-            return "TestMetadataFacet{" + "value='" + value + '\'' + '}';
+            return "TestMetadataFacet{ name='"+ name+ "' value='" + value + '\'' + '}';
         }
 
         @Override

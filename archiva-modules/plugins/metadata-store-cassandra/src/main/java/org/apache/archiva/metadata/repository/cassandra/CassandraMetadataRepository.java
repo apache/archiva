@@ -52,9 +52,11 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.MetadataFacetModel;
@@ -62,11 +64,13 @@ import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Project;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,7 +82,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Spliterator;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.apache.archiva.metadata.repository.cassandra.CassandraUtils.*;
 import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
@@ -88,14 +97,12 @@ import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames
  * @since 2.0.0
  */
 public class CassandraMetadataRepository
-    implements MetadataRepository
+    extends AbstractMetadataRepository implements MetadataRepository
 {
 
     private Logger logger = LoggerFactory.getLogger( getClass() );
 
     private ArchivaConfiguration configuration;
-
-    private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
     private final CassandraArchivaManager cassandraArchivaManager;
 
@@ -117,11 +124,11 @@ public class CassandraMetadataRepository
 
     private final StringSerializer ss = StringSerializer.get();
 
-    public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
+    public CassandraMetadataRepository( MetadataService metadataService,
                                         ArchivaConfiguration configuration,
                                         CassandraArchivaManager cassandraArchivaManager )
     {
-        this.metadataFacetFactories = metadataFacetFactories;
+        super( metadataService );
         this.configuration = configuration;
         this.cassandraArchivaManager = cassandraArchivaManager;
         this.keyspace = cassandraArchivaManager.getKeyspace();
@@ -1026,7 +1033,7 @@ public class CassandraMetadataRepository
         {
             for ( Map.Entry<String, Map<String, String>> entry : metadataFacetsPerFacetIds.entrySet() )
             {
-                MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( entry.getKey() );
+                MetadataFacetFactory metadataFacetFactory = getFacetFactory( entry.getKey() );
                 if ( metadataFacetFactory != null )
                 {
                     MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet();
@@ -1445,7 +1452,7 @@ public class CassandraMetadataRepository
 
         String cf = cassandraArchivaManager.getMetadataFacetFamilyName();
 
-        for ( final String facetId : metadataFacetFactories.keySet() )
+        for ( final String facetId : getSupportedFacets() )
         {
             MetadataFacet metadataFacet = facetedMetadata.getFacet( facetId );
             if ( metadataFacet == null )
@@ -1518,6 +1525,75 @@ public class CassandraMetadataRepository
         return facets;
     }
 
+    private <T> Spliterator<T> createResultSpliterator( QueryResult<OrderedRows<String, String, String>> result, Function<Row<String, String, String>, T> converter) throws MetadataRepositoryException
+    {
+        final int size = result.get().getCount();
+        return new Spliterator<T>( )
+        {
+            @Override
+            public boolean tryAdvance( Consumer<? super T> action )
+            {
+                if (size>=1)
+                {
+                    for ( Row<String, String, String> row : result.get( ) )
+                    {
+                        T item = converter.apply( row );
+                        if ( item != null )
+                        {
+                            action.accept( item );
+                            return true;
+                        }
+                    }
+
+                }
+                return false;
+            }
+
+            @Override
+            public Spliterator<T> trySplit( )
+            {
+                return null;
+            }
+
+            @Override
+            public long estimateSize( )
+            {
+                return size;
+            }
+
+            @Override
+            public int characteristics( )
+            {
+                return ORDERED+NONNULL+SIZED;
+            }
+        };
+    }
+
+    @Override
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries ) throws MetadataRepositoryException
+    {
+        final MetadataFacetFactory<T> metadataFacetFactory = getFacetFactory( facetClazz );
+        final String facetId = metadataFacetFactory.getFacetId( );
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
+            .setColumnNames( NAME.toString() ) //
+            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
+            .addEqualsExpression( FACET_ID.toString(), facetId ) //
+            .execute();
+
+        return StreamSupport.stream( createResultSpliterator( result, ( Row<String, String, String> row)-> {
+            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
+            String name = getStringValue( columnSlice, NAME.toString( ) );
+            T metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
+            Map<String, String> map = new HashMap<>( );
+            map.put( getStringValue( columnSlice, KEY.toString() ), getStringValue( columnSlice, VALUE.toString() ) );
+            metadataFacet.fromProperties( map );
+            return metadataFacet;
+        }), false );
+    }
+
     @Override
     public boolean hasMetadataFacet( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
@@ -1530,7 +1606,7 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
+        MetadataFacetFactory metadataFacetFactory = getFacetFactory( facetId );
         if ( metadataFacetFactory == null )
         {
             return null;
@@ -1559,6 +1635,12 @@ public class CassandraMetadataRepository
         }
         metadataFacet.fromProperties( map );
         return metadataFacet;
+    }
+
+    @Override
+    public <T extends MetadataFacet> T getMetadataFacet( RepositorySession session, String repositoryId, Class<T> clazz, String name ) throws MetadataRepositoryException
+    {
+        return null;
     }
 
     @Override
@@ -1701,6 +1783,12 @@ public class CassandraMetadataRepository
         }
 
         return artifactMetadatas;
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries ) throws MetadataRepositoryException
+    {
+        return null;
     }
 
 
@@ -2175,7 +2263,7 @@ public class CassandraMetadataRepository
 
             for ( Map.Entry<String, List<MetadataFacetModel>> entry : metadataFacetValuesPerFacetId.entrySet() )
             {
-                MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( entry.getKey() );
+                MetadataFacetFactory metadataFacetFactory = getFacetFactory( entry.getKey() );
                 if ( metadataFacetFactory != null )
                 {
                     List<MetadataFacetModel> facetModels = entry.getValue();

@@ -21,17 +21,32 @@ package org.apache.archiva.metadata.repository;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public abstract class AbstractMetadataRepository
     implements MetadataRepository
 {
+
+    protected MetadataService metadataService;
+
+    public AbstractMetadataRepository() {
+
+    }
+
+    public AbstractMetadataRepository( MetadataService metadataService )
+    {
+        this.metadataService = metadataService;
+    }
 
     @Override
     public void updateProject( RepositorySession session, String repositoryId, ProjectMetadata project )
@@ -75,13 +90,6 @@ public abstract class AbstractMetadataRepository
         throws MetadataRepositoryException
     {
         return false;
-    }
-
-    @Override
-    public MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
-        throws MetadataRepositoryException
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -296,4 +304,59 @@ public abstract class AbstractMetadataRepository
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz ) throws MetadataRepositoryException
+    {
+        return getMetadataFacetStream( session, repositoryId, facetClazz, 0, Long.MAX_VALUE );
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime ) throws MetadataRepositoryException
+    {
+        return getArtifactsByDateRangeStream( session, repositoryId, startTime, endTime, 0, Long.MAX_VALUE );
+    }
+
+    @Override
+    public MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
+        throws MetadataRepositoryException
+    {
+        return getMetadataFacet( session, repositoryId, getFactoryClassForId( facetId ), name );
+    }
+
+    @Override
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries ) throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T extends MetadataFacet> T getMetadataFacet( RepositorySession session, String repositoryId, Class<T> clazz, String name ) throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries ) throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+
+    protected <T extends MetadataFacet> MetadataFacetFactory getFacetFactory(Class<T> facetClazz) {
+        return metadataService.getFactory( facetClazz );
+    }
+
+    protected MetadataFacetFactory getFacetFactory(String facetId) {
+        return metadataService.getFactory( facetId );
+    }
+
+    protected Set<String> getSupportedFacets() {
+        return metadataService.getSupportedFacets( );
+    }
+
+    protected Class<? extends MetadataFacet> getFactoryClassForId( String facetId ) {
+        return metadataService.getFactoryClassForId( facetId );
+    }
 }

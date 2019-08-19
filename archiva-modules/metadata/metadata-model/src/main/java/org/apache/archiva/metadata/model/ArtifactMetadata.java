@@ -227,6 +227,7 @@ public class ArtifactMetadata
         {
             return false;
         }
+        // We allow some
         if ( fileLastModified != null
             ? !fileLastModified.equals( that.fileLastModified )
             : that.fileLastModified != null )

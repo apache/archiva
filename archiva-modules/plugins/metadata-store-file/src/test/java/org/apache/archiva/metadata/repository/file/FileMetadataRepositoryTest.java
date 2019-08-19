@@ -25,6 +25,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -32,6 +33,7 @@ import org.junit.Ignore;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -69,9 +71,11 @@ public class FileMetadataRepositoryTest
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
         ArchivaConfiguration config = createTestConfiguration( directory );
-        Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
+        List<MetadataFacetFactory> factories = createTestMetadataFacetFactories();
+        MetadataService metadataService = new MetadataService( );
+        metadataService.setMetadataFacetFactories( factories );
 
-        this.repository = new FileMetadataRepository( factories, config );
+        this.repository = new FileMetadataRepository( metadataService, config );
     }
 
     @Override

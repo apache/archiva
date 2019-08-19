@@ -77,6 +77,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.jcr.Repository;
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -467,7 +468,7 @@ public class OakRepositoryFactory
                         FACET_NODE_TYPE //
                     ), Type.STRINGS );
                     IndexDefinitionBuilder idxBuilder = new IndexDefinitionBuilder( lucene );
-                    idxBuilder.async( "async", "nrt" ).includedPaths( "/repositories" ).evaluatePathRestrictions();
+                    idxBuilder.async( "async", "nrt", "sync" ).includedPaths( "/repositories" ).evaluatePathRestrictions();
 
                     initBaseRule(idxBuilder.indexRule( REPOSITORY_NODE_TYPE ));
                     initBaseRule(idxBuilder.indexRule( NAMESPACE_NODE_TYPE ))
@@ -485,8 +486,12 @@ public class OakRepositoryFactory
                         .property( "whenGathered" ).type("Date").propertyIndex().analyzed().ordered()
                         .property("size").type("Long").propertyIndex().analyzed().ordered()
                         .property("version").propertyIndex().analyzed().ordered();
+
                     initRegexAll( idxBuilder.indexRule( FACET_NODE_TYPE ) )
-                        .property("facetId").propertyIndex().analyzed().ordered();
+                        .property("archiva:facetId").propertyIndex().analyzed().ordered()
+                        .property("archiva:name").propertyIndex().analyzed().ordered();
+
+
                     idxBuilder.indexRule( MIXIN_META_SCM )
                         .property( "scm.connection" ).propertyIndex()
                         .property( "scm.developerConnection" ).propertyIndex()
@@ -525,9 +530,6 @@ public class OakRepositoryFactory
                     log.info( "Index: {} repo-lucene: {}", lucene, lucene.getChildNode( "repo-lucene" ) );
                     log.info( "repo-lucene Properties: {}", lucene.getChildNode( "repo-lucene" ).getProperties( ) );
                 } else {
-
-                    NodeBuilder lucene = oakIdx.child( "repo-lucene" );
-                    lucene.setProperty( "reindex", true );
                     log.info( "No Index update" );
                 }
                 // IndexUtils.createIndexDefinition(  )
@@ -557,73 +559,36 @@ public class OakRepositoryFactory
         Repository r = jcr.createRepository();
         stopWatch.stop();
         log.info( "time to create jcr repository: {} ms", stopWatch.getTime() );
-//        try
-//        {
-//            Thread.currentThread().sleep( 1000 );
-//        }
-//        catch ( InterruptedException e )
-//        {
-//            log.error( e.getMessage(), e );
-//        }
+
         return r;
 
 
     }
 
+    private void closeSilently( Closeable service) {
+        if (service!=null) {
+            try
+            {
+                service.close();
+            }
+            catch ( Throwable e )
+            {
+                //
+            }
+        }
+    }
+
     public void close()
     {
         log.info( "Closing JCR RepositoryFactory" );
-        if ( fileStore != null )
-        {
-            fileStore.close();
-        }
-
-        if (backgroundObserver != null){
-            backgroundObserver.close();
-        }
-
-        if (externalIndexObserver != null){
-            externalIndexObserver.close();
-        }
-
-        if (indexProvider != null) {
-            indexProvider.close();
-            indexProvider = null;
-        }
-
-        if (documentQueue != null){
-            try
-            {
-                documentQueue.close();
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace( );
-            }
-        }
-
-        if (nrtIndexFactory != null){
-            try
-            {
-                nrtIndexFactory.close();
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace( );
-            }
-        }
-
-        //Close the copier first i.e. before executorService
-        if (indexCopier != null){
-            try
-            {
-                indexCopier.close();
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace( );
-            }
-        }
+        closeSilently( fileStore );
+        closeSilently( backgroundObserver );
+        closeSilently( externalIndexObserver );
+        closeSilently( indexProvider );
+        indexProvider = null;
+        closeSilently( documentQueue );
+        closeSilently( nrtIndexFactory );
+        closeSilently( indexCopier );
 
         if (executorService != null){
             executorService.shutdown();

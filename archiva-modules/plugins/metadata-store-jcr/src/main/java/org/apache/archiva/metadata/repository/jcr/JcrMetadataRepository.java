@@ -35,10 +35,12 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.MetadataService;
+import org.apache.archiva.metadata.repository.MetadataSessionException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsProvider;
@@ -98,7 +100,7 @@ import static org.apache.archiva.metadata.repository.jcr.JcrConstants.*;
  * TODO revise reference storage
  */
 public class JcrMetadataRepository
-    implements MetadataRepository, RepositoryStatisticsProvider
+    extends AbstractMetadataRepository implements MetadataRepository, RepositoryStatisticsProvider
 {
 
 
@@ -120,8 +122,6 @@ public class JcrMetadataRepository
 
     private static final String QUERY_ARTIFACT_2 = "')";
 
-    private MetadataService metadataService;
-
     private Logger log = LoggerFactory.getLogger( JcrMetadataRepository.class );
 
     private Repository repository;
@@ -129,7 +129,7 @@ public class JcrMetadataRepository
     public JcrMetadataRepository( MetadataService metadataService, Repository repository )
         throws RepositoryException
     {
-        this.metadataService = metadataService;
+        super( metadataService );
         this.repository = repository;
     }
 
@@ -542,21 +542,22 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz ) throws MetadataRepositoryException
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz,
+        long offset, long maxEntries) throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
         final MetadataFacetFactory<T> factory = metadataService.getFactory( facetClazz );
         final String facetId = factory.getFacetId( );
-        final String facetPath = getFacetPath( repositoryId, facetId );
-        String q = "SELECT * FROM ["+FACET_NODE_TYPE+"] AS facet WHERE ISDESCENDANTNODE(facet, [/"+facetPath+"])";
+        final String facetPath = '/'+getFacetPath( repositoryId, facetId );
+        String q = "SELECT * FROM ["+FACET_NODE_TYPE+"] AS facet WHERE ISDESCENDANTNODE(facet, ["+facetPath+"]) ORDER BY [facet].[archiva:name]";
         Map<String, String> params = new HashMap<>( );
-        QueryResult result = runNativeJcrQuery( jcrSession, q, params );
+        QueryResult result = runNativeJcrQuery( jcrSession, q, params, offset, maxEntries );
         return StreamSupport.stream( createResultSpliterator( result, (Row row)-> {
             try
             {
                 Node node = row.getNode( "facet" );
-                String path = StringUtils.removeStart( node.getPath(), facetPath);
-                return createFacet( factory, node, repositoryId, path );
+                String facetName = node.getProperty( "archiva:name" ).getString();
+                return createFacet( factory, node, repositoryId, facetName );
             }
             catch ( RepositoryException e )
             {
@@ -564,12 +565,6 @@ public class JcrMetadataRepository
             }
         }), false );
 
-    }
-
-    @Override
-    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries ) throws MetadataRepositoryException
-    {
-        return null;
     }
 
     private void recurse( List<String> facets, String prefix, Node node )
@@ -599,14 +594,14 @@ public class JcrMetadataRepository
             return null;
         }
         final Session jcrSession = getSession( session );
-        final MetadataFacetFactory<T> factory = metadataService.getFactory( clazz );
+        final MetadataFacetFactory<T> factory = getFacetFactory( clazz );
         final String facetId = factory.getFacetId( );
         try
         {
             Node root = jcrSession.getRootNode();
             Node node = root.getNode( getFacetPath( repositoryId, facetId, name ) );
 
-            if ( metadataService.getSupportedFacets().size()==0)
+            if ( getSupportedFacets().size()==0)
             {
                 return null;
             }
@@ -646,13 +641,6 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
-        throws MetadataRepositoryException
-    {
-        return getMetadataFacet( session, repositoryId, metadataService.getFactoryClassForId( facetId ), name );
-    }
-
-    @Override
     public void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
@@ -665,19 +653,21 @@ public class JcrMetadataRepository
             String id = metadataFacet.getFacetId();
             Node facetNode = JcrUtils.getOrAddNode( facets, id );
 
-            Node node = getOrAddNodeByPath( facetNode, metadataFacet.getName() );
-            if (!node.isNodeType( FACET_NODE_TYPE ))
+            Node facetInstance = getOrAddNodeByPath( facetNode, metadataFacet.getName() );
+            if (!facetInstance.isNodeType( FACET_NODE_TYPE ))
             {
-                node.addMixin( FACET_NODE_TYPE );
-                node.setProperty( "facetId", id );
+                facetInstance.addMixin( FACET_NODE_TYPE );
+                facetInstance.setProperty( "archiva:facetId", id );
+                facetInstance.setProperty( "archiva:name", metadataFacet.getName( ) );
             }
 
             for ( Map.Entry<String, String> entry : metadataFacet.toProperties().entrySet() )
             {
-                node.setProperty( entry.getKey(), entry.getValue() );
+                facetInstance.setProperty( entry.getKey(), entry.getValue() );
             }
+            session.save();
         }
-        catch ( RepositoryException e )
+        catch ( RepositoryException | MetadataSessionException e )
         {
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
@@ -695,7 +685,7 @@ public class JcrMetadataRepository
             if ( root.hasNode( path ) )
             {
                 Node node = root.getNode( path );
-                if ( node.isNodeType( org.apache.archiva.metadata.repository.jcr.JcrConstants.NAMESPACE_NODE_TYPE ) )
+                if ( node.isNodeType( NAMESPACE_NODE_TYPE ) )
                 {
                     node.remove();
                 }
@@ -802,12 +792,6 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime ) throws MetadataRepositoryException
-    {
-        return null;
-    }
-
-    @Override
     public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries ) throws MetadataRepositoryException
     {
         return null;
@@ -887,7 +871,12 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
-    public QueryResult runNativeJcrQuery( final Session jcrSession, final String q, final Map<String, String> bindingParam)
+    public QueryResult runNativeJcrQuery( final Session jcrSession, final String q, final Map<String, String> bindingParam) throws MetadataRepositoryException
+    {
+        return runNativeJcrQuery( jcrSession, q, bindingParam, 0, Long.MAX_VALUE );
+    }
+
+    public QueryResult runNativeJcrQuery( final Session jcrSession, final String q, final Map<String, String> bindingParam, long offset, long maxEntries)
         throws MetadataRepositoryException
     {
         Map<String, String> bindings;
@@ -899,8 +888,10 @@ public class JcrMetadataRepository
 
         try
         {
-            log.debug( "Query: {}", q );
+            log.debug( "Query: offset={}, limit={}, query={}", offset, maxEntries, q );
             Query query = jcrSession.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            query.setLimit( maxEntries );
+            query.setOffset( offset );
             ValueFactory valueFactory = jcrSession.getValueFactory();
             for ( Entry<String, String> entry : bindings.entrySet() )
             {
@@ -1350,7 +1341,7 @@ public class JcrMetadataRepository
 
         try
         {
-            return getNodeNames( getSession(session), path, org.apache.archiva.metadata.repository.jcr.JcrConstants.NAMESPACE_NODE_TYPE );
+            return getNodeNames( getSession(session), path, NAMESPACE_NODE_TYPE );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -1823,7 +1814,7 @@ public class JcrMetadataRepository
         throws RepositoryException
     {
         Node repo = getOrAddRepositoryContentNode( jcrSession, repositoryId );
-        return getOrAddNodeByPath( repo, namespace.replace( '.', '/' ), org.apache.archiva.metadata.repository.jcr.JcrConstants.NAMESPACE_NODE_TYPE );
+        return getOrAddNodeByPath( repo, namespace.replace( '.', '/' ), NAMESPACE_NODE_TYPE );
     }
 
     private Node getOrAddProjectNode( Session jcrSession, String repositoryId, String namespace, String projectId )
