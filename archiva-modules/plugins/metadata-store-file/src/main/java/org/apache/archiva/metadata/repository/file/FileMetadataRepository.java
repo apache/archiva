@@ -486,7 +486,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repoId, Date startTime, Date endTime )
+    public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repoId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException
     {
         try
@@ -520,8 +520,8 @@ public class FileMetadataRepository
         return null;
     }
 
-    private void getArtifactsByDateRange( RepositorySession session, List<ArtifactMetadata> artifacts, String repoId, String ns, Date startTime,
-                                          Date endTime )
+    private void getArtifactsByDateRange( RepositorySession session, List<ArtifactMetadata> artifacts, String repoId, String ns, ZonedDateTime startTime,
+                                          ZonedDateTime endTime )
         throws MetadataRepositoryException
     {
         try
@@ -537,9 +537,9 @@ public class FileMetadataRepository
                 {
                     for ( ArtifactMetadata artifact : getArtifacts( session, repoId, ns, project, version ) )
                     {
-                        if ( startTime == null || startTime.before( artifact.getWhenGathered() ) )
+                        if ( startTime == null || startTime.isBefore( ZonedDateTime.from(artifact.getWhenGathered().toInstant()) ) )
                         {
-                            if ( endTime == null || endTime.after( artifact.getWhenGathered() ) )
+                            if ( endTime == null || endTime.isAfter( ZonedDateTime.from(artifact.getWhenGathered().toInstant()) ) )
                             {
                                 artifacts.add( artifact );
                             }

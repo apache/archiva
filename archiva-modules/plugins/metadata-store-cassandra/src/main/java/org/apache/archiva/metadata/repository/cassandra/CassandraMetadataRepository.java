@@ -64,7 +64,6 @@ import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Project;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
-import org.apache.archiva.repository.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -1748,8 +1747,8 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, final String repositoryId, final Date startTime,
-                                                           final Date endTime )
+    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, final String repositoryId, final ZonedDateTime startTime,
+                                                           final ZonedDateTime endTime )
         throws MetadataRepositoryException
     {
 
@@ -1761,11 +1760,11 @@ public class CassandraMetadataRepository
 
         if ( startTime != null )
         {
-            query = query.addGteExpression( WHEN_GATHERED.toString(), startTime.getTime() );
+            query = query.addGteExpression( WHEN_GATHERED.toString(), startTime.toInstant().toEpochMilli() );
         }
         if ( endTime != null )
         {
-            query = query.addLteExpression( WHEN_GATHERED.toString(), endTime.getTime() );
+            query = query.addLteExpression( WHEN_GATHERED.toString(), endTime.toInstant().toEpochMilli() );
         }
         QueryResult<OrderedRows<String, String, Long>> result = query.execute();
 

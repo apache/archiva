@@ -24,12 +24,9 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
-import org.apache.maven.index_shaded.lucene.util.packed.DirectMonotonicReader;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -192,25 +189,51 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
     /**
-     * Returns the facet instance using the proper class.
+     * Returns the facet instance for the given class, which is stored on repository level for the given name.
+     * If the given name does not point to a instance that can be represented by this class, <code>null</code> will be returned.
+     * If the facet is not found the method returns <code>null</code>.
      *
      * @param session The repository session
-     * @param repositoryId The repository
+     * @param repositoryId The id of the repository
      * @param clazz The facet object class
-     * @param name The name of the facet
-     * @param <T> The facet object
-     * @return The facet instance if it exists.
+     * @param name The name of the facet (name or path)
+     * @param <T> The type of the facet object
+     * @return The facet instance, if it exists.
      * @throws MetadataRepositoryException
      */
     <T extends MetadataFacet> T getMetadataFacet(RepositorySession session, String repositoryId, Class<T> clazz, String name)
     throws MetadataRepositoryException;
 
+    /**
+     * Adss a facet to the repository level.
+     *
+     * @param session The repository session
+     * @param repositoryId The id of the repository
+     * @param metadataFacet The facet to add
+     * @throws MetadataRepositoryException if the facet cannot be stored.
+     */
     void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException;
 
+    /**
+     * Removes all facets with the given facetId from the repository level.
+     *
+     * @param session The repository session
+     * @param repositoryId The id of the repository
+     * @param facetId The facet id
+     * @throws MetadataRepositoryException if the removal fails
+     */
     void removeMetadataFacets( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException;
 
+    /**
+     * Removes the given facet from the repository level, if it exists.
+     *
+     * @param session The repository session
+     * @param repositoryId The id of the repository
+     * @param facetId The facet id
+     * @param name The facet name or path
+     */
     void removeMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
         throws MetadataRepositoryException;
 
@@ -225,9 +248,18 @@ public interface MetadataRepository
      * @return
      * @throws MetadataRepositoryException
      */
-    List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repositoryId, Date startTime, Date endTime )
+    List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
+    /**
+     * Returns all the artifacts
+     * @param session
+     * @param repositoryId
+     * @param startTime
+     * @param endTime
+     * @return
+     * @throws MetadataRepositoryException
+     */
     Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 

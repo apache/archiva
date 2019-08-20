@@ -32,6 +32,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -91,14 +96,14 @@ public class NewArtifactsRssFeedProcessor
     private SyndFeed processNewArtifactsInRepo( String repoId )
         throws FeedException
     {
-        Calendar greaterThanThisDate = Calendar.getInstance( GMT_TIME_ZONE );
-        greaterThanThisDate.add( Calendar.DATE, -( getNumberOfDaysBeforeNow() ) );
-        greaterThanThisDate.clear( Calendar.MILLISECOND );
 
+        ZonedDateTime greaterThanThisDate = ZonedDateTime.of(LocalDateTime.now(), GMT_TIME_ZONE.toZoneId()).minusDays(
+                getNumberOfDaysBeforeNow()
+        ).truncatedTo(ChronoUnit.SECONDS);
         List<ArtifactMetadata> artifacts;
         try(RepositorySession session = repositorySessionFactory.createSession())
         {
-            artifacts = session.getRepository().getArtifactsByDateRange(session , repoId, greaterThanThisDate.getTime(), null );
+            artifacts = session.getRepository().getArtifactsByDateRange(session , repoId, greaterThanThisDate, null );
         }
         catch ( MetadataRepositoryException e )
         {

@@ -35,7 +35,10 @@ import org.springframework.format.annotation.NumberFormat;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1221,7 +1224,7 @@ public abstract class AbstractMetadataRepositoryTest
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
             session.save( );
 
-            Date date = new Date( artifact.getWhenGathered( ).getTime( ) - 10000 );
+            ZonedDateTime date = ZonedDateTime.from(artifact.getWhenGathered().toInstant()).minusSeconds(10);
 
             tryAssert( ( ) -> {
                 List<ArtifactMetadata> artifacts = getRepository( ).getArtifactsByDateRange( session, TEST_REPO_ID, date, null );
@@ -1240,7 +1243,7 @@ public abstract class AbstractMetadataRepositoryTest
             ArtifactMetadata artifact = createArtifact( );
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
 
-            Date date = new Date( artifact.getWhenGathered( ).getTime( ) + 10000 );
+            ZonedDateTime date = ZonedDateTime.from(artifact.getWhenGathered().toInstant()).plusSeconds(10);
 
             tryAssert( ( ) -> {
                 List<ArtifactMetadata> artifacts = getRepository( ).getArtifactsByDateRange( session, TEST_REPO_ID, date, null );
@@ -1260,8 +1263,8 @@ public abstract class AbstractMetadataRepositoryTest
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
             session.save( );
 
-            Date lower = new Date( artifact.getWhenGathered( ).getTime( ) - 10000 );
-            Date upper = new Date( artifact.getWhenGathered( ).getTime( ) + 10000 );
+            ZonedDateTime lower = ZonedDateTime.from(artifact.getWhenGathered().toInstant()).minusSeconds(10);
+            ZonedDateTime upper = ZonedDateTime.from(artifact.getWhenGathered().toInstant()).plusSeconds(10);
 
             tryAssert( ( ) -> {
                 List<ArtifactMetadata> artifacts = getRepository( ).getArtifactsByDateRange( session, TEST_REPO_ID, lower, upper );
@@ -1281,7 +1284,7 @@ public abstract class AbstractMetadataRepositoryTest
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
             session.save( );
 
-            Date upper = new Date( artifact.getWhenGathered( ).getTime( ) + 10000 );
+            ZonedDateTime upper = ZonedDateTime.from(artifact.getWhenGathered().toInstant()).plusSeconds(10);
 
             tryAssert( ( ) -> {
                 List<ArtifactMetadata> artifacts = getRepository( ).getArtifactsByDateRange( session, TEST_REPO_ID, null, upper );
@@ -1301,7 +1304,7 @@ public abstract class AbstractMetadataRepositoryTest
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
             session.save( );
 
-            Date upper = new Date( artifact.getWhenGathered( ).getTime( ) - 10000 );
+            ZonedDateTime upper = ZonedDateTime.from(artifact.getWhenGathered().toInstant()).minusSeconds(10);
 
             tryAssert( ( ) -> {
                 List<ArtifactMetadata> artifacts = getRepository( ).getArtifactsByDateRange( session, TEST_REPO_ID, null, upper );

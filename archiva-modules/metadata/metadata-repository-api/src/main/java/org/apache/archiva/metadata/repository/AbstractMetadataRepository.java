@@ -28,7 +28,6 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -112,7 +111,7 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repositoryId, Date startTime, Date endTime )
+    public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();

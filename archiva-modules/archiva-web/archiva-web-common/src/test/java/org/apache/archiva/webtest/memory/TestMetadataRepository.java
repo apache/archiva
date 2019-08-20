@@ -23,6 +23,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -89,7 +90,7 @@ public class TestMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repoId, Date startTime, Date endTime )
+    public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repoId, ZonedDateTime startTime, ZonedDateTime endTime )
     {
         return artifacts;
     }

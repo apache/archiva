@@ -23,9 +23,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.rss.RssFeedGenerator;
@@ -37,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.stream.Stream;
 
 @RunWith (ArchivaBlockJUnit4ClassRunner.class)
 public class NewArtifactsRssFeedProcessorTest
@@ -119,7 +117,7 @@ public class NewArtifactsRssFeedProcessorTest
         // check that the date used in the call is close to the one passed (5 seconds difference at most)
         Calendar cal = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
         cal.add( Calendar.DATE, -30 );
-        assertTrue( ( metadataRepository.getFrom().getTime() - cal.getTimeInMillis() ) < 1000 * 5 );
+        assertTrue( metadataRepository.getFrom().minus(cal.getTimeInMillis(), ChronoUnit.MILLIS).toInstant().toEpochMilli() < 1000 * 5 );
         assertEquals( null, metadataRepository.getTo() );
         assertEquals( TEST_REPO, metadataRepository.getRepoId() );
 
@@ -153,7 +151,7 @@ public class NewArtifactsRssFeedProcessorTest
     private class MetadataRepositoryMock
         extends AbstractMetadataRepository
     {
-        private Date from, to;
+        private ZonedDateTime from, to;
 
         private String repoId;
 
@@ -162,7 +160,7 @@ public class NewArtifactsRssFeedProcessorTest
 
 
         @Override
-        public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repoId, Date from, Date to )
+        public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repoId, ZonedDateTime from, ZonedDateTime to )
         {
             setRepoId( repoId );
             setFrom( from );
@@ -170,22 +168,22 @@ public class NewArtifactsRssFeedProcessorTest
             return artifactsByDateRange;
         }
 
-        public void setFrom( Date from )
+        public void setFrom(ZonedDateTime from )
         {
             this.from = from;
         }
 
-        public Date getFrom()
+        public ZonedDateTime getFrom()
         {
             return from;
         }
 
-        public void setTo( Date to )
+        public void setTo(ZonedDateTime to )
         {
             this.to = to;
         }
 
-        public Date getTo()
+        public ZonedDateTime getTo()
         {
             return to;
         }
