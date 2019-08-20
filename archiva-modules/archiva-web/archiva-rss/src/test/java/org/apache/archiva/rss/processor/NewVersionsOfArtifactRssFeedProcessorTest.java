@@ -40,6 +40,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.nio.file.Paths;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,12 +122,14 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
     public void testProcess()
         throws Exception
     {
-        Date whenGathered = new Date( 123456789 );
+        Date whenGatheredDate = new Date( 123456789 );
+        ZonedDateTime whenGathered = ZonedDateTime.ofInstant(whenGatheredDate.toInstant(), ZoneId.systemDefault());
 
         ArtifactMetadata artifact1 = createArtifact( whenGathered, "1.0.1" );
         ArtifactMetadata artifact2 = createArtifact( whenGathered, "1.0.2" );
 
-        Date whenGatheredNext = new Date( 345678912 );
+        Date whenGatheredNextDate = new Date( 345678912 );
+        ZonedDateTime whenGatheredNext = ZonedDateTime.ofInstant(whenGatheredNextDate.toInstant(), ZoneId.systemDefault());
 
         ArtifactMetadata artifact3 = createArtifact( whenGatheredNext, "1.0.3-SNAPSHOT" );
 
@@ -148,24 +153,23 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         assertEquals( "New versions of artifact 'org.apache.archiva:artifact-two' found during repository scan.",
                       feed.getDescription() );
         assertEquals( "en-us", feed.getLanguage() );
-        assertEquals( whenGatheredNext, feed.getPublishedDate() );
+        assertEquals( whenGatheredNext.toInstant(), ZonedDateTime.ofInstant(feed.getPublishedDate().toInstant(), ZoneId.systemDefault()).toInstant() );
 
         List<SyndEntry> entries = feed.getEntries();
 
         assertEquals( 2, entries.size() );
 
-        assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGathered,
-                      entries.get( 0 ).getTitle() );
-        assertEquals( whenGathered, entries.get( 0 ).getPublishedDate() );
+        assertTrue( entries.get(0).getTitle().contains("New Versions of Artifact 'org.apache.archiva:artifact-two' as of "));
+        assertEquals( whenGathered.toInstant(), entries.get( 0 ).getPublishedDate().toInstant() );
 
-        assertEquals( "New Versions of Artifact 'org.apache.archiva:artifact-two' as of " + whenGatheredNext,
-                      entries.get( 1 ).getTitle() );
-        assertEquals( whenGatheredNext, entries.get( 1 ).getPublishedDate() );
+        assertTrue(entries.get(1).getTitle().contains("New Versions of Artifact 'org.apache.archiva:artifact-two' as of "));
+
+        assertEquals( whenGatheredNext.toInstant(), entries.get( 1 ).getPublishedDate().toInstant() );
 
         metadataRepositoryControl.verify();
     }
 
-    private ArtifactMetadata createArtifact( Date whenGathered, String version )
+    private ArtifactMetadata createArtifact(ZonedDateTime whenGathered, String version )
     {
         ArtifactMetadata artifact = new ArtifactMetadata();
         artifact.setNamespace( GROUP_ID );

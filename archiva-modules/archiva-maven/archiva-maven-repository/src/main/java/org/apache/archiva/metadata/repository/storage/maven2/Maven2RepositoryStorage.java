@@ -64,6 +64,8 @@ import java.io.Reader;
 import java.nio.channels.Channels;
 import java.nio.charset.Charset;
 import java.nio.file.NoSuchFileException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -740,7 +742,7 @@ public class Maven2RepositoryStorage
     }
 
     private static void populateArtifactMetadataFromFile(ArtifactMetadata metadata, StorageAsset file) throws IOException {
-        metadata.setWhenGathered(new Date());
+        metadata.setWhenGathered(ZonedDateTime.now(ZoneId.of("GMT")));
         metadata.setFileLastModified(file.getModificationTime().toEpochMilli());
         ChecksummedFile checksummedFile = new ChecksummedFile(file.getFilePath());
         try {

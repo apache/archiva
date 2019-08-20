@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -96,7 +97,7 @@ public class ArtifactMetadata
     /**
      * When the artifact was found in the repository storage and added to the metadata content repository.
      */
-    private Date whenGathered;
+    private ZonedDateTime whenGathered;
 
     public String getId()
     {
@@ -143,7 +144,7 @@ public class ArtifactMetadata
         this.fileLastModified = new Date( fileLastModified );
     }
 
-    public void setWhenGathered( Date whenGathered )
+    public void setWhenGathered( ZonedDateTime whenGathered )
     {
         this.whenGathered = whenGathered;
     }
@@ -158,7 +159,7 @@ public class ArtifactMetadata
         this.sha1 = sha1;
     }
 
-    public Date getWhenGathered()
+    public ZonedDateTime getWhenGathered()
     {
         return whenGathered;
     }
@@ -269,7 +270,7 @@ public class ArtifactMetadata
         {
             return false;
         }
-        if ( whenGathered != null ? !whenGathered.equals( that.whenGathered ) : that.whenGathered != null )
+        if ( whenGathered != null ? !whenGathered.toInstant().equals( that.whenGathered.toInstant() ) : that.whenGathered != null )
         {
             return false;
         }

@@ -46,6 +46,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -69,7 +71,7 @@ public class ArchivaMetadataCreationConsumer
     @Inject
     private FileTypes filetypes;
 
-    private Date whenGathered;
+    private ZonedDateTime whenGathered;
 
     private List<String> includes = new ArrayList<>( 0 );
 
@@ -120,7 +122,7 @@ public class ArchivaMetadataCreationConsumer
         throws ConsumerException
     {
         repoId = repo.getId();
-        this.whenGathered = whenGathered;
+        this.whenGathered = ZonedDateTime.ofInstant(whenGathered.toInstant(), ZoneId.of("GMT"));
     }
 
     @Override

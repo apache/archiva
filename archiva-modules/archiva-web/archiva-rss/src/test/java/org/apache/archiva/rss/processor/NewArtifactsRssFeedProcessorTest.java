@@ -34,6 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -95,7 +97,7 @@ public class NewArtifactsRssFeedProcessorTest
         throws Exception
     {
         List<ArtifactMetadata> newArtifacts = new ArrayList<>();
-        Date whenGathered = Calendar.getInstance().getTime();
+        ZonedDateTime whenGathered = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
 
         newArtifacts.add( createArtifact( "artifact-one", "1.0", whenGathered ) );
         newArtifacts.add( createArtifact( "artifact-one", "1.1", whenGathered ) );
@@ -115,9 +117,8 @@ public class NewArtifactsRssFeedProcessorTest
         SyndFeed feed = newArtifactsProcessor.process( reqParams );
 
         // check that the date used in the call is close to the one passed (5 seconds difference at most)
-        Calendar cal = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
-        cal.add( Calendar.DATE, -30 );
-        assertTrue( metadataRepository.getFrom().minus(cal.getTimeInMillis(), ChronoUnit.MILLIS).toInstant().toEpochMilli() < 1000 * 5 );
+        ZonedDateTime cal = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()).minusDays(30);
+        assertTrue(ChronoUnit.SECONDS.between(cal.toInstant(), metadataRepository.getFrom().toInstant())<5);
         assertEquals( null, metadataRepository.getTo() );
         assertEquals( TEST_REPO, metadataRepository.getRepoId() );
 
@@ -125,16 +126,16 @@ public class NewArtifactsRssFeedProcessorTest
         assertTrue(
             feed.getDescription().equals( "New artifacts found in repository 'test-repo' during repository scan." ) );
         assertTrue( feed.getLanguage().equals( "en-us" ) );
-        assertTrue( feed.getPublishedDate().equals( whenGathered ) );
+        assertTrue( feed.getPublishedDate().toInstant().equals( whenGathered.toInstant() ) );
 
         List<SyndEntry> entries = feed.getEntries();
         assertEquals( entries.size(), 1 );
         assertTrue(
-            entries.get( 0 ).getTitle().equals( "New Artifacts in Repository 'test-repo' as of " + whenGathered ) );
-        assertTrue( entries.get( 0 ).getPublishedDate().equals( whenGathered ) );
+            entries.get( 0 ).getTitle().contains( "New Artifacts in Repository 'test-repo' as of " ));
+        assertTrue( entries.get( 0 ).getPublishedDate().toInstant().equals( whenGathered.toInstant() ) );
     }
 
-    private ArtifactMetadata createArtifact( String artifactId, String version, Date whenGathered )
+    private ArtifactMetadata createArtifact( String artifactId, String version, ZonedDateTime whenGathered )
     {
         ArtifactMetadata artifact = new ArtifactMetadata();
         artifact.setNamespace( "org.apache.archiva" );

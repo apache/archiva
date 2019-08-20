@@ -52,6 +52,8 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -537,9 +539,9 @@ public class FileMetadataRepository
                 {
                     for ( ArtifactMetadata artifact : getArtifacts( session, repoId, ns, project, version ) )
                     {
-                        if ( startTime == null || startTime.isBefore( ZonedDateTime.from(artifact.getWhenGathered().toInstant()) ) )
+                        if ( startTime == null || startTime.isBefore( ZonedDateTime.from(artifact.getWhenGathered().toInstant().atZone(ZoneId.systemDefault())) ) )
                         {
-                            if ( endTime == null || endTime.isAfter( ZonedDateTime.from(artifact.getWhenGathered().toInstant()) ) )
+                            if ( endTime == null || endTime.isAfter( ZonedDateTime.from(artifact.getWhenGathered().toInstant().atZone(ZoneId.systemDefault())) ) )
                             {
                                 artifacts.add( artifact );
                             }
@@ -600,7 +602,7 @@ public class FileMetadataRepository
                     }
                     else if ( "whenGathered".equals( field ) )
                     {
-                        artifact.setWhenGathered( new Date( Long.parseLong( value ) ) );
+                        artifact.setWhenGathered( ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong( value )), ZoneId.of("GMT") ) );
                     }
                     else if ( "version".equals( field ) )
                     {
@@ -951,7 +953,7 @@ public class FileMetadataRepository
             properties.setProperty( "artifact:updated:" + id,
                                     Long.toString( artifact.getFileLastModified().getTime() ) );
             properties.setProperty( "artifact:whenGathered:" + id,
-                                    Long.toString( artifact.getWhenGathered().getTime() ) );
+                                    Long.toString( artifact.getWhenGathered().toInstant().toEpochMilli()) );
             properties.setProperty( "artifact:size:" + id, Long.toString( artifact.getSize() ) );
             if ( artifact.getMd5() != null )
             {

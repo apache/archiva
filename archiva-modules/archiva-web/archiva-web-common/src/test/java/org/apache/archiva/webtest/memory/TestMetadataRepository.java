@@ -23,6 +23,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +44,8 @@ public class TestMetadataRepository
 
     public TestMetadataRepository()
     {
-        Date whenGathered = new Date( 123456789 );
+        Date whenGatheredDate = new Date( 123456789 );
+        ZonedDateTime whenGathered = ZonedDateTime.ofInstant(whenGatheredDate.toInstant(), ZoneId.systemDefault());
 
         addArtifact( "artifact-one", "1.0", whenGathered );
         addArtifact( "artifact-one", "1.1", whenGathered );
@@ -55,7 +57,7 @@ public class TestMetadataRepository
         addArtifact( "artifact-four", "1.1-beta-2", whenGathered );
     }
 
-    private void addArtifact( String projectId, String projectVersion, Date whenGathered )
+    private void addArtifact( String projectId, String projectVersion, ZonedDateTime whenGathered )
     {
         ArtifactMetadata artifact = new ArtifactMetadata();
         artifact.setFileLastModified( System.currentTimeMillis() );

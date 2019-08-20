@@ -72,6 +72,7 @@ import javax.jcr.query.RowIterator;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.Map.Entry;
@@ -206,8 +207,7 @@ public class JcrMetadataRepository
             cal.setTime( artifactMeta.getFileLastModified() );
             node.setProperty( JCR_LAST_MODIFIED, cal );
 
-            cal = Calendar.getInstance();
-            cal.setTime( artifactMeta.getWhenGathered() );
+            cal = GregorianCalendar.from(artifactMeta.getWhenGathered());
             node.setProperty( "whenGathered", cal );
 
             node.setProperty( "size", artifactMeta.getSize() );
@@ -1671,7 +1671,8 @@ public class JcrMetadataRepository
 
         if ( artifactNode.hasProperty( "whenGathered" ) )
         {
-            artifact.setWhenGathered( artifactNode.getProperty( "whenGathered" ).getDate().getTime() );
+            Calendar cal = artifactNode.getProperty("whenGathered").getDate();
+            artifact.setWhenGathered( ZonedDateTime.ofInstant(cal.toInstant(), cal.getTimeZone().toZoneId()));
         }
 
         if ( artifactNode.hasProperty( "size" ) )

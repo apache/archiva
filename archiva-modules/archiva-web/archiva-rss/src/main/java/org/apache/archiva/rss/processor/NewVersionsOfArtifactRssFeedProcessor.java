@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -116,7 +117,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
         int idx = 0;
         for ( ArtifactMetadata artifact : artifacts )
         {
-            long whenGathered = artifact.getWhenGathered().getTime();
+            long whenGathered = artifact.getWhenGathered().toInstant().toEpochMilli();
 
             if ( tmp != whenGathered )
             {
@@ -129,7 +130,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
 
                 entry = new RssFeedEntry(
                     this.getTitle() + "\'" + groupId + ":" + artifactId + "\'" + " as of " + new Date( whenGathered ) );
-                entry.setPublishedDate( artifact.getWhenGathered() );
+                entry.setPublishedDate( Date.from(artifact.getWhenGathered().toInstant()) );
                 description =
                     this.getDescription() + "\'" + groupId + ":" + artifactId + "\'" + ": \n" + artifact.getId() +
                         " | ";

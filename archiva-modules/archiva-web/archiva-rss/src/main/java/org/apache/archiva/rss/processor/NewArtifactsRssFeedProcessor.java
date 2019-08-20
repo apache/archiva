@@ -97,7 +97,7 @@ public class NewArtifactsRssFeedProcessor
         throws FeedException
     {
 
-        ZonedDateTime greaterThanThisDate = ZonedDateTime.of(LocalDateTime.now(), GMT_TIME_ZONE.toZoneId()).minusDays(
+        ZonedDateTime greaterThanThisDate = ZonedDateTime.now(GMT_TIME_ZONE.toZoneId()).minusDays(
                 getNumberOfDaysBeforeNow()
         ).truncatedTo(ChronoUnit.SECONDS);
         List<ArtifactMetadata> artifacts;
@@ -118,7 +118,7 @@ public class NewArtifactsRssFeedProcessor
         int idx = 0;
         for ( ArtifactMetadata artifact : artifacts )
         {
-            long whenGathered = artifact.getWhenGathered().getTime();
+            long whenGathered = artifact.getWhenGathered().toInstant().toEpochMilli();
 
             String id = artifact.getNamespace() + "/" + artifact.getProject() + "/" + artifact.getId();
             if ( tmp != whenGathered )
@@ -133,7 +133,7 @@ public class NewArtifactsRssFeedProcessor
                 String repoId1 = artifact.getRepositoryId();
                 entry = new RssFeedEntry( this.getTitle() + "\'" + repoId1 + "\'" + " as of " + new Date(
                     whenGathered ) );
-                entry.setPublishedDate( artifact.getWhenGathered() );
+                entry.setPublishedDate( Date.from(artifact.getWhenGathered().toInstant()) );
                 description = this.getDescription() + "\'" + repoId1 + "\'" + ": \n" + id + " | ";
             }
             else

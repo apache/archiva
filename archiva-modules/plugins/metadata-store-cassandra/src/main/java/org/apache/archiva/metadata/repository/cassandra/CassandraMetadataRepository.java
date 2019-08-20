@@ -69,6 +69,8 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1335,7 +1337,7 @@ public class CassandraMetadataRepository
             // updater
             ColumnFamilyUpdater<String, String> updater = this.artifactMetadataTemplate.createUpdater( key );
             updater.setLong( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().getTime() );
-            updater.setLong( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().getTime() );
+            updater.setLong( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().toInstant().toEpochMilli() );
             updater.setLong( SIZE.toString(), artifactMeta.getSize() );
             addUpdateStringValue( updater, MD5.toString(), artifactMeta.getMd5() );
             addUpdateStringValue( updater, SHA1.toString(), artifactMeta.getSha1() );
@@ -1357,7 +1359,7 @@ public class CassandraMetadataRepository
                 .addInsertion( key, cf, column( SIZE.toString(), artifactMeta.getSize() ) ) //
                 .addInsertion( key, cf, column( MD5.toString(), artifactMeta.getMd5() ) ) //
                 .addInsertion( key, cf, column( SHA1.toString(), artifactMeta.getSha1() ) ) //
-                .addInsertion( key, cf, column( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().getTime() ) )//
+                .addInsertion( key, cf, column( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().toInstant().toEpochMilli() ) )//
                 .execute();
         }
 
@@ -1807,7 +1809,7 @@ public class CassandraMetadataRepository
         Long whenGathered = getLongValue( columnSlice, WHEN_GATHERED.toString() );
         if ( whenGathered != null )
         {
-            artifactMetadata.setWhenGathered( new Date( whenGathered ) );
+            artifactMetadata.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(whenGathered), ZoneId.of("GMT")));
         }
         return artifactMetadata;
     }
@@ -1828,7 +1830,7 @@ public class CassandraMetadataRepository
         Long whenGathered = getAsLongValue( columnSlice, WHEN_GATHERED.toString() );
         if ( whenGathered != null )
         {
-            artifactMetadata.setWhenGathered( new Date( whenGathered ) );
+            artifactMetadata.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(whenGathered), ZoneId.of("GMT")));
         }
         return artifactMetadata;
     }
