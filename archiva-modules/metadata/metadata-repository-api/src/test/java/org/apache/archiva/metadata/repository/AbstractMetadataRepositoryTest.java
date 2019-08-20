@@ -893,6 +893,7 @@ public abstract class AbstractMetadataRepositoryTest
                 assertNotNull( str );
                 List<TestMetadataFacet> result = str.collect( Collectors.toList( ) );
                 assertEquals( 1, result.size( ) );
+                assertNotNull( result.get( 0 ) );
                 assertEquals( TEST_NAME, result.get( 0 ).getName( ) );
             } );
 
@@ -918,6 +919,7 @@ public abstract class AbstractMetadataRepositoryTest
                 assertNotNull( str );
                 List<TestMetadataFacet> result = str.collect( Collectors.toList( ) );
                 assertEquals( 100, result.size( ) );
+                assertNotNull( result.get( 0 ) );
                 for (int i=0; i<10; i++) {
                     log.info( "Result {}", result.get( i ).getName( ) );
                 }

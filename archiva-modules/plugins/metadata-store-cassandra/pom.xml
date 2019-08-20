@@ -260,6 +260,7 @@
               <archiva.repositorySessionFactory.id>cassandra</archiva.repositorySessionFactory.id>
               <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             </systemPropertyVariables>
+            <trimStackTrace>false</trimStackTrace>
           </configuration>
         </plugin>
       </plugins>
