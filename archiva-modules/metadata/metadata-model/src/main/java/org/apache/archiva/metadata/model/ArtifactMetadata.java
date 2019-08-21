@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import sun.reflect.generics.repository.MethodRepository;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -39,6 +41,8 @@ import java.util.Date;
 public class ArtifactMetadata
     extends FacetedMetadata
 {
+
+
     /**
      * The artifact ID uniquely identifies an artifact within a given namespace, project and project version. For
      * example, <tt>archiva-1.4-20100201.345612-2.jar</tt>
@@ -145,12 +149,12 @@ public class ArtifactMetadata
 
     public void setFileLastModified( long fileLastModified )
     {
-        this.fileLastModified = ZonedDateTime.ofInstant(Instant.ofEpochMilli(fileLastModified), ZoneId.of("GMT"));
+        this.fileLastModified = ZonedDateTime.ofInstant(Instant.ofEpochMilli(fileLastModified), ModelInfo.STORAGE_TZ);
     }
 
     public void setWhenGathered( ZonedDateTime whenGathered )
     {
-        this.whenGathered = whenGathered;
+        this.whenGathered = whenGathered.withZoneSameInstant(ModelInfo.STORAGE_TZ);
     }
 
     public void setMd5( String md5 )

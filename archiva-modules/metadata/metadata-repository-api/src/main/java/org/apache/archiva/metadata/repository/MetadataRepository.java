@@ -26,6 +26,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -87,9 +88,16 @@ import java.util.stream.Stream;
  *
  * Facets can be stored on repository, project, version and artifact level.
  *
+ * For retrieving artifacts there are methods that return lists and streaming based methods. Some implementations (e.g. JCR) use
+ * lazy loading for the retrieved objects. So the streaming methods may be faster and use less memory than the list based methods.
+ * But for some backends there is no difference.
+ *
  */
 public interface MetadataRepository
 {
+
+
+
     /**
      * Update metadata for a particular project in the metadata repository, or create it, if it does not already exist.
      *
@@ -155,15 +163,46 @@ public interface MetadataRepository
     List<String> getMetadataFacets( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException;
 
+
+    /**
+     *
+     * The same as
+     * @see #getMetadataFacetStream(RepositorySession, String, Class, QueryParameter queryParameter)
+     * but uses default query parameters.
+     *
+     * There is no limitation of the number of result objects returned, but implementations may have a hard upper bound for
+     * the number of results.
+     *
+     * @param session
+     * @param repositoryId
+     * @param facetClazz
+     * @param <T>
+     * @return
+     * @throws MetadataRepositoryException
+     * @since 3.0
+     */
     <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz)
         throws MetadataRepositoryException;
 
+    /**
+     * Returns a stream of MetadataFacet elements that match the given facet class.
+     * Implementations should order the resulting stream by facet name.
+     *
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param facetClazz The class of the facet
+     * @param <T> The facet type
+     * @return
+     * @throws MetadataRepositoryException
+     * @since 3.0
+     */
     <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter)
         throws MetadataRepositoryException;
 
     /**
-     * Returns true, if there is facet data stored for the given id on the repository. The facet data itself
-     * may be empty. It's just checking if there is data stored for the given facet id.
+     * Returns true, if there is facet data stored for the given facet id on the repository on repository level. The facet data itself
+     * may be empty. It's just checking if there is an object stored for the given facet id.
      *
      * @param session The repository session
      * @param repositoryId The repository id
@@ -200,13 +239,14 @@ public interface MetadataRepository
      * @param name The name of the facet (name or path)
      * @param <T> The type of the facet object
      * @return The facet instance, if it exists.
-     * @throws MetadataRepositoryException
+     * @throws MetadataRepositoryException if the data cannot be retrieved from the backend
+     * @since 3.0
      */
     <T extends MetadataFacet> T getMetadataFacet(RepositorySession session, String repositoryId, Class<T> clazz, String name)
     throws MetadataRepositoryException;
 
     /**
-     * Adss a facet to the repository level.
+     * Adds a facet to the repository level.
      *
      * @param session The repository session
      * @param repositoryId The id of the repository
@@ -238,41 +278,79 @@ public interface MetadataRepository
     void removeMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
         throws MetadataRepositoryException;
 
+
     /**
-     * if startTime or endTime are <code>null</code> they are not used for search
+     * Is the same as {@link #getArtifactsByDateRange(RepositorySession, String, ZonedDateTime, ZonedDateTime, QueryParameter)}, but
+     * uses default query parameters.
      *
-     *
-     * @param session
-     * @param repositoryId
-     * @param startTime    can be <code>null</code>
-     * @param endTime      can be <code>null</code>
-     * @return
-     * @throws MetadataRepositoryException
      */
     List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
+    /**
+     *
+     * Searches for artifacts where the 'whenGathered' attribute value is between the given start and end time.
+     * If start or end time or both are <code>null</code>, the time range for the search is unbounded for this parameter.
+     *
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param startTime    The start time/date as zoned date, can be <code>null</code>
+     * @param endTime      The end time/date as zoned date, can be <code>null</code>
+     * @param queryParameter Additional parameters for the query that affect ordering and returned results
+     * @return The list of metadata objects for the found instances.
+     * @throws MetadataRepositoryException if the query fails.
+     * @since 3.0
+     */
     List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter )
             throws MetadataRepositoryException;
 
 
     /**
-     * Returns all the artifacts
-     * @param session
-     * @param repositoryId
-     * @param startTime
-     * @param endTime
-     * @return
+     * Returns all the artifacts who's 'whenGathered' attribute value is inside the given time range (inclusive) as stream of objects.
+     *
+     * Implementations should return a stream of sorted objects. The objects should be sorted by the 'whenGathered' date in ascending order.
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param startTime The start time, can be <code>null</code>
+     * @param endTime The end time, can be <code>null</code>
+     * @return A stream of artifact metadata objects.
      * @throws MetadataRepositoryException
+     * @since 3.0
      */
     Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
+    /**
+     * Returns all the artifacts who's 'whenGathered' attribute value is inside the given time range (inclusive) as stream of objects.
+     *
+     * If no sort attributes are given by the queryParameter, the result is sorted by the 'whenGathered' date.
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param startTime The start time, can be <code>null</code>
+     * @param endTime The end time, can be <code>null</code>
+     * @param queryParameter Additional parameters for the query that affect ordering and number of returned results.
+     * @return A stream of artifact metadata objects.
+     * @throws MetadataRepositoryException
+     * @since 3.0
+     */
     Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId,
                                                            ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter)
         throws MetadataRepositoryException;
 
-    Collection<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, String repositoryId, String checksum )
+
+    /**
+     * Returns the artifacts that match the given checksum. All checksum types are searched.
+     *
+     * @param session The repository session
+     * @param repositoryId  The repository id
+     * @param checksum The checksum as string of numbers
+     * @return The list of artifacts that match the given checksum.
+     * @throws MetadataRepositoryException
+     */
+    List<ArtifactMetadata> getArtifactsByChecksum(RepositorySession session, String repositoryId, String checksum )
         throws MetadataRepositoryException;
 
     /**

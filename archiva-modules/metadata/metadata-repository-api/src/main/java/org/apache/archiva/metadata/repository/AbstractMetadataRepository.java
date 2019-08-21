@@ -26,11 +26,10 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.commons.collections4.ComparatorUtils;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public abstract class AbstractMetadataRepository
@@ -119,7 +118,7 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, String repositoryId, String checksum )
+    public List<ArtifactMetadata> getArtifactsByChecksum(RepositorySession session, String repositoryId, String checksum )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
@@ -253,6 +252,45 @@ public abstract class AbstractMetadataRepository
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
+    }
+
+    protected static Comparator<ArtifactMetadata> getArtifactMetadataComparator(final QueryParameter queryParameter, String defaultAttr) {
+        List<Comparator<ArtifactMetadata>> compList = new ArrayList<>();
+        List<String> sortFields = new ArrayList<>();
+        if (queryParameter.getSortFields().size() == 0) {
+            sortFields.add(defaultAttr);
+        } else {
+            sortFields = queryParameter.getSortFields();
+        }
+        for (String attribute : sortFields) {
+            switch (attribute) {
+                case "id":
+                    compList.add(Comparator.comparing(ArtifactMetadata::getId));
+                    break;
+                case "whenGathered":
+                    compList.add(Comparator.comparing(ArtifactMetadata::getWhenGathered));
+                    break;
+                case "fileLastModified":
+                    compList.add(Comparator.comparing(ArtifactMetadata::getFileLastModified));
+                case "version":
+                    compList.add(Comparator.comparing(ArtifactMetadata::getVersion));
+                    break;
+                case "projectVersion":
+                    compList.add(Comparator.comparing(ArtifactMetadata::getProjectVersion));
+                    break;
+                case "project":
+                    compList.add(Comparator.comparing(ArtifactMetadata::getProject));
+                    break;
+                default:
+                    //
+            }
+        }
+        Comparator<ArtifactMetadata> comp = ComparatorUtils.chainedComparator(compList);
+        if (queryParameter.isAscending()) {
+            return comp;
+        } else {
+            return comp.reversed();
+        }
     }
 
     @Override

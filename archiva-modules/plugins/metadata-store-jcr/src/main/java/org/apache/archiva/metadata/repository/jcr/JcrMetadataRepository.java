@@ -21,20 +21,7 @@ package org.apache.archiva.metadata.repository.jcr;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.archiva.metadata.QueryParameter;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.CiManagement;
-import org.apache.archiva.metadata.model.Dependency;
-import org.apache.archiva.metadata.model.FacetedMetadata;
-import org.apache.archiva.metadata.model.IssueManagement;
-import org.apache.archiva.metadata.model.License;
-import org.apache.archiva.metadata.model.MailingList;
-import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.model.Organization;
-import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
-import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.model.*;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -792,10 +779,10 @@ public class JcrMetadataRepository
             query.setLimit(queryParameter.getLimit());
             ValueFactory valueFactory = jcrSession.getValueFactory();
             if (startTime != null) {
-                query.bindValue("start", valueFactory.createValue(createCalendar(startTime)));
+                query.bindValue("start", valueFactory.createValue(createCalendar(startTime.withZoneSameInstant(ModelInfo.STORAGE_TZ))));
             }
             if (endTime != null) {
-                query.bindValue("end", valueFactory.createValue(createCalendar(endTime)));
+                query.bindValue("end", valueFactory.createValue(createCalendar(endTime.withZoneSameInstant(ModelInfo.STORAGE_TZ))));
             }
             return query.execute();
         } catch (RepositoryException e) {
@@ -843,7 +830,7 @@ public class JcrMetadataRepository
 
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, String repositoryId, String checksum )
+    public List<ArtifactMetadata> getArtifactsByChecksum(RepositorySession session, String repositoryId, String checksum )
         throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );

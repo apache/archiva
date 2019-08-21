@@ -903,7 +903,7 @@ public abstract class AbstractMetadataRepositoryTest
         {
             for (int i = 0; i<500; i++)
             {
-                getRepository( ).addMetadataFacet( session, TEST_REPO_ID, new TestMetadataFacet( TEST_FACET_ID, TEST_VALUE, TEST_NAME+"/"+i ) );
+                getRepository( ).addMetadataFacet( session, TEST_REPO_ID, new TestMetadataFacet( TEST_FACET_ID, TEST_VALUE, TEST_NAME+"/"+String.format("%03d",i) ) );
             }
         }
 
@@ -916,11 +916,75 @@ public abstract class AbstractMetadataRepositoryTest
                 assertEquals( 100, result.size( ) );
                 assertNotNull( result.get( 0 ) );
                 for (int i=0; i<10; i++) {
-                    log.info( "Result {}", result.get( i ).getName( ) );
+                    assertEquals(TEST_NAME + "/" + String.format("%03d",i), result.get(i).getName());
                 }
-                assertEquals( TEST_NAME+"/"+0, result.get( 0 ).getName( ) );
-            }, 2, 500 );
+            }, 3, 500 );
 
+        }
+    }
+
+    @Test
+    public void testGetMetadataFacetsStreamWithOffset( )
+            throws Exception
+    {
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            for (int i = 0; i<100; i++)
+            {
+                getRepository( ).addMetadataFacet( session, TEST_REPO_ID, new TestMetadataFacet( TEST_FACET_ID, TEST_VALUE, TEST_NAME+"/"+String.format("%03d", i) ) );
+            }
+        }
+
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            tryAssert( ( ) -> {
+                Stream<TestMetadataFacet> str = getRepository( ).getMetadataFacetStream( session, TEST_REPO_ID, TestMetadataFacet.class, new QueryParameter(5, 10));
+                assertNotNull( str );
+                List<TestMetadataFacet> result = str.collect( Collectors.toList( ) );
+                assertEquals( 10, result.size( ) );
+                assertNotNull( result.get( 0 ) );
+                for (int i=0; i<10; i++) {
+                    assertEquals(TEST_NAME + "/" + String.format("%03d",i+5), result.get(i).getName());
+                }
+            }, 3, 500 );
+
+        }
+    }
+
+    @Test
+    public void testGetArtifactsByDateRangeStreamLowerAndUpperBound( )
+            throws Exception
+    {
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            final ArtifactMetadata artifact1 = createArtifact( );
+            artifact1.setWhenGathered(ZonedDateTime.now().minusDays(1));
+            getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
+            final ArtifactMetadata artifact2 = createArtifact( );
+            artifact2.setId(artifact2.getId()+"-2");
+            artifact2.setVersion(TEST_PROJECT_VERSION+"-2");
+            artifact2.setWhenGathered(ZonedDateTime.now());
+            getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
+            final ArtifactMetadata artifact3 = createArtifact();
+            artifact3.setId(artifact3.getId()+"-3");
+            artifact3.setVersion(TEST_PROJECT_VERSION+"-3");
+            artifact3.setWhenGathered(ZonedDateTime.now().plusDays(1));
+            getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact3 );
+            session.save( );
+
+            ZonedDateTime lower = artifact2.getWhenGathered().minusSeconds(10);
+            ZonedDateTime upper = artifact2.getWhenGathered().plusSeconds(10);
+
+            tryAssert( ( ) -> {
+                Stream<ArtifactMetadata> stream = getRepository().getArtifactsByDateRangeStream(session, TEST_REPO_ID, lower, upper, new QueryParameter());
+                assertNotNull(stream);
+
+                List<ArtifactMetadata> artifacts = stream.collect(Collectors.toList());
+                assertEquals(1, artifacts.size());
+
+
+                assertEquals( Collections.singletonList( artifact2 ), artifacts );
+            } );
         }
     }
 

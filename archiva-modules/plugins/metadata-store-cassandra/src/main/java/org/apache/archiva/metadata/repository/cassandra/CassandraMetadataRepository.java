@@ -73,18 +73,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Spliterator;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -1795,7 +1784,7 @@ public class CassandraMetadataRepository
 
     @Override
     public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, final String repositoryId, final ZonedDateTime startTime,
-                                                           final ZonedDateTime endTime )
+                                                           final ZonedDateTime endTime, QueryParameter queryParameter )
         throws MetadataRepositoryException
     {
 
@@ -1804,6 +1793,7 @@ public class CassandraMetadataRepository
             .createRangeSlicesQuery( keyspace, ss, ss, ls ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
             .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
+
 
         if ( startTime != null )
         {
@@ -1831,10 +1821,25 @@ public class CassandraMetadataRepository
         return artifactMetadatas;
     }
 
+    /**
+     * For documentation see {@link MetadataRepository#getArtifactsByDateRangeStream(RepositorySession, String, ZonedDateTime, ZonedDateTime, QueryParameter)}
+     *
+     * This implementation orders the stream. It does not order the query in the backend.
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @param startTime The start time, can be <code>null</code>
+     * @param endTime The end time, can be <code>null</code>
+     * @param queryParameter Additional parameters for the query that affect ordering and number of returned results.
+     * @return
+     * @throws MetadataRepositoryException
+     * @see MetadataRepository#getArtifactsByDateRangeStream
+     */
     @Override
     public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
-        return null;
+        Comparator<ArtifactMetadata> comp = getArtifactMetadataComparator(queryParameter, "whenGathered");
+        return getArtifactsByDateRange(session, repositoryId, startTime, endTime, queryParameter).stream().sorted(comp).skip(queryParameter.getOffset()).limit(queryParameter.getLimit());
     }
 
 
@@ -1881,7 +1886,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, final String repositoryId, final String checksum )
+    public List<ArtifactMetadata> getArtifactsByChecksum(RepositorySession session, final String repositoryId, final String checksum )
         throws MetadataRepositoryException
     {
 
@@ -1923,7 +1928,7 @@ public class CassandraMetadataRepository
 
         }
 
-        return artifactMetadataMap.values();
+        return new ArrayList(artifactMetadataMap.values());
     }
 
     /**

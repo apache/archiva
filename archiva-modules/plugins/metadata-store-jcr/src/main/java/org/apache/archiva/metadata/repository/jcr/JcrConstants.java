@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.repository.jcr;
  * under the License.
  */
 
+import java.time.ZoneId;
+
 /**
  * Node types and properties defined in the schema.
  *
@@ -26,6 +28,9 @@ package org.apache.archiva.metadata.repository.jcr;
  */
 public interface JcrConstants
 {
+
+
+
     String BASE_NODE_TYPE = "archiva:base";
     String NAMESPACE_NODE_TYPE = "archiva:namespace";
     String PROJECT_NODE_TYPE = "archiva:project";
