@@ -20,26 +20,21 @@ package org.apache.archiva.metadata.repository;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.generic.GenericMetadataFacetFactory;
 import org.apache.archiva.metadata.model.*;
-import org.apache.archiva.metadata.model.facets.AbstractMetadataFacetFactory;
-import org.apache.archiva.repository.Repository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.NumberFormat;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -915,7 +910,7 @@ public abstract class AbstractMetadataRepositoryTest
         try ( RepositorySession session = getSessionFactory( ).createSession( ) )
         {
             tryAssert( ( ) -> {
-                Stream<TestMetadataFacet> str = getRepository( ).getMetadataFacetStream( session, TEST_REPO_ID, TestMetadataFacet.class, 0, 100 );
+                Stream<TestMetadataFacet> str = getRepository( ).getMetadataFacetStream( session, TEST_REPO_ID, TestMetadataFacet.class, new QueryParameter(0, 100));
                 assertNotNull( str );
                 List<TestMetadataFacet> result = str.collect( Collectors.toList( ) );
                 assertEquals( 100, result.size( ) );

@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.file;
 
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;
@@ -60,7 +61,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -352,7 +352,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries ) throws MetadataRepositoryException
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         final MetadataFacetFactory<T> metadataFacetFactory = getFacetFactory( facetClazz );
         if (metadataFacetFactory==null) {
@@ -367,8 +367,8 @@ public class FileMetadataRepository
                 .filter( path -> Files.exists( path.resolve( searchFile ) ) )
                 .map(path -> directory.relativize(path).toString())
                 .sorted()
-                .skip( offset )
-                .limit(maxEntries)
+                .skip( queryParameter.getOffset())
+                .limit(queryParameter.getLimit())
                 .map(name -> getMetadataFacet( session, repositoryId, facetClazz, name ));
         } catch (IOException e) {
             throw new MetadataRepositoryException( e.getMessage( ), e );
@@ -517,7 +517,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries ) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         return null;
     }

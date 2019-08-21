@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository;
 * under the License.
 */
 
+import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
@@ -111,7 +112,7 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
+    public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
@@ -306,13 +307,13 @@ public abstract class AbstractMetadataRepository
     @Override
     public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz ) throws MetadataRepositoryException
     {
-        return getMetadataFacetStream( session, repositoryId, facetClazz, 0, Long.MAX_VALUE );
+        return getMetadataFacetStream( session, repositoryId, facetClazz, new QueryParameter());
     }
 
     @Override
     public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime ) throws MetadataRepositoryException
     {
-        return getArtifactsByDateRangeStream( session, repositoryId, startTime, endTime, 0, Long.MAX_VALUE );
+        return getArtifactsByDateRangeStream( session, repositoryId, startTime, endTime, new QueryParameter());
     }
 
     @Override
@@ -323,7 +324,7 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries ) throws MetadataRepositoryException
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
@@ -337,7 +338,7 @@ public abstract class AbstractMetadataRepository
 
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries ) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
@@ -358,4 +359,13 @@ public abstract class AbstractMetadataRepository
     protected Class<? extends MetadataFacet> getFactoryClassForId( String facetId ) {
         return metadataService.getFactoryClassForId( facetId );
     }
+
+
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repoId, ZonedDateTime startTime, ZonedDateTime endTime)
+            throws MetadataRepositoryException {
+        return getArtifactsByDateRange(session, repoId, startTime, endTime, new QueryParameter());
+    }
+
 }

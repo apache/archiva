@@ -38,6 +38,7 @@ import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;
@@ -70,13 +71,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -88,7 +87,6 @@ import java.util.Spliterator;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -1590,17 +1588,16 @@ public class CassandraMetadataRepository
      * Implementation is not very performant, because sorting is part of the stream. I do not know how to specify the sort
      * in the query.
      * 
+     * @param <T>
      * @param session
      * @param repositoryId
      * @param facetClazz
-     * @param offset
-     * @param maxEntries
-     * @param <T>
+     * @param queryParameter
      * @return
      * @throws MetadataRepositoryException
      */
     @Override
-    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries ) throws MetadataRepositoryException
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         final MetadataFacetFactory<T> metadataFacetFactory = getFacetFactory( facetClazz );
         final String facetId = metadataFacetFactory.getFacetId( );
@@ -1637,7 +1634,7 @@ public class CassandraMetadataRepository
             }
             return updateItem;
 
-        }), false ).sorted( (f1, f2) -> f1.getName()!=null ? f1.getName().compareTo( f2.getName() ) : 1 ).skip( offset ).limit( maxEntries );
+        }), false ).sorted( (f1, f2) -> f1.getName()!=null ? f1.getName().compareTo( f2.getName() ) : 1 ).skip( queryParameter.getOffset()).limit( queryParameter.getLimit());
     }
 
     @Override
@@ -1835,7 +1832,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries ) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         return null;
     }

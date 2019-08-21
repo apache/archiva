@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
+import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
@@ -157,7 +158,7 @@ public interface MetadataRepository
     <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz)
         throws MetadataRepositoryException;
 
-    <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz, long offset, long maxEntries)
+    <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter)
         throws MetadataRepositoryException;
 
     /**
@@ -251,6 +252,10 @@ public interface MetadataRepository
     List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
+    List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter )
+            throws MetadataRepositoryException;
+
+
     /**
      * Returns all the artifacts
      * @param session
@@ -263,8 +268,8 @@ public interface MetadataRepository
     Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
-    Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId,
-                                                            ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries )
+    Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId,
+                                                           ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter)
         throws MetadataRepositoryException;
 
     Collection<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, String repositoryId, String checksum )

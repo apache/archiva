@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.jcr;
  */
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;
@@ -49,7 +50,6 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.commons.cnd.CndImporter;
 import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +72,6 @@ import javax.jcr.query.RowIterator;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.Map.Entry;
@@ -528,9 +527,30 @@ public class JcrMetadataRepository
         };
     }
 
+    private StringBuilder appendQueryParams(StringBuilder query, String selector, String defaultProperty, QueryParameter queryParameter) {
+        if (queryParameter.getSortFields().size()==0) {
+            query.append(" ORDER BY [").append(selector).append("].[").append(defaultProperty).append("]");
+            if (queryParameter.isAscending()) {
+                query.append(" ASC");
+            } else {
+                query.append(" DESC");
+            }
+        } else {
+            query.append(" ORDER BY");
+            for (String property : queryParameter.getSortFields()) {
+                query.append(" [").append(selector).append("].[").append(property).append("]");
+                if (queryParameter.isAscending()) {
+                    query.append(" ASC");
+                } else {
+                    query.append(" DESC");
+                }
+            }
+        }
+        return query;
+    }
+
     @Override
-    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz,
-        long offset, long maxEntries) throws MetadataRepositoryException
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
         final MetadataFacetFactory<T> factory = metadataService.getFactory( facetClazz );
@@ -538,10 +558,11 @@ public class JcrMetadataRepository
         final String facetPath = '/'+getFacetPath( repositoryId, facetId );
         StringBuilder query = new StringBuilder("SELECT * FROM [");
         query.append(FACET_NODE_TYPE).append("] AS facet WHERE ISDESCENDANTNODE(facet, [")
-                .append(facetPath).append("]) ORDER BY [facet].[archiva:name]");
+                .append(facetPath).append("])");
+        appendQueryParams(query, "facet", "archiva:name", queryParameter);
         String q = query.toString();
-         Map<String, String> params = new HashMap<>( );
-        QueryResult result = runNativeJcrQuery( jcrSession, q, params, offset, maxEntries );
+        Map<String, String> params = new HashMap<>( );
+        QueryResult result = runNativeJcrQuery( jcrSession, q, params, queryParameter.getOffset(), queryParameter.getLimit());
         return StreamSupport.stream( createResultSpliterator( result, (Row row)-> {
             try
             {
@@ -744,7 +765,8 @@ public class JcrMetadataRepository
         }
     }
 
-    private String buildArtifactByDateRangeQuery(String repoId, ZonedDateTime startTime, ZonedDateTime endTime) {
+    private StringBuilder buildArtifactByDateRangeQuery(String repoId, ZonedDateTime startTime, ZonedDateTime endTime,
+                                                        QueryParameter queryParameter) {
         StringBuilder q = getArtifactQuery( repoId );
 
         if ( startTime != null )
@@ -755,19 +777,19 @@ public class JcrMetadataRepository
         {
             q.append(" AND [artifact].[whenGathered] <= $end");
         }
-        q.append(" ORDER BY [artifact].[whenGathered]");
-        return q.toString();
+        appendQueryParams(q, "artifact", "whenGathered", queryParameter);
+        return q;
     }
 
     private QueryResult queryArtifactByDateRange(Session jcrSession, String repositoryId,
                                                  ZonedDateTime startTime, ZonedDateTime endTime,
-                                                 long offset, long maxEntries) throws MetadataRepositoryException {
-        String q = buildArtifactByDateRangeQuery(repositoryId, startTime, endTime);
+                                                 QueryParameter queryParameter) throws MetadataRepositoryException {
+        String q = buildArtifactByDateRangeQuery(repositoryId, startTime, endTime, queryParameter).toString();
 
         try {
             Query query = jcrSession.getWorkspace().getQueryManager().createQuery(q, Query.JCR_SQL2);
-            query.setOffset(offset);
-            query.setLimit(maxEntries);
+            query.setOffset(queryParameter.getOffset());
+            query.setLimit(queryParameter.getLimit());
             ValueFactory valueFactory = jcrSession.getValueFactory();
             if (startTime != null) {
                 query.bindValue("start", valueFactory.createValue(createCalendar(startTime)));
@@ -782,7 +804,7 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repoId, ZonedDateTime startTime, ZonedDateTime endTime )
+    public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repoId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter )
         throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
@@ -790,7 +812,7 @@ public class JcrMetadataRepository
         List<ArtifactMetadata> artifacts;
         try
         {
-            QueryResult result = queryArtifactByDateRange(jcrSession, repoId, startTime, endTime, 0, Long.MAX_VALUE);
+            QueryResult result = queryArtifactByDateRange(jcrSession, repoId, startTime, endTime, queryParameter);
 
             artifacts = new ArrayList<>();
             for ( Node n : JcrUtils.getNodes( result ) )
@@ -806,10 +828,10 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, long offset, long maxEntries ) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
-        QueryResult result = queryArtifactByDateRange(jcrSession, repositoryId, startTime, endTime, offset, maxEntries);
+        QueryResult result = queryArtifactByDateRange(jcrSession, repositoryId, startTime, endTime, queryParameter);
         return StreamSupport.stream(createResultSpliterator(result, (row) -> {
             try {
                 return getArtifactFromNode(repositoryId, row.getNode("artifact"));
