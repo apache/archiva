@@ -951,7 +951,7 @@ public class FileMetadataRepository
 
             String id = artifact.getId();
             properties.setProperty( "artifact:updated:" + id,
-                                    Long.toString( artifact.getFileLastModified().getTime() ) );
+                                    Long.toString( artifact.getFileLastModified().toInstant().toEpochMilli()) );
             properties.setProperty( "artifact:whenGathered:" + id,
                                     Long.toString( artifact.getWhenGathered().toInstant().toEpochMilli()) );
             properties.setProperty( "artifact:size:" + id, Long.toString( artifact.getSize() ) );

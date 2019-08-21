@@ -203,8 +203,7 @@ public class JcrMetadataRepository
                 getOrAddArtifactNode( jcrSession, repositoryId, namespace, projectId, projectVersion, artifactMeta.getId() );
 
             node.setProperty( "id", artifactMeta.getId( ) );
-            Calendar cal = Calendar.getInstance();
-            cal.setTime( artifactMeta.getFileLastModified() );
+            Calendar cal = GregorianCalendar.from(artifactMeta.getFileLastModified());
             node.setProperty( JCR_LAST_MODIFIED, cal );
 
             cal = GregorianCalendar.from(artifactMeta.getWhenGathered());

@@ -20,7 +20,11 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 
 /**
@@ -77,7 +81,7 @@ public class ArtifactMetadata
     /**
      * The last modified date of the artifact file, if known.
      */
-    private Date fileLastModified;
+    private ZonedDateTime fileLastModified;
 
     /**
      * The file size of the artifact, if known.
@@ -141,7 +145,7 @@ public class ArtifactMetadata
 
     public void setFileLastModified( long fileLastModified )
     {
-        this.fileLastModified = new Date( fileLastModified );
+        this.fileLastModified = ZonedDateTime.ofInstant(Instant.ofEpochMilli(fileLastModified), ZoneId.of("GMT"));
     }
 
     public void setWhenGathered( ZonedDateTime whenGathered )
@@ -174,7 +178,7 @@ public class ArtifactMetadata
         return sha1;
     }
 
-    public Date getFileLastModified()
+    public ZonedDateTime getFileLastModified()
     {
 
         return fileLastModified;
@@ -228,9 +232,9 @@ public class ArtifactMetadata
         {
             return false;
         }
-        // We allow some
+        // Time equality by instant that means the point in time must match, but not the time zone
         if ( fileLastModified != null
-            ? !fileLastModified.equals( that.fileLastModified )
+            ? !fileLastModified.toInstant().equals( that.fileLastModified.toInstant() )
             : that.fileLastModified != null )
         {
             return false;

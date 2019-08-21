@@ -70,6 +70,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -1337,7 +1338,7 @@ public class CassandraMetadataRepository
         {
             // updater
             ColumnFamilyUpdater<String, String> updater = this.artifactMetadataTemplate.createUpdater( key );
-            updater.setLong( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().getTime() );
+            updater.setLong( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().toInstant().toEpochMilli());
             updater.setLong( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().toInstant().toEpochMilli() );
             updater.setLong( SIZE.toString(), artifactMeta.getSize() );
             addUpdateStringValue( updater, MD5.toString(), artifactMeta.getMd5() );
@@ -1356,7 +1357,7 @@ public class CassandraMetadataRepository
                 .addInsertion( key, cf, column( PROJECT.toString(), artifactMeta.getProject() ) ) //
                 .addInsertion( key, cf, column( PROJECT_VERSION.toString(), projectVersion ) ) //
                 .addInsertion( key, cf, column( VERSION.toString(), artifactMeta.getVersion() ) ) //
-                .addInsertion( key, cf, column( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().getTime() ) ) //
+                .addInsertion( key, cf, column( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().toInstant().toEpochMilli() ) ) //
                 .addInsertion( key, cf, column( SIZE.toString(), artifactMeta.getSize() ) ) //
                 .addInsertion( key, cf, column( MD5.toString(), artifactMeta.getMd5() ) ) //
                 .addInsertion( key, cf, column( SHA1.toString(), artifactMeta.getSha1() ) ) //
@@ -1407,8 +1408,8 @@ public class CassandraMetadataRepository
         artifactMetadataModel.setProjectVersion( projectVersion );
         artifactMetadataModel.setVersion( artifactMeta.getVersion() );
         artifactMetadataModel.setFileLastModified( artifactMeta.getFileLastModified() == null
-                                                       ? new Date().getTime()
-                                                       : artifactMeta.getFileLastModified().getTime() );
+                                                       ? ZonedDateTime.now().toInstant().toEpochMilli()
+                                                       : artifactMeta.getFileLastModified().toInstant().toEpochMilli() );
 
         // now facets
         updateFacets( artifactMeta, artifactMetadataModel );
