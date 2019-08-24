@@ -56,4 +56,6 @@ public interface CassandraArchivaManager
 
     String getDependencyFamilyName();
 
+    String getChecksumFamilyName();
+
 }

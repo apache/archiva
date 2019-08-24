@@ -37,6 +37,7 @@ import me.prettyprint.hector.api.mutation.MutationResult;
 import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
+import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -76,9 +77,11 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static org.apache.archiva.metadata.model.ModelInfo.STORAGE_TZ;
 import static org.apache.archiva.metadata.repository.cassandra.CassandraUtils.*;
 import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
 
@@ -90,6 +93,7 @@ public class CassandraMetadataRepository
     extends AbstractMetadataRepository implements MetadataRepository
 {
 
+    private static final String ARTIFACT_METADATA_MODEL_KEY = "artifactMetadataModel.key";
     private Logger logger = LoggerFactory.getLogger( getClass() );
 
     private ArchivaConfiguration configuration;
@@ -109,6 +113,8 @@ public class CassandraMetadataRepository
     private final ColumnFamilyTemplate<String, String> licenseTemplate;
 
     private final ColumnFamilyTemplate<String, String> dependencyTemplate;
+
+    private final ColumnFamilyTemplate<String, String> checksumTemplate;
 
     private final Keyspace keyspace;
 
@@ -163,6 +169,12 @@ public class CassandraMetadataRepository
                                                                     //
                                                                     StringSerializer.get(), //
                                                                     StringSerializer.get() );
+
+        this.checksumTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
+                cassandraArchivaManager.getChecksumFamilyName(),
+                //
+                StringSerializer.get(), //
+                StringSerializer.get() );
     }
 
 
@@ -1036,6 +1048,77 @@ public class CassandraMetadataRepository
         return projectVersionMetadata;
     }
 
+    protected void recordChecksums( String repositoryId, String artifactMetadataKey, Map<String, String> checksums)
+    {
+        if ( checksums == null || checksums.isEmpty() )
+        {
+            return;
+        }
+        Mutator<String> checksumMutator = this.checksumTemplate.createMutator();
+        for ( Map.Entry<String, String> entry : checksums.entrySet())
+        {
+            // we don't care about the key as the real used one with the projectVersionMetadata
+            String keyChecksums = UUID.randomUUID().toString();
+            String cfChecksums = cassandraArchivaManager.getChecksumFamilyName();
+
+            addInsertion( checksumMutator, keyChecksums, cfChecksums, ARTIFACT_METADATA_MODEL_KEY,
+                    artifactMetadataKey );
+            addInsertion( checksumMutator, keyChecksums, cfChecksums, CHECKSUM_ALG.toString(), entry.getKey());
+            addInsertion( checksumMutator, keyChecksums, cfChecksums, CHECKSUM_VALUE.toString(),
+                    entry.getValue() );
+            addInsertion(checksumMutator, keyChecksums, cfChecksums, REPOSITORY_NAME.toString(), repositoryId);
+
+        }
+        checksumMutator.execute();
+    }
+
+    protected void removeChecksums( String artifactMetadataKey )
+    {
+
+        QueryResult<OrderedRows<String, String, String>> result =
+                HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
+                        .setColumnFamily( cassandraArchivaManager.getChecksumFamilyName() ) //
+                        .setColumnNames( CHECKSUM_ALG.toString() ) //
+                        .setRowCount( Integer.MAX_VALUE ) //
+                        .addEqualsExpression(ARTIFACT_METADATA_MODEL_KEY, artifactMetadataKey ) //
+                        .execute();
+
+        if ( result.get().getCount() < 1 )
+        {
+            return;
+        }
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            this.checksumTemplate.deleteRow( row.getKey() );
+        }
+
+    }
+
+    protected Map<String, String> getChecksums( String artifactMetadataKey )
+    {
+        Map<String, String> checksums = new HashMap<>();
+
+        QueryResult<OrderedRows<String, String, String>> result =
+                HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
+                        .setColumnFamily( cassandraArchivaManager.getChecksumFamilyName() ) //
+                        .setColumnNames( ARTIFACT_METADATA_MODEL_KEY, REPOSITORY_NAME.toString(),
+                                CHECKSUM_ALG.toString(), CHECKSUM_VALUE.toString() ) //
+                        .setRowCount( Integer.MAX_VALUE ) //
+                        .addEqualsExpression(ARTIFACT_METADATA_MODEL_KEY, artifactMetadataKey) //
+                        .execute();
+        for ( Row<String, String, String> row : result.get() )
+        {
+            ColumnFamilyResult<String, String> columnFamilyResult =
+                    this.checksumTemplate.queryColumns( row.getKey() );
+
+            checksums.put(columnFamilyResult.getString(CHECKSUM_ALG.toString()),
+                    columnFamilyResult.getString(CHECKSUM_VALUE.toString()));
+        }
+
+        return checksums;
+    }
+
     protected void recordMailingList( String projectVersionMetadataKey, List<MailingList> mailingLists )
     {
         if ( mailingLists == null || mailingLists.isEmpty() )
@@ -1297,6 +1380,18 @@ public class CassandraMetadataRepository
         return dependencies;
     }
 
+    private Map<String, String> mapChecksums(Map<ChecksumAlgorithm,String> checksums) {
+        return checksums.entrySet().stream().collect(Collectors.toMap(
+                e -> e.getKey().name(), e -> e.getValue()
+        ));
+    }
+
+    private Map<ChecksumAlgorithm, String> mapChecksumsReverse(Map<String,String> checksums) {
+        return checksums.entrySet().stream().collect(Collectors.toMap(
+                e -> ChecksumAlgorithm.valueOf(e.getKey()), e -> e.getValue()
+        ));
+    }
+
     @Override
     public void updateArtifact( RepositorySession session, String repositoryId, String namespaceId, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
@@ -1328,9 +1423,9 @@ public class CassandraMetadataRepository
             updater.setLong( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().toInstant().toEpochMilli());
             updater.setLong( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().toInstant().toEpochMilli() );
             updater.setLong( SIZE.toString(), artifactMeta.getSize() );
-            addUpdateStringValue( updater, MD5.toString(), artifactMeta.getMd5() );
-            addUpdateStringValue( updater, SHA1.toString(), artifactMeta.getSha1() );
             addUpdateStringValue( updater, VERSION.toString(), artifactMeta.getVersion() );
+            removeChecksums(key);
+            recordChecksums(repositoryId, key, mapChecksums(artifactMeta.getChecksums()));
             this.artifactMetadataTemplate.update( updater );
         }
         else
@@ -1346,10 +1441,9 @@ public class CassandraMetadataRepository
                 .addInsertion( key, cf, column( VERSION.toString(), artifactMeta.getVersion() ) ) //
                 .addInsertion( key, cf, column( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().toInstant().toEpochMilli() ) ) //
                 .addInsertion( key, cf, column( SIZE.toString(), artifactMeta.getSize() ) ) //
-                .addInsertion( key, cf, column( MD5.toString(), artifactMeta.getMd5() ) ) //
-                .addInsertion( key, cf, column( SHA1.toString(), artifactMeta.getSha1() ) ) //
                 .addInsertion( key, cf, column( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().toInstant().toEpochMilli() ) )//
                 .execute();
+            recordChecksums(repositoryId, key, mapChecksums(artifactMeta.getChecksums()));
         }
 
         key = new ProjectVersionMetadataModel.KeyBuilder() //
@@ -1397,6 +1491,7 @@ public class CassandraMetadataRepository
         artifactMetadataModel.setFileLastModified( artifactMeta.getFileLastModified() == null
                                                        ? ZonedDateTime.now().toInstant().toEpochMilli()
                                                        : artifactMeta.getFileLastModified().toInstant().toEpochMilli() );
+        artifactMetadataModel.setChecksums(mapChecksums(artifactMeta.getChecksums()));
 
         // now facets
         updateFacets( artifactMeta, artifactMetadataModel );
@@ -1419,7 +1514,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
             .execute();
 
-        final Set<String> versions = new HashSet<String>();
+        final Set<String> versions = new HashSet<>();
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -1806,15 +1901,16 @@ public class CassandraMetadataRepository
         QueryResult<OrderedRows<String, String, Long>> result = query.execute();
 
         List<ArtifactMetadata> artifactMetadatas = new ArrayList<>( result.get().getCount() );
+        Iterator<Row<String, String, Long>> keyIter = result.get().iterator();
+        if (keyIter.hasNext()) {
+            String key = keyIter.next().getKey();
+            for (Row<String, String, Long> row : result.get()) {
+                ColumnSlice<String, Long> columnSlice = row.getColumnSlice();
+                String repositoryName = getAsStringValue(columnSlice, REPOSITORY_NAME.toString());
+                if (StringUtils.equals(repositoryName, repositoryId)) {
 
-        for ( Row<String, String, Long> row : result.get() )
-        {
-            ColumnSlice<String, Long> columnSlice = row.getColumnSlice();
-            String repositoryName = getAsStringValue( columnSlice, REPOSITORY_NAME.toString() );
-            if ( StringUtils.equals( repositoryName, repositoryId ) )
-            {
-
-                artifactMetadatas.add( mapArtifactMetadataLongColumnSlice( columnSlice ) );
+                    artifactMetadatas.add(mapArtifactMetadataLongColumnSlice(key, columnSlice));
+                }
             }
         }
 
@@ -1843,7 +1939,7 @@ public class CassandraMetadataRepository
     }
 
 
-    protected ArtifactMetadata mapArtifactMetadataLongColumnSlice( ColumnSlice<String, Long> columnSlice )
+    protected ArtifactMetadata mapArtifactMetadataLongColumnSlice( String key, ColumnSlice<String, Long> columnSlice )
     {
         ArtifactMetadata artifactMetadata = new ArtifactMetadata();
         artifactMetadata.setNamespace( getAsStringValue( columnSlice, NAMESPACE_ID.toString() ) );
@@ -1859,12 +1955,13 @@ public class CassandraMetadataRepository
         Long whenGathered = getLongValue( columnSlice, WHEN_GATHERED.toString() );
         if ( whenGathered != null )
         {
-            artifactMetadata.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(whenGathered), ZoneId.of("GMT")));
+            artifactMetadata.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(whenGathered), STORAGE_TZ));
         }
+        artifactMetadata.setChecksums(mapChecksumsReverse(getChecksums(key)));
         return artifactMetadata;
     }
 
-    protected ArtifactMetadata mapArtifactMetadataStringColumnSlice( ColumnSlice<String, String> columnSlice )
+    protected ArtifactMetadata mapArtifactMetadataStringColumnSlice( String key, ColumnSlice<String, String> columnSlice )
     {
         ArtifactMetadata artifactMetadata = new ArtifactMetadata();
         artifactMetadata.setNamespace( getStringValue( columnSlice, NAMESPACE_ID.toString() ) );
@@ -1880,8 +1977,9 @@ public class CassandraMetadataRepository
         Long whenGathered = getAsLongValue( columnSlice, WHEN_GATHERED.toString() );
         if ( whenGathered != null )
         {
-            artifactMetadata.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(whenGathered), ZoneId.of("GMT")));
+            artifactMetadata.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(whenGathered), STORAGE_TZ));
         }
+        artifactMetadata.setChecksums(mapChecksumsReverse(getChecksums(key)));
         return artifactMetadata;
     }
 
@@ -1895,37 +1993,37 @@ public class CassandraMetadataRepository
 
         RangeSlicesQuery<String, String, String> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
+            .setColumnFamily( cassandraArchivaManager.getChecksumFamilyName()) //
+            .setColumnNames(ARTIFACT_METADATA_MODEL_KEY); //
 
-        query = query.addEqualsExpression( SHA1.toString(), checksum ).addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
+        query = query.addEqualsExpression( CHECKSUM_VALUE.toString(), checksum )
+                .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
 
         QueryResult<OrderedRows<String, String, String>> result = query.execute();
 
+        List<String> artifactKeys = new ArrayList<>();
         for ( Row<String, String, String> row : result.get() )
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
 
-            artifactMetadataMap.put( row.getKey(), mapArtifactMetadataStringColumnSlice( columnSlice ) );
+            artifactKeys.add(columnSlice.getColumnByName(ARTIFACT_METADATA_MODEL_KEY).getValue());
 
         }
 
-        query = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( NAMESPACE_ID.toString(), SIZE.toString(), ID.toString(), FILE_LAST_MODIFIED.toString(), MD5.toString(), PROJECT.toString(), PROJECT_VERSION.toString(),
-                             REPOSITORY_NAME.toString(), VERSION.toString(), WHEN_GATHERED.toString(), SHA1.toString() ); //
+        for (String key : artifactKeys) {
+            query = HFactory //
+                    .createRangeSlicesQuery(keyspace, ss, ss, ss) //
+                    .setColumnFamily(cassandraArchivaManager.getArtifactMetadataFamilyName()) //
+                    .setColumnNames(NAMESPACE_ID.toString(), SIZE.toString(), ID.toString(), FILE_LAST_MODIFIED.toString(), MD5.toString(), PROJECT.toString(), PROJECT_VERSION.toString(),
+                            REPOSITORY_NAME.toString(), VERSION.toString(), WHEN_GATHERED.toString(), SHA1.toString())
+                    .setKeys(key, key);
+            result = query.execute();
 
-        query = query.addEqualsExpression( MD5.toString(), checksum ).addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
+            for (Row<String, String, String> row : result.get()) {
+                ColumnSlice<String, String> columnSlice = row.getColumnSlice();
 
-        result = query.execute();
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-
-            artifactMetadataMap.put( row.getKey(), mapArtifactMetadataStringColumnSlice( columnSlice ) );
-
+                artifactMetadataMap.put(row.getKey(), mapArtifactMetadataStringColumnSlice(key, columnSlice));
+            }
         }
 
         return new ArrayList(artifactMetadataMap.values());
@@ -1993,7 +2091,8 @@ public class CassandraMetadataRepository
 
             for ( Row<String, String, String> artifactMetadataRow : artifactMetadataResult.get() )
             {
-                artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( artifactMetadataRow.getColumnSlice() ) );
+                String artifactKey = artifactMetadataRow.getKey();
+                artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( artifactKey, artifactMetadataRow.getColumnSlice() ) );
             }
         }
 
@@ -2120,13 +2219,15 @@ public class CassandraMetadataRepository
 
         QueryResult<OrderedRows<String, String, String>> result = query.execute();
 
+
+
         List<ArtifactMetadata> artifactMetadatas = new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, String> row : result.get() )
         {
+            String key = row.getKey();
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-
-            artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( columnSlice ) );
+            artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( key, columnSlice ) );
 
         }
 
@@ -2240,7 +2341,8 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( row.getColumnSlice() ) );
+            String key = row.getKey();
+            artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( key, row.getColumnSlice() ) );
         }
 
         result = HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //

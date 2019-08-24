@@ -92,6 +92,8 @@ public class DefaultCassandraArchivaManager
 
     private String dependencyFamilyName = "dependency";
 
+    private String checksumFamilyName = "checksum";
+
     @Value("${cassandra.host}")
     private String cassandraHost;
 
@@ -388,6 +390,49 @@ public class DefaultCassandraArchivaManager
 
         }
 
+        // Checksum table
+        {
+            final ColumnFamilyDefinition checksumCf =
+                    HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                            getChecksumFamilyName(), //
+                            ComparatorType.UTF8TYPE );
+
+            BasicColumnDefinition artifactMetatadaModel_key = new BasicColumnDefinition();
+            artifactMetatadaModel_key.setName( StringSerializer.get().toByteBuffer( "artifactMetadataModel.key" ) );
+            artifactMetatadaModel_key.setIndexName( "artifactMetadataModel_key" );
+            artifactMetatadaModel_key.setIndexType( ColumnIndexType.KEYS );
+            artifactMetatadaModel_key.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            checksumCf.addColumnDefinition( artifactMetatadaModel_key );
+
+
+            BasicColumnDefinition checksumAlgorithmColumn = new BasicColumnDefinition();
+            checksumAlgorithmColumn.setName( StringSerializer.get().toByteBuffer( CHECKSUM_ALG.toString() ) );
+            checksumAlgorithmColumn.setIndexName( CHECKSUM_ALG.toString() );
+            checksumAlgorithmColumn.setIndexType( ColumnIndexType.KEYS );
+            checksumAlgorithmColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            checksumCf.addColumnDefinition( checksumAlgorithmColumn );
+
+            BasicColumnDefinition checksumValueColumn = new BasicColumnDefinition();
+            checksumValueColumn.setName( StringSerializer.get().toByteBuffer( CHECKSUM_VALUE.toString() ) );
+            checksumValueColumn.setIndexName( CHECKSUM_VALUE.toString() );
+            checksumValueColumn.setIndexType( ColumnIndexType.KEYS );
+            checksumValueColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            checksumCf.addColumnDefinition( checksumValueColumn );
+
+            BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
+            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
+            repositoryNameColumn.setIndexName( REPOSITORY_NAME.toString() );
+            repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
+            repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            checksumCf.addColumnDefinition( repositoryNameColumn );
+
+
+            cfds.add( checksumCf );
+
+            // creating indexes for cql query
+
+        }
+
         // mailinglist table
         {
             final ColumnFamilyDefinition mailingListCf =
@@ -552,5 +597,10 @@ public class DefaultCassandraArchivaManager
     public String getDependencyFamilyName()
     {
         return dependencyFamilyName;
+    }
+
+    @Override
+    public String getChecksumFamilyName() {
+        return checksumFamilyName;
     }
 }

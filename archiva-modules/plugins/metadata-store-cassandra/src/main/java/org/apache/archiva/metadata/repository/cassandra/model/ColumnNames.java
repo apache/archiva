@@ -45,7 +45,9 @@ public enum ColumnNames
     ARTIFACT_ID( "artifactId" ),
     DESCRIPTION( "description" ),
     URL( "url" ),
-    WHEN_GATHERED( "whenGathered" );
+    WHEN_GATHERED( "whenGathered" ),
+    CHECKSUM_ALG("checksumAlgorithm"),
+    CHECKSUM_VALUE("checksumValue");
 
     private final String name;
 

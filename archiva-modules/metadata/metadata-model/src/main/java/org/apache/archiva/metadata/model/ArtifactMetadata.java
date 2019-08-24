@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
 import sun.reflect.generics.repository.MethodRepository;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,6 +29,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Metadata stored in the content repository for a particular artifact. Information that is shared between different
@@ -37,10 +42,9 @@ import java.util.Date;
  * For more information, see the
  * <a href="{@docRoot}/../metadata-content-model.html" target="_top">Metadata Content Model</a>.
  */
-@XmlRootElement ( name = "artifactMetadata" )
+@XmlRootElement(name = "artifactMetadata")
 public class ArtifactMetadata
-    extends FacetedMetadata
-{
+        extends FacetedMetadata {
 
 
     /**
@@ -57,21 +61,21 @@ public class ArtifactMetadata
     /**
      * The namespace of the project within the repository.
      *
-     * @see org.apache.archiva.metadata.model.ProjectMetadata#namespace
+     * @see ProjectMetadata#getNamespace()
      */
     private String namespace;
 
     /**
      * The identifier of the project within the repository and namespace.
      *
-     * @see org.apache.archiva.metadata.model.ProjectMetadata#id
+     * @see ProjectMetadata#getId()
      */
     private String project;
 
     /**
      * The version of the project. This may be more generalised than @{link #version}.
      *
-     * @see org.apache.archiva.metadata.model.ProjectVersionMetadata#id
+     * @see ProjectVersionMetadata#getId()
      */
     private String projectVersion;
 
@@ -93,193 +97,176 @@ public class ArtifactMetadata
     private long size;
 
     /**
-     * The MD5 checksum of the artifact, if calculated.
+     * The list of checksums.
      */
-    private String md5;
+    private Map<ChecksumAlgorithm, String> checksums = new HashMap<>();
 
-    /**
-     * The SHA-1 checksum of the artifact, if calculated.
-     */
-    private String sha1;
+    private String toStringValue = "";
+    private int lastHash = 0;
 
     /**
      * When the artifact was found in the repository storage and added to the metadata content repository.
      */
     private ZonedDateTime whenGathered;
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public void setId( String id )
-    {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public long getSize()
-    {
+    public long getSize() {
         return size;
     }
 
-    public void setSize( long size )
-    {
+    public void setSize(long size) {
         this.size = size;
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion( String version )
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
-    public String getProjectVersion()
-    {
+    public String getProjectVersion() {
         return projectVersion;
     }
 
-    public void setProjectVersion( String projectVersion )
-    {
+    public void setProjectVersion(String projectVersion) {
         this.projectVersion = projectVersion;
     }
 
-    public void setFileLastModified( long fileLastModified )
-    {
+    public void setFileLastModified(long fileLastModified) {
         this.fileLastModified = ZonedDateTime.ofInstant(Instant.ofEpochMilli(fileLastModified), ModelInfo.STORAGE_TZ);
     }
 
-    public void setWhenGathered( ZonedDateTime whenGathered )
-    {
+    public void setWhenGathered(ZonedDateTime whenGathered) {
         this.whenGathered = whenGathered.withZoneSameInstant(ModelInfo.STORAGE_TZ);
     }
 
-    public void setMd5( String md5 )
-    {
-        this.md5 = md5;
+    public void setMd5(String md5) {
+        this.checksums.put(ChecksumAlgorithm.MD5, md5);
     }
 
-    public void setSha1( String sha1 )
-    {
-        this.sha1 = sha1;
+    public void setSha1(String sha1) {
+        this.checksums.put(ChecksumAlgorithm.SHA1, sha1);
     }
 
-    public ZonedDateTime getWhenGathered()
-    {
+    public ZonedDateTime getWhenGathered() {
         return whenGathered;
     }
 
-    public String getMd5()
-    {
-        return md5;
+    public String getChecksum(ChecksumAlgorithm checksumAlgorithm) {
+        return checksums.get(checksumAlgorithm);
     }
 
-    public String getSha1()
-    {
-        return sha1;
+    public void setChecksum(ChecksumAlgorithm algorithm, String checksumValue) {
+        this.checksums.put(algorithm, checksumValue);
     }
 
-    public ZonedDateTime getFileLastModified()
-    {
+    public Set<ChecksumAlgorithm> getChecksumTypes() {
+        return checksums.keySet();
+    }
+
+    public Map<ChecksumAlgorithm,String> getChecksums() {
+        return this.checksums;
+    }
+
+    public void setChecksums(Map<ChecksumAlgorithm,String> checksums) {
+        this.checksums = checksums;
+    }
+
+    public String getMd5() {
+        return checksums.get(ChecksumAlgorithm.MD5);
+    }
+
+    public String getSha1() {
+        return checksums.get(ChecksumAlgorithm.SHA1);
+    }
+
+    public ZonedDateTime getFileLastModified() {
 
         return fileLastModified;
     }
 
-    public String getNamespace()
-    {
+    public String getNamespace() {
         return namespace;
     }
 
-    public void setNamespace( String namespace )
-    {
+    public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
 
-    public void setProject( String project )
-    {
+    public void setProject(String project) {
         this.project = project;
     }
 
-    public String getProject()
-    {
+    public String getProject() {
         return project;
     }
 
-    public String getRepositoryId()
-    {
+    public String getRepositoryId() {
         return repositoryId;
     }
 
-    public void setRepositoryId( String repositoryId )
-    {
+    public void setRepositoryId(String repositoryId) {
         this.repositoryId = repositoryId;
     }
 
     @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
         ArtifactMetadata that = (ArtifactMetadata) o;
 
-        if ( size != that.size )
-        {
+        if (size != that.size) {
             return false;
         }
         // Time equality by instant that means the point in time must match, but not the time zone
-        if ( fileLastModified != null
-            ? !fileLastModified.toInstant().equals( that.fileLastModified.toInstant() )
-            : that.fileLastModified != null )
-        {
+        if (fileLastModified != null
+                ? !fileLastModified.toInstant().equals(that.fileLastModified.toInstant())
+                : that.fileLastModified != null) {
             return false;
         }
-        if ( !id.equals( that.id ) )
-        {
+        if (!id.equals(that.id)) {
             return false;
         }
-        if ( md5 != null ? !md5.equals( that.md5 ) : that.md5 != null )
-        {
+        for ( Map.Entry<ChecksumAlgorithm, String> entry : this.checksums.entrySet()) {
+            String thatChecksum = that.checksums.get(entry.getKey());
+            if (entry.getValue()!=null ? !entry.getValue().equals(thatChecksum) : thatChecksum!=null) {
+                return false;
+            }
+        }
+        if (namespace != null ? !namespace.equals(that.namespace) : that.namespace != null) {
             return false;
         }
-        if ( namespace != null ? !namespace.equals( that.namespace ) : that.namespace != null )
-        {
+        if (project != null ? !project.equals(that.project) : that.project != null) {
             return false;
         }
-        if ( project != null ? !project.equals( that.project ) : that.project != null )
-        {
-            return false;
-        }
-        if ( projectVersion != null ? !projectVersion.equals( that.projectVersion ) : that.projectVersion != null )
-        {
+        if (projectVersion != null ? !projectVersion.equals(that.projectVersion) : that.projectVersion != null) {
             return false;
         }
         /**
          * We cannot compare in different repositories, if this is in here
-        if ( !repositoryId.equals( that.repositoryId ) )
-        {
-            return false;
-        }
+         if ( !repositoryId.equals( that.repositoryId ) )
+         {
+         return false;
+         }
          **/
-        if ( sha1 != null ? !sha1.equals( that.sha1 ) : that.sha1 != null )
-        {
+        if (version != null ? !version.equals(that.version) : that.version != null) {
             return false;
         }
-        if ( version != null ? !version.equals( that.version ) : that.version != null )
-        {
-            return false;
-        }
-        if ( whenGathered != null ? !whenGathered.toInstant().equals( that.whenGathered.toInstant() ) : that.whenGathered != null )
-        {
+        if (whenGathered != null ? !whenGathered.toInstant().equals(that.whenGathered.toInstant()) : that.whenGathered != null) {
             return false;
         }
 
@@ -287,28 +274,37 @@ public class ArtifactMetadata
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + ( repositoryId != null ? repositoryId.hashCode() : 0 );
-        result = 31 * result + ( namespace != null ? namespace.hashCode() : 0 );
-        result = 31 * result + ( project != null ? project.hashCode() : 0 );
-        result = 31 * result + ( projectVersion != null ? projectVersion.hashCode() : 0 );
-        result = 31 * result + ( version != null ? version.hashCode() : 0 );
-        result = 31 * result + ( fileLastModified != null ? fileLastModified.hashCode() : 0 );
-        result = 31 * result + (int) ( size ^ ( size >>> 32 ) );
-        result = 31 * result + ( md5 != null ? md5.hashCode() : 0 );
-        result = 31 * result + ( sha1 != null ? sha1.hashCode() : 0 );
-        result = 31 * result + ( whenGathered != null ? whenGathered.hashCode() : 0 );
+        result = 31 * result + (repositoryId != null ? repositoryId.hashCode() : 0);
+        result = 31 * result + (namespace != null ? namespace.hashCode() : 0);
+        result = 31 * result + (project != null ? project.hashCode() : 0);
+        result = 31 * result + (projectVersion != null ? projectVersion.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (fileLastModified != null ? fileLastModified.hashCode() : 0);
+        result = 31 * result + (int) (size ^ (size >>> 32));
+        for (String checksum : checksums.values()) {
+            result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
+        }
+        result = 31 * result + (whenGathered != null ? whenGathered.hashCode() : 0);
         return result;
     }
 
+    /**
+     * Doing some hashing to avoid the expensive string concatenation.
+     */
     @Override
-    public String toString()
-    {
-        return "ArtifactMetadata{" + "id='" + id + '\'' + ", size=" + size + ", version='" + version + '\'' +
-            ", fileLastModified=" + fileLastModified + ", whenGathered=" + whenGathered + ", md5='" + md5 + '\'' +
-            ", sha1='" + sha1 + '\'' + ", namespace='" + namespace + '\'' + ", project='" + project + '\'' +
-            ", projectVersion='" + projectVersion + '\'' + ", repositoryId='" + repositoryId + '\'' + '}';
+    public String toString() {
+        final int hashCode=hashCode();
+        if (hashCode!=lastHash) {
+            toStringValue = "ArtifactMetadata{" + "id='" + id + '\'' + ", size=" + size + ", version='" + version + '\'' +
+                    ", fileLastModified=" + fileLastModified + ", whenGathered=" + whenGathered +
+                    ", namespace='" + namespace + '\'' + ", project='" + project + '\'' +
+                    ", projectVersion='" + projectVersion + '\'' + ", repositoryId='" + repositoryId + '\'' +
+                    ", checksums=" + checksums.entrySet().stream().map(e -> e.getKey() + ":" + e.getValue()).collect(Collectors.joining(",")) +
+                    '}';
+            lastHash=hashCode;
+        }
+        return toStringValue;
     }
 }

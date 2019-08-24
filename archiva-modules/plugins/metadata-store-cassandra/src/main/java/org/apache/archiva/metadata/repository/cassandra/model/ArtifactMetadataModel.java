@@ -23,6 +23,8 @@ import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
 
@@ -61,6 +63,8 @@ public class ArtifactMetadataModel
     private String sha1;
 
     private long whenGathered;
+
+    private Map<String, String> checksums = new HashMap<>();
 
     public ArtifactMetadataModel()
     {
@@ -193,6 +197,22 @@ public class ArtifactMetadataModel
     public void setWhenGathered( long whenGathered )
     {
         this.whenGathered = whenGathered;
+    }
+
+    public void setChecksum(String type, String value) {
+        this.checksums.put(type, value);
+    }
+
+    public String getChecksum(String type) {
+        return this.checksums.get(type);
+    }
+
+    public void setChecksums(Map<String,String> checksums) {
+        this.checksums = checksums;
+    }
+
+    public Map<String,String> getChecksums() {
+        return this.checksums;
     }
 
 

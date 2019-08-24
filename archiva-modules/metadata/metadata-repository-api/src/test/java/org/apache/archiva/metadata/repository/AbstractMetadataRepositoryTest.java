@@ -80,6 +80,9 @@ public abstract class AbstractMetadataRepositoryTest
 
     protected Logger log = LoggerFactory.getLogger( getClass( ) );
 
+    protected int assertMaxTries =10;
+    protected int assertRetrySleepMs=500;
+
     /*
      * Used by tryAssert to allow to throw exceptions in the lambda expression.
      */
@@ -91,7 +94,7 @@ public abstract class AbstractMetadataRepositoryTest
 
     protected void tryAssert( AssertFunction func ) throws Exception
     {
-        tryAssert( func, 20, 500 );
+        tryAssert( func, assertMaxTries, assertRetrySleepMs );
     }
 
 
@@ -960,15 +963,25 @@ public abstract class AbstractMetadataRepositoryTest
             final ArtifactMetadata artifact1 = createArtifact( );
             artifact1.setWhenGathered(ZonedDateTime.now().minusDays(1));
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
+
+            ZonedDateTime gatheredNow = ZonedDateTime.now();
             final ArtifactMetadata artifact2 = createArtifact( );
-            artifact2.setId(artifact2.getId()+"-2");
+            String artifact2Id = artifact2.getId() + "-2";
+            artifact2.setId(artifact2Id);
             artifact2.setVersion(TEST_PROJECT_VERSION+"-2");
-            artifact2.setWhenGathered(ZonedDateTime.now());
+            artifact2.setWhenGathered(gatheredNow);
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
             final ArtifactMetadata artifact3 = createArtifact();
-            artifact3.setId(artifact3.getId()+"-3");
+            String artifact3Id = artifact3.getId() + "-3";
+            artifact3.setId(artifact3Id);
             artifact3.setVersion(TEST_PROJECT_VERSION+"-3");
-            artifact3.setWhenGathered(ZonedDateTime.now().plusDays(1));
+            artifact3.setWhenGathered(gatheredNow.minusSeconds(5));
+
+            final ArtifactMetadata artifact4 = createArtifact();
+            artifact4.setId(artifact4.getId()+"-4");
+            artifact4.setVersion(TEST_PROJECT_VERSION+"-4");
+            artifact4.setWhenGathered(gatheredNow.plusDays(1));
+
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact3 );
             session.save( );
 
@@ -980,10 +993,10 @@ public abstract class AbstractMetadataRepositoryTest
                 assertNotNull(stream);
 
                 List<ArtifactMetadata> artifacts = stream.collect(Collectors.toList());
-                assertEquals(1, artifacts.size());
+                assertEquals(2, artifacts.size());
+                assertEquals(artifact3Id, artifacts.get(0).getId());
+                assertEquals(artifact2Id, artifacts.get(1).getId());
 
-
-                assertEquals( Collections.singletonList( artifact2 ), artifacts );
             } );
         }
     }

@@ -38,7 +38,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,7 +78,10 @@ public class CassandraMetadataRepositoryTest
     public void setUp()
         throws Exception
     {
+
         super.setUp();
+        assertMaxTries =1;
+        assertRetrySleepMs=10;
 
         Path directory = Paths.get( "target/test-repositories" );
         if ( Files.exists(directory) )
