@@ -815,7 +815,7 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
         QueryResult result = queryArtifactByDateRange(jcrSession, repositoryId, startTime, endTime, queryParameter);

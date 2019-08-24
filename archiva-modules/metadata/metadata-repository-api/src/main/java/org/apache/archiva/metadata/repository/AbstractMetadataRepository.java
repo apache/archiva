@@ -28,6 +28,8 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.commons.collections4.ComparatorUtils;
 
+import javax.annotation.Nonnull;
+import javax.management.Query;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Stream;
@@ -342,6 +344,10 @@ public abstract class AbstractMetadataRepository
         throw new UnsupportedOperationException();
     }
 
+    protected QueryParameter getParameterOrDefault(QueryParameter queryParameter) {
+        return queryParameter == null ? new QueryParameter( ) : queryParameter;
+    }
+
     @Override
     public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz ) throws MetadataRepositoryException
     {
@@ -349,9 +355,9 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime ) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime ) throws MetadataRepositoryException
     {
-        return getArtifactsByDateRangeStream( session, repositoryId, startTime, endTime, new QueryParameter());
+        return getArtifactByDateRangeStream( session, repositoryId, startTime, endTime, new QueryParameter());
     }
 
     @Override
@@ -376,7 +382,7 @@ public abstract class AbstractMetadataRepository
 
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
@@ -403,7 +409,35 @@ public abstract class AbstractMetadataRepository
     @Override
     public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repoId, ZonedDateTime startTime, ZonedDateTime endTime)
             throws MetadataRepositoryException {
-        return getArtifactsByDateRange(session, repoId, startTime, endTime, new QueryParameter());
+        return getArtifactsByDateRange(session, repoId, startTime, endTime, getParameterOrDefault( null ));
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repositoryId ) throws MetadataResolutionException
+    {
+        return getArtifactStream( session, repositoryId, getParameterOrDefault( null ) );
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repoId,
+                                                       final String namespace, final String projectId,
+                                                       final String projectVersion) throws MetadataResolutionException
+    {
+        return getArtifactStream( session,repoId,namespace, projectId, projectVersion, getParameterOrDefault( null ));
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repositoryId, QueryParameter queryParameter ) throws MetadataResolutionException
+    {
+        throw new UnsupportedOperationException( );
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repoId,
+                                                       final String namespace, final String projectId,
+                                                       final String projectVersion, final QueryParameter queryParameter ) throws MetadataResolutionException
+    {
+        throw new UnsupportedOperationException( );
     }
 
 }

@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.model;
  */
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import sun.reflect.generics.repository.MethodRepository;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -99,7 +100,7 @@ public class ArtifactMetadata
     /**
      * The list of checksums.
      */
-    private Map<ChecksumAlgorithm, String> checksums = new HashMap<>();
+    private Map<ChecksumAlgorithm, String> checksums = new DualHashBidiMap<>( );
 
     private String toStringValue = "";
     private int lastHash = 0;
@@ -175,6 +176,10 @@ public class ArtifactMetadata
 
     public Map<ChecksumAlgorithm,String> getChecksums() {
         return this.checksums;
+    }
+
+    public boolean hasChecksum(String checksum) {
+        return this.checksums.containsValue( checksum );
     }
 
     public void setChecksums(Map<ChecksumAlgorithm,String> checksums) {

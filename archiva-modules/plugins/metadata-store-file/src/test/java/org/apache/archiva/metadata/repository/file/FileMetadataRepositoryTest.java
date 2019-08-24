@@ -64,6 +64,8 @@ public class FileMetadataRepositoryTest
         throws Exception
     {
         super.setUp();
+        assertMaxTries = 1;
+        assertRetrySleepMs = 10;
 
         Path directory = Paths.get( "target/test-repositories" );
         if (Files.exists(directory))

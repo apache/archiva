@@ -72,7 +72,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -1918,7 +1917,7 @@ public class CassandraMetadataRepository
     }
 
     /**
-     * For documentation see {@link MetadataRepository#getArtifactsByDateRangeStream(RepositorySession, String, ZonedDateTime, ZonedDateTime, QueryParameter)}
+     * For documentation see {@link MetadataRepository#getArtifactByDateRangeStream(RepositorySession, String, ZonedDateTime, ZonedDateTime, QueryParameter)}
      *
      * This implementation orders the stream. It does not order the query in the backend.
      *
@@ -1929,10 +1928,10 @@ public class CassandraMetadataRepository
      * @param queryParameter Additional parameters for the query that affect ordering and number of returned results.
      * @return
      * @throws MetadataRepositoryException
-     * @see MetadataRepository#getArtifactsByDateRangeStream
+     * @see MetadataRepository#getArtifactByDateRangeStream
      */
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         Comparator<ArtifactMetadata> comp = getArtifactMetadataComparator(queryParameter, "whenGathered");
         return getArtifactsByDateRange(session, repositoryId, startTime, endTime, queryParameter).stream().sorted(comp).skip(queryParameter.getOffset()).limit(queryParameter.getLimit());

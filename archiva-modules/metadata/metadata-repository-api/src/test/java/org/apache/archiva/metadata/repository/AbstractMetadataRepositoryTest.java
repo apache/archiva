@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.generic.GenericMetadataFacetFactory;
@@ -69,6 +70,8 @@ public abstract class AbstractMetadataRepositoryTest
     private static final String TEST_VALUE = "test-value";
 
     private static final String UNKNOWN = "unknown";
+
+    private static final String TEST_SHA256 = "e43857b4e75e04a09d167564ca9a4636e5d233035483ba4ecf1243e34325d565";
 
     private static final String TEST_MD5 = "bd4a9b642562547754086de2dab26b7d";
 
@@ -989,7 +992,7 @@ public abstract class AbstractMetadataRepositoryTest
             ZonedDateTime upper = artifact2.getWhenGathered().plusSeconds(10);
 
             tryAssert( ( ) -> {
-                Stream<ArtifactMetadata> stream = getRepository().getArtifactsByDateRangeStream(session, TEST_REPO_ID, lower, upper, new QueryParameter());
+                Stream<ArtifactMetadata> stream = getRepository().getArtifactByDateRangeStream(session, TEST_REPO_ID, lower, upper, new QueryParameter());
                 assertNotNull(stream);
 
                 List<ArtifactMetadata> artifacts = stream.collect(Collectors.toList());
@@ -1194,6 +1197,29 @@ public abstract class AbstractMetadataRepositoryTest
                     getRepository( ).getArtifacts( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
                 ArrayList<ArtifactMetadata> actual = new ArrayList<>( artifacts );
                 Collections.sort( actual, ( o1, o2 ) -> o1.getId( ).compareTo( o2.getId( ) ) );
+                assertEquals( Arrays.asList( artifact1, artifact2 ), actual );
+            } );
+
+        }
+    }
+
+    @Test
+    public void testGetArtifactStream( )
+        throws Exception
+    {
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            ArtifactMetadata artifact1 = createArtifact( );
+            ArtifactMetadata artifact2 = createArtifact( "pom" );
+            getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
+            getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
+
+            tryAssert( ( ) -> {
+                Stream<ArtifactMetadata> artifacts =
+                    getRepository( ).getArtifactStream( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+                assertNotNull( artifacts );
+                List<ArtifactMetadata> actual = artifacts
+                    .sorted( ( o1, o2 ) -> o1.getId( ).compareTo( o2.getId( ) ) ).collect( Collectors.toList( ) );
                 assertEquals( Arrays.asList( artifact1, artifact2 ), actual );
             } );
 
@@ -1592,6 +1618,23 @@ public abstract class AbstractMetadataRepositoryTest
     }
 
     @Test
+    public void testGetArtifactsByChecksumSingleResultSha256( )
+        throws Exception
+    {
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) )
+        {
+            ArtifactMetadata artifact = createArtifact( );
+            artifact.setChecksum( ChecksumAlgorithm.SHA256,  TEST_SHA256);
+            getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
+            session.save( );
+
+            assertEquals( Collections.singletonList( artifact ),
+                new ArrayList<>( getRepository( ).getArtifactsByChecksum( session, TEST_REPO_ID, TEST_SHA256 ) ) );
+
+        }
+    }
+
+    @Test
     public void testGetArtifactsByChecksumSingleResultMd5( )
         throws Exception
     {
@@ -1635,10 +1678,13 @@ public abstract class AbstractMetadataRepositoryTest
             getRepository( ).updateArtifact( session, TEST_REPO_ID, namespace, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
             session.save( );
 
-            tryAssert( ( ) -> assertEquals( Collections.singletonList( artifact ),
-                new ArrayList<>( getRepository( ).getArtifactsByChecksum( session, TEST_REPO_ID, TEST_SHA1 ) ) ) );
-            tryAssert( ( ) -> assertEquals( Collections.singletonList( artifact ),
-                new ArrayList<>( getRepository( ).getArtifactsByChecksum( session, TEST_REPO_ID, TEST_MD5 ) ) ) );
+            tryAssert( ( ) ->
+            {
+                assertEquals( Collections.singletonList( artifact ),
+                    new ArrayList<>( getRepository( ).getArtifactsByChecksum( session, TEST_REPO_ID, TEST_SHA1 ) ) );
+                assertEquals( Collections.singletonList( artifact ),
+                    new ArrayList<>( getRepository( ).getArtifactsByChecksum( session, TEST_REPO_ID, TEST_MD5 ) ) );
+            });
 
         }
     }

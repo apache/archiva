@@ -26,7 +26,8 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 
-import java.time.ZoneId;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -319,7 +320,7 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException
      * @since 3.0
      */
-    Stream<ArtifactMetadata> getArtifactsByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
+    Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
     /**
@@ -336,7 +337,7 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException
      * @since 3.0
      */
-    Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId,
+    Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId,
                                                            ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter)
         throws MetadataRepositoryException;
 
@@ -453,6 +454,72 @@ public interface MetadataRepository
     List<ArtifactMetadata> getArtifacts( RepositorySession session, String repositoryId )
         throws MetadataRepositoryException;
 
+    /**
+     * Returns a stream of artifacts that are stored in the given repository. The number and order of elements in the stream
+     * is defined by the <code>queryParameter</code>.
+     * The efficiency of ordering of elements is dependent on the implementation.
+     * There may be some implementations that have to put a hard limit on the elements returned.
+     * If there are no <code>sortFields</code> defined in the query parameter, the order of elements in the stream is undefined and depends
+     * on the implementation.
+     *
+     * @param session
+     * @param repositoryId
+     * @return A stream of artifact metadata objects for each artifact found in the repository.
+     * @since 3.0
+     */
+    Stream<ArtifactMetadata> getArtifactStream( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nullable QueryParameter queryParameter )
+        throws MetadataResolutionException;
+
+    /**
+     * Returns a stream of all the artifacts in the given repository using default query parameter.
+     * The order of the artifacts returned in the stream depends on the implementation.
+     * The number of elements in the stream is unlimited, but there may be some implementations that have to put a hard
+     * limit on the elements returned.
+     * For further information see {@link #getArtifactStream(RepositorySession, String, QueryParameter)} 
+     *
+     * @param session The repository session
+     * @param repositoryId The repository id
+     * @return A (unlimited) stream of artifact metadata elements that are found in this repository
+     * @since 3.0
+     * @see #getArtifactStream(RepositorySession, String, QueryParameter)
+     */
+    Stream<ArtifactMetadata> getArtifactStream( @Nonnull RepositorySession session, @Nonnull String repositoryId)
+        throws MetadataResolutionException;
+
+    /**
+     * Returns a stream of artifacts found for the given artifact coordinates and using the <code>queryParameter</code>
+     *
+     * @param session The repository session. May not be <code>null</code>.
+     * @param repoId The repository id. May not be <code>null</code>.
+     * @param namespace The namespace. May not be <code>null</code>.
+     * @param projectId The project id. May not be <code>null</code>.
+     * @param projectVersion The project version. May not be <code>null</code>.
+     * @return A stream of artifact metadata object. Order and number of elements returned, depends on the <code>queryParameter</code>.
+     * @since 3.0
+     * @throws MetadataResolutionException if there are no elements for the given artifact coordinates.
+     */
+    Stream<ArtifactMetadata> getArtifactStream( @Nonnull RepositorySession session, @Nonnull String repoId,
+                                                @Nonnull String namespace, @Nonnull String projectId,
+                                                @Nonnull String projectVersion, @Nullable QueryParameter queryParameter )
+        throws MetadataResolutionException;
+
+    /**
+     * Returns a stream of artifacts found for the given artifact coordinates. The order of elements returned, depends on the
+     * implementation.
+     *
+     * @param session The repository session. May not be <code>null</code>.
+     * @param repoId The repository id. May not be <code>null</code>.
+     * @param namespace The namespace. May not be <code>null</code>.
+     * @param projectId The project id. May not be <code>null</code>.
+     * @param projectVersion The project version. May not be <code>null</code>.
+     * @return A stream of artifact metadata object. Order and number of elements returned, depends on the <code>queryParameter</code>.
+     * @since 3.0
+     * @throws MetadataResolutionException if there are no elements for the given artifact coordinates.
+     */
+    Stream<ArtifactMetadata> getArtifactStream( @Nonnull RepositorySession session, @Nonnull String repoId,
+                                                @Nonnull String namespace, @Nonnull String projectId,
+                                           @Nonnull String projectVersion)
+        throws MetadataResolutionException;
     /**
      * basically just checking it exists not complete data returned
      *

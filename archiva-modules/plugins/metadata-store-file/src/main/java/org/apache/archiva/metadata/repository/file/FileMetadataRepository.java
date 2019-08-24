@@ -19,14 +19,18 @@ package org.apache.archiva.metadata.repository.file;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.*;
 import org.apache.archiva.metadata.repository.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -413,7 +417,7 @@ public class FileMetadataRepository
      * @throws MetadataRepositoryException
      */
     @Override
-    public Stream<ArtifactMetadata> getArtifactsByDateRangeStream(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException {
+    public Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException {
         try {
             List<ArtifactMetadata> artifacts = new ArrayList<>();
             for (String ns : getRootNamespaces(session, repositoryId)) {
@@ -451,6 +455,7 @@ public class FileMetadataRepository
             throw new MetadataRepositoryException(e.getMessage(), e);
         }
     }
+
 
     @Override
     public Collection<ArtifactMetadata> getArtifacts(RepositorySession session, String repoId, String namespace, String projectId,
@@ -491,10 +496,9 @@ public class FileMetadataRepository
                         artifact.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(value)), ZoneId.of("GMT")));
                     } else if ("version".equals(field)) {
                         artifact.setVersion(value);
-                    } else if ("md5".equals(field)) {
-                        artifact.setMd5(value);
-                    } else if ("sha1".equals(field)) {
-                        artifact.setSha1(value);
+                    } else if (field.startsWith("checksum")) {
+                        String algorithmStr = StringUtils.removeStart( name, "artifact:checksum:"+id+":");
+                        artifact.setChecksum( ChecksumAlgorithm.valueOf( algorithmStr ), value );
                     } else if ("facetIds".equals(field)) {
                         if (value.length() > 0) {
                             String propertyPrefix = "artifact:facet:" + id + ":";
@@ -566,11 +570,9 @@ public class FileMetadataRepository
             // alternatively, we could build a referential tree in the content repository, however it would need some levels
             // of depth to avoid being too broad to be useful (eg. /repository/checksums/a/ab/abcdef1234567)
 
-            List<ArtifactMetadata> artifacts = new ArrayList<>();
-            for (String ns : getRootNamespaces(session, repositoryId)) {
-                getArtifactsByChecksum(session, artifacts, repositoryId, ns, checksum);
-            }
-            return artifacts;
+            return getArtifactStream( session, repositoryId ).filter(
+                a -> a.hasChecksum( checksum )
+            ).collect( Collectors.toList() );
         } catch (MetadataResolutionException e) {
             throw new MetadataRepositoryException(e.getMessage(), e);
         }
@@ -607,8 +609,8 @@ public class FileMetadataRepository
             properties.remove("artifact:updated:" + id);
             properties.remove("artifact:whenGathered:" + id);
             properties.remove("artifact:size:" + id);
-            properties.remove("artifact:md5:" + id);
-            properties.remove("artifact:sha1:" + id);
+            artifactMetadata.getChecksums().entrySet().stream().forEach( entry ->
+                properties.remove( "artifact:checksum:"+id+":"+entry.getKey().name() ));
             properties.remove("artifact:version:" + id);
             properties.remove("artifact:facetIds:" + id);
 
@@ -638,15 +640,15 @@ public class FileMetadataRepository
             properties.remove("artifact:updated:" + id);
             properties.remove("artifact:whenGathered:" + id);
             properties.remove("artifact:size:" + id);
-            properties.remove("artifact:md5:" + id);
-            properties.remove("artifact:sha1:" + id);
             properties.remove("artifact:version:" + id);
             properties.remove("artifact:facetIds:" + id);
 
-            String prefix = "artifact:facet:" + id + ":";
-            for (Object key : new ArrayList<>(properties.keySet())) {
-                String property = (String) key;
-                if (property.startsWith(prefix)) {
+            String facetPrefix = "artifact:facet:" + id + ":";
+            String checksumPrefix = "artifact:checksum:"+id+":";
+            for (String property  : properties.stringPropertyNames()) {
+                if (property.startsWith( checksumPrefix )) {
+                    properties.remove( property );
+                } else if (property.startsWith(facetPrefix)) {
                     properties.remove(property);
                 }
             }
@@ -687,27 +689,6 @@ public class FileMetadataRepository
         }
     }
 
-    private void getArtifactsByChecksum(RepositorySession session, List<ArtifactMetadata> artifacts, String repositoryId, String ns,
-                                        String checksum)
-            throws MetadataRepositoryException {
-        try {
-            for (String namespace : getNamespaces(session, repositoryId, ns)) {
-                getArtifactsByChecksum(session, artifacts, repositoryId, ns + "." + namespace, checksum);
-            }
-
-            for (String project : getProjects(session, repositoryId, ns)) {
-                for (String version : getProjectVersions(session, repositoryId, ns, project)) {
-                    for (ArtifactMetadata artifact : getArtifacts(session, repositoryId, ns, project, version)) {
-                        if (checksum.equals(artifact.getMd5()) || checksum.equals(artifact.getSha1())) {
-                            artifacts.add(artifact);
-                        }
-                    }
-                }
-            }
-        } catch (MetadataResolutionException e) {
-            throw new MetadataRepositoryException(e.getMessage(), e);
-        }
-    }
 
     @Override
     public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata(RepositorySession session, String key, String value, String repositoryId)
@@ -771,12 +752,8 @@ public class FileMetadataRepository
             properties.setProperty("artifact:whenGathered:" + id,
                     Long.toString(artifact.getWhenGathered().toInstant().toEpochMilli()));
             properties.setProperty("artifact:size:" + id, Long.toString(artifact.getSize()));
-            if (artifact.getMd5() != null) {
-                properties.setProperty("artifact:md5:" + id, artifact.getMd5());
-            }
-            if (artifact.getSha1() != null) {
-                properties.setProperty("artifact:sha1:" + id, artifact.getSha1());
-            }
+            artifact.getChecksums().entrySet().stream().forEach( entry ->
+                properties.setProperty( "artifact:checksum:"+id+":"+entry.getKey().name(), entry.getValue() ));
             properties.setProperty("artifact:version:" + id, artifact.getVersion());
 
             Set<String> facetIds = new LinkedHashSet<>(artifact.getFacetIds());
@@ -1043,6 +1020,32 @@ public class FileMetadataRepository
         return getNamespaces(session, repoId, null);
     }
 
+    private Stream<String> getAllNamespacesStream(RepositorySession session, String repoId) {
+        Path directory = null;
+        try
+        {
+            directory = getDirectory(repoId);
+        }
+        catch ( IOException e )
+        {
+            return Stream.empty( );
+        }
+        if (!(Files.exists(directory) && Files.isDirectory(directory))) {
+            return Stream.empty( );
+        }
+        final String searchFile = NAMESPACE_METADATA_KEY + ".properties";
+        try
+        {
+            return  Files.list(directory).filter(Files::isDirectory).filter(path ->
+                    Files.exists(path.resolve(searchFile))
+                ).map(path -> path.getFileName().toString());
+        }
+        catch ( IOException e )
+        {
+            return Stream.empty( );
+        }
+    }
+
     @Override
     public Collection<String> getNamespaces(RepositorySession session, String repoId, String baseNamespace)
             throws MetadataResolutionException {
@@ -1180,6 +1183,85 @@ public class FileMetadataRepository
         } catch (MetadataResolutionException e) {
             throw new MetadataRepositoryException(e.getMessage(), e);
         }
+    }
+
+    private class ArtifactCoordinates {
+        final String namespace;
+        final String project;
+        final String version;
+
+        public ArtifactCoordinates(String namespace, String project, String version) {
+            this.namespace = namespace;
+            this.project = project;
+            this.version = version;
+        }
+
+        public String getNamespace( )
+        {
+            return namespace;
+        }
+
+        public String getProject( )
+        {
+            return project;
+        }
+
+        public String getVersion( )
+        {
+            return version;
+        }
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( @Nonnull final RepositorySession session, @Nonnull final String repositoryId,
+                                                       @Nullable QueryParameter queryParameter ) throws MetadataResolutionException
+    {
+
+        queryParameter = getParameterOrDefault( queryParameter );
+        return getAllNamespacesStream( session, repositoryId ).filter( Objects::nonNull ).flatMap( ns ->
+            {
+                try
+                {
+                    return getProjects( session, repositoryId, ns ).stream( ).map( proj ->
+                        new ArtifactCoordinates( ns, proj, null ) );
+                }
+                catch ( MetadataResolutionException e )
+                {
+                    return null;
+                }
+            }
+        ).filter( Objects::nonNull ).flatMap( artifactCoordinates ->
+            {
+                try
+                {
+                    return getProjectVersions( session, repositoryId, artifactCoordinates.getNamespace( ), artifactCoordinates.getProject( ) )
+                        .stream( ).map(version -> new ArtifactCoordinates( artifactCoordinates.getNamespace(), artifactCoordinates.getProject(), version ));
+                }
+                catch ( MetadataResolutionException e )
+                {
+                    return null;
+                }
+            }
+        ).filter( Objects::nonNull ).flatMap( ac ->
+            {
+                try
+                {
+                    return getArtifactStream( session, repositoryId, ac.getNamespace(), ac.getProject(), ac.getVersion() );
+                }
+                catch ( MetadataResolutionException e )
+                {
+                    return null;
+                }
+            }
+            ).filter( Objects::nonNull );
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repoId,
+                                                       final String namespace, final String projectId,
+                                                       final String projectVersion ) throws MetadataResolutionException
+    {
+        return getArtifacts( session, repoId, namespace, projectId, projectVersion ).stream( );
     }
 
     private void getArtifacts(RepositorySession session, List<ArtifactMetadata> artifacts, String repoId, String ns)
