@@ -259,7 +259,7 @@ public abstract class AbstractRepositoryPurge
                                 }
                                 else
                                 {
-                                    // metadataRepository.removeArtifact( artifactMetadata, baseVersion );
+                                    // metadataRepository.removeTimestampedArtifact( artifactMetadata, baseVersion );
                                     metaRemovalList.put( info, artifactMetadata );
                                 }
                             }
@@ -366,7 +366,7 @@ public abstract class AbstractRepositoryPurge
                     version = artifactInfo.getProjectVersion( );
                 MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet( );
                 mavenArtifactFacetToCompare.setClassifier( artifactInfo.getClassifier( ) );
-                metadataRepository.removeArtifact(repositorySession , repository.getId( ), groupId,
+                metadataRepository.removeFacetFromArtifact(repositorySession , repository.getId( ), groupId,
                     artifactId, version, mavenArtifactFacetToCompare );
                 try {
                     repositorySession.save( );
@@ -377,7 +377,7 @@ public abstract class AbstractRepositoryPurge
         }
         else
         {
-            metadataRepository.removeArtifact(repositorySession , artifactMetadata, artifactInfo.getProjectVersion( ) );
+            metadataRepository.removeTimestampedArtifact(repositorySession , artifactMetadata, artifactInfo.getProjectVersion( ) );
         }
     }
 

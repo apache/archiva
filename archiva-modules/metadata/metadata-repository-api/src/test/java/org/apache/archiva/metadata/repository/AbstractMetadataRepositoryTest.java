@@ -177,7 +177,7 @@ public abstract class AbstractMetadataRepositoryTest
             }
         } );
 
-        // for the getArtifactsByProjectVersionMetadata tests
+        // for the getArtifactsByProjectVersionFacet tests
         factories.add( new GenericMetadataFacetFactory( ) );
 
         return factories;
@@ -1540,13 +1540,13 @@ public abstract class AbstractMetadataRepositoryTest
 
                 assertThat( namespaces ).isNotNull( ).isNotEmpty( ).hasSize( 1 ).contains( "org" );
 
-                namespaces = getRepository( ).getNamespaces( session, TEST_REPO_ID, "org" );
+                namespaces = getRepository( ).getChildNamespaces( session, TEST_REPO_ID, "org" );
                 assertThat( namespaces ).isNotNull( ).isNotEmpty( ).hasSize( 1 ).contains( "apache" );
 
-                namespaces = getRepository( ).getNamespaces( session, TEST_REPO_ID, "org.apache" );
+                namespaces = getRepository( ).getChildNamespaces( session, TEST_REPO_ID, "org.apache" );
                 assertThat( namespaces ).isNotNull( ).isNotEmpty( ).hasSize( 1 ).contains( "maven" );
 
-                namespaces = getRepository( ).getNamespaces( session, TEST_REPO_ID, "org.apache.maven" );
+                namespaces = getRepository( ).getChildNamespaces( session, TEST_REPO_ID, "org.apache.maven" );
                 assertThat( namespaces ).isNotNull( ).isNotEmpty( ).hasSize( 1 ).contains( "shared" );
 
             } );
@@ -1566,7 +1566,7 @@ public abstract class AbstractMetadataRepositoryTest
             metadata.setId( TEST_PROJECT_VERSION );
             getRepository( ).updateProjectVersion( session, TEST_REPO_ID, namespace, TEST_PROJECT, metadata );
 
-            Collection<String> namespaces = getRepository( ).getNamespaces( session, TEST_REPO_ID, namespace );
+            Collection<String> namespaces = getRepository( ).getChildNamespaces( session, TEST_REPO_ID, namespace );
 
             assertThat( namespaces ).isNotNull( ).isEmpty( );
 
@@ -1754,7 +1754,7 @@ public abstract class AbstractMetadataRepositoryTest
 
             tryAssert( ( ) -> {
                 Collection<ArtifactMetadata> artifactsByMetadata =
-                    getRepository( ).getArtifactsByProjectVersionMetadata( session, TEST_METADATA_KEY, TEST_METADATA_VALUE, TEST_REPO_ID );
+                    getRepository( ).getArtifactsByProjectVersionFacet( session, TEST_METADATA_KEY, TEST_METADATA_VALUE, TEST_REPO_ID );
 
                 assertThat( artifactsByMetadata ).hasSize( 1 );
                 ArtifactMetadata artifactMetadata = artifactsByMetadata.iterator( ).next( );
@@ -1775,7 +1775,7 @@ public abstract class AbstractMetadataRepositoryTest
             tryAssert( ( ) -> {
 
                 Collection<ArtifactMetadata> artifactsByMetadata =
-                    getRepository( ).getArtifactsByProjectVersionMetadata( session, TEST_METADATA_KEY, TEST_METADATA_VALUE, null );
+                    getRepository( ).getArtifactsByProjectVersionFacet( session, TEST_METADATA_KEY, TEST_METADATA_VALUE, null );
                 assertThat( artifactsByMetadata ).hasSize( 1 );
                 assertThat( artifactsByMetadata.iterator( ).next( ).getRepositoryId( ) ).isNotNull( ).isNotEmpty( );
             } );
@@ -1792,7 +1792,7 @@ public abstract class AbstractMetadataRepositoryTest
             tryAssert( ( ) -> {
 
                 Collection<ArtifactMetadata> artifactsByMetadata =
-                    getRepository( ).getArtifactsByProjectVersionMetadata( session, TEST_METADATA_KEY, TEST_METADATA_VALUE, null );
+                    getRepository( ).getArtifactsByProjectVersionFacet( session, TEST_METADATA_KEY, TEST_METADATA_VALUE, null );
                 assertThat( artifactsByMetadata ).hasSize( 1 );
             } );
         }
@@ -1807,7 +1807,7 @@ public abstract class AbstractMetadataRepositoryTest
             createArtifactWithMavenArtifactFacet( session );
             tryAssert( ( ) -> {
                 Collection<ArtifactMetadata> artifactsByMetadata =
-                    getRepository( ).getArtifactsByMetadata( session, "foo", TEST_METADATA_VALUE, null );
+                    getRepository( ).getArtifactsByAttribute( session, "foo", TEST_METADATA_VALUE, null );
                 assertThat( artifactsByMetadata ).hasSize( 1 );
                 ArtifactMetadata artifactMetadata = artifactsByMetadata.iterator( ).next( );
                 assertThat( artifactMetadata.getId( ) ).isEqualTo( TEST_PROJECT + "-" + TEST_PROJECT_VERSION + ".jar" );
@@ -1828,10 +1828,10 @@ public abstract class AbstractMetadataRepositoryTest
         {
             createArtifactWithData( session );
             // only works on JCR implementation
-            // Collection<ArtifactMetadata> artifactsByProperty = getRepository().getArtifactsByProperty( "org.name", TEST_ORGANIZATION.getName(), TEST_REPO_ID );
+            // Collection<ArtifactMetadata> artifactsByProperty = getRepository().getArtifactsByProjectVersionAttribute( "org.name", TEST_ORGANIZATION.getName(), TEST_REPO_ID );
             tryAssert( ( ) -> {
 
-                Collection<ArtifactMetadata> artifactsByProperty = getRepository( ).getArtifactsByProperty( session, "url", TEST_URL, TEST_REPO_ID );
+                Collection<ArtifactMetadata> artifactsByProperty = getRepository( ).getArtifactsByProjectVersionAttribute( session, "url", TEST_URL, TEST_REPO_ID );
                 assertThat( artifactsByProperty ).hasSize( 1 );
                 ArtifactMetadata artifactMetadata = artifactsByProperty.iterator( ).next( );
                 assertThat( artifactMetadata.getId( ) ).isEqualTo( TEST_PROJECT + "-" + TEST_PROJECT_VERSION + ".jar" );
@@ -2046,13 +2046,13 @@ public abstract class AbstractMetadataRepositoryTest
 
             log.info( "artifactMetadatas: {}", artifactMetadatas );
 
-            getRepository( ).removeArtifact( session, artifactOne, "2.0-SNAPSHOT" );
+            getRepository( ).removeTimestampedArtifact( session, artifactOne, "2.0-SNAPSHOT" );
 
             artifactMetadatas = getRepository( ).getArtifacts( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT" );
 
             assertThat( artifactMetadatas ).isNotNull( ).isNotEmpty( ).hasSize( 1 );
 
-            getRepository( ).removeArtifact( session, artifactTwo, "2.0-SNAPSHOT" );
+            getRepository( ).removeTimestampedArtifact( session, artifactTwo, "2.0-SNAPSHOT" );
 
             artifactMetadatas = getRepository( ).getArtifacts( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT" );
 

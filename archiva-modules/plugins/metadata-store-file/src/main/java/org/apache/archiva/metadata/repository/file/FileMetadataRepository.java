@@ -476,7 +476,7 @@ public class FileMetadataRepository
                                          ZonedDateTime endTime)
             throws MetadataRepositoryException {
         try {
-            for (String namespace : getNamespaces(session, repoId, ns)) {
+            for (String namespace : this.getChildNamespaces(session, repoId, ns)) {
                 getArtifactsByDateRange(session, artifacts, repoId, ns + "." + namespace, startTime, endTime);
             }
 
@@ -580,17 +580,6 @@ public class FileMetadataRepository
     }
 
 
-    @Override
-    public boolean canObtainAccess(Class<?> aClass) {
-        return false;
-    }
-
-    @Override
-    public <T> T obtainAccess(RepositorySession session, Class<T> aClass) {
-        throw new IllegalArgumentException(
-                "Access using " + aClass + " is not supported on the file metadata storage");
-    }
-
     private void updateArtifactFacets(ArtifactMetadata artifact, Properties properties) {
         String propertyPrefix = "artifact:facet:" + artifact.getId() + ":";
         for (MetadataFacet facet : artifact.getFacetList()) {
@@ -634,7 +623,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeArtifact(RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion)
+    public void removeTimestampedArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion)
             throws MetadataRepositoryException {
 
         try {
@@ -712,8 +701,8 @@ public class FileMetadataRepository
      * @throws MetadataRepositoryException
      */
     @Override
-    public void removeArtifact(RepositorySession session, String repositoryId, String namespace, String project, String projectVersion,
-                               MetadataFacet metadataFacet)
+    public void removeFacetFromArtifact( RepositorySession session, String repositoryId, String namespace, String project, String projectVersion,
+                                         MetadataFacet metadataFacet)
             throws MetadataRepositoryException {
         throw new UnsupportedOperationException("not implemented");
     }
@@ -731,21 +720,21 @@ public class FileMetadataRepository
 
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata(RepositorySession session, String key, String value, String repositoryId)
+    public List<ArtifactMetadata> getArtifactsByProjectVersionFacet( RepositorySession session, String key, String value, String repositoryId)
             throws MetadataRepositoryException {
         throw new UnsupportedOperationException("not yet implemented in File backend");
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByMetadata(RepositorySession session, String key, String value, String repositoryId)
+    public List<ArtifactMetadata> getArtifactsByAttribute( RepositorySession session, String key, String value, String repositoryId)
             throws MetadataRepositoryException {
         throw new UnsupportedOperationException("not yet implemented in File backend");
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProperty(RepositorySession session, String key, String value, String repositoryId)
+    public List<ArtifactMetadata> getArtifactsByProjectVersionAttribute( RepositorySession session, String key, String value, String repositoryId)
             throws MetadataRepositoryException {
-        throw new UnsupportedOperationException("getArtifactsByProperty not yet implemented in File backend");
+        throw new UnsupportedOperationException("getArtifactsByProjectVersionAttribute not yet implemented in File backend");
     }
 
     private Path getMetadataDirectory(String repoId, String facetId)
@@ -1057,7 +1046,7 @@ public class FileMetadataRepository
     @Override
     public Collection<String> getRootNamespaces(RepositorySession session, String repoId)
             throws MetadataResolutionException {
-        return getNamespaces(session, repoId, null);
+        return this.getChildNamespaces(session, repoId, null);
     }
 
     private Stream<String> getAllNamespacesStream(RepositorySession session, String repoId) {
@@ -1087,7 +1076,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getNamespaces(RepositorySession session, String repoId, String baseNamespace)
+    public Collection<String> getChildNamespaces( RepositorySession session, String repoId, String baseNamespace)
             throws MetadataResolutionException {
         try {
             List<String> allNamespaces;
@@ -1305,7 +1294,7 @@ public class FileMetadataRepository
 
     private void getArtifacts(RepositorySession session, List<ArtifactMetadata> artifacts, String repoId, String ns)
             throws MetadataResolutionException {
-        for (String namespace : getNamespaces(session, repoId, ns)) {
+        for (String namespace : this.getChildNamespaces(session, repoId, ns)) {
             getArtifacts(session, artifacts, repoId, ns + "." + namespace);
         }
 

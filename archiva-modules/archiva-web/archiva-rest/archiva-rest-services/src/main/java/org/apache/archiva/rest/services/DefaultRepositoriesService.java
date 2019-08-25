@@ -703,7 +703,7 @@ public class DefaultRepositoriesService
 
             for ( ArtifactMetadata artifactMetadata : artifacts )
             {
-                metadataRepository.removeArtifact(repositorySession , artifactMetadata, version );
+                metadataRepository.removeTimestampedArtifact(repositorySession , artifactMetadata, version );
             }
 
             metadataRepository.removeProjectVersion(repositorySession , repositoryId, namespace, projectId, version );
@@ -920,7 +920,7 @@ public class DefaultRepositoriesService
                                 artifact.getVersion();
                             MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet();
                             mavenArtifactFacetToCompare.setClassifier( artifact.getClassifier() );
-                            metadataRepository.removeArtifact(repositorySession , repositoryId, groupId, artifactId,
+                            metadataRepository.removeFacetFromArtifact(repositorySession , repositoryId, groupId, artifactId,
                                 version, mavenArtifactFacetToCompare );
                             repositorySession.save();
                         }
@@ -930,7 +930,7 @@ public class DefaultRepositoriesService
                     {
                         if ( snapshotVersion )
                         {
-                            metadataRepository.removeArtifact(repositorySession ,
+                            metadataRepository.removeTimestampedArtifact(repositorySession ,
                                 artifactMetadata, VersionUtil.getBaseVersion( artifact.getVersion() ) );
                         }
                         else

@@ -73,7 +73,7 @@ public class RepositoryWalkingStatisticsProvider implements RepositoryStatistics
                                  String ns )
         throws MetadataResolutionException
     {
-        for ( String namespace : metadataRepository.getNamespaces( repositorySession , repositoryId, ns ) )
+        for ( String namespace : metadataRepository.getChildNamespaces( repositorySession , repositoryId, ns ) )
         {
             walkRepository( repositorySession, metadataRepository, stats, repositoryId, ns + "." + namespace );
         }

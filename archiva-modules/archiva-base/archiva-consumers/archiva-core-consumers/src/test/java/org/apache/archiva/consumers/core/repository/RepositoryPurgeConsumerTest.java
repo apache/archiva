@@ -27,7 +27,6 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -210,7 +209,7 @@ public class RepositoryPurgeConsumerTest
         // Verify the metadataRepository invocations
         verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(2)).removeArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
+        verify(metadataRepository, times(2)).removeTimestampedArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
         for (ArtifactMetadata meta : metaL) {
             assertTrue(meta.getId().startsWith(projectName));
@@ -323,7 +322,7 @@ public class RepositoryPurgeConsumerTest
         // Verify the metadataRepository invocations
         verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(2)).removeArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
+        verify(metadataRepository, times(2)).removeTimestampedArtifact( eq(repositorySession), metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
         assertTrue( metaL.size( ) > 0 );
         for (ArtifactMetadata meta : metaL) {
@@ -403,8 +402,8 @@ public class RepositoryPurgeConsumerTest
 
         verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, never()).removeArtifact( eq(repositorySession), any(), any() );
-        verify(metadataRepository, never()).removeArtifact( eq(repositorySession), any(), any(), any(), any(), any(MetadataFacet.class) );
+        verify(metadataRepository, never()).removeTimestampedArtifact( eq(repositorySession), any(), any() );
+        verify(metadataRepository, never()).removeFacetFromArtifact( eq(repositorySession), any(), any(), any(), any(), any(MetadataFacet.class) );
 
         // check if the snapshot wasn't removed
 
@@ -473,7 +472,7 @@ public class RepositoryPurgeConsumerTest
 
         verify(metadataRepository, times(1)).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, never()).removeArtifact( eq(repositorySession), any(), any() );
+        verify(metadataRepository, never()).removeTimestampedArtifact( eq(repositorySession), any(), any() );
 
         // check if the snapshot was removed
         assertDeleted( projectRoot + "/2.3-SNAPSHOT" );

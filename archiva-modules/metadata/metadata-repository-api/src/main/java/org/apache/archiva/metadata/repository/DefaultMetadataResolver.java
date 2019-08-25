@@ -249,7 +249,7 @@ public class DefaultMetadataResolver
             Collection<String> namespaces = namespacesCache.get( cacheKey );
             if ( namespaces == null )
             {
-                namespaces = metadataRepository.getNamespaces( session, repoId, namespace );
+                namespaces = metadataRepository.getChildNamespaces( session, repoId, namespace );
                 namespacesCache.put( cacheKey, namespaces );
             }
             Collection<String> exclusions = new ArrayList<>( namespaces );
@@ -302,7 +302,7 @@ public class DefaultMetadataResolver
             Collection<String> namespaces = namespacesCache.get( cacheKey );
             if ( namespaces == null )
             {
-                namespaces = metadataRepository.getNamespaces( session, repoId, namespace );
+                namespaces = metadataRepository.getChildNamespaces( session, repoId, namespace );
                 namespacesCache.put( cacheKey, namespaces );
             }
 

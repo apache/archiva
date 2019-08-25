@@ -28,8 +28,6 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.commons.collections4.ComparatorUtils;
 
-import javax.annotation.Nonnull;
-import javax.management.Query;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Stream;
@@ -127,21 +125,21 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionFacet( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByMetadata( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByAttribute( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProperty( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionAttribute( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
@@ -155,15 +153,15 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public void removeArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
+    public void removeTimestampedArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeArtifact( RepositorySession session, String repositoryId, String namespace, String project, String version,
-                                MetadataFacet metadataFacet )
+    public void removeFacetFromArtifact( RepositorySession session, String repositoryId, String namespace, String project, String version,
+                                         MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
@@ -229,7 +227,7 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public Collection<String> getNamespaces( RepositorySession session, String repoId, String namespace )
+    public Collection<String> getChildNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
@@ -315,19 +313,6 @@ public abstract class AbstractMetadataRepository
     public void close()
         throws MetadataRepositoryException
     {
-    }
-
-    @Override
-    public boolean canObtainAccess( Class<?> aClass )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <T> T obtainAccess( RepositorySession session, Class<T> aClass )
-        throws MetadataRepositoryException
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Override

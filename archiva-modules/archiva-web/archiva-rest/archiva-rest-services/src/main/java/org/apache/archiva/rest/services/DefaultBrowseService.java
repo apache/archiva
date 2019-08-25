@@ -1019,7 +1019,7 @@ public class DefaultBrowseService
         }
         try
         {
-            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProjectVersionMetadata(repositorySession , key, value, repositoryId );
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProjectVersionFacet(repositorySession , key, value, repositoryId );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )
@@ -1047,7 +1047,7 @@ public class DefaultBrowseService
         }
         try
         {
-            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByMetadata(repositorySession , key, value, repositoryId );
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByAttribute(repositorySession , key, value, repositoryId );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )
@@ -1075,7 +1075,7 @@ public class DefaultBrowseService
         }
         try
         {
-            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProperty(repositorySession , key, value, repositoryId );
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProjectVersionAttribute(repositorySession , key, value, repositoryId );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )

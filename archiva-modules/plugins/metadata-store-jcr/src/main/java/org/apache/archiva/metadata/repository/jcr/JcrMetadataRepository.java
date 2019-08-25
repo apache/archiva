@@ -963,7 +963,7 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionFacet( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
@@ -973,7 +973,7 @@ public class JcrMetadataRepository
 
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByMetadata( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByAttribute( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
@@ -983,7 +983,7 @@ public class JcrMetadataRepository
 
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProperty( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionAttribute( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
@@ -1367,11 +1367,11 @@ public class JcrMetadataRepository
     public Collection<String> getRootNamespaces( RepositorySession session, String repositoryId )
         throws MetadataResolutionException
     {
-        return getNamespaces(session , repositoryId, null );
+        return this.getChildNamespaces(session , repositoryId, null );
     }
 
     @Override
-    public Collection<String> getNamespaces( RepositorySession session, String repositoryId, String baseNamespace )
+    public Collection<String> getChildNamespaces( RepositorySession session, String repositoryId, String baseNamespace )
         throws MetadataResolutionException
     {
         String path = baseNamespace != null
@@ -1417,7 +1417,7 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public void removeArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
+    public void removeTimestampedArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
@@ -1525,8 +1525,8 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public void removeArtifact( RepositorySession session, String repositoryId, String namespace, String project, String projectVersion,
-                                MetadataFacet metadataFacet )
+    public void removeFacetFromArtifact( RepositorySession session, String repositoryId, String namespace, String project, String projectVersion,
+                                         MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
@@ -1602,25 +1602,6 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
-
-    @Override
-    public boolean canObtainAccess( Class<?> aClass )
-    {
-        return aClass == Session.class;
-    }
-
-    @SuppressWarnings( "unchecked" )
-    @Override
-    public <T> T obtainAccess( RepositorySession session, Class<T> aClass )
-        throws MetadataRepositoryException
-    {
-        if ( aClass == Session.class )
-        {
-            return (T) getSession( session );
-        }
-        throw new IllegalArgumentException(
-            "Access using " + aClass + " is not supported on the JCR metadata storage" );
-    }
 
     @Override
     public void close()

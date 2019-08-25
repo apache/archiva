@@ -482,7 +482,7 @@ public class CassandraMetadataRepository
 
     // FIXME this one need peformance improvement maybe a cache?
     @Override
-    public Collection<String> getNamespaces( RepositorySession session, final String repoId, final String namespaceId )
+    public Collection<String> getChildNamespaces( RepositorySession session, final String repoId, final String namespaceId )
         throws MetadataResolutionException
     {
 
@@ -2032,17 +2032,17 @@ public class CassandraMetadataRepository
 
     /**
      * Project version and artifact level metadata are stored in the same place, no distinctions in Cassandra
-     * implementation, just calls {@link MetadataRepository#getArtifactsByMetadata(RepositorySession, String, String, String)}
+     * implementation, just calls {@link MetadataRepository#getArtifactsByAttribute(RepositorySession, String, String, String)}
      */
     @Override
-    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionFacet( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
-        return getArtifactsByMetadata( session, key, value, repositoryId );
+        return this.getArtifactsByAttribute( session, key, value, repositoryId );
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByMetadata( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByAttribute( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         RangeSlicesQuery<String, String, String> query =
@@ -2101,7 +2101,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProperty( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionAttribute( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         QueryResult<OrderedRows<String, String, String>> result =
@@ -2146,7 +2146,7 @@ public class CassandraMetadataRepository
                                 final String version, final String id )
         throws MetadataRepositoryException
     {
-        logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
+        logger.debug( "removeTimestampedArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
                       repositoryId, namespace, project, version, id );
         String key =
             new ArtifactMetadataModel.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespace ).withId(
@@ -2166,10 +2166,10 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
+    public void removeTimestampedArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
-        logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
+        logger.debug( "removeTimestampedArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
                       artifactMetadata.getRepositoryId(), artifactMetadata.getNamespace(),
                       artifactMetadata.getProject(), baseVersion, artifactMetadata.getId() );
         String key =
@@ -2182,8 +2182,8 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeArtifact( RepositorySession session, final String repositoryId, final String namespace, final String project,
-                                final String version, final MetadataFacet metadataFacet )
+    public void removeFacetFromArtifact( RepositorySession session, final String repositoryId, final String namespace, final String project,
+                                         final String version, final MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
 
@@ -2447,21 +2447,6 @@ public class CassandraMetadataRepository
     }
 
 
-    @Override
-    public boolean canObtainAccess( Class<?> aClass )
-    {
-        return false;
-    }
-
-    @Override
-    public <T> T obtainAccess( RepositorySession session, Class<T> aClass )
-        throws MetadataRepositoryException
-    {
-        throw new IllegalArgumentException(
-            "Access using " + aClass + " is not supported on the cassandra metadata storage" );
-    }
-
-
     private static class ModelMapperHolder
     {
         private static ModelMapper MODEL_MAPPER = new ModelMapper();
@@ -2473,7 +2458,7 @@ public class CassandraMetadataRepository
     }
 
     /**
-     * This implementation just calls getArtifactsByMetadata( null, text, repositoryId ). We can't search artifacts by
+     * This implementation just calls getArtifactsByAttribute( null, text, repositoryId ). We can't search artifacts by
      * any property.
      */
     @Override
@@ -2481,7 +2466,7 @@ public class CassandraMetadataRepository
                                                    final String text, final boolean exact )
         throws MetadataRepositoryException
     {
-        return getArtifactsByMetadata( session, null, text, repositoryId );
+        return this.getArtifactsByAttribute( session, null, text, repositoryId );
     }
 
     /**
@@ -2494,8 +2479,8 @@ public class CassandraMetadataRepository
     {
         // TODO optimize
         List<ArtifactMetadata> artifacts = new LinkedList<ArtifactMetadata>();
-        artifacts.addAll( getArtifactsByMetadata( session, key, text, repositoryId ) );
-        artifacts.addAll( getArtifactsByProperty( session, key, text, repositoryId ) );
+        artifacts.addAll( this.getArtifactsByAttribute( session, key, text, repositoryId ) );
+        artifacts.addAll( this.getArtifactsByProjectVersionAttribute( session, key, text, repositoryId ) );
         return artifacts;
     }
 

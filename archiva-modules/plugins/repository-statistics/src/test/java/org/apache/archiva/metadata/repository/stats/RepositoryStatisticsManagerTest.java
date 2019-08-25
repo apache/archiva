@@ -628,9 +628,9 @@ public class RepositoryStatisticsManagerTest
 
             expect( metadataRepository.getProjects(session , TEST_REPO_ID, "com" ) ).andReturn( Arrays.<String>asList() );
 
-            expect( metadataRepository.getNamespaces(session , TEST_REPO_ID, "com" ) ).andReturn( Arrays.asList( "example" ) );
+            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "com" ) ).andReturn( Arrays.asList( "example" ) );
 
-            expect( metadataRepository.getNamespaces(session , TEST_REPO_ID, "com.example" ) ).andReturn(
+            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "com.example" ) ).andReturn(
                 Arrays.<String>asList() );
 
             expect( metadataRepository.getProjects(session , TEST_REPO_ID, "com.example" ) ).andReturn(
@@ -650,14 +650,14 @@ public class RepositoryStatisticsManagerTest
                                createArtifact( "com.example", "example-project", "1.1", "pom" ) ) );
 
 
-            expect( metadataRepository.getNamespaces(session , TEST_REPO_ID, "org" ) ).andReturn( Arrays.asList( "apache", "codehaus" ) );
+            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org" ) ).andReturn( Arrays.asList( "apache", "codehaus" ) );
 
-            expect( metadataRepository.getNamespaces(session , TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.asList( "archiva", "maven" )  );
+            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.asList( "archiva", "maven" )  );
 
 
             expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.<String>asList() );
 
-            expect( metadataRepository.getNamespaces(session , TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.<String>asList() );
+            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.<String>asList() );
 
             expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.asList( "metadata-repository-api", "metadata-model" ) );
 
@@ -685,7 +685,7 @@ public class RepositoryStatisticsManagerTest
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-model", "1.3", "pom" ) ) );
 
-            expect( metadataRepository.getNamespaces(session , TEST_REPO_ID, "org.apache.maven" ) ).andReturn( Arrays.<String>asList() );
+            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache.maven" ) ).andReturn( Arrays.<String>asList() );
 
             expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache.maven" ) )
                 .andReturn( Arrays.asList( "maven-model" )  );
@@ -697,14 +697,14 @@ public class RepositoryStatisticsManagerTest
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "jar" ),
                                            createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "pom" ) ) );
 
-            expect( metadataRepository.getNamespaces(session , TEST_REPO_ID, "org.codehaus" ) ).andReturn( Arrays.asList( "plexus" ) );
+            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.codehaus" ) ).andReturn( Arrays.asList( "plexus" ) );
 
             expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org" ) ).andReturn( Arrays.<String>asList(  ) );
 
             expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.codehaus" ) )
                 .andReturn( Arrays.<String>asList(  ) );
 
-            expect( metadataRepository.getNamespaces(session , TEST_REPO_ID, "org.codehaus.plexus" ) )
+            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.codehaus.plexus" ) )
                 .andReturn( Arrays.<String>asList(  ) );
 
             expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.codehaus.plexus" ) )

@@ -345,8 +345,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.3-SNAPSHOT") );
         verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.4-SNAPSHOT") );
-        verify(metadataRepository, never()).removeArtifact(eq(repositorySession) , any(ArtifactMetadata.class), any(String.class) );
-        verify(metadataRepository, never()).removeArtifact(eq(repositorySession) , any(String.class), any(String.class), any(String.class), any(String.class), any( MetadataFacet.class) );
+        verify(metadataRepository, never()).removeTimestampedArtifact(eq(repositorySession) , any(ArtifactMetadata.class), any(String.class) );
+        verify(metadataRepository, never()).removeFacetFromArtifact(eq(repositorySession) , any(String.class), any(String.class), any(String.class), any(String.class), any( MetadataFacet.class) );
 
 
 
