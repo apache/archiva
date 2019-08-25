@@ -107,7 +107,7 @@ public interface MetadataRepository
      * @param project      the project metadata to create or update
      * @throws MetadataRepositoryException if the update fails
      */
-    void updateProject( RepositorySession session, String repositoryId, ProjectMetadata project )
+    void updateProject( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull ProjectMetadata project )
         throws MetadataRepositoryException;
 
     /**
@@ -121,8 +121,9 @@ public interface MetadataRepository
      * @param artifactMeta Information about the artifact itself.
      * @throws MetadataRepositoryException if something goes wrong during update.
      */
-    void updateArtifact( RepositorySession session, String repositoryId, String namespace, String projectId, String projectVersion,
-                         ArtifactMetadata artifactMeta )
+    void updateArtifact( @Nonnull RepositorySession session, @Nonnull String repositoryId,
+                         @Nonnull String namespace, @Nonnull String projectId, @Nonnull String projectVersion,
+                         @Nonnull ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException;
 
     /**
@@ -136,8 +137,9 @@ public interface MetadataRepository
      * @param versionMetadata The metadata for the version
      * @throws MetadataRepositoryException if something goes wrong during update
      */
-    void updateProjectVersion( RepositorySession session, String repositoryId, String namespace, String projectId,
-                               ProjectVersionMetadata versionMetadata )
+    void updateProjectVersion( @Nonnull RepositorySession session, @Nonnull String repositoryId,
+                               @Nonnull String namespace, @Nonnull String projectId,
+                               @Nonnull ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException;
 
     /**
@@ -149,7 +151,7 @@ public interface MetadataRepository
      * @param namespace The namespace ('.' separated)
      * @throws MetadataRepositoryException if something goes wrong during update
      */
-    void updateNamespace( RepositorySession session, String repositoryId, String namespace )
+    void updateNamespace( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull String namespace )
         throws MetadataRepositoryException;
 
     /**
@@ -161,7 +163,7 @@ public interface MetadataRepository
      * @return The list of facet names, or an empty list, if there are no facets stored on this repository for the given facet id.
      * @throws MetadataRepositoryException if something goes wrong
      */
-    List<String> getMetadataFacets( RepositorySession session, String repositoryId, String facetId )
+    List<String> getMetadataFacets( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull String facetId )
         throws MetadataRepositoryException;
 
 
@@ -182,7 +184,8 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException
      * @since 3.0
      */
-    <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz)
+    <T extends MetadataFacet> Stream<T> getMetadataFacetStream( @Nonnull RepositorySession session,
+                                                                @Nonnull String repositoryId, @Nonnull Class<T> facetClazz)
         throws MetadataRepositoryException;
 
     /**
@@ -198,7 +201,9 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException
      * @since 3.0
      */
-    <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter)
+    <T extends MetadataFacet> Stream<T> getMetadataFacetStream(@Nonnull RepositorySession session,
+                                                                @Nonnull String repositoryId,  @Nonnull Class<T> facetClazz,
+                                                                @Nonnull QueryParameter queryParameter)
         throws MetadataRepositoryException;
 
     /**
@@ -212,7 +217,7 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException if something goes wrong
      * @since 1.4-M4
      */
-    boolean hasMetadataFacet( RepositorySession session, String repositoryId, String facetId )
+    boolean hasMetadataFacet( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull String facetId )
         throws MetadataRepositoryException;
 
     /**
@@ -226,7 +231,8 @@ public interface MetadataRepository
      * @return The facet values
      * @throws MetadataRepositoryException if something goes wrong.
      */
-    MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
+    MetadataFacet getMetadataFacet( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull String facetId,
+                                    @Nonnull String name )
         throws MetadataRepositoryException;
 
     /**
@@ -243,7 +249,8 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException if the data cannot be retrieved from the backend
      * @since 3.0
      */
-    <T extends MetadataFacet> T getMetadataFacet(RepositorySession session, String repositoryId, Class<T> clazz, String name)
+    <T extends MetadataFacet> T getMetadataFacet(@Nonnull RepositorySession session, @Nonnull String repositoryId,
+                                                 @Nonnull Class<T> clazz, @Nonnull String name)
     throws MetadataRepositoryException;
 
     /**
@@ -254,7 +261,8 @@ public interface MetadataRepository
      * @param metadataFacet The facet to add
      * @throws MetadataRepositoryException if the facet cannot be stored.
      */
-    void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
+    void addMetadataFacet( @Nonnull RepositorySession session, @Nonnull String repositoryId,
+                           @Nonnull MetadataFacet metadataFacet )
         throws MetadataRepositoryException;
 
     /**
@@ -265,7 +273,7 @@ public interface MetadataRepository
      * @param facetId The facet id
      * @throws MetadataRepositoryException if the removal fails
      */
-    void removeMetadataFacets( RepositorySession session, String repositoryId, String facetId )
+    void removeMetadataFacets( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull String facetId )
         throws MetadataRepositoryException;
 
     /**
@@ -276,7 +284,7 @@ public interface MetadataRepository
      * @param facetId The facet id
      * @param name The facet name or path
      */
-    void removeMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
+    void removeMetadataFacet( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull String facetId, @Nonnull String name )
         throws MetadataRepositoryException;
 
 
@@ -285,7 +293,8 @@ public interface MetadataRepository
      * uses default query parameters.
      *
      */
-    List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
+    List<ArtifactMetadata> getArtifactsByDateRange( @Nonnull RepositorySession session, @Nonnull String repositoryId,
+                                                    @Nullable ZonedDateTime startTime, @Nullable ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
     /**
@@ -303,7 +312,9 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException if the query fails.
      * @since 3.0
      */
-    List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter )
+    List<ArtifactMetadata> getArtifactsByDateRange(@Nonnull RepositorySession session, @Nonnull String repositoryId,
+                                                   @Nullable ZonedDateTime startTime, @Nullable ZonedDateTime endTime,
+                                                   @Nonnull QueryParameter queryParameter )
             throws MetadataRepositoryException;
 
 
@@ -320,7 +331,8 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException
      * @since 3.0
      */
-    Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime )
+    Stream<ArtifactMetadata> getArtifactByDateRangeStream( @Nonnull RepositorySession session, @Nonnull String repositoryId,
+                                                           @Nullable ZonedDateTime startTime, @Nullable ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
     /**
@@ -337,8 +349,9 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException
      * @since 3.0
      */
-    Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId,
-                                                           ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter)
+    Stream<ArtifactMetadata> getArtifactByDateRangeStream( @Nonnull RepositorySession session, @Nonnull String repositoryId,
+                                                           @Nullable ZonedDateTime startTime, @Nullable ZonedDateTime endTime,
+                                                           @Nonnull QueryParameter queryParameter)
         throws MetadataRepositoryException;
 
 
@@ -351,7 +364,7 @@ public interface MetadataRepository
      * @return The list of artifacts that match the given checksum.
      * @throws MetadataRepositoryException
      */
-    List<ArtifactMetadata> getArtifactsByChecksum(RepositorySession session, String repositoryId, String checksum )
+    List<ArtifactMetadata> getArtifactsByChecksum(@Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull String checksum )
         throws MetadataRepositoryException;
 
     /**
@@ -365,7 +378,8 @@ public interface MetadataRepository
      * @return a list of artifacts
      * @throws MetadataRepositoryException
      */
-    List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( RepositorySession session, String key, String value, String repositoryId )
+    List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( @Nonnull RepositorySession session, @Nonnull String key, @Nonnull String value,
+                                                                 @Nullable String repositoryId )
         throws MetadataRepositoryException;
 
     /**
@@ -467,7 +481,7 @@ public interface MetadataRepository
      * @return A stream of artifact metadata objects for each artifact found in the repository.
      * @since 3.0
      */
-    Stream<ArtifactMetadata> getArtifactStream( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nullable QueryParameter queryParameter )
+    Stream<ArtifactMetadata> getArtifactStream( @Nonnull RepositorySession session, @Nonnull String repositoryId, @Nonnull QueryParameter queryParameter )
         throws MetadataResolutionException;
 
     /**
@@ -500,7 +514,7 @@ public interface MetadataRepository
      */
     Stream<ArtifactMetadata> getArtifactStream( @Nonnull RepositorySession session, @Nonnull String repoId,
                                                 @Nonnull String namespace, @Nonnull String projectId,
-                                                @Nonnull String projectVersion, @Nullable QueryParameter queryParameter )
+                                                @Nonnull String projectVersion, @Nonnull QueryParameter queryParameter )
         throws MetadataResolutionException;
 
     /**

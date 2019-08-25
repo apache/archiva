@@ -1207,19 +1207,22 @@ public abstract class AbstractMetadataRepositoryTest
     public void testGetArtifactStream( )
         throws Exception
     {
+        ArtifactMetadata artifact1 = createArtifact( );
+        ArtifactMetadata artifact2 = createArtifact( "pom" );
         try ( RepositorySession session = getSessionFactory( ).createSession( ) )
         {
-            ArtifactMetadata artifact1 = createArtifact( );
-            ArtifactMetadata artifact2 = createArtifact( "pom" );
+
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
-
+        }
+        try ( RepositorySession session = getSessionFactory( ).createSession( ) ) {
             tryAssert( ( ) -> {
                 Stream<ArtifactMetadata> artifacts =
                     getRepository( ).getArtifactStream( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
                 assertNotNull( artifacts );
                 List<ArtifactMetadata> actual = artifacts
                     .sorted( ( o1, o2 ) -> o1.getId( ).compareTo( o2.getId( ) ) ).collect( Collectors.toList( ) );
+                assertEquals( 2, actual.size( ) );
                 assertEquals( Arrays.asList( artifact1, artifact2 ), actual );
             } );
 
@@ -1628,8 +1631,10 @@ public abstract class AbstractMetadataRepositoryTest
             getRepository( ).updateArtifact( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
             session.save( );
 
-            assertEquals( Collections.singletonList( artifact ),
-                new ArrayList<>( getRepository( ).getArtifactsByChecksum( session, TEST_REPO_ID, TEST_SHA256 ) ) );
+            tryAssert( () ->
+                assertEquals( Collections.singletonList( artifact ),
+                new ArrayList<>( getRepository( ).getArtifactsByChecksum( session, TEST_REPO_ID, TEST_SHA256 ) ))
+            );
 
         }
     }

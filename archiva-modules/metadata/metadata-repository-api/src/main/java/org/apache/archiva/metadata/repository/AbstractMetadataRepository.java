@@ -344,10 +344,6 @@ public abstract class AbstractMetadataRepository
         throw new UnsupportedOperationException();
     }
 
-    protected QueryParameter getParameterOrDefault(QueryParameter queryParameter) {
-        return queryParameter == null ? new QueryParameter( ) : queryParameter;
-    }
-
     @Override
     public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession session, String repositoryId, Class<T> facetClazz ) throws MetadataRepositoryException
     {
@@ -409,13 +405,13 @@ public abstract class AbstractMetadataRepository
     @Override
     public List<ArtifactMetadata> getArtifactsByDateRange(RepositorySession session, String repoId, ZonedDateTime startTime, ZonedDateTime endTime)
             throws MetadataRepositoryException {
-        return getArtifactsByDateRange(session, repoId, startTime, endTime, getParameterOrDefault( null ));
+        return getArtifactsByDateRange(session, repoId, startTime, endTime, new QueryParameter(  ));
     }
 
     @Override
     public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repositoryId ) throws MetadataResolutionException
     {
-        return getArtifactStream( session, repositoryId, getParameterOrDefault( null ) );
+        return getArtifactStream( session, repositoryId, new QueryParameter(  ) );
     }
 
     @Override
@@ -423,7 +419,7 @@ public abstract class AbstractMetadataRepository
                                                        final String namespace, final String projectId,
                                                        final String projectVersion) throws MetadataResolutionException
     {
-        return getArtifactStream( session,repoId,namespace, projectId, projectVersion, getParameterOrDefault( null ));
+        return getArtifactStream( session,repoId,namespace, projectId, projectVersion, new QueryParameter(  ));
     }
 
     @Override

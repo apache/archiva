@@ -26,16 +26,16 @@
  + content (archiva:content) primary
 
 [archiva:content] > archiva:base mixin
- + * (archiva:namespace) multiple
+ + * (archiva:namespace)
 
 [archiva:namespace] > archiva:base mixin
  - namespace (string)
- + * (archiva:namespace) multiple
- + * (archiva:project) multiple
+ + * (archiva:namespace)
+ + * (archiva:project)
 
 [archiva:project] > archiva:base mixin
  - name (string)
- + * (archiva:projectVersion) multiple
+ + * (archiva:projectVersion)
 
 [archiva:meta_scm] mixin
   - scm.connection (string)
@@ -79,7 +79,10 @@
  - optional (boolean)
 
 [archiva:dependencies] mixin
- + * (archiva:dependency) multiple
+ + * (archiva:dependency)
+
+[archiva:checksums]
+ + * (archiva:checksum)
 
 [archiva:checksum]
  - type (string)
@@ -90,20 +93,18 @@
  - description (string)
  - url (uri)
  - incomplete (boolean)
- + * (archiva:artifact) multiple
- + license (archiva:meta_license) multiple
- + mailinglist (archiva:meta_mailinglist) multiple
- + dependencies (archiva:dependencies)
- + * (archiva:facet) multiple
+ + * (archiva:artifact)
+ + * (archiva:meta_license)
+ + * (archiva:meta_mailinglist)
+ + * (archiva:dependencies)
+ + * (archiva:facet)
 
 [archiva:artifact] > archiva:base mixin
  - whenGathered (date)
  - size (long)
- - md5 (string)
- - sha1 (string)
  - version (string)
- + checksum (archiva:checksum) multiple
- + * (archiva:facet) multiple
+ + * (archiva:checksum)
+ + * (archiva:facet)
 
 [archiva:facet] > archiva:base mixin
  - archiva:facetId

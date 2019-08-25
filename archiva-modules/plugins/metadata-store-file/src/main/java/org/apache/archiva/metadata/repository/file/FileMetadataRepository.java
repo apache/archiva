@@ -1214,10 +1214,9 @@ public class FileMetadataRepository
 
     @Override
     public Stream<ArtifactMetadata> getArtifactStream( @Nonnull final RepositorySession session, @Nonnull final String repositoryId,
-                                                       @Nullable QueryParameter queryParameter ) throws MetadataResolutionException
+                                                       @Nonnull QueryParameter queryParameter ) throws MetadataResolutionException
     {
 
-        queryParameter = getParameterOrDefault( queryParameter );
         return getAllNamespacesStream( session, repositoryId ).filter( Objects::nonNull ).flatMap( ns ->
             {
                 try

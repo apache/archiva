@@ -90,8 +90,12 @@ public class JcrMetadataRepositoryTest
     }
 
     @Before
-    public void setup() throws MetadataRepositoryException, RepositoryException, MetadataSessionException
+    @Override
+    public void setUp() throws Exception
     {
+        super.setUp();
+        super.assertMaxTries=5;
+        super.assertRetrySleepMs = 500;
         try( JcrRepositorySession session = (JcrRepositorySession) getSessionFactory().createSession() ) {
             Session jcrSession = session.getJcrSession( );
             if (jcrSession.itemExists( "/repositories/test" ))

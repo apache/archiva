@@ -485,7 +485,12 @@ public class OakRepositoryFactory
                     initBaseRule(idxBuilder.indexRule( ARTIFACT_NODE_TYPE ))
                         .property( "whenGathered" ).type("Date").propertyIndex().analyzed().ordered()
                         .property("size").type("Long").propertyIndex().analyzed().ordered()
-                        .property("version").propertyIndex().analyzed().ordered();
+                        .property("version").propertyIndex().analyzed().ordered()
+                        .property("checksums/*/value").propertyIndex();
+
+                    initBaseRule( idxBuilder.indexRule( CHECKSUM_NODE_TYPE ) )
+                        .property("type").propertyIndex()
+                        .property("value").propertyIndex();
 
                     initRegexAll( idxBuilder.indexRule( FACET_NODE_TYPE ) )
                         .property("archiva:facetId").propertyIndex().analyzed().ordered()

@@ -2095,7 +2095,7 @@ public class CassandraMetadataRepository
             }
         }
 
-        return mapArtifactMetadataToArtifact( metadataFacetResult, artifactMetadatas );
+        return mapArtifactFacetToArtifact( metadataFacetResult, artifactMetadatas );
     }
 
     @Override
@@ -2354,13 +2354,13 @@ public class CassandraMetadataRepository
             .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
             .execute();
 
-        return mapArtifactMetadataToArtifact(result, artifactMetadatas);
+        return mapArtifactFacetToArtifact(result, artifactMetadatas);
     }
 
     /**
      * Attach metadata to each of the  ArtifactMetadata objects
      */
-    private List<ArtifactMetadata> mapArtifactMetadataToArtifact(QueryResult<OrderedRows<String, String, String>> result, List<ArtifactMetadata> artifactMetadatas) {
+    private List<ArtifactMetadata> mapArtifactFacetToArtifact( QueryResult<OrderedRows<String, String, String>> result, List<ArtifactMetadata> artifactMetadatas) {
         if ( result.get() == null || result.get().getCount() < 1 )
         {
             return artifactMetadatas;
@@ -2475,7 +2475,8 @@ public class CassandraMetadataRepository
      * any property.
      */
     @Override
-    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String text, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( final RepositorySession session, final String repositoryId,
+                                                   final String text, final boolean exact )
         throws MetadataRepositoryException
     {
         return getArtifactsByMetadata( session, null, text, repositoryId );
@@ -2485,7 +2486,8 @@ public class CassandraMetadataRepository
      * The exact parameter is ignored as we can't do non exact searches in Cassandra
      */
     @Override
-    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String key, String text, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( final RepositorySession session, final String repositoryId,
+                                                   final String key, final String text, final boolean exact )
         throws MetadataRepositoryException
     {
         // TODO optimize
@@ -2493,5 +2495,42 @@ public class CassandraMetadataRepository
         artifacts.addAll( getArtifactsByMetadata( session, key, text, repositoryId ) );
         artifacts.addAll( getArtifactsByProperty( session, key, text, repositoryId ) );
         return artifacts;
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repositoryId,
+                                                       final QueryParameter queryParameter ) throws MetadataResolutionException
+    {
+        RangeSlicesQuery<String, String, String> query = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName( ) ) //
+            .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
+
+        query = query.addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
+
+        QueryResult<OrderedRows<String, String, String>> result = query.execute();
+
+        try
+        {
+            return StreamSupport.stream( createResultSpliterator( result, ( Row<String, String, String> row, ArtifactMetadata last ) ->
+                mapArtifactMetadataStringColumnSlice( row.getKey( ), row.getColumnSlice( ) ) ), false )
+                .skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new MetadataResolutionException( e.getMessage( ), e );
+        }
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repoId,
+                                                       final String namespace, final String projectId, final String projectVersion,
+                                                       final QueryParameter queryParameter ) throws MetadataResolutionException
+    {
+        // Currently we have to align the facets with the artifacts, which means querying artifacts, querying facets and combining them.
+        // I so no stream friendly way to do this, so we just use the collection based method and return the stream.
+        // TODO: Maybe we can query the facets for each artifact separately, but not sure, if this affects performance significantly
+        //       We need some data to verify this.
+        return getArtifacts( session, repoId, namespace, projectId, projectVersion ).stream( ).skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
     }
 }

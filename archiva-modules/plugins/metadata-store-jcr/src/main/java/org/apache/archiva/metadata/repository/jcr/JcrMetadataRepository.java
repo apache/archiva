@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.jcr;
  */
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.*;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.Repository;
@@ -196,8 +198,22 @@ public class JcrMetadataRepository
             node.setProperty( "whenGathered", cal );
 
             node.setProperty( "size", artifactMeta.getSize() );
-            node.setProperty( "md5", artifactMeta.getMd5() );
-            node.setProperty( "sha1", artifactMeta.getSha1() );
+
+            int idx=0;
+            Node cslistNode = getOrAddNodeByPath( node, "checksums" );
+            NodeIterator nit = cslistNode.getNodes("*");
+            while (nit.hasNext()) {
+                Node csNode = nit.nextNode();
+                if (csNode.isNodeType( CHECKSUM_NODE_TYPE )) {
+                    csNode.remove();
+                }
+            }
+            for ( Map.Entry<ChecksumAlgorithm, String> entry : artifactMeta.getChecksums().entrySet()) {
+                String type = entry.getKey( ).name( );
+                Node csNode = cslistNode.addNode( type , CHECKSUM_NODE_TYPE);
+                csNode.setProperty( "type", type );
+                csNode.setProperty( "value", entry.getValue( ) );
+            }
 
             node.setProperty( "version", artifactMeta.getVersion() );
 
@@ -836,7 +852,7 @@ public class JcrMetadataRepository
         final Session jcrSession = getSession( session );
         List<ArtifactMetadata> artifacts;
 
-        String q = getArtifactQuery( repositoryId ) + " AND ([sha1] = $checksum OR [md5] = $checksum)";
+        String q = getArtifactQuery( repositoryId ).append(" AND ([artifact].[checksums/*/value] = $checksum)").toString();
 
         try
         {
@@ -1688,18 +1704,31 @@ public class JcrMetadataRepository
             artifact.setSize( artifactNode.getProperty( "size" ).getLong() );
         }
 
-        if ( artifactNode.hasProperty( "md5" ) )
-        {
-            artifact.setMd5( artifactNode.getProperty( "md5" ).getString() );
-        }
-
-        if ( artifactNode.hasProperty( "sha1" ) )
-        {
-            artifact.setSha1( artifactNode.getProperty( "sha1" ).getString() );
+        Node cslistNode = getOrAddNodeByPath( artifactNode, "checksums" );
+        NodeIterator csNodeIt = cslistNode.getNodes( "*" );
+        while (csNodeIt.hasNext()) {
+            Node csNode = csNodeIt.nextNode( );
+            if (csNode.isNodeType( CHECKSUM_NODE_TYPE ))
+            {
+                addChecksum( artifact, csNode );
+            }
         }
 
         retrieveFacetProperties( artifact, artifactNode );
         return artifact;
+    }
+
+    private void addChecksum(ArtifactMetadata artifact, Node n) {
+        try
+        {
+            ChecksumAlgorithm alg = ChecksumAlgorithm.valueOf( n.getProperty( "type" ).getString() );
+            String value = n.getProperty( "value" ).getString( );
+            artifact.setChecksum( alg, value );
+        }
+        catch ( Throwable e )
+        {
+            log.error( "Could not set checksum from node {}", n );
+        }
     }
 
     private static String getPropertyString( Node node, String name )
@@ -1995,5 +2024,109 @@ public class JcrMetadataRepository
     public Session login() throws RepositoryException
     {
         return repository.login(new SimpleCredentials( "admin", "admin".toCharArray() ) );
+    }
+
+    private static boolean isArtifactNodeType(Node n) {
+        try
+        {
+            return n != null && n.isNodeType( ARTIFACT_NODE_TYPE );
+        }
+        catch ( RepositoryException e )
+        {
+            return false;
+        }
+    }
+
+    private Optional<ArtifactMetadata> getArtifactOptional(final String repositoryId, final Node n) {
+        try
+        {
+            return Optional.ofNullable( getArtifactFromNode( repositoryId, n ) );
+        }
+        catch ( RepositoryException e )
+        {
+            return Optional.empty( );
+        }
+    }
+
+    private Optional<ArtifactMetadata> getArtifactOptional(final String repositoryId, final Row row) {
+        try
+        {
+            return Optional.ofNullable( getArtifactFromNode( repositoryId, row.getNode( "artifact" ) ) );
+        }
+        catch ( RepositoryException e )
+        {
+            return Optional.empty( );
+        }
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repositoryId,
+                                                       final String namespace, final String projectId, final String projectVersion,
+                                                       final QueryParameter queryParameter ) throws MetadataResolutionException
+    {
+        final Session jcrSession;
+        try
+        {
+            jcrSession = getSession( session );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new MetadataResolutionException( e.getMessage( ) );
+        }
+
+        try
+        {
+            Node root = jcrSession.getRootNode();
+            String path = getProjectVersionPath( repositoryId, namespace, projectId, projectVersion );
+
+            if ( root.hasNode( path ) )
+            {
+                Node node = root.getNode( path );
+                return StreamSupport.stream( JcrUtils.getChildNodes( node ).spliterator( ), false ).filter(JcrMetadataRepository::isArtifactNodeType)
+                    .map( n -> getArtifactOptional( repositoryId, n ) )
+                .map( Optional::get ).skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
+            } else {
+                return Stream.empty( );
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
+    }
+
+    @Override
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repositoryId,
+                                                       final QueryParameter queryParameter ) throws MetadataResolutionException
+    {
+        final Session jcrSession;
+        try
+        {
+            jcrSession = getSession( session );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new MetadataResolutionException( e.getMessage( ), e );
+        }
+        List<ArtifactMetadata> artifacts;
+
+        String q = getArtifactQuery( repositoryId ).toString();
+
+        try
+        {
+            Query query = jcrSession.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            QueryResult result = query.execute();
+
+            return StreamSupport.stream( createResultSpliterator( result, ( Row row ) ->
+            getArtifactOptional( repositoryId, row ) ), false )
+                .map(Optional::get)
+                .skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
+
+        }
+        catch ( RepositoryException | MetadataRepositoryException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
+
     }
 }
