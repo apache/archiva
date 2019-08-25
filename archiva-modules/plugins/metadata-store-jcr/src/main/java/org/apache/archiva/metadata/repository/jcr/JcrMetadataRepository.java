@@ -1267,8 +1267,8 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public Collection<String> getArtifactVersions( RepositorySession session, String repositoryId, String namespace, String projectId,
-                                                   String projectVersion )
+    public List<String> getArtifactVersions( RepositorySession session, String repositoryId, String namespace, String projectId,
+                                             String projectVersion )
         throws MetadataResolutionException
     {
         final Session jcrSession;
@@ -1302,12 +1302,12 @@ public class JcrMetadataRepository
             throw new MetadataResolutionException( e.getMessage(), e );
         }
 
-        return versions;
+        return new ArrayList<>( versions );
     }
 
     @Override
-    public Collection<ProjectVersionReference> getProjectReferences( RepositorySession session, String repositoryId, String namespace,
-                                                                     String projectId, String projectVersion )
+    public List<ProjectVersionReference> getProjectReferences( RepositorySession session, String repositoryId, String namespace,
+                                                               String projectId, String projectVersion )
         throws MetadataResolutionException
     {
         final Session jcrSession;
@@ -1364,14 +1364,14 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public Collection<String> getRootNamespaces( RepositorySession session, String repositoryId )
+    public List<String> getRootNamespaces( RepositorySession session, String repositoryId )
         throws MetadataResolutionException
     {
         return this.getChildNamespaces(session , repositoryId, null );
     }
 
     @Override
-    public Collection<String> getChildNamespaces( RepositorySession session, String repositoryId, String baseNamespace )
+    public List<String> getChildNamespaces( RepositorySession session, String repositoryId, String baseNamespace )
         throws MetadataResolutionException
     {
         String path = baseNamespace != null
@@ -1389,7 +1389,7 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjects( RepositorySession session, String repositoryId, String namespace )
+    public List<String> getProjects( RepositorySession session, String repositoryId, String namespace )
         throws MetadataResolutionException
     {
         try
@@ -1403,7 +1403,7 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjectVersions( RepositorySession session, String repositoryId, String namespace, String projectId )
+    public List<String> getProjectVersions( RepositorySession session, String repositoryId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         try
@@ -1561,8 +1561,8 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, String repositoryId, String namespace, String projectId,
-                                                      String projectVersion )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, String repositoryId, String namespace, String projectId,
+                                                String projectVersion )
         throws MetadataResolutionException
     {
         final Session jcrSession;
@@ -1720,7 +1720,7 @@ public class JcrMetadataRepository
         return node.hasProperty( name ) ? node.getProperty( name ).getString() : null;
     }
 
-    private Collection<String> getNodeNames( Session jcrSession, String path, String nodeType )
+    private List<String> getNodeNames( Session jcrSession, String path, String nodeType )
         throws MetadataResolutionException
     {
 

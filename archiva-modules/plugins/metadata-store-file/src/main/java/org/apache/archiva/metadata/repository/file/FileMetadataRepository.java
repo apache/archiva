@@ -498,8 +498,8 @@ public class FileMetadataRepository
 
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts(RepositorySession session, String repoId, String namespace, String projectId,
-                                                     String projectVersion)
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
+                                                String projectVersion)
             throws MetadataResolutionException {
         try {
             Map<String, ArtifactMetadata> artifacts = new HashMap<>();
@@ -567,7 +567,7 @@ public class FileMetadataRepository
                     }
                 }
             }
-            return artifacts.values();
+            return new ArrayList<>(artifacts.values());
         } catch (IOException e) {
             throw new MetadataResolutionException(e.getMessage(), e);
         }
@@ -996,8 +996,8 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getArtifactVersions(RepositorySession session, String repoId, String namespace, String projectId,
-                                                  String projectVersion)
+    public List<String> getArtifactVersions( RepositorySession session, String repoId, String namespace, String projectId,
+                                             String projectVersion)
             throws MetadataResolutionException {
         try {
             Path directory = getDirectory(repoId).resolve(namespace + "/" + projectId + "/" + projectVersion);
@@ -1011,15 +1011,15 @@ public class FileMetadataRepository
                     versions.add((String) entry.getValue());
                 }
             }
-            return versions;
+            return new ArrayList<>( versions );
         } catch (IOException e) {
             throw new MetadataResolutionException(e.getMessage(), e);
         }
     }
 
     @Override
-    public Collection<ProjectVersionReference> getProjectReferences(RepositorySession session, String repoId, String namespace, String projectId,
-                                                                    String projectVersion)
+    public List<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
+                                                               String projectVersion)
             throws MetadataResolutionException {
         try {
             Path directory = getDirectory(repoId).resolve(namespace + "/" + projectId + "/" + projectVersion);
@@ -1044,7 +1044,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getRootNamespaces(RepositorySession session, String repoId)
+    public List<String> getRootNamespaces( RepositorySession session, String repoId)
             throws MetadataResolutionException {
         return this.getChildNamespaces(session, repoId, null);
     }
@@ -1076,7 +1076,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getChildNamespaces( RepositorySession session, String repoId, String baseNamespace)
+    public List<String> getChildNamespaces( RepositorySession session, String repoId, String baseNamespace)
             throws MetadataResolutionException {
         try {
             List<String> allNamespaces;
@@ -1110,7 +1110,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjects(RepositorySession session, String repoId, String namespace)
+    public List<String> getProjects( RepositorySession session, String repoId, String namespace)
             throws MetadataResolutionException {
         try {
             List<String> projects;
@@ -1132,7 +1132,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjectVersions(RepositorySession session, String repoId, String namespace, String projectId)
+    public List<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId)
             throws MetadataResolutionException {
         try {
             List<String> projectVersions;

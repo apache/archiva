@@ -26,7 +26,6 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -74,7 +73,7 @@ public class TestMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
+    public List<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
     {
         return versions;
     }
@@ -99,8 +98,8 @@ public class TestMetadataRepository
 
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
-                                                      String projectVersion )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
+                                                String projectVersion )
     {
         return artifacts;
     }

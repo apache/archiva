@@ -459,7 +459,7 @@ public class CassandraMetadataRepository
 
     // FIXME this one need peformance improvement maybe a cache?
     @Override
-    public Collection<String> getRootNamespaces( RepositorySession session, final String repoId )
+    public List<String> getRootNamespaces( RepositorySession session, final String repoId )
         throws MetadataResolutionException
     {
 
@@ -477,12 +477,12 @@ public class CassandraMetadataRepository
             namespaces.add( StringUtils.substringBefore( getStringValue( row.getColumnSlice(), NAME.toString() ), "." ) );
         }
 
-        return namespaces;
+        return new ArrayList<>( namespaces );
     }
 
     // FIXME this one need peformance improvement maybe a cache?
     @Override
-    public Collection<String> getChildNamespaces( RepositorySession session, final String repoId, final String namespaceId )
+    public List<String> getChildNamespaces( RepositorySession session, final String repoId, final String namespaceId )
         throws MetadataResolutionException
     {
 
@@ -577,7 +577,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjects( RepositorySession session, final String repoId, final String namespace )
+    public List<String> getProjects( RepositorySession session, final String repoId, final String namespace )
         throws MetadataResolutionException
     {
 
@@ -596,7 +596,7 @@ public class CassandraMetadataRepository
             projects.add( getStringValue( row.getColumnSlice(), PROJECT_ID.toString() ) );
         }
 
-        return projects;
+        return new ArrayList<>( projects );
     }
 
     @Override
@@ -642,7 +642,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjectVersions( RepositorySession session, final String repoId, final String namespace, final String projectId )
+    public List<String> getProjectVersions( RepositorySession session, final String repoId, final String namespace, final String projectId )
         throws MetadataResolutionException
     {
 
@@ -669,7 +669,7 @@ public class CassandraMetadataRepository
             versions.add( getStringValue( orderedRows.getColumnSlice(), PROJECT_VERSION.toString() ) );
         }
 
-        return versions;
+        return new ArrayList<>( versions );
 
     }
 
@@ -1500,8 +1500,8 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<String> getArtifactVersions( RepositorySession session, final String repoId, final String namespace, final String projectId,
-                                                   final String projectVersion )
+    public List<String> getArtifactVersions( RepositorySession session, final String repoId, final String namespace, final String projectId,
+                                             final String projectVersion )
         throws MetadataResolutionException
     {
 
@@ -1522,11 +1522,11 @@ public class CassandraMetadataRepository
             versions.add( getStringValue( row.getColumnSlice(), VERSION.toString() ) );
         }
 
-        return versions;
+        return new ArrayList<>( versions );
 
     }
 
-    /**
+    /*
      * iterate over available facets to remove/add from the artifactMetadata
      *
      * @param facetedMetadata
@@ -2237,8 +2237,8 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public Collection<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
-                                                                     String projectVersion )
+    public List<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
+                                                               String projectVersion )
         throws MetadataResolutionException
     {
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
@@ -2317,8 +2317,8 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, final String repoId, final String namespace,
-                                                      final String projectId, final String projectVersion )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, final String repoId, final String namespace,
+                                                final String projectId, final String projectVersion )
         throws MetadataResolutionException
     {
 

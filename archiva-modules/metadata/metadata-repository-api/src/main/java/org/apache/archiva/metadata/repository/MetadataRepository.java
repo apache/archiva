@@ -29,7 +29,6 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -589,7 +588,7 @@ public interface MetadataRepository
      * @return A list of version strings, or a empty list if no versions are found, or this is not a snapshot version.
      * @throws MetadataResolutionException if the retrieval of the metadata failed.
      */
-    Collection<String> getArtifactVersions( RepositorySession session, String repoId, String namespace, String projectId, String projectVersion )
+    List<String> getArtifactVersions( RepositorySession session, String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataResolutionException;
 
     /**
@@ -605,8 +604,8 @@ public interface MetadataRepository
      * @return a list of project references
      * @throws MetadataResolutionException if the version could not be found.
      */
-    Collection<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
-                                                              String projectVersion )
+    List<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
+                                                        String projectVersion )
         throws MetadataResolutionException;
 
     /**
@@ -617,7 +616,7 @@ public interface MetadataRepository
      * @return A list of namespace names, or empty list, if no namespace is stored for this repository.
      * @throws MetadataResolutionException If the retrieval failed.
      */
-    Collection<String> getRootNamespaces( RepositorySession session, String repoId )
+    List<String> getRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException;
 
     /**
@@ -626,10 +625,10 @@ public interface MetadataRepository
      * @param session   The repository session.
      * @param repoId    The repository id.
      * @param namespace The parent namespace '.'-separated.
-     * @return {@link Collection} of child namespace names, or a empty list, if there are no children for the given parent namespace.
+     * @return {@link List} of child namespace names, or a empty list, if there are no children for the given parent namespace.
      * @throws MetadataResolutionException if the retrieval failed.
      */
-    Collection<String> getChildNamespaces( RepositorySession session, String repoId, String namespace )
+    List<String> getChildNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException;
 
     /**
@@ -641,7 +640,7 @@ public interface MetadataRepository
      * @return The list of project names or empty list if no project exists at the given namespace.
      * @throws MetadataResolutionException if the retrieval failed.
      */
-    Collection<String> getProjects( RepositorySession session, String repoId, String namespace )
+    List<String> getProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException;
 
     /**
@@ -654,7 +653,7 @@ public interface MetadataRepository
      * @return The list of versions or a empty list, if not version was found.
      * @throws MetadataResolutionException if the retrieval failed.
      */
-    Collection<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
+    List<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
         throws MetadataResolutionException;
 
     /**
@@ -682,8 +681,8 @@ public interface MetadataRepository
      * @return The list of artifact metadata objects, or a empty list, if no artifact exists for this version.
      * @throws MetadataResolutionException if the retrieval failed.
      */
-    Collection<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
-                                               String projectVersion )
+    List<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
+                                         String projectVersion )
         throws MetadataResolutionException;
 
     /**

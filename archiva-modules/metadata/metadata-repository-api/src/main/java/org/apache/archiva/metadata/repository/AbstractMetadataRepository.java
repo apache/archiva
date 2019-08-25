@@ -204,44 +204,44 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public Collection<String> getArtifactVersions( RepositorySession session, String repoId, String namespace, String projectId,
-                                                   String projectVersion )
+    public List<String> getArtifactVersions( RepositorySession session, String repoId, String namespace, String projectId,
+                                             String projectVersion )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
-                                                                     String projectVersion )
+    public List<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
+                                                               String projectVersion )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getRootNamespaces( RepositorySession session, String repoId )
+    public List<String> getRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getChildNamespaces( RepositorySession session, String repoId, String namespace )
+    public List<String> getChildNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getProjects( RepositorySession session, String repoId, String namespace )
+    public List<String> getProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
+    public List<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
@@ -294,8 +294,8 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
-                                                      String projectVersion )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
+                                                String projectVersion )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
