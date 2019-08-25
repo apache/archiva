@@ -23,26 +23,66 @@ import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.QueryParameter;
-import org.apache.archiva.metadata.model.*;
-import org.apache.archiva.metadata.repository.*;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.CiManagement;
+import org.apache.archiva.metadata.model.Dependency;
+import org.apache.archiva.metadata.model.IssueManagement;
+import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.MailingList;
+import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.Organization;
+import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.MetadataService;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * File implementation of the metadata repository. It uses property files in a separate directory tree.
+ * The implementation has no fulltext index. So fulltext queries are not supported.
+ *
+ * Some retrieval methods may not be very efficient.
+ */
+@ParametersAreNonnullByDefault
 public class FileMetadataRepository
         extends AbstractMetadataRepository implements MetadataRepository {
 
@@ -1213,8 +1253,8 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactStream( @Nonnull final RepositorySession session, @Nonnull final String repositoryId,
-                                                       @Nonnull QueryParameter queryParameter ) throws MetadataResolutionException
+    public Stream<ArtifactMetadata> getArtifactStream(  final RepositorySession session,  final String repositoryId,
+                                                        QueryParameter queryParameter ) throws MetadataResolutionException
     {
 
         return getAllNamespacesStream( session, repositoryId ).filter( Objects::nonNull ).flatMap( ns ->

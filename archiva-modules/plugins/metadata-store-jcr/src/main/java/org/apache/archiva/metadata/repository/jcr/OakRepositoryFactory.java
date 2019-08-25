@@ -75,7 +75,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.jcr.Repository;
 import java.io.Closeable;
 import java.io.IOException;
@@ -90,14 +89,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.apache.archiva.metadata.repository.jcr.JcrConstants.*;
 import static org.apache.archiva.metadata.repository.jcr.OakRepositoryFactory.StoreType.IN_MEMORY_TYPE;
 import static org.apache.archiva.metadata.repository.jcr.OakRepositoryFactory.StoreType.SEGMENT_FILE_TYPE;
 import static org.apache.commons.io.FileUtils.ONE_MB;
 import static org.apache.jackrabbit.JcrConstants.*;
 import static org.apache.jackrabbit.oak.api.Type.NAME;
-import static org.apache.archiva.metadata.repository.jcr.JcrConstants.*;
-import static org.apache.jackrabbit.oak.spi.whiteboard.WhiteboardUtils.registerMBean;
-import static org.apache.jackrabbit.oak.spi.whiteboard.WhiteboardUtils.scheduleWithFixedDelay;
 
 /**
  * Created by martin on 14.06.17.
@@ -430,7 +427,7 @@ public class OakRepositoryFactory
             }
 
             @Override
-            public void initialize( @Nonnull NodeBuilder root )
+            public void initialize(  NodeBuilder root )
             {
                 NodeBuilder namespaces;
                 if ( !root.hasChildNode( NamespaceConstants.REP_NAMESPACES ) )
