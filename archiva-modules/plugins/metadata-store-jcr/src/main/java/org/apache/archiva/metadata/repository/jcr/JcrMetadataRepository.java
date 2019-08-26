@@ -1969,7 +1969,7 @@ public class JcrMetadataRepository
 //            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause,
 //                                                    Query.JCR_SQL2 );
             String whereClause = "WHERE ISDESCENDANTNODE([/repositories/" + repositoryId + "/content])";
-            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause, Query.JCR_SQL2 );
+            Query query = queryManager.createQuery( "SELECT type,size FROM ["+ARTIFACT_NODE_TYPE+"] " + whereClause, Query.JCR_SQL2 );
 
             QueryResult queryResult = query.execute();
 
@@ -1978,6 +1978,7 @@ public class JcrMetadataRepository
             for ( Row row : JcrUtils.getRows( queryResult ) )
             {
                 Node n = row.getNode();
+                log.debug( "Result node {}", n );
                 totalSize += row.getValue( "size" ).getLong();
 
                 String type;

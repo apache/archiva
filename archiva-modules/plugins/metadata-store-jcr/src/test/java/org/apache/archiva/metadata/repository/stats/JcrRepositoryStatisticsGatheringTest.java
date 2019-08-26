@@ -23,9 +23,11 @@ import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.DefaultMetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.jcr.JcrMetadataRepository;
 import org.apache.archiva.metadata.repository.jcr.JcrRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.jcr.JcrRepositorySession;
@@ -50,6 +52,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,6 +67,7 @@ import java.util.zip.GZIPInputStream;
 public class JcrRepositoryStatisticsGatheringTest
     extends TestCase
 {
+    private static final Logger log = LoggerFactory.getLogger( JcrRepositoryStatisticsGatheringTest.class );
     private static final int TOTAL_FILE_COUNT = 1000;
 
     private static final int NEW_FILE_COUNT = 500;
@@ -78,6 +82,8 @@ public class JcrRepositoryStatisticsGatheringTest
     private static Repository jcrRepository;
 
     Logger logger = LoggerFactory.getLogger( getClass() );
+    private int assertRetrySleepMs = 500;
+    private int assertMaxTries = 5;
 
     @BeforeClass
     public static void setupSpec()
@@ -121,6 +127,61 @@ public class JcrRepositoryStatisticsGatheringTest
         sessionFactory.close();
     }
 
+    /*
+     * Used by tryAssert to allow to throw exceptions in the lambda expression.
+     */
+    @FunctionalInterface
+    protected interface AssertFunction
+    {
+        void accept( ) throws Exception;
+    }
+
+    protected void tryAssert( AssertFunction func ) throws Exception
+    {
+        tryAssert( func, assertMaxTries, assertRetrySleepMs );
+    }
+
+
+    /*
+     * Runs the assert method until the assert is successful or the number of retries
+     * is reached. This is needed because the JCR Oak index update is asynchronous, so updates
+     * may not be visible immediately after the modification.
+     */
+    private void tryAssert( AssertFunction func, int retries, int sleepMillis ) throws Exception
+    {
+        Throwable t = null;
+        int retry = retries;
+        while ( retry-- > 0 )
+        {
+            try
+            {
+                func.accept( );
+                return;
+            }
+            catch ( Exception | AssertionError e )
+            {
+                t = e;
+                Thread.currentThread( ).sleep( sleepMillis );
+                log.warn( "Retrying assert {}: {}", retry, e.getMessage( ) );
+            }
+        }
+        log.warn( "Retries: {}, Exception: {}", retry, t.getMessage( ) );
+        if ( retry <= 0 && t != null )
+        {
+            if ( t instanceof RuntimeException )
+            {
+                throw (RuntimeException) t;
+            }
+            else if ( t instanceof Exception )
+            {
+                throw (Exception) t;
+            }
+            else if ( t instanceof Error )
+            {
+                throw (Error) t;
+            }
+        }
+    }
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String type )
         throws RepositoryException
@@ -175,7 +236,6 @@ public class JcrRepositoryStatisticsGatheringTest
             testedStatistics.setScanStartTime(startTime);
             testedStatistics.setScanEndTime(endTime);
 
-            repository.populateStatistics(repSession, repository, TEST_REPO, testedStatistics);
 
             DefaultRepositoryStatistics expectedStatistics = new DefaultRepositoryStatistics();
             expectedStatistics.setNewFileCount(NEW_FILE_COUNT);
@@ -195,13 +255,15 @@ public class JcrRepositoryStatisticsGatheringTest
             expectedStatistics.setTotalCountForType("pom", 144);
             expectedStatistics.setRepositoryId(TEST_REPO);
 
-            logger.info("getTotalCountForType: {}", testedStatistics.getTotalCountForType());
+            tryAssert( () -> {
+                repository.populateStatistics(repSession, repository, TEST_REPO, testedStatistics);
+
+                logger.info("getTotalCountForType: {}", testedStatistics.getTotalCountForType());
 
             assertEquals(NEW_FILE_COUNT, testedStatistics.getNewFileCount());
             assertEquals(TOTAL_FILE_COUNT, testedStatistics.getTotalFileCount());
             assertEquals(endTime, testedStatistics.getScanEndTime());
             assertEquals(startTime, testedStatistics.getScanStartTime());
-            assertEquals(95954585, testedStatistics.getTotalArtifactFileSize());
             assertEquals(269, testedStatistics.getTotalArtifactCount());
             assertEquals(1, testedStatistics.getTotalGroupCount());
             assertEquals(43, testedStatistics.getTotalProjectCount());
@@ -213,6 +275,8 @@ public class JcrRepositoryStatisticsGatheringTest
             assertEquals(2, testedStatistics.getTotalCountForType("war"));
             assertEquals(144, testedStatistics.getTotalCountForType("pom"));
             assertEquals(10, testedStatistics.getTotalCountForType("java-source"));
+            assertEquals(95954585, testedStatistics.getTotalArtifactFileSize());
+        });
 
         }
     }
@@ -227,7 +291,7 @@ public class JcrRepositoryStatisticsGatheringTest
         n = JcrUtils.getOrAddNode( n, "org" );
         n = JcrUtils.getOrAddNode( n, "apache" );
 
-        GZIPInputStream inputStream = new GZIPInputStream( getClass( ).getResourceAsStream( "/artifacts.xml.gz" ) );
+        InputStream inputStream = getClass( ).getResourceAsStream( "/artifacts.xml" );
         jcrSession.importXML( n.getPath( ), inputStream, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW );
         jcrSession.save( );
     }
