@@ -552,6 +552,27 @@ public class JcrMetadataRepository
         return query;
     }
 
+    private <T extends MetadataFacet> Function<Row, Optional<T>> getFacetFromRowFunc( MetadataFacetFactory<T> factory, String repositoryId ) {
+        return (Row row) -> {
+            try
+            {
+                Node node = row.getNode( "facet" );
+                if (node.hasProperty( "archiva:name" ))
+                {
+                    String facetName = node.getProperty( "archiva:name" ).getString( );
+                    return Optional.ofNullable( createFacetFromNode( factory, node, repositoryId, facetName ) );
+                } else {
+                    return Optional.empty( );
+                }
+            }
+            catch ( RepositoryException e )
+            {
+                log.error( "Exception encountered {}", e.getMessage( ) );
+                return Optional.empty();
+            }
+        };
+    }
+
     @Override
     public <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter) throws MetadataRepositoryException
     {
@@ -561,23 +582,13 @@ public class JcrMetadataRepository
         final String facetPath = '/'+getFacetPath( repositoryId, facetId );
         StringBuilder query = new StringBuilder("SELECT * FROM [");
         query.append(FACET_NODE_TYPE).append("] AS facet WHERE ISDESCENDANTNODE(facet, [")
-                .append(facetPath).append("])");
+                .append(facetPath).append("]) AND [facet].[archiva:name] IS NOT NULL");
         appendQueryParams(query, "facet", "archiva:name", queryParameter);
         String q = query.toString();
         Map<String, String> params = new HashMap<>( );
         QueryResult result = runNativeJcrQuery( jcrSession, q, params, queryParameter.getOffset(), queryParameter.getLimit());
-        return StreamSupport.stream( createResultSpliterator( result, (Row row)-> {
-            try
-            {
-                Node node = row.getNode( "facet" );
-                String facetName = node.getProperty( "archiva:name" ).getString();
-                return createFacetFromNode( factory, node, repositoryId, facetName );
-            }
-            catch ( RepositoryException e )
-            {
-                return null;
-            }
-        }), false );
+        final Function<Row, Optional<T>> rowFunc = getFacetFromRowFunc( factory, repositoryId );
+        return StreamSupport.stream( createResultSpliterator( result, rowFunc), false ).filter( Optional::isPresent ).map(Optional::get);
 
     }
 
@@ -832,18 +843,23 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
+    private Function<Row, Optional<ArtifactMetadata>> getArtifactFromRowFunc(final String repositoryId) {
+        return (Row row) -> {
+            try {
+                return Optional.of( getArtifactFromNode(repositoryId, row.getNode("artifact")) );
+            } catch (RepositoryException e) {
+                return Optional.empty();
+            }
+        };
+    }
+
     @Override
     public Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
     {
         final Session jcrSession = getSession( session );
-        QueryResult result = queryArtifactByDateRange(jcrSession, repositoryId, startTime, endTime, queryParameter);
-        return StreamSupport.stream(createResultSpliterator(result, (row) -> {
-            try {
-                return getArtifactFromNode(repositoryId, row.getNode("artifact"));
-            } catch (RepositoryException e) {
-                return null;
-            }
-        }), false);
+        final QueryResult result = queryArtifactByDateRange(jcrSession, repositoryId, startTime, endTime, queryParameter);
+        final Function<Row, Optional<ArtifactMetadata>> rowFunc = getArtifactFromRowFunc( repositoryId );
+        return StreamSupport.stream( createResultSpliterator( result, rowFunc ), false ).filter( Optional::isPresent ).map( Optional::get );
     }
 
 
@@ -2038,7 +2054,7 @@ public class JcrMetadataRepository
     private Optional<ArtifactMetadata> getArtifactOptional(final String repositoryId, final Row row) {
         try
         {
-            return Optional.ofNullable( getArtifactFromNode( repositoryId, row.getNode( "artifact" ) ) );
+            return Optional.of( getArtifactFromNode( repositoryId, row.getNode( "artifact" ) ) );
         }
         catch ( RepositoryException e )
         {
@@ -2104,9 +2120,8 @@ public class JcrMetadataRepository
             Query query = jcrSession.getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
             QueryResult result = query.execute();
 
-            return StreamSupport.stream( createResultSpliterator( result, ( Row row ) ->
-            getArtifactOptional( repositoryId, row ) ), false )
-                .map(Optional::get)
+            return StreamSupport.stream( createResultSpliterator( result, getArtifactFromRowFunc( repositoryId )), false )
+                .filter(Optional::isPresent).map(Optional::get)
                 .skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
 
         }

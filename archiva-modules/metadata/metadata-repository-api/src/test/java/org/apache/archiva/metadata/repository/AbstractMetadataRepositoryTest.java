@@ -915,6 +915,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         try ( RepositorySession session = getSessionFactory( ).createSession( ) )
         {
+            session.refreshAndDiscard();
             tryAssert( ( ) -> {
                 Stream<TestMetadataFacet> str = getRepository( ).getMetadataFacetStream( session, TEST_REPO_ID, TestMetadataFacet.class, new QueryParameter(0, 100));
                 assertNotNull( str );
@@ -943,6 +944,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         try ( RepositorySession session = getSessionFactory( ).createSession( ) )
         {
+            session.refreshAndDiscard();
             tryAssert( ( ) -> {
                 Stream<TestMetadataFacet> str = getRepository( ).getMetadataFacetStream( session, TEST_REPO_ID, TestMetadataFacet.class, new QueryParameter(5, 10));
                 assertNotNull( str );

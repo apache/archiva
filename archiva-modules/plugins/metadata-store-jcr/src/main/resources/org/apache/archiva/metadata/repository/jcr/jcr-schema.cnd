@@ -121,7 +121,7 @@
  + * (archiva:facet)
 
 [archiva:facet] > archiva:base
- - archiva:facetId
- - archiva:name
+ - archiva:facetId (string)
+ - archiva:name (string)
  - * (string)
  + * (archiva:facet)

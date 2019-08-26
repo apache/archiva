@@ -491,8 +491,7 @@ public class OakRepositoryFactory
 
                     initRegexAll( idxBuilder.indexRule( FACET_NODE_TYPE ) )
                         .property("archiva:facetId").propertyIndex().analyzed().ordered()
-                        .property("archiva:name").propertyIndex().analyzed().ordered();
-
+                        .property("archiva:name").propertyIndex().analyzed().ordered().nullCheckEnabled().notNullCheckEnabled();
 
                     idxBuilder.indexRule( MIXIN_META_SCM )
                         .property( "scm.connection" ).propertyIndex()
