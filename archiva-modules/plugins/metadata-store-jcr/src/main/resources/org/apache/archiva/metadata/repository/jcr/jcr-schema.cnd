@@ -17,6 +17,10 @@
  * under the License.
  */
 
+/*
+ * JCR OAK does not support same name siblings. Which means we have to
+ * setup unique keys for list entries.
+ */
 <archiva = 'http://archiva.apache.org/jcr'>
 [archiva:base] abstract mixin
   - id (string)
@@ -24,6 +28,7 @@
 
 [archiva:repository] > archiva:base mixin
  + content (archiva:content) primary
+ + facets (nt:hierarchyNode)
 
 [archiva:content] > archiva:base mixin
  + * (archiva:namespace)
@@ -81,7 +86,8 @@
 [archiva:dependencies] mixin
  + * (archiva:dependency)
 
-[archiva:checksums]
+[archiva:checksums] > nt:hierarchyNode
+ - id (string)
  + * (archiva:checksum)
 
 [archiva:checksum]
@@ -99,13 +105,23 @@
  + * (archiva:dependencies)
  + * (archiva:facet)
 
-[archiva:artifact] > archiva:base mixin
+
+
+[archiva:artifact] > archiva:base
  - whenGathered (date)
  - size (long)
  - version (string)
- + * (archiva:checksum)
+ + checksums (archiva:checksums)
  + * (archiva:facet)
 
-[archiva:facet] > archiva:base mixin
+[archiva:facets] > nt:hierarchyNode
+ + * (archiva:facetIdContainer)
+
+[archiva:facetIdContainer] > archiva:base
+ + * (archiva:facet)
+
+[archiva:facet] > archiva:base
  - archiva:facetId
  - archiva:name
+ - * (string)
+ + * (archiva:facet)

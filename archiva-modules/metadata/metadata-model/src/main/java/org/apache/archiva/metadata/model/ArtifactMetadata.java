@@ -21,16 +21,10 @@ package org.apache.archiva.metadata.model;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import sun.reflect.generics.repository.MethodRepository;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.TemporalAccessor;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;

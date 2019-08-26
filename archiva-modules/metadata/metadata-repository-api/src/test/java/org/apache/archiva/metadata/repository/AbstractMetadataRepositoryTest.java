@@ -924,7 +924,7 @@ public abstract class AbstractMetadataRepositoryTest
                 for (int i=0; i<10; i++) {
                     assertEquals(TEST_NAME + "/" + String.format("%03d",i), result.get(i).getName());
                 }
-            }, 3, 500 );
+            }, 5, 500 );
 
         }
     }
@@ -952,7 +952,7 @@ public abstract class AbstractMetadataRepositoryTest
                 for (int i=0; i<10; i++) {
                     assertEquals(TEST_NAME + "/" + String.format("%03d",i+5), result.get(i).getName());
                 }
-            }, 3, 500 );
+            }, 5, 500 );
 
         }
     }

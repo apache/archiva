@@ -202,7 +202,7 @@ public class JcrMetadataRepository
             node.setProperty( "size", artifactMeta.getSize() );
 
             int idx=0;
-            Node cslistNode = getOrAddNodeByPath( node, "checksums" );
+            Node cslistNode = getOrAddNodeByPath( node, "checksums", CHECKSUMS_FOLDER_TYPE, true );
             NodeIterator nit = cslistNode.getNodes("*");
             while (nit.hasNext()) {
                 Node csNode = nit.nextNode();
@@ -234,8 +234,7 @@ public class JcrMetadataRepository
                 if ( metadataFacet != null )
                 {
                     // recreate, to ensure properties are removed
-                    Node n = node.addNode( facetId);
-                    n.addMixin( FACET_NODE_TYPE );
+                    Node n = node.addNode( facetId, FACET_NODE_TYPE);
                     n.setProperty( "facetId", facetId );
 
                     for ( Map.Entry<String, String> entry : metadataFacet.toProperties().entrySet() )
@@ -368,8 +367,7 @@ public class JcrMetadataRepository
                 {
                     versionNode.getNode( facet.getFacetId() ).remove();
                 }
-                Node n = versionNode.addNode( facet.getFacetId() );
-                n.addMixin( FACET_NODE_TYPE );
+                Node n = versionNode.addNode( facet.getFacetId(), FACET_NODE_TYPE );
 
                 for ( Map.Entry<String, String> entry : facet.toProperties().entrySet() )
                 {
@@ -673,15 +671,17 @@ public class JcrMetadataRepository
         try
         {
             Node repo = getOrAddRepositoryNode( jcrSession, repositoryId );
-            Node facets = JcrUtils.getOrAddNode( repo, "facets" );
+            Node facets = JcrUtils.getOrAddNode( repo, "facets", FACETS_FOLDER_TYPE);
 
             String id = metadataFacet.getFacetId();
-            Node facetNode = JcrUtils.getOrAddNode( facets, id );
+            Node facetNode = JcrUtils.getOrAddNode( facets, id, FACET_ID_CONTAINER_TYPE );
+            if (!facetNode.hasProperty("id")) {
+                facetNode.setProperty("id", id);
+            }
 
-            Node facetInstance = getOrAddNodeByPath( facetNode, metadataFacet.getName() );
-            if (!facetInstance.isNodeType( FACET_NODE_TYPE ))
+            Node facetInstance = getOrAddNodeByPath( facetNode, metadataFacet.getName(), FACET_NODE_TYPE, true );
+            if (!facetInstance.hasProperty( "archiva:facetId"))
             {
-                facetInstance.addMixin( FACET_NODE_TYPE );
                 facetInstance.setProperty( "archiva:facetId", id );
                 facetInstance.setProperty( "archiva:name", metadataFacet.getName( ) );
             }
@@ -1796,17 +1796,25 @@ public class JcrMetadataRepository
         return getOrAddNodeByPath( baseNode, name, null );
     }
 
-    private Node getOrAddNodeByPath( Node baseNode, String name, String nodeType )
+    private Node getOrAddNodeByPath( Node baseNode, String name, String nodeType ) throws RepositoryException {
+        return getOrAddNodeByPath(baseNode, name, nodeType, false);
+    }
+
+    private Node getOrAddNodeByPath( Node baseNode, String name, String nodeType, boolean primaryType )
         throws RepositoryException
     {
         log.debug( "getOrAddNodeByPath " + baseNode + " " + name + " " + nodeType );
         Node node = baseNode;
         for ( String n : name.split( "/" ) )
         {
-            node = JcrUtils.getOrAddNode( node, n );
-            if ( nodeType != null && !node.isNodeType( nodeType ))
-            {
-                node.addMixin( nodeType );
+            if (nodeType!=null && primaryType) {
+                node = JcrUtils.getOrAddNode( node, n, nodeType );
+            } else {
+                node = JcrUtils.getOrAddNode( node, n);
+                if ( nodeType != null && !node.isNodeType( nodeType ))
+                {
+                    node.addMixin( nodeType );
+                }
             }
             if (!node.hasProperty( "id" )) {
                 node.setProperty( "id", n );
@@ -1892,11 +1900,7 @@ public class JcrMetadataRepository
         throws RepositoryException
     {
         Node versionNode = getOrAddProjectVersionNode( jcrSession, repositoryId, namespace, projectId, projectVersion );
-        Node node = JcrUtils.getOrAddNode( versionNode, id);
-        if (!node.isNodeType( ARTIFACT_NODE_TYPE ))
-        {
-            node.addMixin( ARTIFACT_NODE_TYPE );
-        }
+        Node node = JcrUtils.getOrAddNode( versionNode, id, ARTIFACT_NODE_TYPE);
         if (!node.hasProperty( "id" )) {
             node.setProperty( "id", id );
         }

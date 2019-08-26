@@ -46,6 +46,9 @@ public interface JcrConstants
     String MIXIN_META_MAILINGLIST = "archiva:meta_mailinglist";
     String DEPENDENCY_NODE_TYPE = "archiva:dependency";
     String CHECKSUM_NODE_TYPE = "archiva:checksum";
+    String CHECKSUMS_FOLDER_TYPE = "archiva:checksums";
+    String FACETS_FOLDER_TYPE = "archiva:facets";
+    String FACET_ID_CONTAINER_TYPE = "archiva:facetIdContainer";
 
     // Must be alphabetically ordered!
     String[] PROJECT_VERSION_VERSION_PROPERTIES = {"ci.system","ci.url", "description", "incomplete", "issue.system","issue.url", "name", "org.name", "org.url", "url", "scm.connection", "scm.developerConnection", "scm.url"};
