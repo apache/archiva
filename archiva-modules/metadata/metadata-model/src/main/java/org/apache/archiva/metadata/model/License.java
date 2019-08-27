@@ -27,7 +27,7 @@ import java.io.Serializable;
  */
 @XmlRootElement(name = "license")
 public class License
-    implements Serializable
+    implements Serializable, Comparable<License>
 {
     /**
      * The name of the license.
@@ -38,6 +38,8 @@ public class License
      * The URL of the license text.
      */
     private String url;
+
+    private Integer index = 0;
 
     public License( String name, String url )
     {
@@ -108,5 +110,19 @@ public class License
     public String toString()
     {
         return "License{" + "name='" + name + '\'' + ", url='" + url + '\'' + '}';
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+
+    @Override
+    public int compareTo(License o) {
+        return this.index.compareTo(o.getIndex());
     }
 }

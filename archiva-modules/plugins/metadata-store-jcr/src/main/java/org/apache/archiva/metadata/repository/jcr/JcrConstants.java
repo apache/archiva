@@ -44,7 +44,12 @@ public interface JcrConstants
     String MIXIN_META_ORGANIZATION = "archiva:meta_organization";
     String MIXIN_META_LICENSE = "archiva:meta_license";
     String MIXIN_META_MAILINGLIST = "archiva:meta_mailinglist";
+    String MAILINGLIST_NODE_TYPE = "archiva:mailinglist";
+    String MAILINGLISTS_FOLDER_TYPE = "archiva:mailinglists";
+    String LICENSES_FOLDER_TYPE = "archiva:licenses";
+    String LICENSE_NODE_TYPE = "archiva:license";
     String DEPENDENCY_NODE_TYPE = "archiva:dependency";
+    String DEPENDENCIES_FOLDER_TYPE = "archiva:dependencies";
     String CHECKSUM_NODE_TYPE = "archiva:checksum";
     String CHECKSUMS_FOLDER_TYPE = "archiva:checksums";
     String FACETS_FOLDER_TYPE = "archiva:facets";

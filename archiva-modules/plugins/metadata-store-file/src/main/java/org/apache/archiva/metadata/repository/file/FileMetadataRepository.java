@@ -218,12 +218,12 @@ public class FileMetadataRepository
                 setProperty(properties, "dependency." + i + ".scope", dependency.getScope());
                 setProperty(properties, "dependency." + i + ".systemPath", dependency.getSystemPath());
                 setProperty(properties, "dependency." + i + ".artifactId", dependency.getArtifactId());
-                setProperty(properties, "dependency." + i + ".groupId", dependency.getGroupId());
+                setProperty(properties, "dependency." + i + ".groupId", dependency.getNamespace());
                 setProperty(properties, "dependency." + i + ".version", dependency.getVersion());
                 setProperty(properties, "dependency." + i + ".type", dependency.getType());
                 setProperty(properties, "dependency." + i + ".optional", String.valueOf(dependency.isOptional()));
 
-                updateProjectReference(repoId, dependency.getGroupId(), dependency.getArtifactId(),
+                updateProjectReference(repoId, dependency.getNamespace(), dependency.getArtifactId(),
                         dependency.getVersion(), reference);
 
                 i++;
@@ -948,7 +948,7 @@ public class FileMetadataRepository
                     if (dependencyArtifactId != null) {
                         Dependency dependency = new Dependency();
                         dependency.setArtifactId(dependencyArtifactId);
-                        dependency.setGroupId(properties.getProperty("dependency." + i + ".groupId"));
+                        dependency.setNamespace(properties.getProperty("dependency." + i + ".groupId"));
                         dependency.setClassifier(properties.getProperty("dependency." + i + ".classifier"));
                         dependency.setOptional(
                                 Boolean.valueOf(properties.getProperty("dependency." + i + ".optional")));

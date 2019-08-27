@@ -59,31 +59,33 @@
  - org.name (string)
  - org.url (uri)
 
-[archiva:meta_license] > archiva:base mixin
+[archiva:license] > archiva:base
  - index (long)
- - license.name (string)
- - license.url (uri)
+ - name (string)
+ - url (uri)
 
-[archiva:meta_mailinglist] > archiva:base
+[archiva:mailinglist] > archiva:base
  - index (long)
  - name (string)
  - archive (string)
  - post (string)
  - unsubscribe (string)
  - subscribe (string)
- - otherArchives (string) multiple
+ - otherArchives (string)
 
 [archiva:dependency] > archiva:base
- - groupId (string)
- - artifactId (string)
+ - namespace (string)
+ - projectId (string)
  - version (string)
+ - artifactId (string)
  - type (string)
  - classifier (string)
  - scope (string)
  - systemPath (string)
  - optional (boolean)
+ - link (path)
 
-[archiva:dependencies] mixin
+[archiva:dependencies] > nt:hierarchyNode
  + * (archiva:dependency)
 
 [archiva:checksums] > nt:hierarchyNode
@@ -94,15 +96,22 @@
  - type (string)
  - value (string)
 
-[archiva:projectVersion] > archiva:base, archiva:meta_scm, archiva:meta_ci, archiva:meta_issue, archiva:meta_organization mixin
+[archiva:mailinglists] > nt:hierarchyNode
+ + * (archiva:mailinglist)
+
+[archiva:licenses] > nt:hierarchyNode
+ + * (archiva:license)
+
+
+[archiva:projectVersion] > archiva:base, archiva:meta_scm, archiva:meta_ci, archiva:meta_issue, archiva:meta_organization
  - name (string)
  - description (string)
  - url (uri)
  - incomplete (boolean)
  + * (archiva:artifact)
- + * (archiva:meta_license)
- + * (archiva:meta_mailinglist)
- + * (archiva:dependencies)
+ + licenses (archiva:licenses)
+ + mailinglists (archiva:mailinglists)
+ + dependencies (archiva:dependencies)
  + * (archiva:facet)
 
 

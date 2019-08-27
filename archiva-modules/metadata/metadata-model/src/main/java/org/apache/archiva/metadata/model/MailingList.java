@@ -30,8 +30,11 @@ import java.util.List;
  */
 @XmlRootElement(name = "mailingList")
 public class MailingList
-    implements Serializable
+    implements Serializable, Comparable<MailingList>
 {
+
+    private Integer index;
+
     /**
      * The primary archive URL for this mailing list.
      */
@@ -133,5 +136,18 @@ public class MailingList
             ", subscribeAddress='" + subscribeAddress + '\'' +
             ", unsubscribeAddress='" + unsubscribeAddress + '\'' +
             '}';
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    @Override
+    public int compareTo(MailingList o) {
+        return this.index.compareTo(o.getIndex());
     }
 }

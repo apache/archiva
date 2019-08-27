@@ -419,7 +419,7 @@ public abstract class AbstractMetadataRepositoryTest
             Dependency d = new Dependency( );
             d.setArtifactId( "artifactId" );
             d.setClassifier( "classifier" );
-            d.setGroupId( "groupId" );
+            d.setNamespace( "groupId" );
             d.setScope( "scope" );
             d.setSystemPath( "system path" );
             d.setType( "type" );
@@ -471,7 +471,7 @@ public abstract class AbstractMetadataRepositoryTest
             d = metadata.getDependencies( ).get( 0 );
             assertEquals( "artifactId", d.getArtifactId( ) );
             assertEquals( "classifier", d.getClassifier( ) );
-            assertEquals( "groupId", d.getGroupId( ) );
+            assertEquals( "groupId", d.getNamespace( ) );
             assertEquals( "scope", d.getScope( ) );
             assertEquals( "system path", d.getSystemPath( ) );
             assertEquals( "type", d.getType( ) );
@@ -2080,7 +2080,7 @@ public abstract class AbstractMetadataRepositoryTest
             Dependency d = new Dependency( );
             d.setArtifactId( "artifactId" );
             d.setClassifier( "classifier" );
-            d.setGroupId( "groupId" );
+            d.setNamespace( "groupId" );
             d.setScope( "scope" );
             d.setSystemPath( "system path" );
             d.setType( "type" );
@@ -2091,7 +2091,7 @@ public abstract class AbstractMetadataRepositoryTest
             d = new Dependency( );
             d.setArtifactId( "artifactId1" );
             d.setClassifier( "classifier" );
-            d.setGroupId( "groupId" );
+            d.setNamespace( "groupId" );
             d.setScope( "scope" );
             d.setSystemPath( "system path" );
             d.setType( "type" );
@@ -2110,7 +2110,7 @@ public abstract class AbstractMetadataRepositoryTest
             tryAssert( ( ) -> {
 
                 Collection<ProjectVersionReference> references =
-                    getRepository( ).getProjectReferences( session, TEST_REPO_ID, dd.getGroupId( ), dd.getArtifactId( ), dd.getVersion( ) );
+                    getRepository( ).getProjectReferences( session, TEST_REPO_ID, dd.getNamespace( ), dd.getArtifactId( ), dd.getVersion( ) );
                     log.info( "references: {}", references );
                 assertThat( references ).isNotNull( ).hasSize( 1 ).contains(
                     new ProjectVersionReference( ProjectVersionReference.ReferenceType.DEPENDENCY, TEST_PROJECT, TEST_NAMESPACE,

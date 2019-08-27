@@ -64,7 +64,12 @@ public class Dependency
     /**
      * The Maven group ID of the dependency.
      */
-    private String groupId;
+    private String namespace;
+
+    /**
+     * The project id
+     */
+    private String projectId;
 
     /**
      * The version of the artifact to depend on. If this refers to a project version then the repository implementation
@@ -127,9 +132,9 @@ public class Dependency
         this.artifactId = artifactId;
     }
 
-    public void setGroupId( String groupId )
+    public void setNamespace(String groupId )
     {
-        this.groupId = groupId;
+        this.namespace = groupId;
     }
 
     public void setVersion( String version )
@@ -147,9 +152,17 @@ public class Dependency
         return artifactId;
     }
 
-    public String getGroupId()
+    public String getNamespace()
     {
-        return groupId;
+        return namespace;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     @Override
@@ -163,7 +176,7 @@ public class Dependency
         sb.append( ", systemPath='" ).append( systemPath ).append( '\'' );
         sb.append( ", type='" ).append( type ).append( '\'' );
         sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
-        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
+        sb.append( ", namespace='" ).append(namespace).append( '\'' );
         sb.append( ", version='" ).append( version ).append( '\'' );
         sb.append( '}' );
         return sb.toString();

@@ -834,7 +834,7 @@ public class DefaultRepositoriesService
                 if ( !targetPath.exists() )
                 {
                     //throw new ContentNotFoundException(
-                    //    artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
+                    //    artifact.getNamespace() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
                     log.warn( "targetPath {} not found skip file deletion", targetPath );
                     return false;
                 }

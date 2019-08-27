@@ -1317,7 +1317,7 @@ public class CassandraMetadataRepository
 
             addInsertion( dependencyMutator, keyDependency, cfDependency, ARTIFACT_ID.toString(), dependency.getArtifactId() );
 
-            addInsertion( dependencyMutator, keyDependency, cfDependency, GROUP_ID.toString(), dependency.getGroupId() );
+            addInsertion( dependencyMutator, keyDependency, cfDependency, GROUP_ID.toString(), dependency.getNamespace() );
 
             addInsertion( dependencyMutator, keyDependency, cfDependency, VERSION.toString(), dependency.getVersion() );
 
@@ -1371,7 +1371,7 @@ public class CassandraMetadataRepository
 
             dependency.setArtifactId( columnFamilyResult.getString( ARTIFACT_ID.toString() ) );
 
-            dependency.setGroupId( columnFamilyResult.getString( GROUP_ID.toString() ) );
+            dependency.setNamespace( columnFamilyResult.getString( GROUP_ID.toString() ) );
 
             dependency.setVersion( columnFamilyResult.getString( VERSION.toString() ) );
 

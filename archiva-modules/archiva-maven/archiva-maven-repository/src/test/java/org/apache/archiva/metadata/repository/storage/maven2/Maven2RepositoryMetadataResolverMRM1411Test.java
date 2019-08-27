@@ -345,7 +345,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         assertEquals( artifactId, dependency.getArtifactId() );
         assertEquals( "jar", dependency.getType() );
         assertEquals( version, dependency.getVersion() );
-        assertEquals( groupId, dependency.getGroupId() );
+        assertEquals( groupId, dependency.getNamespace() );
         assertEquals( scope, dependency.getScope() );
         assertNull( dependency.getClassifier() );
         assertNull( dependency.getSystemPath() );

@@ -351,7 +351,7 @@ public class Maven2RepositoryStorage
                     new org.apache.archiva.metadata.model.Dependency();
             newDependency.setArtifactId(dependency.getArtifactId());
             newDependency.setClassifier(dependency.getClassifier());
-            newDependency.setGroupId(dependency.getGroupId());
+            newDependency.setNamespace(dependency.getGroupId());
             newDependency.setOptional(dependency.isOptional());
             newDependency.setScope(dependency.getScope());
             newDependency.setSystemPath(dependency.getSystemPath());
