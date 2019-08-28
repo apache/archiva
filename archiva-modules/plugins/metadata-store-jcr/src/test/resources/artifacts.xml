@@ -21,9 +21,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-1.1.pom">
@@ -54,9 +51,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-1.1.2.pom">
@@ -87,9 +81,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-1.2.1.pom">
@@ -120,9 +111,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-1.2.2.pom">
@@ -153,9 +141,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-1.3.pom">
@@ -194,9 +179,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-applet-1.1.jar">
@@ -252,9 +234,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-applet-1.1.2.jar">
@@ -310,9 +289,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-applet-1.2.2.jar">
@@ -376,9 +352,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-artifact-converter-1.1.jar">
@@ -434,9 +407,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-artifact-converter-1.1.2.jar">
@@ -492,9 +462,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-artifact-converter-1.2.2.jar">
@@ -558,9 +525,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-artifact-reports-1.1.jar">
@@ -616,9 +580,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-artifact-reports-1.1.2.jar">
@@ -674,9 +635,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-artifact-reports-1.2.2.jar">
@@ -740,9 +698,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-base-1.1.pom">
@@ -773,9 +728,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-base-1.1.2.pom">
@@ -806,9 +758,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-base-1.2.1.pom">
@@ -839,9 +788,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-base-1.2.2.pom">
@@ -872,9 +818,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-base-1.3.pom">
@@ -913,9 +856,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-checksum-1.1-sources.jar">
@@ -999,9 +939,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-checksum-1.1.2.jar">
@@ -1057,9 +994,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-checksum-1.2.1.jar">
@@ -1115,9 +1049,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-checksum-1.2.2.jar">
@@ -1173,9 +1104,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-checksum-1.3.jar">
@@ -1239,9 +1167,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-common-1.1-sources.jar">
@@ -1325,9 +1250,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-common-1.1.2.jar">
@@ -1383,9 +1305,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-common-1.2.1.jar">
@@ -1441,9 +1360,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-common-1.2.2.jar">
@@ -1499,9 +1415,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-common-1.3.jar">
@@ -1565,9 +1478,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-configuration-1.1-sources.jar">
@@ -1651,9 +1561,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-configuration-1.1.2.jar">
@@ -1709,9 +1616,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-configuration-1.2.1.jar">
@@ -1767,9 +1671,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-configuration-1.2.2.jar">
@@ -1825,9 +1726,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-configuration-1.3.jar">
@@ -1891,9 +1789,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumer-api-1.1-sources.jar">
@@ -1977,9 +1872,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumer-api-1.1.2.jar">
@@ -2035,9 +1927,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumer-api-1.2.1.jar">
@@ -2093,9 +1982,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumer-api-1.2.2.jar">
@@ -2151,9 +2037,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumer-api-1.3.jar">
@@ -2217,9 +2100,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumers-1.1.pom">
@@ -2250,9 +2130,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumers-1.1.2.pom">
@@ -2283,9 +2160,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumers-1.2.1.pom">
@@ -2316,9 +2190,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumers-1.2.2.pom">
@@ -2349,9 +2220,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-consumers-1.3.pom">
@@ -2390,9 +2258,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-converter-1.1.jar">
@@ -2448,9 +2313,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-converter-1.1.2.jar">
@@ -2506,9 +2368,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-converter-1.2.2.jar">
@@ -2572,9 +2431,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-core-consumers-1.1-sources.jar">
@@ -2658,9 +2514,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-core-consumers-1.1.2.jar">
@@ -2716,9 +2569,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-core-consumers-1.2.1.jar">
@@ -2774,9 +2624,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-core-consumers-1.2.2.jar">
@@ -2840,9 +2687,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-database-1.1.jar">
@@ -2898,9 +2742,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-database-1.1.2.jar">
@@ -2956,9 +2797,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-database-1.2.2.jar">
@@ -3022,9 +2860,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-database-consumers-1.1.jar">
@@ -3080,9 +2915,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-database-consumers-1.1.2.jar">
@@ -3138,9 +2970,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-database-consumers-1.2.2.jar">
@@ -3204,9 +3033,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-dependency-graph-1.1-sources.jar">
@@ -3290,9 +3116,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-dependency-graph-1.1.2.jar">
@@ -3348,9 +3171,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-dependency-graph-1.2.2.jar">
@@ -3414,9 +3234,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-dependency-tree-consumer-1.1.jar">
@@ -3472,9 +3289,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-dependency-tree-consumer-1.1.2.jar">
@@ -3530,9 +3344,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-dependency-tree-consumer-1.2.2.jar">
@@ -3596,9 +3407,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-indexer-1.1.jar">
@@ -3654,9 +3462,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-indexer-1.1.2.jar">
@@ -3712,9 +3517,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-indexer-1.2.1.jar">
@@ -3770,9 +3572,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-indexer-1.2.2.jar">
@@ -3836,9 +3635,6 @@
     </sv:property>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-jetty-1.2.1-bin.zip">
@@ -3897,9 +3693,6 @@
     </sv:node>
     <sv:node sv:name="1.3.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-jetty-1.3.1-bin.tar.gz">
@@ -3966,9 +3759,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-lucene-consumers-1.1.jar">
@@ -4024,9 +3814,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-lucene-consumers-1.1.2.jar">
@@ -4082,9 +3869,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-lucene-consumers-1.2.2.jar">
@@ -4148,9 +3932,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-metadata-reports-1.1.jar">
@@ -4206,9 +3987,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-metadata-reports-1.1.2.jar">
@@ -4272,9 +4050,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-model-1.1-sources.jar">
@@ -4358,9 +4133,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-model-1.1.2.jar">
@@ -4416,9 +4188,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-model-1.2.1.jar">
@@ -4474,9 +4243,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-model-1.2.2.jar">
@@ -4532,9 +4298,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-model-1.3.jar">
@@ -4598,9 +4361,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-modules-1.1.pom">
@@ -4631,9 +4391,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-modules-1.1.2.pom">
@@ -4664,9 +4421,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-modules-1.2.1.pom">
@@ -4697,9 +4451,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-modules-1.2.2.pom">
@@ -4730,9 +4481,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-modules-1.3.pom">
@@ -4771,9 +4519,6 @@
     </sv:property>
     <sv:node sv:name="3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-parent-3-site.xml">
@@ -4832,9 +4577,6 @@
     </sv:node>
     <sv:node sv:name="5">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-parent-5-site.xml">
@@ -4893,9 +4635,6 @@
     </sv:node>
     <sv:node sv:name="6">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-parent-6-site.xml">
@@ -4962,9 +4701,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-policies-1.1-sources.jar">
@@ -5048,9 +4784,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-policies-1.1.2.jar">
@@ -5106,9 +4839,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-policies-1.2.1.jar">
@@ -5164,9 +4894,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-policies-1.2.2.jar">
@@ -5222,9 +4949,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-policies-1.3.jar">
@@ -5288,9 +5012,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-project-reports-1.1.jar">
@@ -5346,9 +5067,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-project-reports-1.1.2.jar">
@@ -5412,9 +5130,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-proxy-1.1.jar">
@@ -5470,9 +5185,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-proxy-1.1.2.jar">
@@ -5528,9 +5240,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-proxy-1.2.2.jar">
@@ -5594,9 +5303,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-report-manager-1.1.jar">
@@ -5652,9 +5358,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-report-manager-1.1.2.jar">
@@ -5710,9 +5413,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-report-manager-1.2.2.jar">
@@ -5776,9 +5476,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-reporting-1.1.pom">
@@ -5809,9 +5506,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-reporting-1.1.2.pom">
@@ -5842,9 +5536,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-reporting-1.2.2.pom">
@@ -5883,9 +5574,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-repository-layer-1.1-sources.jar">
@@ -5969,9 +5657,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-repository-layer-1.1.2.jar">
@@ -6027,9 +5712,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-repository-layer-1.2.1.jar">
@@ -6085,9 +5767,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-repository-layer-1.2.2.jar">
@@ -6143,9 +5822,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-repository-layer-1.3.jar">
@@ -6209,9 +5885,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-rss-1.1.jar">
@@ -6267,9 +5940,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-rss-1.1.2.jar">
@@ -6325,9 +5995,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-rss-1.2.2.jar">
@@ -6391,9 +6058,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-scheduled-1.1.jar">
@@ -6449,9 +6113,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-scheduled-1.1.2.jar">
@@ -6507,9 +6168,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-scheduled-1.2.2.jar">
@@ -6573,9 +6231,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-security-1.1.jar">
@@ -6631,9 +6286,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-security-1.1.2.jar">
@@ -6689,9 +6341,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-security-1.2.2.jar">
@@ -6755,9 +6404,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-signature-consumers-1.1.jar">
@@ -6813,9 +6459,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-signature-consumers-1.1.2.jar">
@@ -6871,9 +6514,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-signature-consumers-1.2.2.jar">
@@ -6937,9 +6577,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-transaction-1.1.jar">
@@ -6995,9 +6632,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-transaction-1.1.2.jar">
@@ -7053,9 +6687,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-transaction-1.2.2.jar">
@@ -7119,9 +6750,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-web-1.1.pom">
@@ -7152,9 +6780,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-web-1.1.2.pom">
@@ -7185,9 +6810,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-web-1.2.1.pom">
@@ -7218,9 +6840,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-web-1.2.2.pom">
@@ -7259,9 +6878,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-webapp-1.1.pom">
@@ -7317,9 +6933,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-webapp-1.2.2.pom">
@@ -7383,9 +6996,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-webdav-1.1.jar">
@@ -7441,9 +7051,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-webdav-1.1.2.jar">
@@ -7499,9 +7106,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-webdav-1.2.2.jar">
@@ -7565,9 +7169,6 @@
     </sv:property>
     <sv:node sv:name="1.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xml-tools-1.1-sources.jar">
@@ -7651,9 +7252,6 @@
     </sv:node>
     <sv:node sv:name="1.1.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xml-tools-1.1.2.jar">
@@ -7709,9 +7307,6 @@
     </sv:node>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xml-tools-1.2.1.jar">
@@ -7767,9 +7362,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xml-tools-1.2.2.jar">
@@ -7825,9 +7417,6 @@
     </sv:node>
     <sv:node sv:name="1.3">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xml-tools-1.3.jar">
@@ -7891,9 +7480,6 @@
     </sv:property>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xmlrpc-1.2.1.pom">
@@ -7924,9 +7510,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xmlrpc-1.2.2.pom">
@@ -7965,9 +7548,6 @@
     </sv:property>
     <sv:node sv:name="1.2.1">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xmlrpc-api-1.2.1.jar">
@@ -8023,9 +7603,6 @@
     </sv:node>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xmlrpc-api-1.2.2.jar">
@@ -8089,9 +7666,6 @@
     </sv:property>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xmlrpc-client-1.2.2.jar">
@@ -8155,9 +7729,6 @@
     </sv:property>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xmlrpc-security-1.2.2.jar">
@@ -8221,9 +7792,6 @@
     </sv:property>
     <sv:node sv:name="1.2.2">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>nt:unstructured</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
         <sv:value>archiva:projectVersion</sv:value>
       </sv:property>
       <sv:node sv:name="archiva-xmlrpc-services-1.2.2.jar">
