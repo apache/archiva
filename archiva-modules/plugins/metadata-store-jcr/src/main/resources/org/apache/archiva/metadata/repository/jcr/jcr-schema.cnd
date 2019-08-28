@@ -26,12 +26,19 @@
   - id (string)
   - jcr:lastModified (date)
 
-[archiva:repository] > archiva:base mixin
+[archiva:repository] > archiva:base
  + content (archiva:content) primary
  + facets (nt:hierarchyNode)
 
-[archiva:content] > archiva:base mixin
- + * (archiva:namespace)
+[archiva:content] > archiva:base
+ + * (archiva:folder)
+
+/*
+ * Namespaces and projects can have the same path, so we add the generic folder
+ * type as primary type. Namespace and project nodes are mixin types.
+ */
+[archiva:folder] > archiva:base
+ + * (archiva:folder)
 
 [archiva:namespace] > archiva:base mixin
  - namespace (string)

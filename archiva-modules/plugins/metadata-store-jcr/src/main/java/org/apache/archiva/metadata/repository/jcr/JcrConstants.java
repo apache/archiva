@@ -32,8 +32,9 @@ public interface JcrConstants
 
 
     String BASE_NODE_TYPE = "archiva:base";
-    String NAMESPACE_NODE_TYPE = "archiva:namespace";
-    String PROJECT_NODE_TYPE = "archiva:project";
+    String CONTENT_NODE_TYPE = "archiva:content";
+    String NAMESPACE_MIXIN_TYPE = "archiva:namespace";
+    String PROJECT_MIXIN_TYPE = "archiva:project";
     String PROJECT_VERSION_NODE_TYPE = "archiva:projectVersion";
     String ARTIFACT_NODE_TYPE = "archiva:artifact";
     String REPOSITORY_NODE_TYPE = "archiva:repository";
@@ -42,8 +43,6 @@ public interface JcrConstants
     String MIXIN_META_CI = "archiva:meta_ci";
     String MIXIN_META_ISSUE = "archiva:meta_issue";
     String MIXIN_META_ORGANIZATION = "archiva:meta_organization";
-    String MIXIN_META_LICENSE = "archiva:meta_license";
-    String MIXIN_META_MAILINGLIST = "archiva:meta_mailinglist";
     String MAILINGLIST_NODE_TYPE = "archiva:mailinglist";
     String MAILINGLISTS_FOLDER_TYPE = "archiva:mailinglists";
     String LICENSES_FOLDER_TYPE = "archiva:licenses";
@@ -54,6 +53,7 @@ public interface JcrConstants
     String CHECKSUMS_FOLDER_TYPE = "archiva:checksums";
     String FACETS_FOLDER_TYPE = "archiva:facets";
     String FACET_ID_CONTAINER_TYPE = "archiva:facetIdContainer";
+    String FOLDER_TYPE = "archiva:folder";
 
     // Must be alphabetically ordered!
     String[] PROJECT_VERSION_VERSION_PROPERTIES = {"ci.system","ci.url", "description", "incomplete", "issue.system","issue.url", "name", "org.name", "org.url", "url", "scm.connection", "scm.developerConnection", "scm.url"};

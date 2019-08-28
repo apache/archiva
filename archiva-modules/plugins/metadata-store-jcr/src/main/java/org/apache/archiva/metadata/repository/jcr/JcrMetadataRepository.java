@@ -378,7 +378,7 @@ public class JcrMetadataRepository
                 Iterator<Node> nodeIterator = JcrUtils.getChildNodes(root.getNode(namespacePath)).iterator();
                 while (nodeIterator.hasNext()) {
                     Node node = nodeIterator.next();
-                    if (node.isNodeType(org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_NODE_TYPE) && projectId.equals(node.getName())) {
+                    if (node.isNodeType(org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_MIXIN_TYPE) && projectId.equals(node.getName())) {
                         node.remove();
                     }
                 }
@@ -626,7 +626,7 @@ public class JcrMetadataRepository
             String path = getNamespacePath(repositoryId, projectId);
             if (root.hasNode(path)) {
                 Node node = root.getNode(path);
-                if (node.isNodeType(NAMESPACE_NODE_TYPE)) {
+                if (node.isNodeType(NAMESPACE_MIXIN_TYPE)) {
                     node.remove();
                 }
             }
@@ -1196,7 +1196,7 @@ public class JcrMetadataRepository
                 : getRepositoryContentPath(repositoryId);
 
         try {
-            return getNodeNames(getSession(session), path, NAMESPACE_NODE_TYPE);
+            return getNodeNames(getSession(session), path, NAMESPACE_MIXIN_TYPE);
         } catch (MetadataRepositoryException e) {
             throw new MetadataResolutionException(e.getMessage());
         }
@@ -1206,7 +1206,7 @@ public class JcrMetadataRepository
     public List<String> getProjects(RepositorySession session, String repositoryId, String namespace)
             throws MetadataResolutionException {
         try {
-            return getNodeNames(getSession(session), getNamespacePath(repositoryId, namespace), org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_NODE_TYPE);
+            return getNodeNames(getSession(session), getNamespacePath(repositoryId, namespace), org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_MIXIN_TYPE);
         } catch (MetadataRepositoryException e) {
             throw new MetadataResolutionException(e.getMessage());
         }
@@ -1557,6 +1557,25 @@ public class JcrMetadataRepository
         return node;
     }
 
+    private Node getOrAddNodeByPath(Node baseNode, String name, String primaryType, String... mixinTypes)
+            throws RepositoryException {
+        log.debug("getOrAddNodeByPath baseNode={}, name={}, primary={}, mixin={}", baseNode, name, primaryType, mixinTypes);
+        Node node = baseNode;
+        for (String n : name.split("/")) {
+            node = JcrUtils.getOrAddNode(node, n, primaryType);
+            for (String mixin : mixinTypes) {
+                if (mixin != null && !node.isNodeType(mixin)) {
+                    node.addMixin(mixin);
+                }
+
+            }
+            if (!node.hasProperty("id")) {
+                node.setProperty("id", n);
+            }
+        }
+        return node;
+    }
+
     private static String getFacetPath(String repositoryId, String facetId, String name) {
         return getFacetPath(repositoryId, facetId) + "/" + name;
     }
@@ -1567,10 +1586,7 @@ public class JcrMetadataRepository
         Node root = jcrSession.getRootNode();
         Node node = JcrUtils.getOrAddNode(root, "repositories");
         log.debug("Repositories " + node);
-        node = JcrUtils.getOrAddNode(node, repositoryId, JcrConstants.NT_UNSTRUCTURED);
-        if (!node.isNodeType(org.apache.archiva.metadata.repository.jcr.JcrConstants.REPOSITORY_NODE_TYPE)) {
-            node.addMixin(org.apache.archiva.metadata.repository.jcr.JcrConstants.REPOSITORY_NODE_TYPE);
-        }
+        node = JcrUtils.getOrAddNode(node, repositoryId, REPOSITORY_NODE_TYPE);
         if (!node.hasProperty("id")) {
             node.setProperty("id", repositoryId);
         }
@@ -1580,21 +1596,21 @@ public class JcrMetadataRepository
     private Node getOrAddRepositoryContentNode(Session jcrSession, String repositoryId)
             throws RepositoryException {
         Node node = getOrAddRepositoryNode(jcrSession, repositoryId);
-        return JcrUtils.getOrAddNode(node, "content");
+        return JcrUtils.getOrAddNode(node, "content", CONTENT_NODE_TYPE);
     }
 
     private Node getOrAddNamespaceNode(Session jcrSession, String repositoryId, String namespace)
             throws RepositoryException {
         Node repo = getOrAddRepositoryContentNode(jcrSession, repositoryId);
-        return getOrAddNodeByPath(repo, namespace.replace('.', '/'), NAMESPACE_NODE_TYPE);
+        return getOrAddNodeByPath(repo, namespace.replace('.', '/'), FOLDER_TYPE, NAMESPACE_MIXIN_TYPE);
     }
 
     private Node getOrAddProjectNode(Session jcrSession, String repositoryId, String namespace, String projectId)
             throws RepositoryException {
         Node namespaceNode = getOrAddNamespaceNode(jcrSession, repositoryId, namespace);
-        Node node = JcrUtils.getOrAddNode(namespaceNode, projectId);
-        if (!node.isNodeType(org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_NODE_TYPE)) {
-            node.addMixin(org.apache.archiva.metadata.repository.jcr.JcrConstants.PROJECT_NODE_TYPE);
+        Node node = JcrUtils.getOrAddNode(namespaceNode, projectId, FOLDER_TYPE);
+        if (!node.isNodeType(PROJECT_MIXIN_TYPE)) {
+            node.addMixin(PROJECT_MIXIN_TYPE);
         }
         if (!node.hasProperty("id")) {
             node.setProperty("id", projectId);

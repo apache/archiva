@@ -458,8 +458,8 @@ public class OakRepositoryFactory
                         setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME );
                     rules.setProperty( ":childOrder", ImmutableSet.of(
                         REPOSITORY_NODE_TYPE,
-                        NAMESPACE_NODE_TYPE, //
-                        PROJECT_NODE_TYPE,
+                            NAMESPACE_MIXIN_TYPE, //
+                            PROJECT_MIXIN_TYPE,
                         PROJECT_VERSION_NODE_TYPE, //
                         ARTIFACT_NODE_TYPE, //
                         FACET_NODE_TYPE //
@@ -468,9 +468,9 @@ public class OakRepositoryFactory
                     idxBuilder.async( "async", "nrt", "sync" ).includedPaths( "/repositories" ).evaluatePathRestrictions();
 
                     initBaseRule(idxBuilder.indexRule( REPOSITORY_NODE_TYPE ));
-                    initBaseRule(idxBuilder.indexRule( NAMESPACE_NODE_TYPE ))
+                    initBaseRule(idxBuilder.indexRule(NAMESPACE_MIXIN_TYPE))
                         .property( "namespace" ).propertyIndex().analyzed();
-                    initBaseRule(idxBuilder.indexRule( PROJECT_NODE_TYPE ))
+                    initBaseRule(idxBuilder.indexRule(PROJECT_MIXIN_TYPE))
                         .property( "name" ).propertyIndex().analyzed().notNullCheckEnabled().nullCheckEnabled();
                     initBaseRule( idxBuilder.indexRule( PROJECT_VERSION_NODE_TYPE ) )
                         .property("name").propertyIndex().analyzed().notNullCheckEnabled().nullCheckEnabled()
@@ -506,10 +506,10 @@ public class OakRepositoryFactory
                     idxBuilder.indexRule( MIXIN_META_ORGANIZATION )
                         .property( "org.name" ).propertyIndex( ).analyzed( )
                         .property( "org.url" ).propertyIndex( ).analyzed( );
-                    idxBuilder.indexRule( MIXIN_META_LICENSE )
+                    idxBuilder.indexRule( LICENSE_NODE_TYPE )
                         .property( "license.name" ).propertyIndex( ).analyzed( )
                         .property( "license.url" ).propertyIndex( ).analyzed( );
-                    idxBuilder.indexRule( MIXIN_META_MAILINGLIST )
+                    idxBuilder.indexRule( MAILINGLIST_NODE_TYPE )
                         .property( "name" ).propertyIndex().analyzed();
                     initBaseRule(idxBuilder.indexRule( DEPENDENCY_NODE_TYPE ))
                         .property( "groupId" ).propertyIndex().analyzed().ordered()
