@@ -313,6 +313,7 @@ public class JcrMetadataRepository
                     n.setProperty("systemPath", dependency.getSystemPath());
                     n.setProperty("optional", dependency.isOptional());
                     n.setProperty("projectId", dependency.getProjectId());
+                    // TODO: Fixig
                     Node refNode = findArtifactNode(jcrSession, dependency.getNamespace(),
                             dependency.getProjectId(), dependency.getVersion(), dependency.getArtifactId());
                     if (refNode!=null) {
@@ -1646,7 +1647,9 @@ public class JcrMetadataRepository
     private Node findArtifactNode(Session jcrSession, String namespace, String projectId,
                                   String projectVersion, String id) throws RepositoryException {
 
-
+        if (namespace==null || projectId==null||projectVersion==null||id==null) {
+            return null;
+        }
         Node root = jcrSession.getRootNode();
         Node node = JcrUtils.getOrAddNode(root, "repositories");
         for (Node n : JcrUtils.getChildNodes(node)) {
