@@ -46,6 +46,9 @@ public class MergeRepositoriesServiceTest
 
     private Path repoStage = getAppserverBase().resolve("data/repositories").resolve( "test-repository-stage" );
 
+    private int maxChecks = 10;
+    private int checkWaitMs = 500;
+
     @Test
     public void getMergeConflictedArtifacts()
         throws Exception
@@ -56,12 +59,28 @@ public class MergeRepositoriesServiceTest
         waitForScanToComplete( TEST_REPOSITORY_STAGE );
 
 
-        List<Artifact> artifactMetadatas = service.getMergeConflictedArtifacts( TEST_REPOSITORY_STAGE,
-                                                                                TEST_REPOSITORY );
+        int checks = maxChecks;
+        Throwable ex = null;
+        while(checks-->0) {
+            try {
+                log.info("Test Try " + checks);
+                List<Artifact> artifactMetadatas = service.getMergeConflictedArtifacts( TEST_REPOSITORY_STAGE,
+                        TEST_REPOSITORY );
+                log.info("conflicts: {}", artifactMetadatas);
 
-        log.info( "conflicts: {}", artifactMetadatas );
+                assertThat(artifactMetadatas).isNotNull().isNotEmpty().hasSize(8);
+                return;
+            } catch (Throwable e) {
+                ex = e;
+            }
+            Thread.currentThread().sleep(checkWaitMs);
+        }
+        if (ex!=null && ex instanceof AssertionError) {
+            throw (AssertionError)ex;
+        } else {
+            throw new Exception(ex);
+        }
 
-        assertThat( artifactMetadatas ).isNotNull().isNotEmpty().hasSize( 8 );
     }
 
     @Test
@@ -81,10 +100,28 @@ public class MergeRepositoriesServiceTest
 
         MergeRepositoriesService service = getMergeRepositoriesService( authorizationHeader );
 
-        service.mergeRepositories( TEST_REPOSITORY_STAGE, TEST_REPOSITORY, true );
+        int checks = maxChecks;
+        Throwable ex = null;
+        while(checks-->0) {
+            try {
+                log.info("Test Try " + checks);
+                service.mergeRepositories(TEST_REPOSITORY_STAGE, TEST_REPOSITORY, true);
 
-        assertTrue( Files.exists(repo.resolve(mergedArtifactPath)) );
-        assertTrue( Files.exists(repo.resolve(mergedArtifactPomPath)) );
+                assertTrue(Files.exists(repo.resolve(mergedArtifactPath)));
+                assertTrue(Files.exists(repo.resolve(mergedArtifactPomPath)));
+                return;
+            } catch (Throwable e) {
+                log.info("Exception {}, {}", e.getMessage(), e.getClass());
+                ex = e;
+            }
+            Thread.currentThread().sleep(checkWaitMs);
+        }
+        if (ex!=null && ex instanceof AssertionError) {
+            throw (AssertionError)ex;
+        } else if (ex!=null) {
+            throw new Exception(ex);
+        }
+
     }
 
     @After
