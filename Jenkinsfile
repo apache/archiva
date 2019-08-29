@@ -95,7 +95,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
+                                sh "export PATH=$MVN_CMD_DIR:$PATH && mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
                             }
                 }
             }
@@ -136,7 +136,7 @@ pipeline {
                                           options: publishers
                                 )
                                         {
-                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
+                                            sh "export PATH=$MVN_CMD_DIR:$PATH && mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
                                         }
                             }
                         }
