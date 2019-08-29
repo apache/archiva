@@ -32,7 +32,7 @@ buildJdk = 'JDK 1.8 (latest)'
 buildJdk9 = 'JDK 1.9 (latest)'
 buildJdk10 = 'JDK 10 (latest)'
 buildJdk11 = 'JDK 11 (latest)'
-buildMvn = 'Maven 3.5.2'
+buildMvn = 'Maven 3.5.4'
 //localRepository = ".repository"
 localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
 mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'
@@ -95,7 +95,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "export PATH=$MVN_CMD_DIR:$PATH && mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
+                                sh "mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
                             }
                 }
             }
@@ -136,7 +136,7 @@ pipeline {
                                           options: publishers
                                 )
                                         {
-                                            sh "export PATH=$MVN_CMD_DIR:$PATH && mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
+                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
                                         }
                             }
                         }
