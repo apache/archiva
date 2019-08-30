@@ -25,6 +25,8 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -141,7 +143,8 @@ public class ArtifactMetadata
     }
 
     public void setWhenGathered(ZonedDateTime whenGathered) {
-        this.whenGathered = whenGathered.withZoneSameInstant(ModelInfo.STORAGE_TZ);
+        // We set the resolution to milliseconds, because it's the resolution that all current backends support
+        this.whenGathered = whenGathered.withZoneSameInstant(ModelInfo.STORAGE_TZ).truncatedTo(ChronoUnit.MILLIS);
     }
 
     public void setMd5(String md5) {
