@@ -258,8 +258,15 @@ public class RepositoryScannerInstance
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
         log.error("Error occured at {}: {}", file, exc.getMessage(), exc);
-        if (basePath!=null && Files.isSameFile(file, basePath)) {
-            finishWalk();
+        try
+        {
+            if ( basePath != null && Files.isSameFile( file, basePath ) )
+            {
+                log.debug( "Finishing walk from visitFileFailed" );
+                finishWalk( );
+            }
+        } catch (Throwable e) {
+            log.error( "Error during visitFileFailed handling: {}", e.getMessage( ), e );
         }
         return FileVisitResult.CONTINUE;
     }

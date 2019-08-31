@@ -141,7 +141,7 @@ public class DefaultRepositoryScanner
             stats.setKnownConsumers( gatherIds( knownContentConsumers ) );
             stats.setInvalidConsumers( gatherIds( invalidContentConsumers ) );
         } catch (IOException e) {
-            log.error("Could not scan directory {}", repositoryBase);
+            log.error("Could not scan directory {}: {}", repositoryBase, e.getMessage(), e);
         } finally
         {
             inProgressScans.remove( scannerInstance );
