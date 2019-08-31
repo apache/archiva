@@ -71,7 +71,7 @@ public class DefaultMergeRepositoriesService
         }
         catch ( MetadataRepositoryException e )
         {
-            e.printStackTrace( );
+            log.error( "Error while creating repository session {}", e.getMessage( ), e );
         }
         try
         {

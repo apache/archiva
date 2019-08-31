@@ -144,8 +144,7 @@ public class MergeRepositoriesServiceTest
         // FileUtils.copyDirectory( Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).toFile(), repo.toFile() );
 
         Path srcRepo = getProjectDirectory().resolve(  "src/test/repo-with-osgi" );
-        createStagedNeededRepo( TEST_REPOSITORY, srcRepo , true );
-        FileUtils.copyDirectory( getProjectDirectory().resolve("src/test/repo-with-osgi-stage" ).toFile(),
-                                 repoStage.toFile() );
+        createStagedNeededRepo( TEST_REPOSITORY, srcRepo , getProjectDirectory().resolve("src/test/repo-with-osgi-stage" ),  true );
+
     }
 }

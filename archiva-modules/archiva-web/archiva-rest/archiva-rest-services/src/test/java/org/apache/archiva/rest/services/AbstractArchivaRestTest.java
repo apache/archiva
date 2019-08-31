@@ -553,7 +553,7 @@ public abstract class AbstractArchivaRestTest
 
     }
 
-    protected void createAndIndexRepo( String testRepoId, Path srcRepoPath, boolean stageNeeded )
+    protected void createAndIndexRepo( String testRepoId, Path srcRepoPath, Path stagedSrcRepoPath, boolean stageNeeded )
         throws ArchivaRestServiceException, IOException, RedbackServiceException
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
@@ -572,9 +572,16 @@ public abstract class AbstractArchivaRestTest
         }
 
         Path repoPath = getAppserverBase().resolve( "data" ).resolve( "repositories" ).resolve( testRepoId);
+        Path stagedRepoPath = getAppserverBase().resolve( "data" ).resolve( "repositories" ).resolve( testRepoId + "-stage");
 
         FileUtils.deleteQuietly(repoPath.toFile());
         FileUtils.copyDirectory(srcRepoPath.toFile(), repoPath.toFile());
+
+        if (stagedSrcRepoPath!=null) {
+            FileUtils.deleteQuietly(stagedRepoPath.toFile());
+            FileUtils.copyDirectory(stagedSrcRepoPath.toFile(), stagedRepoPath.toFile());
+
+        }
 
         managedRepository.setLocation( repoPath.toAbsolutePath().toString() );
         String suffix = Long.toString( new Date().getTime() );
@@ -607,14 +614,14 @@ public abstract class AbstractArchivaRestTest
     protected void createAndIndexRepo( String testRepoId, Path srcRepoPath )
         throws Exception
     {
-        createAndIndexRepo( testRepoId, srcRepoPath, false );
+        createAndIndexRepo( testRepoId, srcRepoPath, null, false );
         scanRepo( testRepoId );
     }
 
-    protected void createStagedNeededRepo( String testRepoId, Path srcRepoPath, boolean scan )
+    protected void createStagedNeededRepo( String testRepoId, Path srcRepoPath, Path stagedSrcRepoPath, boolean scan )
         throws Exception
     {
-        createAndIndexRepo( testRepoId, srcRepoPath, true );
+        createAndIndexRepo( testRepoId, srcRepoPath, stagedSrcRepoPath, true );
         if ( scan )
         {
             scanRepo( testRepoId );

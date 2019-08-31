@@ -509,7 +509,7 @@ public class BrowseServiceTest
         }
 
         createAndIndexRepo( TEST_REPO_ID, getProjectDirectory().resolve( "src/test/repo-with-osgi" ),
-                            false );
+                            null, false );
 
         waitForScanToComplete( TEST_REPO_ID );
     }
