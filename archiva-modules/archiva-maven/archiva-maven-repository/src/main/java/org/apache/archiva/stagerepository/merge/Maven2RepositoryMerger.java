@@ -35,6 +35,7 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.repository.storage.FilesystemAsset;
@@ -99,6 +100,12 @@ public class Maven2RepositoryMerger
     public void setConfiguration( ArchivaConfiguration configuration )
     {
         this.configuration = configuration;
+    }
+
+    @Override
+    public boolean supportsRepository( RepositoryType type )
+    {
+        return RepositoryType.MAVEN.equals( type );
     }
 
     @Override

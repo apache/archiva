@@ -28,14 +28,16 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.filter.Filter;
 import org.apache.archiva.filter.IncludesFilter;
 import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.MergeRepositoriesService;
-import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
+import org.apache.archiva.stagerepository.merge.RepositoryMerger;
 import org.apache.archiva.stagerepository.merge.RepositoryMergerException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,8 +54,10 @@ public class DefaultMergeRepositoriesService
     // FIXME check archiva-merge-repository to sourceRepoId
 
     @Inject
-    @Named ( value = "repositoryMerger#maven2" )
-    private Maven2RepositoryMerger repositoryMerger;
+    private List<RepositoryMerger> repositoryMerger;
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
 
 
     @Override
@@ -71,13 +75,14 @@ public class DefaultMergeRepositoriesService
         }
         try
         {
+            RepositoryMerger merger = findMerger( sourceRepositoryId );
             List<ArtifactMetadata> artifactMetadatas =
-                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepositoryId,
+                merger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepositoryId,
                                                           targetRepositoryId );
 
             return buildArtifacts( artifactMetadatas, sourceRepositoryId );
         }
-        catch ( RepositoryMergerException e )
+        catch ( RepositoryMergerException | RepositoryNotFoundException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
@@ -87,23 +92,35 @@ public class DefaultMergeRepositoriesService
         }
     }
 
+    RepositoryMerger findMerger(String repositoryId) throws RepositoryNotFoundException
+    {
+        Repository repo = repositoryRegistry.getRepository( repositoryId );
+        if (repo==null) {
+            throw new RepositoryNotFoundException( repositoryId );
+        } else {
+            return repositoryMerger.stream( ).filter( m -> m.supportsRepository( repo.getType( ) ) ).findFirst().get();
+        }
+    }
+
     @Override
     public void mergeRepositories( String sourceRepositoryId, String targetRepositoryId, boolean skipConflicts )
         throws ArchivaRestServiceException
     {
         try
         {
+            RepositoryMerger merger = findMerger( sourceRepositoryId );
+
             if ( skipConflicts )
             {
-                mergeBySkippingConflicts( sourceRepositoryId, targetRepositoryId );
+                mergeBySkippingConflicts( merger,  sourceRepositoryId, targetRepositoryId );
             }
             else
             {
-                doMerge( sourceRepositoryId, targetRepositoryId );
+                doMerge( merger, sourceRepositoryId, targetRepositoryId );
             }
 
         }
-        catch ( RepositoryMergerException e )
+        catch ( RepositoryMergerException | RepositoryNotFoundException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
@@ -111,7 +128,7 @@ public class DefaultMergeRepositoriesService
     }
 
 
-    protected void doMerge( String sourceRepositoryId, String targetRepositoryId )
+    protected void doMerge( RepositoryMerger merger, String sourceRepositoryId, String targetRepositoryId )
         throws RepositoryMergerException, ArchivaRestServiceException
     {
         RepositorySession repositorySession = null;
@@ -132,11 +149,11 @@ public class DefaultMergeRepositoriesService
 
             if ( managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE) && !managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) )
             {
-                mergeWithOutSnapshots( metadataRepository, sourceArtifacts, sourceRepositoryId, targetRepositoryId );
+                mergeWithOutSnapshots(merger, metadataRepository, sourceArtifacts, sourceRepositoryId, targetRepositoryId );
             }
             else
             {
-                repositoryMerger.merge( metadataRepository, sourceRepositoryId, targetRepositoryId );
+                merger.merge( metadataRepository, sourceRepositoryId, targetRepositoryId );
 
                 for ( ArtifactMetadata metadata : sourceArtifacts )
                 {
@@ -155,7 +172,7 @@ public class DefaultMergeRepositoriesService
         }
     }
 
-    public void mergeBySkippingConflicts( String sourceRepositoryId, String targetRepositoryId )
+    private void mergeBySkippingConflicts( RepositoryMerger merger, String sourceRepositoryId, String targetRepositoryId )
         throws RepositoryMergerException, ArchivaRestServiceException
     {
 
@@ -171,7 +188,7 @@ public class DefaultMergeRepositoriesService
         try
         {
             List<ArtifactMetadata> conflictSourceArtifacts =
-                repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepositoryId,
+                merger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepositoryId,
                                                           targetRepositoryId );
             MetadataRepository metadataRepository = repositorySession.getRepository();
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts(repositorySession , sourceRepositoryId );
@@ -181,14 +198,14 @@ public class DefaultMergeRepositoriesService
 
             if ( managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE) && !managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT))
             {
-                mergeWithOutSnapshots( metadataRepository, sourceArtifacts, sourceRepositoryId, targetRepositoryId );
+                mergeWithOutSnapshots( merger, metadataRepository, sourceArtifacts, sourceRepositoryId, targetRepositoryId );
             }
             else
             {
 
                 Filter<ArtifactMetadata> artifactsWithOutConflicts =
                     new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-                repositoryMerger.merge( metadataRepository, sourceRepositoryId, targetRepositoryId,
+                merger.merge( metadataRepository, sourceRepositoryId, targetRepositoryId,
                                         artifactsWithOutConflicts );
                 for ( ArtifactMetadata metadata : sourceArtifacts )
                 {
@@ -207,7 +224,7 @@ public class DefaultMergeRepositoriesService
         }
     }
 
-    private void mergeWithOutSnapshots( MetadataRepository metadataRepository, List<ArtifactMetadata> sourceArtifacts,
+    private void mergeWithOutSnapshots( RepositoryMerger merger, MetadataRepository metadataRepository, List<ArtifactMetadata> sourceArtifacts,
                                         String sourceRepoId, String repoid )
         throws RepositoryMergerException
     {
@@ -228,6 +245,6 @@ public class DefaultMergeRepositoriesService
         sourceArtifacts.removeAll( artifactsWithOutSnapshots );
 
         Filter<ArtifactMetadata> artifactListWithOutSnapShots = new IncludesFilter<ArtifactMetadata>( sourceArtifacts );
-        repositoryMerger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
+        merger.merge( metadataRepository, sourceRepoId, repoid, artifactListWithOutSnapShots );
     }
 }

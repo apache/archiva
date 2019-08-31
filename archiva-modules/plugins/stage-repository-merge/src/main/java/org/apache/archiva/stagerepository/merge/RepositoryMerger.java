@@ -22,11 +22,14 @@ package org.apache.archiva.stagerepository.merge;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.filter.Filter;
+import org.apache.archiva.repository.RepositoryType;
 
 import java.util.List;
 
 public interface RepositoryMerger
 {
+    boolean supportsRepository( RepositoryType type );
+
     void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId )
         throws RepositoryMergerException;
 

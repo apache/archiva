@@ -39,6 +39,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,7 +49,7 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 @RunWith (ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context-merge.xml" })
 public class Maven2RepositoryMergerTest
     extends TestCase
 {
@@ -59,6 +60,7 @@ public class Maven2RepositoryMergerTest
     private Maven2RepositoryMerger repositoryMerger;
 
     @Inject
+    @Named("archivaConfiguration#default")
     ArchivaConfiguration configuration;
 
     private MetadataRepository metadataRepository;
