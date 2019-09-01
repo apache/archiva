@@ -19,7 +19,6 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.storage.RepositoryStorage;
@@ -65,6 +64,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
