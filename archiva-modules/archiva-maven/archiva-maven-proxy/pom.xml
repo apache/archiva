@@ -46,10 +46,6 @@
       <artifactId>archiva-repository-admin-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archetype</groupId>
-      <artifactId>archetype-common</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy</artifactId>
     </dependency>
