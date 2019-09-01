@@ -38,10 +38,6 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-       <artifactId>commons-collections4</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-common</artifactId>
     </dependency>
@@ -50,11 +46,6 @@
       <artifactId>archiva-test-utils</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-jcl</artifactId>
-      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
