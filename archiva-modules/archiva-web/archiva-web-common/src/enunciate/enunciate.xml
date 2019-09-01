@@ -36,6 +36,7 @@
     <jaxws-ri disabled="true"/>
     <jaxws-support disabled="true"/>
     <jaxon1 disabled="true"/>
+    <jackson1 disabled="true"/>
 
     <docs disabled="false"
           docsSubdir=""
