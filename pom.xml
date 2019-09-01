@@ -272,11 +272,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-converter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-core-consumers</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -303,6 +298,11 @@
       <dependency>
         <groupId>org.apache.archiva.maven</groupId>
         <artifactId>archiva-maven-indexer</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.maven</groupId>
+        <artifactId>archiva-maven-converter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
