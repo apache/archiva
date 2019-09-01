@@ -147,11 +147,7 @@
         <artifactId>javax.inject</artifactId>
         <version>1</version>
       </dependency>
-      <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>jsr250-api</artifactId>
-        <version>1.0</version>
-      </dependency>
+
       <dependency>
         <groupId>javax.activation</groupId>
         <artifactId>activation</artifactId>
@@ -597,6 +593,10 @@
             <groupId>org.sonatype.sisu</groupId>
             <artifactId>sisu-guice</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -996,12 +996,23 @@
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-taskqueue</artifactId>
         <version>${redback.taskqueue.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-quartz</artifactId>
         <version>${redback.quartz.version}</version>
-      </dependency>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>      </dependency>
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
@@ -1031,6 +1042,12 @@
         <groupId>org.apache.archiva.redback.components.cache</groupId>
         <artifactId>spring-cache-api</artifactId>
         <version>${redback.cache.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback.components.cache</groupId>
@@ -1132,6 +1149,10 @@
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1268,6 +1289,10 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 
@@ -1277,6 +1302,12 @@
         <groupId>org.apache.archiva.redback.components.registry</groupId>
         <artifactId>spring-registry-api</artifactId>
         <version>${redback.registry.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback.components.registry</groupId>
@@ -1298,6 +1329,10 @@
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

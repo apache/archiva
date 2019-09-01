@@ -192,6 +192,12 @@
     <dependency>
       <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>spring-taskqueue</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.annotation</groupId>
+          <artifactId>jsr250-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback.components</groupId>
