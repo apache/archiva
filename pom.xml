@@ -1806,6 +1806,7 @@
           </execution>
         </executions>
       </plugin>
+
     </plugins>
     <pluginManagement>
       <plugins>
@@ -1881,6 +1882,28 @@
             </excludes>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>3.1.1</version>
+              <configuration>
+                <ignoredDependencies>
+                  <ignoredDependency>org.easymock</ignoredDependency>
+                  <ignoredDependency>junit:junit</ignoredDependency>
+                </ignoredDependencies>
+
+                <!-- ignore annotations for "used but undeclared" warnings
+                <ignoredUsedUndeclaredDependencies>
+                  <ignoredUsedUndeclaredDependency>org.easymock</ignoredUsedUndeclaredDependency>
+                </ignoredUsedUndeclaredDependencies>
+
+                <ignoredUnusedDeclaredDependencies>
+                  <ignoredUnusedDeclaredDependency>org.easymock</ignoredUnusedDeclaredDependency>
+                </ignoredUnusedDeclaredDependencies>
+                -->
+              </configuration>
+        </plugin>
+
       </plugins>
     </pluginManagement>
   </build>
