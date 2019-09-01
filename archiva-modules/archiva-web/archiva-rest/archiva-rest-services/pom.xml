@@ -62,6 +62,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-filelock</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduler-indexing</artifactId>
       <exclusions>
         <exclusion>
@@ -419,6 +423,7 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+
 
     <!-- Needed for JDK >= 9 -->
     <dependency>
