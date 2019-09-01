@@ -103,6 +103,7 @@
       <artifactId>cron-utils</artifactId>
     </dependency>
 
+    <!-- Test scope -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
@@ -121,6 +122,11 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback.components.cache</groupId>
+      <artifactId>spring-cache-ehcache</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

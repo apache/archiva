@@ -40,6 +40,13 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
+
+    <!-- Test scope -->
+    <dependency>
+      <groupId>org.apache.archiva.redback.components.cache</groupId>
+      <artifactId>spring-cache-ehcache</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>

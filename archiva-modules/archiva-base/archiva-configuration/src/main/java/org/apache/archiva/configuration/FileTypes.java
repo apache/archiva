@@ -22,6 +22,7 @@ package org.apache.archiva.configuration;
 import org.apache.archiva.common.FileTypeUtils;
 import org.apache.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.archiva.configuration.io.registry.ConfigurationRegistryReader;
+import org.apache.archiva.configuration.util.PathMatcher;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
@@ -30,7 +31,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.configuration.CombinedConfiguration;
-import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -137,7 +137,7 @@ public class FileTypes
 
         for ( String pattern : artifactPatterns )
         {
-            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
+            if ( PathMatcher.matchPath( pattern, relativePath, false ) )
             {
                 // Found match
                 return true;
@@ -155,7 +155,7 @@ public class FileTypes
 
         for ( String pattern : DEFAULT_EXCLUSIONS )
         {
-            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
+            if ( PathMatcher.matchPath( pattern, relativePath, false ) )
             {
                 // Found match
                 return true;

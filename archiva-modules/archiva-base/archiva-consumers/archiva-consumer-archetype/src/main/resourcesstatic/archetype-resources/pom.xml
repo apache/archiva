@@ -35,6 +35,7 @@
     <log4j.version>${log4jVersion}</log4j.version>
     <spring.version>${springVersion}</spring.version>
     <redback.registry.version>${redbackRegistryVersion}</redback.registry.version>
+    <redback.cache.version>${redbackCacheVersion}</redback.cache.version>
     <guava.version>${guavaVersion}</guava.version>
     <springockito.version>${springockitoVersion}</springockito.version>
     <mockito.version>${mockitoVersion}</mockito.version>
@@ -72,6 +73,14 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
       <version>${archiva.version}</version>
+    </dependency>
+
+    <!-- Test scope -->
+    <dependency>
+      <groupId>org.apache.archiva.redback.components.cache</groupId>
+      <artifactId>spring-cache-ehcache</artifactId>
+      <version>${redbackCacheVersion}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
