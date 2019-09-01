@@ -132,7 +132,7 @@ public class NewArtifactsRssFeedProcessorTest
         assertEquals( entries.size(), 1 );
         assertTrue(
             entries.get( 0 ).getTitle().contains( "New Artifacts in Repository 'test-repo' as of " ));
-        assertTrue( entries.get( 0 ).getPublishedDate().toInstant().equals( whenGathered.toInstant() ) );
+        assertTrue( entries.get( 0 ).getPublishedDate().toInstant().truncatedTo( ChronoUnit.MILLIS ).equals( whenGathered.toInstant().truncatedTo( ChronoUnit.MILLIS ) ) );
     }
 
     private ArtifactMetadata createArtifact( String artifactId, String version, ZonedDateTime whenGathered )

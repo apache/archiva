@@ -376,11 +376,13 @@ public class BrowseServiceTest
         // START SNIPPET: get-artifacts-by-property
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-        List<Artifact> artifactDownloadInfos =
-            browseService.getArtifactsByProperty( "org.name", "The Apache Software Foundation", TEST_REPO_ID );
+        tryAssert( ( ) -> {
+            List<Artifact> artifactDownloadInfos =
+                browseService.getArtifactsByProperty( "org.name", "The Apache Software Foundation", TEST_REPO_ID );
 
-        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 7 );
-        // END SNIPPET: get-artifacts-by-property
+            assertThat( artifactDownloadInfos ).isNotNull( ).isNotEmpty( ).hasSize( 7 );
+            // END SNIPPET: get-artifacts-by-property
+        } );
     }
 
 

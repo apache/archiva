@@ -17,25 +17,31 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://enunciate.webcohesion.com/schemas/enunciate-2.0.0.xsd">
+<enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/stoicflame/enunciate/v2.12.0/top/src/main/resources/META-INF/enunciate-2.2.0.xsd">
 
-  <services>
-    <rest defaultRestSubcontext="archivaUiServices"/>
-  </services>
-
+  <title>Archiva UI Rest API</title>
   <modules>
 
+    <jaxrs>
+      <application path="archivaUiServices" />
+    </jaxrs>
+
+
     <cxf disabled="false"/>
-    <jersey disabled="true" />
+    <jersey disabled="true"/>
     <c disabled="true"/>
     <csharp disabled="true"/>
     <obj-c disabled="true"/>
     <jaxws-ri disabled="true"/>
     <jaxws-support disabled="true"/>
+    <jaxon1 disabled="true"/>
 
-    <docs disabled="false" title="Apache Archiva UI REST API" includeExampleXml="true" includeExampleJson="true"
-          includeDefaultDownloads="false" docsSubdir="" freemarkerTemplate="${project.basedir}/src/enunciate/archiva.fmt" css="${project.basedir}/src/enunciate/archiva.css">
-     <!-- <war docsDir="apidocs" />-->
+    <docs disabled="false"
+          docsSubdir=""
+          freemarkerTemplate="${project.basedir}/src/enunciate/archiva.fmt"
+          css="${project.basedir}/src/enunciate/archiva.css">
+      <!-- <war docsDir="apidocs" />-->
     </docs>
 
   </modules>
