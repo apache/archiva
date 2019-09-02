@@ -410,6 +410,10 @@
             <groupId>org.apache.maven.resolver</groupId>
             <artifactId>*</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -604,6 +608,12 @@
         <artifactId>guice</artifactId>
         <version>4.1.0</version>
         <classifier>no_aop</classifier>
+        <exclusions>
+          <exclusion>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
