@@ -58,9 +58,9 @@
     <maven3x.version>3.5.4</maven3x.version>
     <maven.resolver.version>1.1.1</maven.resolver.version>
     <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
+    <maven-model-converter.version>2.3</maven-model-converter.version>
+    <wagon.version>3.3.3</wagon.version>
 
-    <maven-model-converter.version>2.1</maven-model-converter.version>
-    <wagon.version>3.0.0</wagon.version>
     <redback.version>3.0.0-SNAPSHOT</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
     <redback.quartz.version>2.1</redback.quartz.version>
@@ -68,7 +68,7 @@
     <redback.spring-utils.version>2.1</redback.spring-utils.version>
     <redback.taskqueue.version>2.1</redback.taskqueue.version>
 
-    <jsoup.version>1.7.2</jsoup.version>
+    <jsoup.version>1.12.1</jsoup.version>
     <rome.version>0.9</rome.version>
     <cronutils.version>9.0.1</cronutils.version>
 
