@@ -414,6 +414,10 @@
             <groupId>aopalliance</groupId>
             <artifactId>aopalliance</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
