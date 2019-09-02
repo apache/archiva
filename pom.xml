@@ -57,10 +57,9 @@
 
     <maven3x.version>3.5.4</maven3x.version>
     <maven.resolver.version>1.1.1</maven.resolver.version>
-    <sonatype.aether.version>1.13.1</sonatype.aether.version>
+    <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
 
     <maven-model-converter.version>2.1</maven-model-converter.version>
-    <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
     <wagon.version>3.0.0</wagon.version>
     <redback.version>3.0.0-SNAPSHOT</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
@@ -937,28 +936,6 @@
         <groupId>org.apache.maven.resolver</groupId>
         <artifactId>maven-resolver-transport-http</artifactId>
         <version>${maven.resolver.version}</version>
-      </dependency>
-
-      <!-- Sonatype aether -->
-      <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-api</artifactId>
-        <version>${sonatype.aether.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-impl</artifactId>
-        <version>${sonatype.aether.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-util</artifactId>
-        <version>${sonatype.aether.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-connector-file</artifactId>
-        <version>${sonatype.aether.version}</version>
       </dependency>
 
       <dependency>
