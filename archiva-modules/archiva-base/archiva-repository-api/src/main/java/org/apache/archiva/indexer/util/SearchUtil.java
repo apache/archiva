@@ -19,7 +19,7 @@ package org.apache.archiva.indexer.util;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * SearchUtil - utility class for search.

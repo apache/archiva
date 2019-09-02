@@ -19,7 +19,7 @@ package org.apache.archiva.proxy.maven;
  */
 
 import org.apache.archiva.proxy.model.NetworkProxy;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;

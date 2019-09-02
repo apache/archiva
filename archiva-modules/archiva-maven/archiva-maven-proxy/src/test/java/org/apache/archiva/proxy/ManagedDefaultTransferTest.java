@@ -26,7 +26,7 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.easymock.EasyMock;
 import org.junit.Test;

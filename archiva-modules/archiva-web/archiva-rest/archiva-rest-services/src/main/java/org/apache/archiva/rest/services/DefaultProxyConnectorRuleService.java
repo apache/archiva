@@ -23,7 +23,7 @@ import org.apache.archiva.admin.model.beans.ProxyConnectorRule;
 import org.apache.archiva.admin.model.proxyconnectorrule.ProxyConnectorRuleAdmin;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ProxyConnectorRuleService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

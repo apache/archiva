@@ -34,7 +34,7 @@ import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.maven2.MavenSystemManager;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Parent;

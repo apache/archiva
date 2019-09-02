@@ -23,7 +23,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;

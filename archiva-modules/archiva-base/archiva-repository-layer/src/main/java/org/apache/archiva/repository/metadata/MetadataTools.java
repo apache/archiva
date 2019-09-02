@@ -21,7 +21,6 @@ package org.apache.archiva.repository.metadata;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
@@ -45,9 +44,9 @@ import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -61,19 +60,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
@@ -123,7 +110,7 @@ public class MetadataTools
     public MetadataTools()
     {
         lastUpdatedFormat = new SimpleDateFormat( "yyyyMMddHHmmss" );
-        lastUpdatedFormat.setTimeZone( DateUtils.UTC_TIME_ZONE );
+        lastUpdatedFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     @Override
@@ -693,7 +680,7 @@ public class MetadataTools
 
     private Date toLastUpdatedDate( long lastUpdated )
     {
-        Calendar cal = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+        Calendar cal = Calendar.getInstance( TimeZone.getTimeZone("UTC") );
         cal.setTimeInMillis( lastUpdated );
 
         return cal.getTime();
@@ -704,7 +691,7 @@ public class MetadataTools
         try
         {
             Date date = lastUpdatedFormat.parse( timestampString );
-            Calendar cal = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+            Calendar cal = Calendar.getInstance( TimeZone.getTimeZone("UTC"));
             cal.setTime( date );
 
             return cal.getTimeInMillis();

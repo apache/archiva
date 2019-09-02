@@ -38,7 +38,7 @@ import org.apache.archiva.repository.maven2.MavenSystemManager;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.bridge.MavenRepositorySystem;
 import org.eclipse.aether.RepositorySystem;

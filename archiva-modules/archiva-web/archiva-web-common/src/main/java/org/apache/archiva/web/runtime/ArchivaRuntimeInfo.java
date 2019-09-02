@@ -18,7 +18,7 @@ package org.apache.archiva.web.runtime;
  * under the License.
  */
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

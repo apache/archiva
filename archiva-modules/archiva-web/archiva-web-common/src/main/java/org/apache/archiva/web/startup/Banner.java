@@ -19,7 +19,7 @@ package org.apache.archiva.web.startup;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;

@@ -33,7 +33,7 @@ import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationException;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

@@ -20,7 +20,7 @@ package org.apache.archiva.metadata.model.maven2;
  */
 
 import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;

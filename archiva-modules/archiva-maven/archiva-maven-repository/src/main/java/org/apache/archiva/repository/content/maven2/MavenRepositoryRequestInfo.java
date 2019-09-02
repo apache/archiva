@@ -24,7 +24,7 @@ import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.metadata.MetadataTools;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * RepositoryRequest is used to determine the type of request that is incoming, and convert it to an appropriate

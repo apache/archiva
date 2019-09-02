@@ -19,7 +19,7 @@ package org.apache.archiva.model;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Keys - utility methods for converting common objects into string keys. 

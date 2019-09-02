@@ -19,7 +19,7 @@ package org.apache.archiva.common.filelock;
  * under the License.
  */
 
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

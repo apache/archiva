@@ -23,7 +23,7 @@ package org.apache.archiva.repository.features;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryEventListener;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -20,7 +20,7 @@ package org.apache.archiva.webdav.util;
  */
 
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.webdav.io.OutputContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -26,7 +26,7 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 

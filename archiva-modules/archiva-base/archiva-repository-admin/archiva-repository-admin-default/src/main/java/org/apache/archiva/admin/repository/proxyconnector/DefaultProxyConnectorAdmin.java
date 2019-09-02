@@ -30,7 +30,7 @@ import org.apache.archiva.configuration.functors.ProxyConnectorSelectionPredicat
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.commons.collections4.IterableUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

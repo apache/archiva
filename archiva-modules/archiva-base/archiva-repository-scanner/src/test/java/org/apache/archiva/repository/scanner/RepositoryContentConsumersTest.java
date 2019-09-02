@@ -29,7 +29,7 @@ import org.apache.archiva.repository.BasicRemoteRepository;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.easymock.IMocksControl;
 import org.junit.Test;
 import org.junit.runner.RunWith;

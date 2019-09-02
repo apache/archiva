@@ -23,7 +23,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

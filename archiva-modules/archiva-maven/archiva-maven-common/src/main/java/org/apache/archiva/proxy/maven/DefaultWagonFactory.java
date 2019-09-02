@@ -19,7 +19,7 @@ package org.apache.archiva.proxy.maven;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.Wagon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

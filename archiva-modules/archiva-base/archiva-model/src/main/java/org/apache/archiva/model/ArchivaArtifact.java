@@ -20,7 +20,7 @@ package org.apache.archiva.model;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * ArchivaArtifact - Mutable artifact object.

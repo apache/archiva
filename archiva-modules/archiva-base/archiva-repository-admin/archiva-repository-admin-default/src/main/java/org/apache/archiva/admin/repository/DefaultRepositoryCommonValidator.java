@@ -27,7 +27,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.GenericValidator;
 import org.springframework.stereotype.Service;
 

@@ -19,8 +19,8 @@ package org.apache.archiva.webdav.util;
  * under the License.
  */
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  */

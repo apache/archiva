@@ -20,7 +20,7 @@ package org.apache.archiva.repository.features;
  */
 
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.time.Duration;

@@ -30,7 +30,7 @@ import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.updater.IndexUpdater;

@@ -22,7 +22,7 @@ package org.apache.archiva.consumers.core.repository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Test;
@@ -34,11 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
@@ -293,7 +289,7 @@ public class DaysOldRepositoryPurgeTest
 
         String versionRoot = projectRoot + "/"+ projectVersion;
 
-        Calendar currentDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+        Calendar currentDate = Calendar.getInstance( TimeZone.getTimeZone("UTC") );
         setLastModified( versionRoot, currentDate.getTimeInMillis() );
 
         String timestamp = new SimpleDateFormat( "yyyyMMdd.HHmmss" ).format( currentDate.getTime() );

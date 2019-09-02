@@ -28,7 +28,7 @@ import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsProvider;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryWalkingStatisticsProvider;
-import org.apache.commons.lang.time.StopWatch;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

@@ -21,7 +21,7 @@ package org.apache.archiva.webdav.util;
 
 
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;

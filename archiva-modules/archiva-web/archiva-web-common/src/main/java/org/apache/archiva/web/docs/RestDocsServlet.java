@@ -19,8 +19,8 @@ package org.apache.archiva.web.docs;
  */
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -56,7 +56,7 @@ public class RestDocsServlet
 
         if ( StringUtils.endsWith( path, ".xsd" ) )
         {
-            StringEscapeUtils.escapeXml( resp.getWriter(), IOUtils.toString( is, "UTF-8" ) );
+            resp.getWriter().write(StringEscapeUtils.escapeXml11( IOUtils.toString( is, "UTF-8" ) ));
             //IOUtils.copy( is, resp.getOutputStream() );
             return;
         }

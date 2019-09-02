@@ -19,7 +19,7 @@ package org.apache.archiva.indexer.search;
  */
 
 import org.apache.archiva.model.ArchivaArtifactModel;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;

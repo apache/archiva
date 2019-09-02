@@ -29,7 +29,7 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,13 +37,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 
 /**
@@ -65,7 +59,7 @@ public class DaysOldRepositoryPurge
         this.retentionPeriod = retentionPeriod;
         this.retentionCount = retentionCount;
         timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-        timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
+        timestampParser.setTimeZone( TimeZone.getTimeZone("UTC"));
     }
 
     @Override
@@ -83,7 +77,7 @@ public class DaysOldRepositoryPurge
 
             ArtifactReference artifact = repository.toArtifactReference( path );
 
-            Calendar olderThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+            Calendar olderThanThisDate = Calendar.getInstance( TimeZone.getTimeZone("UTC") );
             olderThanThisDate.add( Calendar.DATE, -retentionPeriod );
 
             // respect retention count
@@ -167,7 +161,7 @@ public class DaysOldRepositoryPurge
                 try
                 {
                     versionDate = timestampParser.parse( tsDate + "." + tsTime );
-                    Calendar cal = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+                    Calendar cal = Calendar.getInstance( TimeZone.getTimeZone("UTC") );
                     cal.setTime( versionDate );
 
                     return cal;

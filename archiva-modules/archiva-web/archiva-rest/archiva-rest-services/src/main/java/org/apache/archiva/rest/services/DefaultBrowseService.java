@@ -53,7 +53,7 @@ import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

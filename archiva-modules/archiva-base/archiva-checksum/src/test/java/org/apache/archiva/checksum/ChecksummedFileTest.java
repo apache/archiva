@@ -20,7 +20,7 @@ package org.apache.archiva.checksum;
  */
 
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;

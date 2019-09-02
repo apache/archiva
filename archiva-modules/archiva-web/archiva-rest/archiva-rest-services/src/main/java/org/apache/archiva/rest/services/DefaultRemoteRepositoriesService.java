@@ -28,7 +28,7 @@ import org.apache.archiva.proxy.maven.WagonFactoryRequest;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.proxy.ProxyInfo;

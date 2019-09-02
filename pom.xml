@@ -48,14 +48,14 @@
   </scm>
 
   <properties>
-    <commons-codec.version>1.6</commons-codec.version>
+    <commons-codec.version>1.13</commons-codec.version>
     <commons-collections.version>4.4</commons-collections.version>
-    <commons-fileupload.version>1.2.2</commons-fileupload.version>
-    <commons-io.version>2.5</commons-io.version>
-    <commons-lang.version>2.6</commons-lang.version>
+    <commons-fileupload.version>1.4</commons-fileupload.version>
+    <commons-io.version>2.6</commons-io.version>
+    <commons-lang.version>3.9</commons-lang.version>
+    <commons-text.version>1.7</commons-text.version>
 
     <maven3x.version>3.5.4</maven3x.version>
-    <maven.compat.version>3.0</maven.compat.version>
     <maven.resolver.version>1.1.1</maven.resolver.version>
     <sonatype.aether.version>1.13.1</sonatype.aether.version>
 
@@ -774,9 +774,14 @@
         <version>${commons-io.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
         <version>${commons-lang.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${commons-text.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>

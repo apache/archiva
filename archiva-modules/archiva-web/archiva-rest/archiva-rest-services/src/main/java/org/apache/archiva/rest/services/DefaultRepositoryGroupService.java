@@ -23,7 +23,7 @@ import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
