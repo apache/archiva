@@ -71,7 +71,7 @@
 
     <jsoup.version>1.7.2</jsoup.version>
     <rome.version>0.9</rome.version>
-    <cronutils.version>6.0.2</cronutils.version>
+    <cronutils.version>9.0.1</cronutils.version>
 
     <spring.version>4.3.10.RELEASE</spring.version>
 
@@ -868,29 +868,10 @@
         <artifactId>maven-model-builder</artifactId>
         <version>${maven3x.version}</version>
       </dependency>
-      <!--
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-compat</artifactId>
-        <version>${maven3x.version}</version>
-      </dependency>
-      -->
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
         <version>${maven3x.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-compat</artifactId>
-        <version>${maven.compat.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.sonatype.sisu</groupId>
-            <artifactId>sisu-guice</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
