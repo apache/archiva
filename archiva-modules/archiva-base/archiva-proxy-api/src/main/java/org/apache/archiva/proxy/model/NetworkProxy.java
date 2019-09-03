@@ -20,6 +20,8 @@ package org.apache.archiva.proxy.model;
  */
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class NetworkProxy
         implements Serializable
@@ -50,7 +52,7 @@ public class NetworkProxy
     /**
      * The proxy password.
      */
-    private String password;
+    private char[] password;
 
     /**
      * @since 1.4-M3
@@ -64,14 +66,14 @@ public class NetworkProxy
         // no op
     }
 
-    public NetworkProxy( String id, String protocol, String host, int port, String username, String password )
+    public NetworkProxy(String id, String protocol, String host, int port, String username, char[] password )
     {
         this.id = id;
         this.protocol = protocol;
         this.host = host;
         this.port = port;
         this.username = username;
-        this.password = password;
+        setPassword(password);
     }
 
     public String getId()
@@ -124,14 +126,17 @@ public class NetworkProxy
         this.username = username;
     }
 
-    public String getPassword()
+    public char[] getPassword()
     {
         return password;
     }
 
-    public void setPassword( String password )
+    public void setPassword(char[] password )
     {
-        this.password = password;
+        if (this.password!=null) {
+            Arrays.fill(this.password, '0');
+        }
+        this.password = Arrays.copyOf(password, password.length);
     }
 
     public boolean isUseNtlm()
@@ -158,12 +163,7 @@ public class NetworkProxy
 
         NetworkProxy that = (NetworkProxy) o;
 
-        if ( id != null ? !id.equals( that.id ) : that.id != null )
-        {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(id, that.id);
     }
 
     @Override

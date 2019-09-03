@@ -49,11 +49,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-model</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-layer</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

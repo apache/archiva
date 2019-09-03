@@ -427,7 +427,7 @@ public class RepositoryModelResolver
             networkProxy.setHost( proxyConnector.getHost() );
             networkProxy.setPort( proxyConnector.getPort() );
             networkProxy.setUserName( proxyConnector.getUsername() );
-            networkProxy.setPassword( proxyConnector.getPassword() );
+            networkProxy.setPassword( new String(proxyConnector.getPassword()) );
 
             String msg = "Using network proxy " + networkProxy.getHost() + ":" + networkProxy.getPort()
                 + " to connect to remote repository " + remoteRepository.getLocation();

@@ -165,7 +165,7 @@ public class DownloadRemoteIndexTask
                 proxyInfo.setHost( this.networkProxy.getHost() );
                 proxyInfo.setPort( this.networkProxy.getPort() );
                 proxyInfo.setUserName( this.networkProxy.getUsername() );
-                proxyInfo.setPassword( this.networkProxy.getPassword() );
+                proxyInfo.setPassword( new String(this.networkProxy.getPassword()) );
             }
             AuthenticationInfo authenticationInfo = null;
             if ( this.remoteRepository.getLoginCredentials()!=null && this.remoteRepository.getLoginCredentials() instanceof PasswordCredentials )

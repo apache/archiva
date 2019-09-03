@@ -190,7 +190,9 @@ public class HttpProxyTransferTest
     public void tearDown()
         throws Exception
     {
-        server.stop();
+        if (server!=null) {
+            server.stop();
+        }
     }
 
     @Test

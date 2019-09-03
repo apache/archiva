@@ -68,18 +68,21 @@
     <redback.spring-utils.version>2.1</redback.spring-utils.version>
     <redback.taskqueue.version>2.1</redback.taskqueue.version>
 
+    <!-- dependencies of maven modules -->
     <jsoup.version>1.12.1</jsoup.version>
     <rome.version>0.9</rome.version>
     <cronutils.version>9.0.1</cronutils.version>
 
     <spring.version>4.3.10.RELEASE</spring.version>
 
-    <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>4.10.4</lucene.version>
 
+    <!-- JCR modules -->
+    <javax.jcr.version>2.0</javax.jcr.version>
     <jcr-oak.version>1.14.0</jcr-oak.version>
+    <!-- Jackrabbit classes are still used for webdav -->
     <jackrabbit.version>2.15.4</jackrabbit.version>
     <metrics-core.version>3.1.0</metrics-core.version>
 

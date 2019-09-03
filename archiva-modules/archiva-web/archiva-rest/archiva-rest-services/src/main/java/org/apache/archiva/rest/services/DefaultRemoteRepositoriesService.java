@@ -167,7 +167,7 @@ public class DefaultRemoteRepositoriesService
                 proxyInfo.setHost(networkProxy.getHost());
                 proxyInfo.setPort(networkProxy.getPort());
                 proxyInfo.setUserName(networkProxy.getUsername());
-                proxyInfo.setPassword(networkProxy.getPassword());
+                proxyInfo.setPassword(new String(networkProxy.getPassword()));
             }
             String url = StringUtils.stripEnd(remoteRepository.getUrl(), "/");
             wagon.connect(new Repository(remoteRepository.getId(), url), proxyInfo);

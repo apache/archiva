@@ -61,10 +61,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-scanner</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduler-repository-api</artifactId>
     </dependency>
     <dependency>

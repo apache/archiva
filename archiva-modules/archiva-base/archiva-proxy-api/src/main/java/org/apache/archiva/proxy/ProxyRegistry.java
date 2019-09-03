@@ -27,6 +27,12 @@ import org.apache.archiva.repository.RepositoryType;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A proxy registry is central access point for accessing a proxy. It gives access to the proxy handlers
+ * that are registered for the different repository types.
+ *
+ * @author Martin Stockhammer <martin_s@apache.org>
+ */
 public interface ProxyRegistry {
 
     /**

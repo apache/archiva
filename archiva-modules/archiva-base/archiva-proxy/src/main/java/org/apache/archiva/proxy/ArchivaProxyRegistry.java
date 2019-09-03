@@ -36,10 +36,15 @@ import javax.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Default proxy registry implementation. Uses the archiva configuration for accessing and storing the
+ * proxy information.
+ *
+ */
 @Service("proxyRegistry#default")
 public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListener {
 
-    private final Logger log = LoggerFactory.getLogger(ArchivaProxyRegistry.class);
+    private static final Logger log = LoggerFactory.getLogger(ArchivaProxyRegistry.class);
 
     @Inject
     ArchivaConfiguration archivaConfiguration;
@@ -83,7 +88,7 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
             proxy.setHost(networkProxyConfig.getHost());
             proxy.setPort(networkProxyConfig.getPort());
             proxy.setUsername(networkProxyConfig.getUsername());
-            proxy.setPassword(networkProxyConfig.getPassword());
+            proxy.setPassword(networkProxyConfig.getPassword().toCharArray());
             proxy.setUseNtlm(networkProxyConfig.isUseNtlm());
 
             this.networkProxyMap.put(key, proxy);

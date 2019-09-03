@@ -303,7 +303,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
                                 proxyInfo.setHost( networkProxy.getHost( ) );
                                 proxyInfo.setPort( networkProxy.getPort( ) );
                                 proxyInfo.setUserName( networkProxy.getUsername( ) );
-                                proxyInfo.setPassword( networkProxy.getPassword( ) );
+                                proxyInfo.setPassword(new String(networkProxy.getPassword()));
                             }
                             AuthenticationInfo authenticationInfo = null;
                             if ( remoteRepository.getLoginCredentials( ) != null && ( remoteRepository.getLoginCredentials( ) instanceof PasswordCredentials) )

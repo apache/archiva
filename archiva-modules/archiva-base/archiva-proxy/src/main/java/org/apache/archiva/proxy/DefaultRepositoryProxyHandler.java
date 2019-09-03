@@ -237,7 +237,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             np.setId(p.getId());
             np.setUseNtlm(p.isUseNtlm());
             np.setUsername(p.getUsername());
-            np.setPassword(p.getPassword());
+            np.setPassword(p.getPassword() == null ? new char[0] : p.getPassword().toCharArray());
             np.setProtocol(p.getProtocol());
             np.setHost(p.getHost());
             np.setPort(p.getPort());

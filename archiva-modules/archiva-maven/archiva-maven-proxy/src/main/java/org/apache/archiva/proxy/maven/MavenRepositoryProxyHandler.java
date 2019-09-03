@@ -87,7 +87,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
             proxy.setHost(networkProxyDef.getHost());
             proxy.setPort(networkProxyDef.getPort());
             proxy.setUserName(networkProxyDef.getUsername());
-            proxy.setPassword(networkProxyDef.getPassword());
+            proxy.setPassword(new String(networkProxyDef.getPassword()));
 
             this.networkProxyMap.put(key, proxy);
         }
