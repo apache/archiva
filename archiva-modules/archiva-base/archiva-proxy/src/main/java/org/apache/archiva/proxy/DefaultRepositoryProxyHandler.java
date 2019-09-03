@@ -73,12 +73,11 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     @Inject
     @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
-    @Inject
-    @Named(value = "repositoryContentFactory#default")
-    private RepositoryContentFactory repositoryFactory;
+
     @Inject
     @Named(value = "metadataTools#default")
     private MetadataTools metadataTools;
+
     @Inject
     private Map<String, PreDownloadPolicy> preDownloadPolicies;
     @Inject
@@ -86,11 +85,13 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     @Inject
     private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
     private ConcurrentMap<String, List<ProxyConnector>> proxyConnectorMap = new ConcurrentHashMap<>();
+
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler<RepositoryTask> scheduler;
     @Inject
     private RepositoryRegistry repositoryRegistry;
+
     @Inject
     @Named(value = "fileLockManager#default")
     private FileLockManager fileLockManager;
@@ -132,13 +133,13 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
                 log.error("Cannot find source repository after config change "+proxyConfig.getSourceRepoId());
                 continue;
             }
-            connector.setSourceRepository(repo.getContent());
+            connector.setSourceRepository(repo);
             RemoteRepository rRepo = repositoryRegistry.getRemoteRepository( proxyConfig.getTargetRepoId() );
             if (rRepo==null) {
                 log.error("Cannot find target repository after config change "+proxyConfig.getSourceRepoId());
                 continue;
             }
-            connector.setTargetRepository(rRepo.getContent());
+            connector.setTargetRepository(rRepo);
 
             connector.setProxyId( proxyConfig.getProxyId() );
             connector.setPolicies( proxyConfig.getPolicies() );
@@ -266,10 +267,10 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
                 continue;
             }
 
-            RemoteRepositoryContent targetRepository = connector.getTargetRepository();
+            RemoteRepository targetRepository = connector.getTargetRepository();
             requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
 
-            String targetPath = targetRepository.toPath( artifact );
+            String targetPath = targetRepository.getContent().toPath( artifact );
 
             if ( SystemUtils.IS_OS_WINDOWS )
             {
@@ -280,7 +281,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             try
             {
                 StorageAsset downloadedFile =
-                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
+                    transferFile( connector, targetRepository.getContent(), targetPath, repository, localFile, requestProperties,
                                   true );
 
                 if ( fileExists(downloadedFile) )
@@ -292,17 +293,17 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             catch ( NotFoundException e )
             {
                 log.debug( "Artifact {} not found on repository \"{}\".", Keys.toKey( artifact ),
-                           targetRepository.getRepository().getId() );
+                           targetRepository.getId() );
             }
             catch ( NotModifiedException e )
             {
                 log.debug( "Artifact {} not updated on repository \"{}\".", Keys.toKey( artifact ),
-                           targetRepository.getRepository().getId() );
+                           targetRepository.getId() );
             }
             catch ( ProxyException e )
             {
                 validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
-                                  targetRepository, localFile, e, previousExceptions );
+                                  targetRepository.getContent(), localFile, e, previousExceptions );
             }
         }
 
@@ -340,7 +341,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
                 continue;
             }
 
-            RemoteRepositoryContent targetRepository = connector.getTargetRepository();
+            RemoteRepository targetRepository = connector.getTargetRepository();
             requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
 
             String targetPath = path;
@@ -348,7 +349,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             try
             {
                 StorageAsset downloadedFile =
-                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
+                    transferFile( connector, targetRepository.getContent(), targetPath, repository, localFile, requestProperties,
                                   false );
 
                 if ( fileExists( downloadedFile ) )
@@ -360,22 +361,22 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             catch ( NotFoundException e )
             {
                 log.debug( "Resource {} not found on repository \"{}\".", path,
-                           targetRepository.getRepository().getId() );
+                           targetRepository.getId() );
             }
             catch ( NotModifiedException e )
             {
                 log.debug( "Resource {} not updated on repository \"{}\".", path,
-                           targetRepository.getRepository().getId() );
+                           targetRepository.getId() );
             }
             catch ( ProxyException e )
             {
                 log.warn(
                     "Transfer error from repository {} for resource {}, continuing to next repository. Error message: {}",
-                    targetRepository.getRepository().getId(), path, e.getMessage() );
+                    targetRepository.getId(), path, e.getMessage() );
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
                            "Transfer error from repository \"{}"
                                + "\" for resource {}, continuing to next repository. Error message: {}",
-                           targetRepository.getRepository().getId(), path, e.getMessage(), e );
+                           targetRepository.getId(), path, e.getMessage(), e );
             }
 
         }
@@ -403,14 +404,14 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
                 continue;
             }
 
-            RemoteRepositoryContent targetRepository = connector.getTargetRepository();
+            RemoteRepository targetRepository = connector.getTargetRepository();
 
-            StorageAsset localRepoFile = toLocalRepoFile( repository, targetRepository, logicalPath );
+            StorageAsset localRepoFile = toLocalRepoFile( repository, targetRepository.getContent(), logicalPath );
             long originalMetadataTimestamp = getLastModified( localRepoFile );
 
             try
             {
-                transferFile( connector, targetRepository, logicalPath, repository, localRepoFile, requestProperties,
+                transferFile( connector, targetRepository.getContent(), logicalPath, repository, localRepoFile, requestProperties,
                               true );
 
                 if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
@@ -422,21 +423,21 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             {
 
                 log.debug( "Metadata {} not found on remote repository '{}'.", logicalPath,
-                           targetRepository.getRepository().getId(), e );
+                           targetRepository.getId(), e );
 
             }
             catch ( NotModifiedException e )
             {
 
                 log.debug( "Metadata {} not updated on remote repository '{}'.", logicalPath,
-                           targetRepository.getRepository().getId(), e );
+                           targetRepository.getId(), e );
 
             }
             catch ( ProxyException e )
             {
                 log.warn(
                     "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
-                    targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
+                    targetRepository.getId(), logicalPath, e.getMessage() );
                 log.debug( "Full stack trace", e );
             }
         }
@@ -659,7 +660,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         {
             // Just-in-time update of the index and database by executing the consumers for this artifact
             //consumers.executeConsumers( connector.getSourceRepository().getRepository(), resource );
-            queueRepositoryTask( connector.getSourceRepository().getRepository().getId(), resource );
+            queueRepositoryTask( connector.getSourceRepository().getId(), resource );
         }
 
         return resource;
@@ -667,7 +668,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
     protected abstract void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository,
                                                StorageAsset tmpResource, StorageAsset[] checksumFiles, String url, String remotePath, StorageAsset resource, Path workingDirectory,
-                                               ManagedRepositoryContent repository ) throws ProxyException, NotModifiedException;
+                                               ManagedRepositoryContent repository ) throws ProxyException;
 
     private void queueRepositoryTask(String repositoryId, StorageAsset localFile )
     {
@@ -950,16 +951,6 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     public void setArchivaConfiguration(ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
-    }
-
-    public RepositoryContentFactory getRepositoryFactory()
-    {
-        return repositoryFactory;
-    }
-
-    public void setRepositoryFactory(RepositoryContentFactory repositoryFactory )
-    {
-        this.repositoryFactory = repositoryFactory;
     }
 
     public MetadataTools getMetadataTools()

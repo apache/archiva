@@ -19,21 +19,22 @@ package org.apache.archiva.repository.connector;
  * under the License.
  */
 
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
 
 import java.util.List;
 
 /**
- * RepositoryConnector 
+ *
+ * A RepositoryConnector maps a managed repository to a remote repository.
  *
  *
  */
 public interface RepositoryConnector
 {
-    ManagedRepositoryContent getSourceRepository();
+    ManagedRepository getSourceRepository();
 
-    RemoteRepositoryContent getTargetRepository();
+    RemoteRepository getTargetRepository();
 
     List<String> getBlacklist();
     

@@ -23,10 +23,7 @@ import org.apache.archiva.configuration.*;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.RemoteRepositoryContent;
-import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -128,9 +125,9 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
         proxyConnector.setPolicies(configuration.getPolicies());
         proxyConnector.setProperties(configuration.getProperties());
         proxyConnector.setProxyId(configuration.getProxyId());
-        ManagedRepositoryContent srcRepo = repositoryRegistry.getManagedRepository(configuration.getSourceRepoId()).getContent();
+        ManagedRepository srcRepo = repositoryRegistry.getManagedRepository(configuration.getSourceRepoId());
         proxyConnector.setSourceRepository(srcRepo);
-        RemoteRepositoryContent targetRepo = repositoryRegistry.getRemoteRepository(configuration.getTargetRepoId()).getContent();
+        RemoteRepository targetRepo = repositoryRegistry.getRemoteRepository(configuration.getTargetRepoId());
         proxyConnector.setTargetRepository(targetRepo);
         return proxyConnector;
     }

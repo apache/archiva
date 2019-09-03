@@ -47,19 +47,11 @@
     </property>
   </bean>
 
-  <bean name="repositoryContentFactory#mocked" class="org.apache.archiva.repository.RepositoryContentFactory">
-    <property name="archivaConfiguration" ref="archivaConfiguration#mock"/>
-  </bean>
-
-
-  <bean name="repositoryContentProvider#mocked" class="org.apache.archiva.repository.mock.RepositoryContentProviderMock" >
-
-  </bean>
+  <bean name="repositoryContentProvider#mocked" class="org.apache.archiva.repository.mock.RepositoryContentProviderMock" />
 
 
   <bean name="repositoryProxyConnectors#test" class="org.apache.archiva.proxy.maven.MavenRepositoryProxyHandler">
     <property name="archivaConfiguration" ref="archivaConfiguration#mock"/>
-    <property name="repositoryFactory" ref="repositoryContentFactory#mocked"/>
     <property name="metadataTools" ref="metadataTools#mocked"/>
   </bean>
 
