@@ -44,9 +44,11 @@ import java.util.Properties;
  */
 @Service( "postDownloadPolicy#checksum" )
 public class ChecksumPolicy
-    implements PostDownloadPolicy
+    extends AbstractPolicy implements PostDownloadPolicy
 {
     private Logger log = LoggerFactory.getLogger( ChecksumPolicy.class );
+
+    private static final String ID = "checksum";
 
     /**
      * The IGNORE policy indicates that if the checksum policy is ignored, and
@@ -75,6 +77,7 @@ public class ChecksumPolicy
 
     public ChecksumPolicy()
     {
+        super();
         options.add( FAIL );
         options.add( FIX );
         options.add( IGNORE );
@@ -174,13 +177,7 @@ public class ChecksumPolicy
     @Override
     public String getId()
     {
-        return "checksum";
-    }
-
-    @Override
-    public String getName()
-    {
-        return "Checksum";
+        return ID;
     }
 
     @Override

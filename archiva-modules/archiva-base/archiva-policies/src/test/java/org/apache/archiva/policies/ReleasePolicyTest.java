@@ -33,7 +33,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * ReleasePolicyTest
@@ -380,5 +385,32 @@ public class ReleasePolicyTest
 
         // reset delta to 0.
         generatedLocalFileUpdateDelta = 0;
+    }
+
+
+    @Test
+    public void testNamesAndDescriptions() throws Exception {
+
+        PreDownloadPolicy policy = lookupPolicy();
+        assertEquals("Release Artifact Update Policy", policy.getName());
+        assertTrue(policy.getDescription(Locale.US).contains("when a release artifact will be updated"));
+        assertEquals("Update always", policy.getOptionName(Locale.US, "always"));
+        assertEquals("Do not download from remote", policy.getOptionName(Locale.US, "never"));
+        assertEquals("Update, if older than a day", policy.getOptionName(Locale.US, "daily"));
+        assertEquals("Update, if older than a hour", policy.getOptionName(Locale.US, "hourly"));
+        assertEquals("Download only once", policy.getOptionName(Locale.US, "once"));
+        assertTrue(policy.getOptionDescription(Locale.US, "always").contains("each download"));
+        assertTrue(policy.getOptionDescription(Locale.US, "never").contains("never from the remote"));
+        assertTrue(policy.getOptionDescription(Locale.US, "daily").contains("older than one day"));
+        assertTrue(policy.getOptionDescription(Locale.US, "hourly").contains("older than one hour"));
+        assertTrue(policy.getOptionDescription(Locale.US, "once").contains("if it does not exist"));
+        try {
+            policy.getOptionName(Locale.US, "xxxx");
+            // Exception should be thrown
+            assertTrue(false);
+        } catch (MissingResourceException e) {
+            //
+        }
+
     }
 }

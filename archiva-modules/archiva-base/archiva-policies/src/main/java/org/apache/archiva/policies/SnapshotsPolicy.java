@@ -32,6 +32,9 @@ public class SnapshotsPolicy
     extends AbstractUpdatePolicy
     implements PreDownloadPolicy
 {
+
+    private static final String ID = "snapshots";
+
     /**
      * Defaults to {@link AbstractUpdatePolicy#HOURLY}
      */
@@ -56,12 +59,7 @@ public class SnapshotsPolicy
     @Override
     public String getId()
     {
-        return "snapshots";
+        return ID;
     }
 
-    @Override
-    public String getName()
-    {
-        return "Snapshots";
-    }
 }

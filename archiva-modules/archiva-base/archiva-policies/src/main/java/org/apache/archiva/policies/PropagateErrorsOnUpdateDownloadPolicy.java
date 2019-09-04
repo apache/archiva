@@ -33,8 +33,10 @@ import java.util.Properties;
  */
 @Service( "downloadErrorPolicy#propagate-errors-on-update" )
 public class PropagateErrorsOnUpdateDownloadPolicy
-    implements DownloadErrorPolicy
+    extends AbstractPolicy implements DownloadErrorPolicy
 {
+    private static final String ID = "propagate-errors-on-update";
+
     /**
      * Signifies any error should cause a failure whether the artifact is already present or not.
      */
@@ -43,9 +45,9 @@ public class PropagateErrorsOnUpdateDownloadPolicy
     /**
      * Signifies any error should cause a failure only if the artifact is not already present.
      */
-    public static final String NOT_PRESENT = "artifact not already present";
+    public static final String NOT_PRESENT = "artifact-not-present";
 
-    private List<String> options = new ArrayList<>( 2 );
+    private static final List<String> options = new ArrayList<>( 2 );
 
     public PropagateErrorsOnUpdateDownloadPolicy()
     {
@@ -91,14 +93,9 @@ public class PropagateErrorsOnUpdateDownloadPolicy
     @Override
     public String getId()
     {
-        return "propagate-errors-on-update";
+        return ID;
     }
 
-    @Override
-    public String getName()
-    {
-        return "Return error when";
-    }
 
     @Override
     public List<String> getOptions()

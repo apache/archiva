@@ -35,9 +35,10 @@ import java.util.Properties;
  */
 @Service( "downloadErrorPolicy#propagate-errors" )
 public class PropagateErrorsDownloadPolicy
-    implements DownloadErrorPolicy
+    extends AbstractPolicy implements DownloadErrorPolicy
 {
     private Logger log = LoggerFactory.getLogger( PropagateErrorsDownloadPolicy.class );
+    private static final String ID = "propagate-errors";
 
     /**
      * Signifies any error should stop searching for other proxies.
@@ -47,7 +48,7 @@ public class PropagateErrorsDownloadPolicy
     /**
      * Propagate errors at the end after all are gathered, if there was no successful download from other proxies.
      */
-    public static final String QUEUE = "queue error";
+    public static final String QUEUE = "queue-error";
 
     /**
      * Ignore errors and treat as if it were not found.
@@ -108,13 +109,7 @@ public class PropagateErrorsDownloadPolicy
     @Override
     public String getId()
     {
-        return "propagate-errors";
-    }
-
-    @Override
-    public String getName()
-    {
-        return "On remote error";
+        return ID ;
     }
 
     @Override

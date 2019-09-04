@@ -36,9 +36,10 @@ import java.util.Properties;
  */
 @Service( "preDownloadPolicy#cache-failures" )
 public class CachedFailuresPolicy
-    implements PreDownloadPolicy
+    extends AbstractPolicy implements PreDownloadPolicy
 {
     private Logger log = LoggerFactory.getLogger( CachedFailuresPolicy.class );
+    private static final String ID = "cache-failures";
 
     /**
      * The NO policy setting means that the the existence of old failures is <strong>not</strong> checked.
@@ -59,6 +60,7 @@ public class CachedFailuresPolicy
 
     public CachedFailuresPolicy()
     {
+        super();
         options.add( NO );
         options.add( YES );
     }
@@ -105,14 +107,9 @@ public class CachedFailuresPolicy
     @Override
     public String getId()
     {
-        return "cache-failures";
+        return ID;
     }
 
-    @Override
-    public String getName()
-    {
-        return "Cache failures";
-    }
 
     @Override
     public List<String> getOptions()

@@ -32,6 +32,8 @@ public class ReleasesPolicy
     extends AbstractUpdatePolicy
     implements PreDownloadPolicy
 {
+
+    private static final String ID = "releases";
     /**
      * Defaults to {@link AbstractUpdatePolicy#HOURLY}
      */
@@ -56,12 +58,7 @@ public class ReleasesPolicy
     @Override
     public String getId()
     {
-        return "releases";
+        return ID;
     }
 
-    @Override
-    public String getName()
-    {
-        return "Releases";
-    }
 }

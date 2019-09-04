@@ -36,12 +36,12 @@ import java.util.Properties;
  *
  */
 public abstract class AbstractUpdatePolicy
-    implements PreDownloadPolicy
+    extends AbstractPolicy implements PreDownloadPolicy
 {
     private Logger log = LoggerFactory.getLogger( AbstractUpdatePolicy.class );
 
     /**
-     * The ALWAYS policy setting means that the artifact is always uipdated from the remote repo.
+     * The ALWAYS policy setting means that the artifact is always updated from the remote repo.
      */
     public static final String ALWAYS = "always";
 
@@ -76,7 +76,7 @@ public abstract class AbstractUpdatePolicy
 
     /**
      * The ONCE policy means that the artifact retrieval occurs only if the
-     * local artifact is not present.  This means that the retreival can only
+     * local artifact is not present.  This means that the retrieval can only
      * occur once.
      */
     public static final String ONCE = "once";
@@ -85,6 +85,8 @@ public abstract class AbstractUpdatePolicy
 
     public AbstractUpdatePolicy()
     {
+        super();
+        super.setOptionPrefix("update.option.");
         options.add( ALWAYS );
         options.add( HOURLY );
         options.add( DAILY );

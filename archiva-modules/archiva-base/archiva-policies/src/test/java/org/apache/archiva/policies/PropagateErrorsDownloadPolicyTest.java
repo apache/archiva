@@ -33,9 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * CachedFailuresPolicyTest
@@ -44,7 +42,7 @@ import java.util.Properties;
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
-public class CachedFailuresPolicyTest
+public class PropagateErrorsDownloadPolicyTest
     extends TestCase
 {
 
@@ -55,10 +53,10 @@ public class CachedFailuresPolicyTest
     private FilesystemStorage filesystemStorage;
 
     @Inject
-    @Named( value = "preDownloadPolicy#cache-failures" )
-    DownloadPolicy downloadPolicy;
+    @Named( value = "downloadErrorPolicy#propagate-errors" )
+    DownloadErrorPolicy downloadPolicy;
 
-    private DownloadPolicy lookupPolicy()
+    private DownloadErrorPolicy lookupPolicy()
         throws Exception
     {
         return downloadPolicy;
@@ -79,58 +77,59 @@ public class CachedFailuresPolicyTest
     }
 
     @Test
-    public void testPolicyNo()
+    public void testPolicyStop()
         throws Exception
     {
-        DownloadPolicy policy = lookupPolicy();
+        DownloadErrorPolicy policy = lookupPolicy();
         StorageAsset localFile = getFile();
         Properties request = createRequest();
 
-        request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
+        Exception ex = new RuntimeException();
+        Map<String, Exception> exMap = new HashMap<>();
 
-        policy.applyPolicy( CachedFailuresPolicy.NO, request, localFile );
+        assertTrue(policy.applyPolicy( PropagateErrorsDownloadPolicy.STOP, request, localFile, ex, exMap ));
     }
 
-    @Test( expected = PolicyViolationException.class )
-    public void testPolicyYes()
-        throws Exception
+    @Test
+    public void testPolicyQueue()
+            throws Exception
     {
-
-        DownloadPolicy policy = lookupPolicy();
+        DownloadErrorPolicy policy = lookupPolicy();
         StorageAsset localFile = getFile();
         Properties request = createRequest();
-        // make unique name
-        String url = "http://a.bad.hostname.maven.org/path/to/resource"+ System.currentTimeMillis() +".txt";
-        
-        request.setProperty( "url", url );
 
-        // should not fail
-        try {
-            policy.applyPolicy(CachedFailuresPolicy.YES, request, localFile);
-        } catch (PolicyViolationException e) {
-            // Converting to runtime exception, because it should be thrown later
-            throw new RuntimeException(e);
-        }
-        // status Yes Not In cache
+        Exception ex = new RuntimeException();
+        Map<String, Exception> exMap = new HashMap<>();
 
-        // Yes in Cache
-        
-        urlFailureCache.cacheFailure( url );
+        assertTrue(policy.applyPolicy( PropagateErrorsDownloadPolicy.QUEUE, request, localFile, ex, exMap ));
+    }
 
-        request.setProperty( "url", url );
+    @Test
+    public void testPolicyIgnore()
+            throws Exception
+    {
+        DownloadErrorPolicy policy = lookupPolicy();
+        StorageAsset localFile = getFile();
+        Properties request = createRequest();
 
-        policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );       
+        Exception ex = new RuntimeException();
+        Map<String, Exception> exMap = new HashMap<>();
+
+        assertFalse(policy.applyPolicy( PropagateErrorsDownloadPolicy.IGNORE, request, localFile, ex, exMap ));
     }
 
     @Test
     public void testNamesAndDescriptions() throws Exception {
-        DownloadPolicy policy = lookupPolicy();
-        assertEquals("Cache Failures Policy", policy.getName());
-        assertTrue(policy.getDescription(Locale.US).contains("if download failures will be cached"));
-        assertEquals("Yes", policy.getOptionName(Locale.US, "yes"));
-        assertEquals("No", policy.getOptionName(Locale.US, "no"));
-        assertTrue(policy.getOptionDescription(Locale.US, "yes").contains("failures are cached and download is not attempted"));
-        assertTrue(policy.getOptionDescription(Locale.US, "no").contains("failures are not cached"));
+
+        DownloadErrorPolicy policy = lookupPolicy();
+        assertEquals("Propagate Download Errors Policy", policy.getName());
+        assertTrue(policy.getDescription(Locale.US).contains("error occurs during download"));
+        assertEquals("Stop on error", policy.getOptionName(Locale.US, "stop"));
+        assertEquals("Continue on error", policy.getOptionName(Locale.US, "queue-error"));
+        assertEquals("Ignore errors", policy.getOptionName(Locale.US, "ignore"));
+        assertTrue(policy.getOptionDescription(Locale.US, "stop").contains("Stops the artifact download"));
+        assertTrue(policy.getOptionDescription(Locale.US, "queue-error").contains("Checks further"));
+        assertTrue(policy.getOptionDescription(Locale.US, "ignore").contains("not found"));
         try {
             policy.getOptionName(Locale.US, "xxxx");
             // Exception should be thrown

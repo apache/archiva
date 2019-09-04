@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Properties;
 
 import static org.junit.Assert.*;
@@ -377,6 +379,29 @@ public class ChecksumPolicyTest
             filesystemStorage = new FilesystemStorage(Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir()), new DefaultFileLockManager());
         }
         return filesystemStorage.getAsset( path );
+    }
+
+
+    @Test
+    public void testNamesAndDescriptions() throws Exception {
+
+        PostDownloadPolicy policy = lookupPolicy();
+        assertEquals("Checksum Policy", policy.getName());
+        assertTrue(policy.getDescription(Locale.US).contains("if the downloaded checksum of a artifact does not match"));
+        assertEquals("Fail, if no match", policy.getOptionName(Locale.US, "fail"));
+        assertEquals("Fix, if no match", policy.getOptionName(Locale.US, "fix"));
+        assertEquals("Ignore, if no match", policy.getOptionName(Locale.US, "ignore"));
+        assertTrue(policy.getOptionDescription(Locale.US, "fail").contains("download fails"));
+        assertTrue(policy.getOptionDescription(Locale.US, "fix").contains("artifact will remain"));
+        assertTrue(policy.getOptionDescription(Locale.US, "ignore").contains("error will be ignored"));
+        try {
+            policy.getOptionName(Locale.US, "xxxx");
+            // Exception should be thrown
+            assertTrue(false);
+        } catch (MissingResourceException e) {
+            //
+        }
+
     }
 
 }

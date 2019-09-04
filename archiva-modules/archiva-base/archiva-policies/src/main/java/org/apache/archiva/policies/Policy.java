@@ -20,9 +20,19 @@ package org.apache.archiva.policies;
  */
 
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
 
+
+/**
+ * This is a generic interface for policies. Policies define different actions to apply to artifacts during the
+ * repository lifecycle, e.g. download, upload, errors.
+ */
 public interface Policy
 {
+
+    String RESOURCE_BUNDLE = "archiva_policies";
+
     /**
      * Get the list of options for this policy.
      *
@@ -47,9 +57,39 @@ public interface Policy
     /**
      * Get the display name for this policy.
      *
-     * TODO todo i18n
-     *
      * @return the name for this policy
      */
     String getName();
+
+    /**
+     * Get the policy name in the language of the given locale.
+     * @param locale The locale
+     * @return The policy name
+     */
+    String getName(Locale locale);
+
+    /**
+     * Return a description of the policy.
+     * @param locale The language
+     * @return The description
+     */
+    String getDescription(Locale locale);
+
+    /**
+     * Returns a description for the given option.
+     * @param locale The locale for the description.
+     * @param option The option to ask the description for.
+     * @return A description of the option in the requested language.
+     * @throws MissingResourceException if the option is not known by this policy.
+     */
+    String getOptionDescription(Locale locale, String option) throws MissingResourceException;
+
+    /**
+     * Returns a name for the given option.
+     * @param locale The locale for the name
+     * @param option  The option identifier
+     * @return  A name in the requested language.
+     * @throws MissingResourceException if the option is not known by this policy.
+     */
+    String getOptionName(Locale locale, String option) throws MissingResourceException;
 }

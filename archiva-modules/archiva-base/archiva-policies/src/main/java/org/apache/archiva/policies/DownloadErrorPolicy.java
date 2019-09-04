@@ -41,7 +41,7 @@ public interface DownloadErrorPolicy
      * @param localFile
      * @param exception          the exception that triggered the error
      * @param previousExceptions any previously triggered exceptions
-     * @return whether to process the exception or not
+     * @return True, if the exception should be processed, False if the exception should be ignored.
      * @throws PolicyConfigurationException if the policy is improperly configured
      */
     boolean applyPolicy( String policySetting, Properties request, StorageAsset localFile, Exception exception,
