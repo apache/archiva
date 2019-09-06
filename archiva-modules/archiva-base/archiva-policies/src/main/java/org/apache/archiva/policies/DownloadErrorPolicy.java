@@ -44,7 +44,7 @@ public interface DownloadErrorPolicy
      * @return True, if the exception should be processed, False if the exception should be ignored.
      * @throws PolicyConfigurationException if the policy is improperly configured
      */
-    boolean applyPolicy( String policySetting, Properties request, StorageAsset localFile, Exception exception,
+    boolean applyPolicy( PolicyOption policySetting, Properties request, StorageAsset localFile, Exception exception,
                          Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException;
 }

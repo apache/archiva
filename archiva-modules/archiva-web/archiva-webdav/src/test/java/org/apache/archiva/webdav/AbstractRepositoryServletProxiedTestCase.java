@@ -24,10 +24,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.policies.CachedFailuresPolicy;
-import org.apache.archiva.policies.ChecksumPolicy;
-import org.apache.archiva.policies.ReleasesPolicy;
-import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.policies.*;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -187,16 +184,16 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
     }
 
-    private void setupConnector( String repoId, RemoteRepoInfo remoteRepo, String releasesPolicy,
-                                 String snapshotsPolicy )
+    private void setupConnector( String repoId, RemoteRepoInfo remoteRepo, PolicyOption releasesPolicy,
+                                 PolicyOption snapshotsPolicy )
     {
         ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
         connector.setSourceRepoId( repoId );
         connector.setTargetRepoId( remoteRepo.id );
-        connector.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, releasesPolicy );
-        connector.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, snapshotsPolicy );
-        connector.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.IGNORE );
-        connector.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.NO );
+        connector.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, releasesPolicy.getId() );
+        connector.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, snapshotsPolicy.getId() );
+        connector.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.IGNORE.getId() );
+        connector.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.NO.getId() );
 
         archivaConfiguration.getConfiguration().addProxyConnector( connector );
     }
@@ -261,12 +258,12 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         setupConnector( repoId, remoteRepo, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS );
     }
 
-    protected void setupReleaseConnector( String managedRepoId, RemoteRepoInfo remoteRepo, String releasePolicy )
+    protected void setupReleaseConnector( String managedRepoId, RemoteRepoInfo remoteRepo, PolicyOption releasePolicy )
     {
         setupConnector( managedRepoId, remoteRepo, releasePolicy, SnapshotsPolicy.ALWAYS );
     }
 
-    protected void setupSnapshotConnector( String managedRepoId, RemoteRepoInfo remoteRepo, String snapshotsPolicy )
+    protected void setupSnapshotConnector( String managedRepoId, RemoteRepoInfo remoteRepo, PolicyOption snapshotsPolicy )
     {
         setupConnector( managedRepoId, remoteRepo, ReleasesPolicy.ALWAYS, snapshotsPolicy );
     }

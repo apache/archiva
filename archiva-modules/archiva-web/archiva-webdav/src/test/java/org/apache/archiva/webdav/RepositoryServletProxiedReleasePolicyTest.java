@@ -22,6 +22,7 @@ package org.apache.archiva.webdav;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.policies.PolicyOption;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.junit.Test;
 
@@ -149,14 +150,14 @@ public class RepositoryServletProxiedReleasePolicyTest
         assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.ONCE, NO_MANAGED_COPY );
     }
 
-    private void assertGetProxiedReleaseArtifactWithPolicy( int expectation, String releasePolicy,
+    private void assertGetProxiedReleaseArtifactWithPolicy( int expectation, PolicyOption releasePolicy,
                                                             boolean hasManagedCopy )
         throws Exception
     {
         assertGetProxiedReleaseArtifactWithPolicy( expectation, releasePolicy, hasManagedCopy, 0 );
     }
 
-    private void assertGetProxiedReleaseArtifactWithPolicy( int expectation, String releasePolicy,
+    private void assertGetProxiedReleaseArtifactWithPolicy( int expectation, PolicyOption releasePolicy,
                                                             boolean hasManagedCopy, long deltaManagedToRemoteTimestamp )
         throws Exception
     {

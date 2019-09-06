@@ -19,13 +19,7 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.archiva.policies.CachedFailuresPolicy;
-import org.apache.archiva.policies.ChecksumPolicy;
-import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
-import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
-import org.apache.archiva.policies.ProxyDownloadException;
-import org.apache.archiva.policies.ReleasesPolicy;
-import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.policies.*;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -530,14 +524,14 @@ public class ErrorHandlingTest
     // HELPER METHODS
     // ------------------------------------------
 
-    private void createMockedProxyConnector( String id, String name, String errorPolicy )
+    private void createMockedProxyConnector( String id, String name, PolicyOption errorPolicy )
     {
         saveRemoteRepositoryConfig( id, name, "test://bad.machine.com/repo/", "default" );
         saveConnector( ID_DEFAULT_MANAGED, id, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS,
                        CachedFailuresPolicy.NO, errorPolicy, false );
     }
 
-    private void createMockedProxyConnector( String id, String name, String errorPolicy, String errorOnUpdatePolicy )
+    private void createMockedProxyConnector( String id, String name, PolicyOption errorPolicy, PolicyOption errorOnUpdatePolicy )
     {
         saveRemoteRepositoryConfig( id, name, "test://bad.machine.com/repo/", "default" );
         saveConnector( ID_DEFAULT_MANAGED, id, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS,

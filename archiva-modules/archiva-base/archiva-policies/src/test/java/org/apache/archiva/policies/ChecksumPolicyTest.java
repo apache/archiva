@@ -19,6 +19,7 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
+import org.apache.archiva.checksum.Checksum;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -305,11 +306,11 @@ public class ChecksumPolicyTest
         }
     }
 
-    private String createMessage( String settingType, String md5State, String sha1State )
+    private String createMessage( PolicyOption settingType, String md5State, String sha1State )
     {
         StringBuilder msg = new StringBuilder();
         msg.append( "Expected result of ChecksumPolicy.apply(" );
-        msg.append( settingType.toUpperCase() );
+        msg.append( settingType.getId().toUpperCase() );
         msg.append( ") when working with " );
         if ( md5State == null )
         {
@@ -388,14 +389,14 @@ public class ChecksumPolicyTest
         PostDownloadPolicy policy = lookupPolicy();
         assertEquals("Checksum Policy", policy.getName());
         assertTrue(policy.getDescription(Locale.US).contains("if the downloaded checksum of a artifact does not match"));
-        assertEquals("Fail, if no match", policy.getOptionName(Locale.US, "fail"));
-        assertEquals("Fix, if no match", policy.getOptionName(Locale.US, "fix"));
-        assertEquals("Ignore, if no match", policy.getOptionName(Locale.US, "ignore"));
-        assertTrue(policy.getOptionDescription(Locale.US, "fail").contains("download fails"));
-        assertTrue(policy.getOptionDescription(Locale.US, "fix").contains("artifact will remain"));
-        assertTrue(policy.getOptionDescription(Locale.US, "ignore").contains("error will be ignored"));
+        assertEquals("Fail, if no match", policy.getOptionName(Locale.US, ChecksumOption.FAIL));
+        assertEquals("Fix, if no match", policy.getOptionName(Locale.US, ChecksumOption.FIX));
+        assertEquals("Ignore, if no match", policy.getOptionName(Locale.US, ChecksumOption.IGNORE));
+        assertTrue(policy.getOptionDescription(Locale.US, ChecksumOption.FAIL).contains("download fails"));
+        assertTrue(policy.getOptionDescription(Locale.US, ChecksumOption.FIX).contains("artifact will remain"));
+        assertTrue(policy.getOptionDescription(Locale.US, ChecksumOption.IGNORE).contains("error will be ignored"));
         try {
-            policy.getOptionName(Locale.US, "xxxx");
+            policy.getOptionName(Locale.US, StandardOption.NOOP);
             // Exception should be thrown
             assertTrue(false);
         } catch (MissingResourceException e) {

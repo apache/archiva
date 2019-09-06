@@ -38,14 +38,14 @@ public interface Policy
      *
      * @return the list of options for this policy.
      */
-    List<String> getOptions();
+    List<PolicyOption> getOptions();
 
     /**
      * Get the default option for this policy.
      *
      * @return the default policy for this policy.
      */
-    String getDefaultOption();
+    PolicyOption getDefaultOption();
 
     /**
      * Get the id for this policy.
@@ -82,7 +82,7 @@ public interface Policy
      * @return A description of the option in the requested language.
      * @throws MissingResourceException if the option is not known by this policy.
      */
-    String getOptionDescription(Locale locale, String option) throws MissingResourceException;
+    String getOptionDescription(Locale locale, PolicyOption option) throws MissingResourceException;
 
     /**
      * Returns a name for the given option.
@@ -91,5 +91,5 @@ public interface Policy
      * @return  A name in the requested language.
      * @throws MissingResourceException if the option is not known by this policy.
      */
-    String getOptionName(Locale locale, String option) throws MissingResourceException;
+    String getOptionName(Locale locale, PolicyOption option) throws MissingResourceException;
 }

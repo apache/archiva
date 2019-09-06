@@ -323,19 +323,19 @@ public class DefaultArchivaConfiguration
                     // Upgrade old policy settings.
                     if ("releases".equals(policyId) || "snapshots".equals(policyId)) {
                         if ("ignored".equals(setting)) {
-                            setting = AbstractUpdatePolicy.ALWAYS;
+                            setting = AbstractUpdatePolicy.ALWAYS.getId();
                         } else if ("disabled".equals(setting)) {
-                            setting = AbstractUpdatePolicy.NEVER;
+                            setting = AbstractUpdatePolicy.NEVER.getId();
                         }
                     } else if ("cache-failures".equals(policyId)) {
                         if ("ignored".equals(setting)) {
-                            setting = CachedFailuresPolicy.NO;
+                            setting = CachedFailuresPolicy.NO.getId();
                         } else if ("cached".equals(setting)) {
-                            setting = CachedFailuresPolicy.YES;
+                            setting = CachedFailuresPolicy.YES.getId();
                         }
                     } else if ("checksum".equals(policyId)) {
                         if ("ignored".equals(setting)) {
-                            setting = ChecksumPolicy.IGNORE;
+                            setting = ChecksumPolicy.IGNORE.getId();
                         }
                     }
 
@@ -344,7 +344,7 @@ public class DefaultArchivaConfiguration
                         Policy policy = findPolicy(policyId);
                         // Does option exist?
                         if (!policy.getOptions().contains(setting)) {
-                            setting = policy.getDefaultOption();
+                            setting = policy.getDefaultOption().getId();
                         }
                         connector.addPolicy(policyId, setting);
                     } else {

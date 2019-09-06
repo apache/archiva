@@ -19,46 +19,16 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-
-import org.springframework.stereotype.Service;
-
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * Utility for policies.
  *
- *
+ * @author Martin Stockhammer <martin_s@apache.org>
  */
-@Service("preDownloadPolicy#releases")
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
-{
 
-    private static final String ID = "releases";
-    /**
-     * Defaults to {@link AbstractUpdatePolicy#HOURLY}
-     */
-    @Override
-    public PolicyOption getDefaultOption()
-    {
-        return AbstractUpdatePolicy.HOURLY;
-    }
+public class PolicyUtil {
 
-    @Override
-    protected boolean isSnapshotPolicy()
-    {
-        return false;
-    }
-    
-    @Override
-    protected String getUpdateMode()
-    {
-        return "releases";
-    }
-
-    @Override
-    public String getId()
-    {
-        return ID;
+    public static PolicyOption findOption(final String id, final Policy policy) {
+        return policy.getOptions().stream().filter(o -> o.getId().equals(id)).findFirst().orElse(policy.getDefaultOption());
     }
 
 }

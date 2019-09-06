@@ -55,25 +55,25 @@ public class ChecksumPolicy
      * the state of, contents of, or validity of the checksum files are not
      * checked.
      */
-    public static final String IGNORE = "ignore";
+    public static final ChecksumOption IGNORE = ChecksumOption.IGNORE;
 
     /**
      * The FAIL policy indicates that if the checksum does not match the
      * downloaded file, then remove the downloaded artifact, and checksum
      * files, and fail the transfer to the client side.
      */
-    public static final String FAIL = "fail";
+    public static final ChecksumOption FAIL = ChecksumOption.FAIL;
 
     /**
      * The FIX policy indicates that if the checksum does not match the
      * downloaded file, then fix the checksum file locally, and return
      * to the client side the corrected checksum.
      */
-    public static final String FIX = "fix";
+    public static final ChecksumOption FIX = ChecksumOption.FIX;
 
     private List<ChecksumAlgorithm> algorithms = Arrays.asList( ChecksumAlgorithm.SHA256, ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 );
 
-    private List<String> options = new ArrayList<>( 3 );
+    private List<PolicyOption> options = new ArrayList<>( 3 );
 
     public ChecksumPolicy()
     {
@@ -84,7 +84,7 @@ public class ChecksumPolicy
     }
 
     @Override
-    public void applyPolicy( String policySetting, Properties request, StorageAsset localFile )
+    public void applyPolicy( PolicyOption policySetting, Properties request, StorageAsset localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
         if ( "resource".equals( request.getProperty( "filetype" ) ) )
@@ -169,7 +169,7 @@ public class ChecksumPolicy
     }
 
     @Override
-    public String getDefaultOption()
+    public PolicyOption getDefaultOption()
     {
         return FIX;
     }
@@ -181,7 +181,7 @@ public class ChecksumPolicy
     }
 
     @Override
-    public List<String> getOptions()
+    public List<PolicyOption> getOptions()
     {
         return options;
     }

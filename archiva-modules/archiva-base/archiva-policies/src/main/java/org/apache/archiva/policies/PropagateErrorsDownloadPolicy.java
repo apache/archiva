@@ -40,22 +40,23 @@ public class PropagateErrorsDownloadPolicy
     private Logger log = LoggerFactory.getLogger( PropagateErrorsDownloadPolicy.class );
     private static final String ID = "propagate-errors";
 
+
     /**
      * Signifies any error should stop searching for other proxies.
      */
-    public static final String STOP = "stop";
+    public static final DownloadErrorOption STOP = DownloadErrorOption.STOP;
 
     /**
      * Propagate errors at the end after all are gathered, if there was no successful download from other proxies.
      */
-    public static final String QUEUE = "queue-error";
+    public static final DownloadErrorOption QUEUE = DownloadErrorOption.QUEUE;
 
     /**
      * Ignore errors and treat as if it were not found.
      */
-    public static final String IGNORE = "ignore";
+    public static final DownloadErrorOption IGNORE = DownloadErrorOption.IGNORE;
 
-    private List<String> options = new ArrayList<>( 3 );
+    private List<PolicyOption> options = new ArrayList<>( 3 );
 
     public PropagateErrorsDownloadPolicy()
     {
@@ -65,7 +66,7 @@ public class PropagateErrorsDownloadPolicy
     }
 
     @Override
-    public boolean applyPolicy( String policySetting, Properties request, StorageAsset localFile, Exception exception,
+    public boolean applyPolicy( PolicyOption policySetting, Properties request, StorageAsset localFile, Exception exception,
                                 Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException
     {
@@ -101,7 +102,7 @@ public class PropagateErrorsDownloadPolicy
     }
 
     @Override
-    public String getDefaultOption()
+    public PolicyOption getDefaultOption()
     {
         return QUEUE;
     }
@@ -113,7 +114,7 @@ public class PropagateErrorsDownloadPolicy
     }
 
     @Override
-    public List<String> getOptions()
+    public List<PolicyOption> getOptions()
     {
         return options;
     }

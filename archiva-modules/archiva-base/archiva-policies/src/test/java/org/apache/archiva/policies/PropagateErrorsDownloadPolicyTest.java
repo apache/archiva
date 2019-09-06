@@ -124,14 +124,14 @@ public class PropagateErrorsDownloadPolicyTest
         DownloadErrorPolicy policy = lookupPolicy();
         assertEquals("Propagate Download Errors Policy", policy.getName());
         assertTrue(policy.getDescription(Locale.US).contains("error occurs during download"));
-        assertEquals("Stop on error", policy.getOptionName(Locale.US, "stop"));
-        assertEquals("Continue on error", policy.getOptionName(Locale.US, "queue-error"));
-        assertEquals("Ignore errors", policy.getOptionName(Locale.US, "ignore"));
-        assertTrue(policy.getOptionDescription(Locale.US, "stop").contains("Stops the artifact download"));
-        assertTrue(policy.getOptionDescription(Locale.US, "queue-error").contains("Checks further"));
-        assertTrue(policy.getOptionDescription(Locale.US, "ignore").contains("not found"));
+        assertEquals("Stop on error", policy.getOptionName(Locale.US, DownloadErrorOption.STOP));
+        assertEquals("Continue on error", policy.getOptionName(Locale.US, DownloadErrorOption.QUEUE));
+        assertEquals("Ignore errors", policy.getOptionName(Locale.US, DownloadErrorOption.IGNORE));
+        assertTrue(policy.getOptionDescription(Locale.US, DownloadErrorOption.STOP).contains("Stops the artifact download"));
+        assertTrue(policy.getOptionDescription(Locale.US, DownloadErrorOption.QUEUE).contains("Checks further"));
+        assertTrue(policy.getOptionDescription(Locale.US, DownloadErrorOption.IGNORE).contains("not found"));
         try {
-            policy.getOptionName(Locale.US, "xxxx");
+            policy.getOptionName(Locale.US, StandardOption.NOOP);
             // Exception should be thrown
             assertTrue(false);
         } catch (MissingResourceException e) {

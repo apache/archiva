@@ -43,12 +43,12 @@ public abstract class AbstractUpdatePolicy
     /**
      * The ALWAYS policy setting means that the artifact is always updated from the remote repo.
      */
-    public static final String ALWAYS = "always";
+    public static final PolicyOption ALWAYS = UpdateOption.ALWAYS;
 
     /**
      * The NEVER policy setting means that the artifact is never updated from the remote repo.
      */
-    public static final String NEVER = "never";
+    public static final PolicyOption NEVER = UpdateOption.NEVER;
 
     /**
      * <p>
@@ -60,7 +60,7 @@ public abstract class AbstractUpdatePolicy
      * <li>The local artifact has a last modified timestamp older than (now - 1 day).</li>
      * </ul>
      */
-    public static final String DAILY = "daily";
+    public static final UpdateOption DAILY = UpdateOption.DAILY;
 
     /**
      * <p>
@@ -72,16 +72,16 @@ public abstract class AbstractUpdatePolicy
      * <li>The local artifact has a last modified timestamp older than (now - 1 hour).</li>
      * </ul>
      */
-    public static final String HOURLY = "hourly";
+    public static final UpdateOption HOURLY = UpdateOption.HOURLY;
 
     /**
      * The ONCE policy means that the artifact retrieval occurs only if the
      * local artifact is not present.  This means that the retrieval can only
      * occur once.
      */
-    public static final String ONCE = "once";
+    public static final UpdateOption ONCE = UpdateOption.ONCE;
 
-    private List<String> options = new ArrayList<>( 5 );
+    private List<PolicyOption> options = new ArrayList<>( 5 );
 
     public AbstractUpdatePolicy()
     {
@@ -99,13 +99,13 @@ public abstract class AbstractUpdatePolicy
     protected abstract String getUpdateMode();
 
     @Override
-    public List<String> getOptions()
+    public List<PolicyOption> getOptions()
     {
         return options;
     }
 
     @Override
-    public void applyPolicy( String policySetting, Properties request, StorageAsset localFile )
+    public void applyPolicy( PolicyOption policySetting, Properties request, StorageAsset localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
         if ( !StringUtils.equals( request.getProperty( "filetype" ), "artifact" ) )

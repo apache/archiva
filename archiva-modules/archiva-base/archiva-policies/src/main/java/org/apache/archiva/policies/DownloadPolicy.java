@@ -41,6 +41,6 @@ public interface DownloadPolicy
      *
      * @throws PolicyViolationException if the policy has been violated.
      */
-    void applyPolicy( String policySetting, Properties request, StorageAsset localFile )
+    void applyPolicy( PolicyOption policySetting, Properties request, StorageAsset localFile )
         throws PolicyViolationException, PolicyConfigurationException;
 }

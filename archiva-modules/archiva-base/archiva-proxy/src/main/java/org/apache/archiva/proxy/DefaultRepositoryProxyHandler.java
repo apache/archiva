@@ -711,9 +711,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      * @param policies  the map of policies to execute. (Map of String policy keys, to {@link DownloadPolicy} objects)
      * @param settings  the map of settings for the policies to execute. (Map of String policy keys, to String policy
      *                  setting)
-     * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, StorageAsset)}
+     * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(PolicyOption, Properties, StorageAsset)}
      *                  )
-     * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, StorageAsset)})
+     * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(PolicyOption, Properties, StorageAsset)})
      * @throws PolicyViolationException
      */
     private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
@@ -726,14 +726,12 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             // so substring after last # to get the hint as with plexus
             String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
             DownloadPolicy policy = entry.getValue();
-            String defaultSetting = policy.getDefaultOption();
+            PolicyOption option = PolicyUtil.findOption(settings.get(key), policy);
 
-            String setting = StringUtils.defaultString( settings.get( key ), defaultSetting );
-
-            log.debug( "Applying [{}] policy with [{}]", key, setting );
+            log.debug( "Applying [{}] policy with [{}]", key, option );
             try
             {
-                policy.applyPolicy( setting, request, localFile );
+                policy.applyPolicy( option, request, localFile );
             }
             catch ( PolicyConfigurationException e )
             {
@@ -755,14 +753,13 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             // so substring after last # to get the hint as with plexus
             String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
             DownloadErrorPolicy policy = entry.getValue();
-            String defaultSetting = policy.getDefaultOption();
-            String setting = StringUtils.defaultString( settings.get( key ), defaultSetting );
+            PolicyOption option = PolicyUtil.findOption(settings.get(key), policy);
 
-            log.debug( "Applying [{}] policy with [{}]", key, setting );
+            log.debug( "Applying [{}] policy with [{}]", key, option );
             try
             {
                 // all policies must approve the exception, any can cancel
-                process = policy.applyPolicy( setting, request, localFile, exception, previousExceptions );
+                process = policy.applyPolicy( option, request, localFile, exception, previousExceptions );
                 if ( !process )
                 {
                     break;

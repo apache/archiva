@@ -40,14 +40,14 @@ public class PropagateErrorsOnUpdateDownloadPolicy
     /**
      * Signifies any error should cause a failure whether the artifact is already present or not.
      */
-    public static final String ALWAYS = "always";
+    public static final DownloadErrorOption ALWAYS = DownloadErrorOption.ALWAYS;
 
     /**
      * Signifies any error should cause a failure only if the artifact is not already present.
      */
-    public static final String NOT_PRESENT = "artifact-not-present";
+    public static final DownloadErrorOption NOT_PRESENT = DownloadErrorOption.NOT_PRESENT;
 
-    private static final List<String> options = new ArrayList<>( 2 );
+    private static final List<PolicyOption> options = new ArrayList<>( 2 );
 
     public PropagateErrorsOnUpdateDownloadPolicy()
     {
@@ -56,7 +56,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
     }
 
     @Override
-    public boolean applyPolicy( String policySetting, Properties request, StorageAsset localFile, Exception exception,
+    public boolean applyPolicy( PolicyOption policySetting, Properties request, StorageAsset localFile, Exception exception,
                                 Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException
     {
@@ -85,7 +85,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
     }
 
     @Override
-    public String getDefaultOption()
+    public PolicyOption getDefaultOption()
     {
         return NOT_PRESENT;
     }
@@ -98,7 +98,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
 
 
     @Override
-    public List<String> getOptions()
+    public List<PolicyOption> getOptions()
     {
         return options;
     }

@@ -326,7 +326,7 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.ONCE, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
-    private void assertSnapshotPolicy( String setting, String path, boolean createLocalFile )
+    private void assertSnapshotPolicy( PolicyOption setting, String path, boolean createLocalFile )
         throws Exception
     {
         PreDownloadPolicy policy = lookupPolicy();
@@ -359,7 +359,7 @@ public class SnapshotsPolicyTest
         policy.applyPolicy( setting, request, localFile );
     }
 
-    private void assertSnapshotPolicyViolation( String setting, String path, boolean createLocalFile )
+    private void assertSnapshotPolicyViolation( PolicyOption setting, String path, boolean createLocalFile )
         throws Exception
     {
         try
@@ -393,18 +393,18 @@ public class SnapshotsPolicyTest
         PreDownloadPolicy policy = lookupPolicy();
         assertEquals("Snapshot Artifact Update Policy", policy.getName());
         assertTrue(policy.getDescription(Locale.US).contains("when a snapshot artifact will be updated"));
-        assertEquals("Update always", policy.getOptionName(Locale.US, "always"));
-        assertEquals("Do not download from remote", policy.getOptionName(Locale.US, "never"));
-        assertEquals("Update, if older than a day", policy.getOptionName(Locale.US, "daily"));
-        assertEquals("Update, if older than a hour", policy.getOptionName(Locale.US, "hourly"));
-        assertEquals("Download only once", policy.getOptionName(Locale.US, "once"));
-        assertTrue(policy.getOptionDescription(Locale.US, "always").contains("each download"));
-        assertTrue(policy.getOptionDescription(Locale.US, "never").contains("never from the remote"));
-        assertTrue(policy.getOptionDescription(Locale.US, "daily").contains("older than one day"));
-        assertTrue(policy.getOptionDescription(Locale.US, "hourly").contains("older than one hour"));
-        assertTrue(policy.getOptionDescription(Locale.US, "once").contains("if it does not exist"));
+        assertEquals("Update always", policy.getOptionName(Locale.US, UpdateOption.ALWAYS));
+        assertEquals("Do not download from remote", policy.getOptionName(Locale.US, UpdateOption.NEVER));
+        assertEquals("Update, if older than a day", policy.getOptionName(Locale.US, UpdateOption.DAILY));
+        assertEquals("Update, if older than a hour", policy.getOptionName(Locale.US, UpdateOption.HOURLY));
+        assertEquals("Download only once", policy.getOptionName(Locale.US, UpdateOption.ONCE));
+        assertTrue(policy.getOptionDescription(Locale.US, UpdateOption.ALWAYS).contains("each download"));
+        assertTrue(policy.getOptionDescription(Locale.US, UpdateOption.NEVER).contains("never from the remote"));
+        assertTrue(policy.getOptionDescription(Locale.US, UpdateOption.DAILY).contains("older than one day"));
+        assertTrue(policy.getOptionDescription(Locale.US, UpdateOption.HOURLY).contains("older than one hour"));
+        assertTrue(policy.getOptionDescription(Locale.US, UpdateOption.ONCE).contains("if it does not exist"));
         try {
-            policy.getOptionName(Locale.US, "xxxx");
+            policy.getOptionName(Locale.US, StandardOption.NOOP);
             // Exception should be thrown
             assertTrue(false);
         } catch (MissingResourceException e) {

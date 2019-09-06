@@ -23,6 +23,7 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.policies.PolicyOption;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.junit.After;
 import org.junit.Before;
@@ -174,14 +175,14 @@ public class RepositoryServletProxiedSnapshotPolicyTest
         assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.ONCE, NO_MANAGED_COPY );
     }
 
-    private void assertGetProxiedSnapshotsArtifactWithPolicy( int expectation, String snapshotsPolicy,
+    private void assertGetProxiedSnapshotsArtifactWithPolicy( int expectation, PolicyOption snapshotsPolicy,
                                                               boolean hasManagedCopy )
         throws Exception
     {
         assertGetProxiedSnapshotsArtifactWithPolicy( expectation, snapshotsPolicy, hasManagedCopy, 0 );
     }
 
-    private void assertGetProxiedSnapshotsArtifactWithPolicy( int expectation, String snapshotsPolicy,
+    private void assertGetProxiedSnapshotsArtifactWithPolicy( int expectation, PolicyOption snapshotsPolicy,
                                                               boolean hasManagedCopy,
                                                               long deltaManagedToRemoteTimestamp )
         throws Exception

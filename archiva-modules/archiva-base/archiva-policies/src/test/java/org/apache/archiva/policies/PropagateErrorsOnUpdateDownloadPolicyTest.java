@@ -117,12 +117,12 @@ public class PropagateErrorsOnUpdateDownloadPolicyTest
         DownloadErrorPolicy policy = lookupPolicy();
         assertEquals("Propagate Errors on Update Policy", policy.getName());
         assertTrue(policy.getDescription(Locale.US).contains("during download of an artifact that exists already"));
-        assertEquals("Propagate always", policy.getOptionName(Locale.US, "always"));
-        assertEquals("Propagate only, if not exists", policy.getOptionName(Locale.US, "not-present"));
-        assertTrue(policy.getOptionDescription(Locale.US, "always").contains("even if the file exists"));
-        assertTrue(policy.getOptionDescription(Locale.US, "not-present").contains("if the file does not exist"));
+        assertEquals("Propagate always", policy.getOptionName(Locale.US, DownloadErrorOption.ALWAYS));
+        assertEquals("Propagate only, if not exists", policy.getOptionName(Locale.US, DownloadErrorOption.NOT_PRESENT));
+        assertTrue(policy.getOptionDescription(Locale.US, DownloadErrorOption.ALWAYS).contains("even if the file exists"));
+        assertTrue(policy.getOptionDescription(Locale.US, DownloadErrorOption.NOT_PRESENT).contains("if the file does not exist"));
         try {
-            policy.getOptionName(Locale.US, "xxxx");
+            policy.getOptionName(Locale.US, StandardOption.NOOP);
             // Exception should be thrown
             assertTrue(false);
         } catch (MissingResourceException e) {

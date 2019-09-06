@@ -588,10 +588,10 @@ public class MetadataToolsTest
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
         connectorConfig.setSourceRepoId( sourceRepoId );
         connectorConfig.setTargetRepoId( targetRepoId );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.IGNORE );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, ReleasesPolicy.ALWAYS );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, SnapshotsPolicy.ALWAYS );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.NO );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.IGNORE.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, ReleasesPolicy.ALWAYS.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, SnapshotsPolicy.ALWAYS.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.NO.getId() );
 
         int count = config.getConfiguration().getProxyConnectors().size();
         config.getConfiguration().addProxyConnector( connectorConfig );

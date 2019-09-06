@@ -235,14 +235,14 @@ public class HttpProxyTransferTest
         connectorConfig.setProxyId( PROXY_ID );
         connectorConfig.setSourceRepoId( MANAGED_ID );
         connectorConfig.setTargetRepoId( PROXIED_ID );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.FIX );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, ReleasesPolicy.ONCE );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, SnapshotsPolicy.ONCE );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.NO );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.FIX.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, ReleasesPolicy.ONCE.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, SnapshotsPolicy.ONCE.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.NO.getId() );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS,
-                                   PropagateErrorsDownloadPolicy.QUEUE );
+                                   PropagateErrorsDownloadPolicy.QUEUE.getId() );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS_ON_UPDATE,
-                                   PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
+                                   PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT.getId() );
 
         int count = config.getConfiguration().getProxyConnectors().size();
         config.getConfiguration().addProxyConnector( connectorConfig );

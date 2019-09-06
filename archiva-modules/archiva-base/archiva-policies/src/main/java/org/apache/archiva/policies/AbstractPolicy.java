@@ -82,17 +82,17 @@ public abstract class AbstractPolicy implements Policy {
     @Override
     public String getDescription(Locale locale) {
         return MessageFormat.format(getBundle(locale).getString(getPolicyPrefix() + "description")
-                , getOptions().stream().collect(Collectors.joining(",")));
+                , getOptions().stream().map(o -> o.getId()).collect(Collectors.joining(",")));
     }
 
     @Override
-    public String getOptionDescription(Locale locale, String option) {
-        return getBundle(locale).getString(getOptionPrefix()+option+".description");
+    public String getOptionDescription(Locale locale, PolicyOption option) {
+        return getBundle(locale).getString(getOptionPrefix()+option.getId()+".description");
     }
 
     @Override
-    public String getOptionName(Locale locale, String option) {
-        return getBundle(locale).getString(getOptionPrefix()+option+".name");
+    public String getOptionName(Locale locale, PolicyOption option) {
+        return getBundle(locale).getString(getOptionPrefix()+option.getId()+".name");
     }
 
 }

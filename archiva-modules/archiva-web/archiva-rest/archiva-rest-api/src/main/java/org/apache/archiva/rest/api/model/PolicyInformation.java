@@ -18,6 +18,8 @@ package org.apache.archiva.rest.api.model;
  * under the License.
  */
 
+import org.apache.archiva.policies.PolicyOption;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
@@ -30,9 +32,9 @@ import java.util.List;
 public class PolicyInformation
     implements Serializable
 {
-    private List<String> options;
+    private List<PolicyOption> options;
 
-    private String defaultOption;
+    private PolicyOption defaultOption;
 
     private String id;
 
@@ -43,7 +45,7 @@ public class PolicyInformation
         // no op
     }
 
-    public PolicyInformation( List<String> options, String defaultOption, String id, String name )
+    public PolicyInformation(List<PolicyOption> options, PolicyOption defaultOption, String id, String name )
     {
         this.options = options;
         this.defaultOption = defaultOption;
@@ -51,22 +53,22 @@ public class PolicyInformation
         this.name = name;
     }
 
-    public List<String> getOptions()
+    public List<PolicyOption> getOptions()
     {
         return options;
     }
 
-    public void setOptions( List<String> options )
+    public void setOptions( List<PolicyOption> options )
     {
         this.options = options;
     }
 
-    public String getDefaultOption()
+    public PolicyOption getDefaultOption()
     {
         return defaultOption;
     }
 
-    public void setDefaultOption( String defaultOption )
+    public void setDefaultOption( PolicyOption defaultOption )
     {
         this.defaultOption = defaultOption;
     }

@@ -127,12 +127,12 @@ public class CachedFailuresPolicyTest
         DownloadPolicy policy = lookupPolicy();
         assertEquals("Cache Failures Policy", policy.getName());
         assertTrue(policy.getDescription(Locale.US).contains("if download failures will be cached"));
-        assertEquals("Yes", policy.getOptionName(Locale.US, "yes"));
-        assertEquals("No", policy.getOptionName(Locale.US, "no"));
-        assertTrue(policy.getOptionDescription(Locale.US, "yes").contains("failures are cached and download is not attempted"));
-        assertTrue(policy.getOptionDescription(Locale.US, "no").contains("failures are not cached"));
+        assertEquals("Yes", policy.getOptionName(Locale.US, StandardOption.YES));
+        assertEquals("No", policy.getOptionName(Locale.US, StandardOption.NO));
+        assertTrue(policy.getOptionDescription(Locale.US, StandardOption.YES).contains("failures are cached and download is not attempted"));
+        assertTrue(policy.getOptionDescription(Locale.US, StandardOption.NO).contains("failures are not cached"));
         try {
-            policy.getOptionName(Locale.US, "xxxx");
+            policy.getOptionName(Locale.US, StandardOption.NOOP);
             // Exception should be thrown
             assertTrue(false);
         } catch (MissingResourceException e) {

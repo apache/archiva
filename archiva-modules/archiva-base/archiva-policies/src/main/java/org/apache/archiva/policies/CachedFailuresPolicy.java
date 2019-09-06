@@ -45,18 +45,18 @@ public class CachedFailuresPolicy
      * The NO policy setting means that the the existence of old failures is <strong>not</strong> checked.
      * All resource requests are allowed thru to the remote repo.
      */
-    public static final String NO = "no";
+    public static final StandardOption NO = StandardOption.NO;
 
     /**
      * The YES policy setting means that the existence of old failures is checked, and will
      * prevent the request from being performed against the remote repo.
      */
-    public static final String YES = "yes";
+    public static final StandardOption YES = StandardOption.YES;
 
     @Inject
     private UrlFailureCache urlFailureCache;
 
-    private List<String> options = new ArrayList<>( 2 );
+    private List<PolicyOption> options = new ArrayList<>( 2 );
 
     public CachedFailuresPolicy()
     {
@@ -66,7 +66,7 @@ public class CachedFailuresPolicy
     }
 
     @Override
-    public void applyPolicy( String policySetting, Properties request, StorageAsset localFile )
+    public void applyPolicy( PolicyOption policySetting, Properties request, StorageAsset localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
         if ( !options.contains( policySetting ) )
@@ -99,7 +99,7 @@ public class CachedFailuresPolicy
     }
 
     @Override
-    public String getDefaultOption()
+    public PolicyOption getDefaultOption()
     {
         return NO;
     }
@@ -112,7 +112,7 @@ public class CachedFailuresPolicy
 
 
     @Override
-    public List<String> getOptions()
+    public List<PolicyOption> getOptions()
     {
         return options;
     }

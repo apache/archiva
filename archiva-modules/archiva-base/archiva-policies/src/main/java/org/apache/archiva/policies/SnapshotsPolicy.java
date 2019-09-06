@@ -39,7 +39,7 @@ public class SnapshotsPolicy
      * Defaults to {@link AbstractUpdatePolicy#HOURLY}
      */
     @Override
-    public String getDefaultOption()
+    public PolicyOption getDefaultOption()
     {
         return AbstractUpdatePolicy.HOURLY;
     }

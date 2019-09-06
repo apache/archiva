@@ -1,5 +1,4 @@
 package org.apache.archiva.policies;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,46 +18,16 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-
-import org.springframework.stereotype.Service;
-
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * Interface for all policy options. Normally they are enums.
+ * The id is a unique identifier. It is used for configuration and serialization.
  *
- *
+ * Implementations should always implement the #toString() method and return the id.
  */
-@Service("preDownloadPolicy#releases")
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
-{
+public interface PolicyOption {
 
-    private static final String ID = "releases";
-    /**
-     * Defaults to {@link AbstractUpdatePolicy#HOURLY}
-     */
-    @Override
-    public PolicyOption getDefaultOption()
-    {
-        return AbstractUpdatePolicy.HOURLY;
-    }
+    String getId();
 
-    @Override
-    protected boolean isSnapshotPolicy()
-    {
-        return false;
-    }
-    
-    @Override
-    protected String getUpdateMode()
-    {
-        return "releases";
-    }
-
-    @Override
-    public String getId()
-    {
-        return ID;
-    }
+    PolicyOption ofId(String id);
 
 }

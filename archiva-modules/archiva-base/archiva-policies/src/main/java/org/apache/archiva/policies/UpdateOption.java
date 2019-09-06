@@ -1,5 +1,4 @@
 package org.apache.archiva.policies;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,46 +18,37 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-
-import org.springframework.stereotype.Service;
-
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * Options for update policies
  *
- *
+ * @author Martin Stockhammer <martin_s@apache.org>
  */
-@Service("preDownloadPolicy#releases")
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
-{
+public enum UpdateOption implements PolicyOption {
+    ALWAYS("always"), NEVER("never"), DAILY("daily"), HOURLY("hourly"), ONCE("once");
 
-    private static final String ID = "releases";
-    /**
-     * Defaults to {@link AbstractUpdatePolicy#HOURLY}
-     */
-    @Override
-    public PolicyOption getDefaultOption()
-    {
-        return AbstractUpdatePolicy.HOURLY;
+    private final String id;
+
+    UpdateOption(String id) {
+        this.id=id;
     }
 
     @Override
-    protected boolean isSnapshotPolicy()
-    {
-        return false;
-    }
-    
-    @Override
-    protected String getUpdateMode()
-    {
-        return "releases";
+    public String getId() {
+        return id;
     }
 
     @Override
-    public String getId()
-    {
-        return ID;
+    public PolicyOption ofId(String id) {
+        for (StandardOption option : StandardOption.values()) {
+            if (option.getId().equals(id)) {
+                return option;
+            }
+        }
+        return StandardOption.NOOP;
     }
 
+    @Override
+    public String toString() {
+        return id;
+    }
 }

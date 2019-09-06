@@ -21,12 +21,7 @@ package org.apache.archiva.proxy;
 
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.configuration.*;
-import org.apache.archiva.policies.CachedFailuresPolicy;
-import org.apache.archiva.policies.ChecksumPolicy;
-import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
-import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
-import org.apache.archiva.policies.ReleasesPolicy;
-import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.policies.*;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -352,35 +347,35 @@ public abstract class AbstractProxyTestCase
                        CachedFailuresPolicy.NO, disabled );
     }
 
-    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
-                                  String snapshotPolicy, String cacheFailuresPolicy, boolean disabled )
+    protected void saveConnector( String sourceRepoId, String targetRepoId, PolicyOption checksumPolicy, PolicyOption releasePolicy,
+                                  PolicyOption snapshotPolicy, PolicyOption cacheFailuresPolicy, boolean disabled )
     {
         saveConnector( sourceRepoId, targetRepoId, checksumPolicy, releasePolicy, snapshotPolicy, cacheFailuresPolicy,
                        PropagateErrorsDownloadPolicy.QUEUE, disabled );
     }
 
-    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
-                                  String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy,
+    protected void saveConnector( String sourceRepoId, String targetRepoId, PolicyOption checksumPolicy, PolicyOption releasePolicy,
+                                  PolicyOption snapshotPolicy, PolicyOption cacheFailuresPolicy, PolicyOption errorPolicy,
                                   boolean disabled )
     {
         saveConnector( sourceRepoId, targetRepoId, checksumPolicy, releasePolicy, snapshotPolicy, cacheFailuresPolicy,
                        errorPolicy, PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT, disabled );
     }
 
-    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
-                                  String snapshotPolicy, String cacheFailuresPolicy, String errorPolicy,
-                                  String errorOnUpdatePolicy, boolean disabled )
+    protected void saveConnector(String sourceRepoId, String targetRepoId, PolicyOption checksumPolicy, PolicyOption releasePolicy,
+                                 PolicyOption snapshotPolicy, PolicyOption cacheFailuresPolicy, PolicyOption errorPolicy,
+                                 PolicyOption errorOnUpdatePolicy, boolean disabled )
     {
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
         connectorConfig.setSourceRepoId( sourceRepoId );
         connectorConfig.setTargetRepoId( targetRepoId );
         connectorConfig.setProxyId(sourceRepoId);
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, checksumPolicy );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, releasePolicy );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, snapshotPolicy );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, cacheFailuresPolicy );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS, errorPolicy );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS_ON_UPDATE, errorOnUpdatePolicy );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, checksumPolicy.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, releasePolicy.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, snapshotPolicy.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, cacheFailuresPolicy.getId());
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS, errorPolicy.getId() );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_PROPAGATE_ERRORS_ON_UPDATE, errorOnUpdatePolicy.getId() );
         connectorConfig.setDisabled( disabled );
 
         int count = config.getConfiguration().getProxyConnectors().size();
