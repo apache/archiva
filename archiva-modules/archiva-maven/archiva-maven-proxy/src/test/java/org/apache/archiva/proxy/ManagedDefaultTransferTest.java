@@ -65,7 +65,7 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, true );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
         assertNull( "File should not have been downloaded", downloadedFile );
     }
 
@@ -87,7 +87,7 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path sourceFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), sourceFile );
@@ -111,7 +111,7 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), path );
 
         Path sourceFile = Paths.get(REPOPATH_PROXIED1, path);
         assertNotNull(downloadedFile);
@@ -147,7 +147,7 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), expectedFile );
         assertNoTempFiles( expectedFile );
@@ -181,7 +181,7 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), path );
 
         assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, originalModificationTime );
@@ -227,7 +227,7 @@ public class ManagedDefaultTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, originalModificationTime );
@@ -272,7 +272,7 @@ public class ManagedDefaultTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
@@ -304,7 +304,7 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
@@ -328,7 +328,7 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
         Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
@@ -359,7 +359,7 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied2File );
@@ -383,7 +383,7 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNull( "File returned was: " + downloadedFile + "; should have got a not found exception",
                     downloadedFile );
@@ -403,7 +403,8 @@ public class ManagedDefaultTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         // Configure Repository (usually done within archiva.xml configuration)
-        saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "" +
+            "http://bad.machine.com/repo/", "default" );
 
         wagonMock.get( EasyMock.eq( path), EasyMock.anyObject( File.class ) );
         EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "transfer failed" )  );
@@ -414,7 +415,7 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         wagonMockControl.verify();
 
@@ -436,8 +437,8 @@ public class ManagedDefaultTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         // Configure Repository (usually done within archiva.xml configuration)
-        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
-        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://dead.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "http://dead.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", false );
@@ -453,7 +454,7 @@ public class ManagedDefaultTransferTest
 
         wagonMockControl.replay();
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNotDownloaded( downloadedFile );
 

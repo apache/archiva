@@ -21,26 +21,36 @@ package org.apache.archiva.proxy;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksumUtil;
-import org.apache.archiva.proxy.model.ProxyConnectorRuleType;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.configuration.*;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorRuleConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.Keys;
-import org.apache.archiva.policies.*;
+import org.apache.archiva.policies.DownloadErrorPolicy;
+import org.apache.archiva.policies.DownloadPolicy;
+import org.apache.archiva.policies.Policy;
+import org.apache.archiva.policies.PolicyConfigurationException;
+import org.apache.archiva.policies.PolicyOption;
+import org.apache.archiva.policies.PolicyViolationException;
+import org.apache.archiva.policies.PostDownloadPolicy;
+import org.apache.archiva.policies.PreDownloadPolicy;
+import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.redback.components.registry.Registry;
-import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.StorageUtil;
-import org.apache.archiva.repository.metadata.MetadataTools;
-import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,41 +66,41 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
 
-public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHandler, RegistryListener {
+public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHandler {
 
     protected Logger log = LoggerFactory.getLogger( DefaultRepositoryProxyHandler.class );
     @Inject
     protected UrlFailureCache urlFailureCache;
 
     @Inject
-    @Named(value = "archivaConfiguration#default")
-    private ArchivaConfiguration archivaConfiguration;
-
-    @Inject
     @Named(value = "metadataTools#default")
     private MetadataTools metadataTools;
 
-    @Inject
-    private Map<String, PreDownloadPolicy> preDownloadPolicies;
-    @Inject
-    private Map<String, PostDownloadPolicy> postDownloadPolicies;
-    @Inject
-    private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
+    private Map<String, PreDownloadPolicy> preDownloadPolicies = new HashMap<>(  );
+    private Map<String, PostDownloadPolicy> postDownloadPolicies = new HashMap<>(  );
+    private Map<String, DownloadErrorPolicy> downloadErrorPolicies = new HashMap<>(  );
     private ConcurrentMap<String, List<ProxyConnector>> proxyConnectorMap = new ConcurrentHashMap<>();
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler<RepositoryTask> scheduler;
+
     @Inject
-    private RepositoryRegistry repositoryRegistry;
+    private ArchivaConfiguration archivaConfiguration;
 
     @Inject
     @Named(value = "fileLockManager#default")
@@ -102,113 +112,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     @PostConstruct
     public void initialize()
     {
-        initConnectors();
-        archivaConfiguration.addChangeListener( this );
         checksumAlgorithms = ChecksumUtil.getAlgorithms(archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().getChecksumTypes());
-
-    }
-
-    @SuppressWarnings("unchecked")
-    private void initConnectors()
-    {
-
-        ProxyConnectorOrderComparator proxyOrderSorter = new ProxyConnectorOrderComparator();
-        this.proxyConnectorMap.clear();
-
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
-        List<ProxyConnectorRuleConfiguration> allProxyConnectorRuleConfigurations =
-            configuration.getProxyConnectorRuleConfigurations();
-
-        List<ProxyConnectorConfiguration> proxyConfigs = configuration.getProxyConnectors();
-        for ( ProxyConnectorConfiguration proxyConfig : proxyConfigs )
-        {
-            String key = proxyConfig.getSourceRepoId();
-
-            // Create connector object.
-            ProxyConnector connector = new ProxyConnector();
-
-            ManagedRepository repo = repositoryRegistry.getManagedRepository( proxyConfig.getSourceRepoId( ) );
-            if (repo==null) {
-                log.error("Cannot find source repository after config change "+proxyConfig.getSourceRepoId());
-                continue;
-            }
-            connector.setSourceRepository(repo);
-            RemoteRepository rRepo = repositoryRegistry.getRemoteRepository( proxyConfig.getTargetRepoId() );
-            if (rRepo==null) {
-                log.error("Cannot find target repository after config change "+proxyConfig.getSourceRepoId());
-                continue;
-            }
-            connector.setTargetRepository(rRepo);
-
-            connector.setProxyId( proxyConfig.getProxyId() );
-            connector.setPolicies( proxyConfig.getPolicies() );
-            connector.setOrder( proxyConfig.getOrder() );
-            connector.setDisabled( proxyConfig.isDisabled() );
-
-            // Copy any blacklist patterns.
-            List<String> blacklist = new ArrayList<>( 0 );
-            if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
-            {
-                blacklist.addAll( proxyConfig.getBlackListPatterns() );
-            }
-            connector.setBlacklist( blacklist );
-
-            // Copy any whitelist patterns.
-            List<String> whitelist = new ArrayList<>( 0 );
-            if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
-            {
-                whitelist.addAll( proxyConfig.getWhiteListPatterns() );
-            }
-            connector.setWhitelist( whitelist );
-
-            List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations =
-                findProxyConnectorRules( connector.getSourceRepository().getId(),
-                                         connector.getTargetRepository().getId(),
-                                         allProxyConnectorRuleConfigurations );
-
-            if ( !proxyConnectorRuleConfigurations.isEmpty() )
-            {
-                for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : proxyConnectorRuleConfigurations )
-                {
-                    if ( StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
-                                             ProxyConnectorRuleType.BLACK_LIST.getRuleType() ) )
-                    {
-                        connector.getBlacklist().add( proxyConnectorRuleConfiguration.getPattern() );
-                    }
-
-                    if ( StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
-                                             ProxyConnectorRuleType.WHITE_LIST.getRuleType() ) )
-                    {
-                        connector.getWhitelist().add( proxyConnectorRuleConfiguration.getPattern() );
-                    }
-                }
-            }
-
-            // Get other connectors
-            List<ProxyConnector> connectors = this.proxyConnectorMap.get( key );
-            if ( connectors == null )
-            {
-                // Create if we are the first.
-                connectors = new ArrayList<>( 1 );
-            }
-
-            // Add the connector.
-            connectors.add( connector );
-
-            // Ensure the list is sorted.
-            Collections.sort( connectors, proxyOrderSorter );
-
-            // Set the key to the list of connectors.
-            this.proxyConnectorMap.put( key, connectors );
-
-
-        }
-
-
-
-
-
     }
 
     private List<ProxyConnectorRuleConfiguration> findProxyConnectorRules(String sourceRepository,
@@ -232,23 +136,8 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         return proxyConnectorRuleConfigurations;
     }
 
-    private void updateNetworkProxies() {
-        Map<String, NetworkProxy> proxies = archivaConfiguration.getConfiguration().getNetworkProxies().stream().map(p -> {
-            NetworkProxy np = new NetworkProxy();
-            np.setId(p.getId());
-            np.setUseNtlm(p.isUseNtlm());
-            np.setUsername(p.getUsername());
-            np.setPassword(p.getPassword() == null ? new char[0] : p.getPassword().toCharArray());
-            np.setProtocol(p.getProtocol());
-            np.setHost(p.getHost());
-            np.setPort(p.getPort());
-            return np;
-        }).collect(Collectors.toMap(p -> p.getId(), p -> p));
-        setNetworkProxies(proxies);
-    }
-
     @Override
-    public StorageAsset fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
+    public StorageAsset fetchFromProxies( ManagedRepository repository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
         StorageAsset localFile = toLocalFile( repository, artifact );
@@ -262,7 +151,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         Map<String, Exception> previousExceptions = new LinkedHashMap<>();
         for ( ProxyConnector connector : connectors )
         {
-            if ( connector.isDisabled() )
+            if ( !connector.isEnabled() )
             {
                 continue;
             }
@@ -281,7 +170,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             try
             {
                 StorageAsset downloadedFile =
-                    transferFile( connector, targetRepository.getContent(), targetPath, repository, localFile, requestProperties,
+                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
                                   true );
 
                 if ( fileExists(downloadedFile) )
@@ -319,9 +208,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     }
 
     @Override
-    public StorageAsset fetchFromProxies( ManagedRepositoryContent repository, String path )
+    public StorageAsset fetchFromProxies( ManagedRepository repository, String path )
     {
-        StorageAsset localFile = repository.getRepository().getAsset( path );
+        StorageAsset localFile = repository.getAsset( path );
 
         // no update policies for these paths
         if ( localFile.exists() )
@@ -336,7 +225,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         List<ProxyConnector> connectors = getProxyConnectors( repository );
         for ( ProxyConnector connector : connectors )
         {
-            if ( connector.isDisabled() )
+            if ( !connector.isEnabled() )
             {
                 continue;
             }
@@ -349,7 +238,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             try
             {
                 StorageAsset downloadedFile =
-                    transferFile( connector, targetRepository.getContent(), targetPath, repository, localFile, requestProperties,
+                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
                                   false );
 
                 if ( fileExists( downloadedFile ) )
@@ -387,9 +276,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     }
 
     @Override
-    public ProxyFetchResult fetchMetadataFromProxies(ManagedRepositoryContent repository, String logicalPath )
+    public ProxyFetchResult fetchMetadataFromProxies( ManagedRepository repository, String logicalPath )
     {
-        StorageAsset localFile = repository.getRepository().getAsset( logicalPath );
+        StorageAsset localFile = repository.getAsset( logicalPath );
 
         Properties requestProperties = new Properties();
         requestProperties.setProperty( "filetype", "metadata" );
@@ -399,7 +288,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         List<ProxyConnector> connectors = new ArrayList<>( getProxyConnectors( repository ) );
         for ( ProxyConnector connector : connectors )
         {
-            if ( connector.isDisabled() )
+            if ( !connector.isEnabled() )
             {
                 continue;
             }
@@ -411,7 +300,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
             try
             {
-                transferFile( connector, targetRepository.getContent(), logicalPath, repository, localRepoFile, requestProperties,
+                transferFile( connector, targetRepository, logicalPath, repository, localRepoFile, requestProperties,
                               true );
 
                 if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
@@ -451,7 +340,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         {
             try
             {
-                metadataTools.updateMetadata( repository, logicalPath );
+                metadataTools.updateMetadata( repository.getContent(), logicalPath );
             }
             catch ( RepositoryMetadataException e )
             {
@@ -489,18 +378,19 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         return ( currentLastModified > originalLastModified );
     }
 
-    private StorageAsset toLocalRepoFile( ManagedRepositoryContent repository, RemoteRepositoryContent targetRepository,
+    private StorageAsset toLocalRepoFile( ManagedRepository repository, RemoteRepositoryContent targetRepository,
                                           String targetPath )
     {
         String repoPath = metadataTools.getRepositorySpecificName( targetRepository, targetPath );
-        return repository.getRepository().getAsset( repoPath );
+        return repository.getAsset( repoPath );
     }
 
     /**
      * Test if the provided ManagedRepositoryContent has any proxies configured for it.
+     * @param repository
      */
     @Override
-    public boolean hasProxies( ManagedRepositoryContent repository )
+    public boolean hasProxies( ManagedRepository repository )
     {
         synchronized ( this.proxyConnectorMap )
         {
@@ -508,9 +398,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
     }
 
-    private StorageAsset toLocalFile(ManagedRepositoryContent repository, ArtifactReference artifact )
+    private StorageAsset toLocalFile(ManagedRepository repository, ArtifactReference artifact )
     {
-        return repository.toFile( artifact );
+        return repository.getContent().toFile( artifact );
     }
 
     /**
@@ -550,12 +440,20 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      *                              the remote resource is not newer than the local File.
      * @throws ProxyException       if transfer was unsuccessful.
      */
-    protected StorageAsset transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
-                                         ManagedRepositoryContent repository, StorageAsset resource, Properties requestProperties,
+    protected StorageAsset transferFile( ProxyConnector connector, RemoteRepository remoteRepository, String remotePath,
+                                         ManagedRepository repository, StorageAsset resource, Properties requestProperties,
                                          boolean executeConsumers )
         throws ProxyException, NotModifiedException
     {
-        String url = remoteRepository.getURL().getUrl();
+        String url = null;
+        try
+        {
+            url = remoteRepository.getLocation().toURL().toString();
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new ProxyException( e.getMessage(), e );
+        }
         if ( !url.endsWith( "/" ) )
         {
             url = url + "/";
@@ -570,7 +468,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             if ( !matchesPattern( remotePath, connector.getWhitelist() ) )
             {
                 log.debug( "Path [{}] is not part of defined whitelist (skipping transfer from repository [{}]).",
-                           remotePath, remoteRepository.getRepository().getName() );
+                           remotePath, remoteRepository.getId() );
                 return null;
             }
         }
@@ -579,7 +477,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         if ( matchesPattern( remotePath, connector.getBlacklist() ) )
         {
             log.debug( "Path [{}] is part of blacklist (skipping transfer from repository [{}]).", remotePath,
-                       remoteRepository.getRepository().getName() );
+                       remoteRepository.getId() );
             return null;
         }
 
@@ -666,9 +564,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         return resource;
     }
 
-    protected abstract void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository,
+    protected abstract void transferResources( ProxyConnector connector, RemoteRepository remoteRepository,
                                                StorageAsset tmpResource, StorageAsset[] checksumFiles, String url, String remotePath, StorageAsset resource, Path workingDirectory,
-                                               ManagedRepositoryContent repository ) throws ProxyException;
+                                               ManagedRepository repository ) throws ProxyException;
 
     private void queueRepositoryTask(String repositoryId, StorageAsset localFile )
     {
@@ -716,7 +614,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(PolicyOption, Properties, StorageAsset)})
      * @throws PolicyViolationException
      */
-    private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
+    private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<Policy, PolicyOption> settings,
                                    Properties request, StorageAsset localFile )
         throws PolicyViolationException
     {
@@ -724,9 +622,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         {
             // olamy with spring rolehint is now downloadPolicy#hint
             // so substring after last # to get the hint as with plexus
-            String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
+            String key = entry.getValue( ).getId( );
             DownloadPolicy policy = entry.getValue();
-            PolicyOption option = PolicyUtil.findOption(settings.get(key), policy);
+            PolicyOption option = settings.containsKey(policy ) ? settings.get(policy) : policy.getDefaultOption();
 
             log.debug( "Applying [{}] policy with [{}]", key, option );
             try
@@ -740,7 +638,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
     }
 
-    private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<String, String> settings,
+    private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<Policy, PolicyOption> settings,
                                    Properties request, ArtifactReference artifact, RemoteRepositoryContent content,
                                    StorageAsset localFile, Exception exception, Map<String, Exception> previousExceptions )
         throws ProxyDownloadException
@@ -751,9 +649,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
             // olamy with spring rolehint is now downloadPolicy#hint
             // so substring after last # to get the hint as with plexus
-            String key = StringUtils.substringAfterLast( entry.getKey(), "#" );
+            String key = entry.getValue( ).getId( );
             DownloadErrorPolicy policy = entry.getValue();
-            PolicyOption option = PolicyUtil.findOption(settings.get(key), policy);
+            PolicyOption option = settings.containsKey( policy ) ? settings.get(policy) : policy.getDefaultOption();
 
             log.debug( "Applying [{}] policy with [{}]", key, option );
             try
@@ -799,7 +697,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      * @param repository
      * @return file location of working directory
      */
-    private Path createWorkingDirectory( ManagedRepositoryContent repository )
+    private Path createWorkingDirectory( ManagedRepository repository )
     {
         try
         {
@@ -883,9 +781,10 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
     /**
      * TODO: Ensure that list is correctly ordered based on configuration. See MRM-477
+     * @param repository
      */
     @Override
-    public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository )
+    public List<ProxyConnector> getProxyConnectors( ManagedRepository repository )
     {
 
         if ( !this.proxyConnectorMap.containsKey( repository.getId() ) )
@@ -899,18 +798,6 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
     }
 
-    @Override
-    public void afterConfigurationChange(Registry registry, String propertyName, Object propertyValue )
-    {
-        if ( ConfigurationNames.isManagedRepositories( propertyName ) //
-            || ConfigurationNames.isRemoteRepositories( propertyName ) //
-            || ConfigurationNames.isProxyConnector( propertyName ) ) //
-        {
-            initConnectors();
-        } else if (ConfigurationNames.isNetworkProxy(propertyName)) {
-            updateNetworkProxies();
-        }
-    }
 
     protected String addParameters(String path, RemoteRepository remoteRepository )
     {
@@ -932,17 +819,6 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
 
         return res.toString();
-    }
-
-    @Override
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        /* do nothing */
-    }
-
-    public ArchivaConfiguration getArchivaConfiguration()
-    {
-        return archivaConfiguration;
     }
 
     public void setArchivaConfiguration(ArchivaConfiguration archivaConfiguration )
@@ -1001,9 +877,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     }
 
     @Override
-    public void setNetworkProxies(Map<String, NetworkProxy> proxies) {
+    public void setNetworkProxies(Map<String, NetworkProxy> networkProxies ) {
         this.networkProxyMap.clear();
-        this.networkProxyMap.putAll(proxies);
+        this.networkProxyMap.putAll( networkProxies );
     }
 
     @Override
@@ -1018,4 +894,77 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
     @Override
     public abstract List<RepositoryType> supports();
+
+    @Override
+    public void setPolicies( List<Policy> policyList )
+    {
+        preDownloadPolicies.clear();
+        postDownloadPolicies.clear();
+        downloadErrorPolicies.clear();
+        for (Policy policy : policyList) {
+            addPolicy( policy );
+        }
+    }
+
+    void addPolicy(PreDownloadPolicy policy) {
+        preDownloadPolicies.put( policy.getId( ), policy );
+    }
+
+    void addPolicy(PostDownloadPolicy policy) {
+        postDownloadPolicies.put( policy.getId( ), policy );
+    }
+    void addPolicy(DownloadErrorPolicy policy) {
+        downloadErrorPolicies.put( policy.getId( ), policy );
+    }
+
+    @Override
+    public void addPolicy( Policy policy )
+    {
+        if (policy instanceof PreDownloadPolicy) {
+            addPolicy( (PreDownloadPolicy)policy );
+        } else if (policy instanceof PostDownloadPolicy) {
+            addPolicy( (PostDownloadPolicy) policy );
+        } else if (policy instanceof DownloadErrorPolicy) {
+            addPolicy( (DownloadErrorPolicy) policy );
+        } else {
+            log.warn( "Policy not known: {}, {}", policy.getId( ), policy.getClass( ).getName( ) );
+        }
+    }
+
+    @Override
+    public void removePolicy( Policy policy )
+    {
+        final String id = policy.getId();
+        if (preDownloadPolicies.containsKey( id )) {
+            preDownloadPolicies.remove( id );
+        } else if (postDownloadPolicies.containsKey( id )) {
+            postDownloadPolicies.remove( id );
+        } else if (downloadErrorPolicies.containsKey( id )) {
+            downloadErrorPolicies.remove( id );
+        }
+    }
+
+    @Override
+    public void addProxyConnector( ProxyConnector connector )
+    {
+        final String sourceId = connector.getSourceRepository( ).getId( );
+        List<ProxyConnector> connectors;
+        if (proxyConnectorMap.containsKey( sourceId )) {
+            connectors = proxyConnectorMap.get( sourceId );
+        } else {
+            connectors = new ArrayList<>( );
+            proxyConnectorMap.put( sourceId, connectors );
+        }
+        connectors.add( connector );
+    }
+
+    @Override
+    public void setProxyConnectors( List<ProxyConnector> proxyConnectors )
+    {
+        proxyConnectorMap.clear();
+        for ( ProxyConnector connector : proxyConnectors )
+        {
+            addProxyConnector( connector );
+        }
+    }
 }

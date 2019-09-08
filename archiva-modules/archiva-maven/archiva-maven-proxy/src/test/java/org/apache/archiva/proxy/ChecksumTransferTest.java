@@ -64,7 +64,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, true );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNull( downloadedFile );
     }
@@ -86,7 +86,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -112,7 +112,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -138,7 +138,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -163,7 +163,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -188,7 +188,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -213,7 +213,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
@@ -236,7 +236,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -262,7 +262,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
@@ -285,7 +285,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         // This is a success situation. No SHA1 with a Good MD5.
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
@@ -311,7 +311,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
@@ -334,7 +334,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -361,7 +361,7 @@ public class ChecksumTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -387,7 +387,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -413,7 +413,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -436,7 +436,7 @@ public class ChecksumTransferTest
         assertFalse( Files.exists(expectedFile.getParent()) );
         assertFalse( Files.exists(expectedFile) );
 
-        saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "http://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
@@ -453,7 +453,7 @@ public class ChecksumTransferTest
 
         wagonMockControl.replay();
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         wagonMockControl.verify();
 
@@ -490,7 +490,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
@@ -517,7 +517,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -545,7 +545,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );

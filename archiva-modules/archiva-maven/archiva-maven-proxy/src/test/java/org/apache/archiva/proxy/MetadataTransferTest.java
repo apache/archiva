@@ -128,7 +128,7 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -145,7 +145,7 @@ public class MetadataTransferTest
         String requestedResource = "org/apache/maven/test/get-default-layout/maven-metadata.xml";
         setupTestableManagedRepository( requestedResource );
 
-        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
@@ -991,7 +991,7 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1017,7 +1017,7 @@ public class MetadataTransferTest
         Path expectedFile = managedDefaultDir.resolve(requestedResource);
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1038,7 +1038,7 @@ public class MetadataTransferTest
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1064,7 +1064,7 @@ public class MetadataTransferTest
         Path expectedFile = managedDefaultDir.resolve(requestedResource);
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 

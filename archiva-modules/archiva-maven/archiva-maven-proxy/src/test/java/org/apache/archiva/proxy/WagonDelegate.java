@@ -269,11 +269,11 @@ public class WagonDelegate
         try
         {
             Files.createDirectories(destination.getParent());
-            if ( contentToGet == null )
+            if ( contentToGet == null && !Files.exists(destination))
             {
                 Files.createFile(destination);
             }
-            else
+            else if (contentToGet != null)
             {
                 org.apache.archiva.common.utils.FileUtils.writeStringToFile(destination, Charset.defaultCharset(), contentToGet);
             }
@@ -282,5 +282,9 @@ public class WagonDelegate
         {
             throw new RuntimeException( e.getMessage(), e );
         }
+    }
+
+    public void cleanup() {
+
     }
 }

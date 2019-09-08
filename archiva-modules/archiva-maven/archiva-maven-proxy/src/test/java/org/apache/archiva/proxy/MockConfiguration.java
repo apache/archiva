@@ -91,6 +91,7 @@ public class MockConfiguration
         registryListeners.add( listener );
     }
 
+
     @Override
     public void removeChangeListener( RegistryListener listener )
     {
@@ -122,6 +123,10 @@ public class MockConfiguration
             {
                 e.printStackTrace();
             }
+        }
+
+        for (ConfigurationListener listener : configListeners) {
+            listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.CHANGED ) );
         }
     }
 

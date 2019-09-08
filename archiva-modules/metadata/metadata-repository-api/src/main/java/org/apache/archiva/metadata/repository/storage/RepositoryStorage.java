@@ -25,6 +25,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.filter.Filter;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.xml.XMLException;
 
@@ -70,7 +71,7 @@ public interface RepositoryStorage
      * @param artifact the artifact reference
      * @throws org.apache.archiva.policies.ProxyDownloadException
      */    
-    void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
+    void applyServerSideRelocation( ManagedRepository managedRepository, ArtifactReference artifact )
         throws ProxyDownloadException;
 
     /**

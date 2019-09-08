@@ -32,15 +32,46 @@ import java.util.List;
  */
 public interface RepositoryConnector
 {
+    /**
+     * Returns the local repository that is connected to the remote.
+     * @return The local managed repository.
+     */
     ManagedRepository getSourceRepository();
 
+    /**
+     * Returns the remote repository that is connected to the local.
+     * @return The remote repository.
+     */
     RemoteRepository getTargetRepository();
 
+    /**
+     * Returns a list of paths that are not fetched from the remote repository.
+     * @return A list of paths.
+     */
     List<String> getBlacklist();
-    
+
+    /**
+     * Returns a list of paths that are fetched from the remote repository, even if a
+     * parent path is in the blacklist.
+     *
+     * @return The list of paths.
+     */
     List<String> getWhitelist();
-    
-    boolean isDisabled();
-    
-    void setDisabled(boolean disabled);
+
+    /**
+     * Returns true, if this connector is enabled, otherwise false.
+     * @return True, if enabled.
+     */
+    boolean isEnabled();
+
+    /**
+     * Enables this connector, if it was disabled before, otherwise does nothing.
+     */
+    void enable();
+
+    /**
+     * Disables this connector, if it was enabled before, otherwise does nothing.
+     */
+    void disable();
+
 }

@@ -28,6 +28,7 @@ import org.apache.archiva.metadata.repository.storage.*;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
@@ -101,7 +102,7 @@ public class MockBeanServices
     }
 
     @Override
-    public void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
+    public void applyServerSideRelocation( ManagedRepository managedRepository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
 

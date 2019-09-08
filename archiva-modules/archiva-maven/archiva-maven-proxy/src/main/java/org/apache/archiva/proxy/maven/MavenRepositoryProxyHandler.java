@@ -27,6 +27,7 @@ import org.apache.archiva.proxy.NotModifiedException;
 import org.apache.archiva.proxy.ProxyException;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
+import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +56,7 @@ import java.util.concurrent.ConcurrentMap;
  * TODO exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
-@Service("repositoryProxyConnectors#maven")
+@Service( "repositoryProxyHandler#maven" )
 public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
 
     private static final List<RepositoryType> REPOSITORY_TYPES = new ArrayList<>();
@@ -76,7 +77,6 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
 
     private void updateWagonProxyInfo(Map<String, NetworkProxy> proxyList) {
         this.networkProxyMap.clear();
-        List<NetworkProxyConfiguration> networkProxies = getArchivaConfiguration().getConfiguration().getNetworkProxies();
         for (Map.Entry<String, NetworkProxy> proxyEntry : proxyList.entrySet()) {
             String key = proxyEntry.getKey();
             NetworkProxy networkProxyDef = proxyEntry.getValue();
@@ -94,9 +94,9 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
     }
 
     @Override
-    public void setNetworkProxies(Map<String, NetworkProxy> proxies) {
-        super.setNetworkProxies(proxies);
-        updateWagonProxyInfo(proxies);
+    public void setNetworkProxies(Map<String, NetworkProxy> networkProxies ) {
+        super.setNetworkProxies( networkProxies );
+        updateWagonProxyInfo( networkProxies );
     }
 
     /**
@@ -112,13 +112,13 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
      * @throws ProxyException
      * @throws NotModifiedException
      */
-    protected void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository,
+    protected void transferResources( ProxyConnector connector, RemoteRepository remoteRepository,
                                       StorageAsset tmpResource, StorageAsset[] checksumFiles, String url, String remotePath, StorageAsset resource,
-                                      Path workingDirectory, ManagedRepositoryContent repository )
+                                      Path workingDirectory, ManagedRepository repository )
             throws ProxyException, NotModifiedException {
         Wagon wagon = null;
         try {
-            RepositoryURL repoUrl = remoteRepository.getURL();
+            RepositoryURL repoUrl = remoteRepository.getContent().getURL();
             String protocol = repoUrl.getProtocol();
             NetworkProxy networkProxy = null;
             String proxyId = connector.getProxyId();
@@ -127,7 +127,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
                 networkProxy = getNetworkProxy(proxyId);
             }
             WagonFactoryRequest wagonFactoryRequest = new WagonFactoryRequest("wagon#" + protocol,
-                    remoteRepository.getRepository().getExtraHeaders());
+                    remoteRepository.getExtraHeaders());
             if (networkProxy == null) {
 
                 log.warn("No network proxy with id {} found for connector {}->{}", proxyId,
@@ -180,8 +180,8 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
         }
     }
 
-    protected void transferArtifact(Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                    ManagedRepositoryContent repository, Path resource, Path tmpDirectory,
+    protected void transferArtifact(Wagon wagon, RemoteRepository remoteRepository, String remotePath,
+                                    ManagedRepository repository, Path resource, Path tmpDirectory,
                                     StorageAsset destFile)
             throws ProxyException {
         transferSimpleFile(wagon, remoteRepository, remotePath, repository, resource, destFile.getFilePath());
@@ -200,11 +200,11 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
      * @param ext              the type of checksum to transfer (example: ".md5" or ".sha1")
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
-    protected void transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                     ManagedRepositoryContent repository, Path resource, String ext,
+    protected void transferChecksum( Wagon wagon, RemoteRepository remoteRepository, String remotePath,
+                                     ManagedRepository repository, Path resource, String ext,
                                      Path destFile )
             throws ProxyException {
-        String url = remoteRepository.getURL().getUrl() + remotePath + ext;
+        String url = remoteRepository.getLocation().toString() + remotePath + ext;
 
         // Transfer checksum does not use the policy.
         if (urlFailureCache.hasFailedBefore(url)) {
@@ -239,8 +239,8 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
      * @param origFile         the local file to save to
      * @throws ProxyException if there was a problem moving the downloaded file into place.
      */
-    protected void transferSimpleFile(Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                      ManagedRepositoryContent repository, Path origFile, Path destFile)
+    protected void transferSimpleFile(Wagon wagon, RemoteRepository remoteRepository, String remotePath,
+                                      ManagedRepository repository, Path origFile, Path destFile)
             throws ProxyException {
         assert (remotePath != null);
 
@@ -249,16 +249,16 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
             boolean success = false;
 
             if (!Files.exists(origFile)) {
-                log.debug("Retrieving {} from {}", remotePath, remoteRepository.getRepository().getName());
-                wagon.get(addParameters(remotePath, remoteRepository.getRepository()), destFile.toFile());
+                log.debug("Retrieving {} from {}", remotePath, remoteRepository.getId());
+                wagon.get(addParameters(remotePath, remoteRepository), destFile.toFile());
                 success = true;
 
                 // You wouldn't get here on failure, a WagonException would have been thrown.
                 log.debug("Downloaded successfully.");
             } else {
-                log.debug("Retrieving {} from {} if updated", remotePath, remoteRepository.getRepository().getName());
+                log.debug("Retrieving {} from {} if updated", remotePath, remoteRepository.getId());
                 try {
-                    success = wagon.getIfNewer(addParameters(remotePath, remoteRepository.getRepository()), destFile.toFile(),
+                    success = wagon.getIfNewer(addParameters(remotePath, remoteRepository), destFile.toFile(),
                             Files.getLastModifiedTime(origFile).toMillis());
                 } catch (IOException e) {
                     throw new ProxyException("Failed to the modification time of " + origFile.toAbsolutePath());
@@ -274,13 +274,13 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
             }
         } catch (ResourceDoesNotExistException e) {
             throw new NotFoundException(
-                    "Resource [" + remoteRepository.getURL() + "/" + remotePath + "] does not exist: " + e.getMessage(),
+                    "Resource [" + remoteRepository.getLocation() + "/" + remotePath + "] does not exist: " + e.getMessage(),
                     e);
         } catch (WagonException e) {
             // TODO: shouldn't have to drill into the cause, but TransferFailedException is often not descriptive enough
 
             String msg =
-                    "Download failure on resource [" + remoteRepository.getURL() + "/" + remotePath + "]:" + e.getMessage();
+                    "Download failure on resource [" + remoteRepository.getLocation() + "/" + remotePath + "]:" + e.getMessage();
             if (e.getCause() != null) {
                 msg += " (cause: " + e.getCause() + ")";
             }
@@ -297,7 +297,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
      * @return true if the connection was successful. false if not connected.
      */
     protected boolean connectToRepository(ProxyConnector connector, Wagon wagon,
-                                          RemoteRepositoryContent remoteRepository) {
+                                          RemoteRepository remoteRepository) {
         boolean connected = false;
 
         final ProxyInfo networkProxy =
@@ -307,7 +307,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
             if (networkProxy != null) {
                 // TODO: move to proxyInfo.toString()
                 String msg = "Using network proxy " + networkProxy.getHost() + ":" + networkProxy.getPort()
-                        + " to connect to remote repository " + remoteRepository.getURL();
+                        + " to connect to remote repository " + remoteRepository.getLocation();
                 if (networkProxy.getNonProxyHosts() != null) {
                     msg += "; excluding hosts: " + networkProxy.getNonProxyHosts();
                 }
@@ -321,7 +321,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
         AuthenticationInfo authInfo = null;
         String username = "";
         String password = "";
-        RepositoryCredentials repCred = remoteRepository.getRepository().getLoginCredentials();
+        RepositoryCredentials repCred = remoteRepository.getLoginCredentials();
         if (repCred != null && repCred instanceof PasswordCredentials) {
             PasswordCredentials pwdCred = (PasswordCredentials) repCred;
             username = pwdCred.getUsername();
@@ -329,7 +329,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
         }
 
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            log.debug("Using username {} to connect to remote repository {}", username, remoteRepository.getURL());
+            log.debug("Using username {} to connect to remote repository {}", username, remoteRepository.getLocation());
             authInfo = new AuthenticationInfo();
             authInfo.setUserName(username);
             authInfo.setPassword(password);
@@ -337,7 +337,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
 
         // Convert seconds to milliseconds
 
-        long timeoutInMilliseconds = remoteRepository.getRepository().getTimeout().toMillis();
+        long timeoutInMilliseconds = remoteRepository.getTimeout().toMillis();
 
         // Set timeout  read and connect
         // FIXME olamy having 2 config values
@@ -346,11 +346,11 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
 
         try {
             Repository wagonRepository =
-                    new Repository(remoteRepository.getId(), remoteRepository.getURL().toString());
+                    new Repository(remoteRepository.getId(), remoteRepository.getLocation().toString());
             wagon.connect(wagonRepository, authInfo, networkProxy);
             connected = true;
         } catch (ConnectionException | AuthenticationException e) {
-            log.warn("Could not connect to {}: {}", remoteRepository.getRepository().getName(), e.getMessage());
+            log.warn("Could not connect to {}: {}", remoteRepository.getId(), e.getMessage());
             connected = false;
         }
 
@@ -369,5 +369,21 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
     @Override
     public List<RepositoryType> supports() {
         return REPOSITORY_TYPES;
+    }
+
+    @Override
+    public void addNetworkproxy( String id, NetworkProxy networkProxy )
+    {
+
+    }
+
+    @Override
+    public <T extends RepositoryProxyHandler> T getHandler( Class<T> clazz ) throws IllegalArgumentException
+    {
+        if (clazz.isAssignableFrom( this.getClass() )) {
+            return (T)this;
+        } else {
+            throw new IllegalArgumentException( "This Proxy Handler is no subclass of " + clazz );
+        }
     }
 }

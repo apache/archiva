@@ -598,7 +598,7 @@ public class ArchivaDavResourceFactory
                     {
                         boolean previouslyExisted = repoAsset.exists();
 
-                        boolean fromProxy = fetchContentFromProxies( managedRepositoryContent, request, logicalResource );
+                        boolean fromProxy = fetchContentFromProxies( managedRepository, request, logicalResource );
 
                         StorageAsset resourceAsset=null;
                         // At this point the incoming request can either be in default or
@@ -753,16 +753,16 @@ public class ArchivaDavResourceFactory
         return resource;
     }
 
-    private boolean fetchContentFromProxies( ManagedRepositoryContent managedRepository, DavServletRequest request,
+    private boolean fetchContentFromProxies( ManagedRepository managedRepository, DavServletRequest request,
                                              LogicalResource resource )
         throws DavException
     {
         String path = resource.getPath();
-        if (!proxyRegistry.hasHandler(managedRepository.getRepository().getType())) {
-            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No proxy handler found for repository type "+managedRepository.getRepository().getType());
+        if (!proxyRegistry.hasHandler(managedRepository.getType())) {
+            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No proxy handler found for repository type "+managedRepository.getType());
         }
-        RepositoryRequestInfo repositoryRequestInfo = managedRepository.getRepository().getRequestInfo();
-        RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(managedRepository.getRepository().getType()).get(0);
+        RepositoryRequestInfo repositoryRequestInfo = managedRepository.getRequestInfo();
+        RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(managedRepository.getType()).get(0);
         if ( repositoryRequestInfo.isSupportFile( path ) )
         {
             StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
@@ -793,7 +793,7 @@ public class ArchivaDavResourceFactory
 
             if ( artifact != null )
             {
-                String repositoryLayout = managedRepository.getRepository().getLayout();
+                String repositoryLayout = managedRepository.getLayout();
 
                 RepositoryStorage repositoryStorage =
                     this.applicationContext.getBean( "repositoryStorage#" + repositoryLayout, RepositoryStorage.class );
@@ -801,7 +801,7 @@ public class ArchivaDavResourceFactory
 
                 StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, artifact );
 
-                resource.setPath( managedRepository.toPath( artifact ) );
+                resource.setPath( managedRepository.getContent().toPath( artifact ) );
 
                 log.debug( "Proxied artifact '{}:{}:{}'", artifact.getGroupId(), artifact.getArtifactId(),
                            artifact.getVersion() );
