@@ -67,8 +67,8 @@ public class CacheFailuresTransferTest
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
-        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
-        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/anotherrepo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "http://bad.machine.com/anotherrepo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
@@ -84,14 +84,14 @@ public class CacheFailuresTransferTest
         wagonMockControl.replay();
 
         //noinspection UnusedAssignment
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         wagonMockControl.verify();
 
         // Second attempt to download same artifact use cache
         wagonMockControl.reset();
         wagonMockControl.replay();
-        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
         wagonMockControl.verify();
 
         assertNotDownloaded( downloadedFile);
@@ -111,8 +111,8 @@ public class CacheFailuresTransferTest
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
-        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
-        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/anotherrepo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "http://bad.machine.com/anotherrepo/", "default" );
 
 
         // Configure Connector (usually done within archiva.xml configuration)
@@ -126,7 +126,7 @@ public class CacheFailuresTransferTest
 
         wagonMockControl.replay();
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         wagonMockControl.verify();
 
@@ -138,7 +138,7 @@ public class CacheFailuresTransferTest
 
         wagonMockControl.replay();
 
-        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         wagonMockControl.verify();
 
@@ -170,7 +170,7 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         // Validate that file actually came from proxied2 (as intended).
         Path proxied2File = Paths.get( REPOPATH_PROXIED2, path );

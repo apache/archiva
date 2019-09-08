@@ -60,7 +60,7 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -81,7 +81,7 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
@@ -104,7 +104,7 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
@@ -129,7 +129,7 @@ public class SnapshotTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
 
         // Attempt to download.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         // Should not have downloaded as managed is newer than remote.
         assertNotDownloaded( downloadedFile );
@@ -221,7 +221,7 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
@@ -245,7 +245,7 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, expectedTimestamp );
@@ -271,7 +271,7 @@ public class SnapshotTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES , false);
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
@@ -294,7 +294,7 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
@@ -321,7 +321,7 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );

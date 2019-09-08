@@ -103,7 +103,7 @@ public class AbstractRepositoryConnectorConfiguration
      * @param key
      * @param value
      */
-    public void addPolicy( Object key, String value )
+    public void addPolicy( String key, String value )
     {
         getPolicies().put( key, value );
     } //-- void addPolicy( Object, String )
@@ -114,7 +114,7 @@ public class AbstractRepositoryConnectorConfiguration
      * @param key
      * @param value
      */
-    public void addProperty( Object key, String value )
+    public void addProperty( String key, String value )
     {
         getProperties().put( key, value );
     } //-- void addProperty( Object, String )
@@ -149,7 +149,7 @@ public class AbstractRepositoryConnectorConfiguration
      * 
      * @return Map
      */
-    public java.util.Map getPolicies()
+    public java.util.Map<String, String> getPolicies()
     {
         if ( this.policies == null )
         {
@@ -164,7 +164,7 @@ public class AbstractRepositoryConnectorConfiguration
      * 
      * @return Map
      */
-    public java.util.Map getProperties()
+    public java.util.Map<String, String> getProperties()
     {
         if ( this.properties == null )
         {

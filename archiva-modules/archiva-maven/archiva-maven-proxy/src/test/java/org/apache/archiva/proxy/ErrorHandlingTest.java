@@ -526,14 +526,14 @@ public class ErrorHandlingTest
 
     private void createMockedProxyConnector( String id, String name, PolicyOption errorPolicy )
     {
-        saveRemoteRepositoryConfig( id, name, "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( id, name, "http://bad.machine.com/repo/", "default" );
         saveConnector( ID_DEFAULT_MANAGED, id, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS,
                        CachedFailuresPolicy.NO, errorPolicy, false );
     }
 
     private void createMockedProxyConnector( String id, String name, PolicyOption errorPolicy, PolicyOption errorOnUpdatePolicy )
     {
-        saveRemoteRepositoryConfig( id, name, "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( id, name, "http://bad.machine.com/repo/", "default" );
         saveConnector( ID_DEFAULT_MANAGED, id, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS,
                        CachedFailuresPolicy.NO, errorPolicy, errorOnUpdatePolicy, false );
     }
@@ -596,7 +596,7 @@ public class ErrorHandlingTest
         StorageAsset downloadedFile = null;
         try
         {
-            downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository,
+            downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(),
                                                             managedDefaultRepository.toArtifactReference( path ) );
             fail( "Proxy should not have succeeded" );
         }
@@ -637,7 +637,7 @@ public class ErrorHandlingTest
         wagonMockControl.replay();
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(),
                                                              managedDefaultRepository.toArtifactReference( path ) );
 
         wagonMockControl.verify();

@@ -64,6 +64,9 @@ public abstract class AbstractProxyTestCase
     protected ApplicationContext applicationContext;
 
     @Inject
+    private ProxyRegistry proxyRegistry;
+
+    @Inject
     RepositoryRegistry repositoryRegistry;
 
     protected static final String ID_PROXIED1 = "proxied1";
@@ -152,14 +155,16 @@ public abstract class AbstractProxyTestCase
         // Setup the proxy handler.
         //proxyHandler = applicationContext.getBean (RepositoryProxyHandler) lookup( RepositoryProxyHandler.class.getName() );
 
-        proxyHandler = applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyHandler.class );
+        proxyHandler = applicationContext.getBean( "repositoryProxyHandler#test", RepositoryProxyHandler.class );
+        assertNotNull( proxyRegistry );
+        assertTrue(proxyRegistry.getAllHandler( ).get( RepositoryType.MAVEN).contains( proxyHandler ));
 
 
         // Setup the wagon mock.
         wagonMockControl = EasyMock.createNiceControl();
         wagonMock = wagonMockControl.createMock( Wagon.class );
 
-        delegate = (WagonDelegate) applicationContext.getBean( "wagon#test", Wagon.class );
+        delegate = (WagonDelegate) applicationContext.getBean( "wagon#http", Wagon.class );
 
         delegate.setDelegate( wagonMock );
 

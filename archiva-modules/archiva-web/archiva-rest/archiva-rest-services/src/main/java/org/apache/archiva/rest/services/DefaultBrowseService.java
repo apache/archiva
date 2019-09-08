@@ -949,13 +949,13 @@ public class DefaultBrowseService
 
                 String path = managedRepositoryContent.toPath( archivaArtifact );
 
-                file = proxyHandler.fetchFromProxies( managedRepositoryContent, path );
+                file = proxyHandler.fetchFromProxies( managedRepositoryContent.getRepository(), path );
 
                 if ( file != null && file.exists() )
                 {
                     // download pom now
                     String pomPath = StringUtils.substringBeforeLast( path, ".jar" ) + ".pom";
-                    proxyHandler.fetchFromProxies( managedRepositoryContent, pomPath );
+                    proxyHandler.fetchFromProxies( managedRepositoryContent.getRepository(), pomPath );
                     return true;
                 }
             }

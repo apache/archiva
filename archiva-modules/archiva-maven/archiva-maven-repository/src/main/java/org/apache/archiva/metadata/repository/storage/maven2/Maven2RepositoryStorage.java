@@ -558,7 +558,7 @@ public class Maven2RepositoryStorage
     }
 
     @Override
-    public void applyServerSideRelocation(ManagedRepositoryContent managedRepository, ArtifactReference artifact)
+    public void applyServerSideRelocation(ManagedRepository managedRepository, ArtifactReference artifact)
             throws ProxyDownloadException {
         if ("pom".equals(artifact.getType())) {
             return;
@@ -571,7 +571,7 @@ public class Maven2RepositoryStorage
         pomReference.setVersion(artifact.getVersion());
         pomReference.setType("pom");
 
-        RepositoryType repositoryType = managedRepository.getRepository().getType();
+        RepositoryType repositoryType = managedRepository.getType();
         if (!proxyRegistry.hasHandler(repositoryType)) {
             throw new ProxyDownloadException("No proxy handler found for repository type " + repositoryType, new HashMap<>());
         }
@@ -582,7 +582,7 @@ public class Maven2RepositoryStorage
         proxyHandler.fetchFromProxies(managedRepository, pomReference);
 
         // Open and read the POM from the managed repo
-        StorageAsset pom = managedRepository.toFile(pomReference);
+        StorageAsset pom = managedRepository.getContent().toFile(pomReference);
 
         if (!pom.exists()) {
             return;

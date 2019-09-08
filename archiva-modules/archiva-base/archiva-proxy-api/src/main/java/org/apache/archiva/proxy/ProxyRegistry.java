@@ -69,11 +69,16 @@ public interface ProxyRegistry {
      * Returns the list of all proxy connectors.
      * @return
      */
-    public List<org.apache.archiva.proxy.model.ProxyConnector> getProxyConnectors();
+    List<org.apache.archiva.proxy.model.ProxyConnector> getProxyConnectors( );
 
     /**
      * Returns a map of connector lists with the source repository id as key
      * @return A map with source repository ids as key and list of corresponding proxy connector objects as value.
      */
-    public Map<String, List<ProxyConnector>> getProxyConnectorAsMap();
+    Map<String, List<ProxyConnector>> getProxyConnectorAsMap( );
+
+    /**
+     * Reloads the proxies from the configuration.
+     */
+    void reload();
 }

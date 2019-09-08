@@ -50,10 +50,12 @@
   <bean name="repositoryContentProvider#mocked" class="org.apache.archiva.repository.mock.RepositoryContentProviderMock" />
 
 
-  <bean name="repositoryProxyConnectors#test" class="org.apache.archiva.proxy.maven.MavenRepositoryProxyHandler">
+  <bean name="repositoryProxyHandler#test" class="org.apache.archiva.proxy.maven.MavenRepositoryProxyHandler">
     <property name="archivaConfiguration" ref="archivaConfiguration#mock"/>
     <property name="metadataTools" ref="metadataTools#mocked"/>
   </bean>
+
+  <alias name="repositoryProxyHandler#test" alias="repositoryProxyHandler#maven"/>
 
   <bean name="metadataTools#default" class="org.apache.archiva.repository.metadata.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#mock"/>
@@ -79,7 +81,7 @@
     <property name="timeToLiveSeconds" value="1800"/>
   </bean>
 
-  <bean name="wagon#test" class="org.apache.archiva.proxy.WagonDelegate" scope="singleton"/>
+  <bean name="wagon#http" class="org.apache.archiva.proxy.WagonDelegate" scope="singleton"/>
   <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>
 
   <alias name="userConfiguration#redback" alias="userConfiguration#default"/>

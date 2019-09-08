@@ -30,11 +30,16 @@ import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
 import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.proxy.maven.DefaultWagonFactory;
+import org.apache.archiva.proxy.maven.WagonFactory;
+import org.apache.archiva.proxy.maven.WagonFactoryRequest;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.wagon.Wagon;
+import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -80,8 +85,6 @@ public class HttpProxyTransferTest
 
     private RepositoryProxyHandler proxyHandler;
 
-    private ArchivaConfiguration config;
-
     private ManagedRepositoryContent managedDefaultRepository;
 
     @Inject
@@ -89,6 +92,12 @@ public class HttpProxyTransferTest
 
     @Inject
     private RepositoryRegistry repositoryRegistry;
+
+    @Inject
+    private ArchivaConfiguration config;
+
+    @Inject
+    private ProxyRegistry proxyRegistry;
 
     private Server server;
 
@@ -104,9 +113,7 @@ public class HttpProxyTransferTest
     public void setUp()
         throws Exception
     {
-        proxyHandler = applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyHandler.class );
-
-        config = applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );
+        proxyHandler = applicationContext.getBean( "repositoryProxyHandler#test", RepositoryProxyHandler.class );
 
         // clear from previous tests - TODO the spring context should be initialised per test instead, or the config
         // made a complete mock
@@ -180,6 +187,11 @@ public class HttpProxyTransferTest
 
         config.getConfiguration().addRemoteRepository( repoConfig );
 
+        Wagon wagon = new HttpWagon( );
+        WagonDelegate delegate = (WagonDelegate) applicationContext.getBean( "wagon#http", Wagon.class );
+        delegate.setDelegate( wagon );
+
+        proxyRegistry.reload();
         repositoryRegistry.reload();
 
         managedDefaultRepository = createRepository(MANAGED_ID, "Default Managed Repository", repoPath, "default");
@@ -208,10 +220,11 @@ public class HttpProxyTransferTest
         addConnector();
 
         Path expectedFile = Paths.get( managedDefaultRepository.getRepoRoot() ).resolve( path );
+        Files.deleteIfExists( expectedFile );
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Attempt the proxy fetch.
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path sourceFile = Paths.get( PROXIED_BASEDIR, path );
         assertNotNull( "Expected File should not be null.", expectedFile );

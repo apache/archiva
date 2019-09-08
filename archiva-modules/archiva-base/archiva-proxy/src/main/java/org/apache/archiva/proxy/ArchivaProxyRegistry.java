@@ -20,6 +20,9 @@ package org.apache.archiva.proxy;
  */
 
 import org.apache.archiva.configuration.*;
+import org.apache.archiva.policies.Policy;
+import org.apache.archiva.policies.PolicyOption;
+import org.apache.archiva.policies.PolicyUtil;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
@@ -31,6 +34,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +42,7 @@ import java.util.stream.Collectors;
  * proxy information.
  *
  */
+@SuppressWarnings( "SpringJavaInjectionPointsAutowiringInspection" )
 @Service("proxyRegistry#default")
 public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListener {
 
@@ -50,6 +55,9 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
     List<RepositoryProxyHandler> repositoryProxyHandlers;
 
     @Inject
+    List<Policy> policies;
+
+    @Inject
     RepositoryRegistry repositoryRegistry;
 
     private Map<String, NetworkProxy> networkProxyMap = new HashMap<>();
@@ -58,6 +66,7 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
 
     private Map<String, List<ProxyConnector>> connectorMap = new HashMap<>();
     private List<ProxyConnector> connectorList = new ArrayList<>();
+    private Map<Policy, PolicyOption> policyMap = new HashMap<>( );
 
 
     @PostConstruct
@@ -65,7 +74,9 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
         if (repositoryProxyHandlers == null) {
             repositoryProxyHandlers = new ArrayList<>();
         }
+        archivaConfiguration.addListener( this );
         updateHandler();
+        updateConnectors();
         updateNetworkProxies();
     }
 
@@ -85,17 +96,18 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
             proxy.setHost(networkProxyConfig.getHost());
             proxy.setPort(networkProxyConfig.getPort());
             proxy.setUsername(networkProxyConfig.getUsername());
-            proxy.setPassword(networkProxyConfig.getPassword().toCharArray());
+            proxy.setPassword(networkProxyConfig.getPassword()==null? new char[0] : networkProxyConfig.getPassword().toCharArray());
             proxy.setUseNtlm(networkProxyConfig.isUseNtlm());
 
             this.networkProxyMap.put(key, proxy);
         }
-        for (RepositoryProxyHandler connectors : repositoryProxyHandlers) {
-            connectors.setNetworkProxies(this.networkProxyMap);
+        for (RepositoryProxyHandler proxyHandler : repositoryProxyHandlers) {
+            proxyHandler.setNetworkProxies(this.networkProxyMap);
         }
     }
 
-    private void updateHandler() {
+    private void updateHandler( ) {
+
         for (RepositoryProxyHandler handler : repositoryProxyHandlers) {
             List<RepositoryType> types = handler.supports();
             for (RepositoryType type : types) {
@@ -104,16 +116,27 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
                 }
                 handlerMap.get(type).add(handler);
             }
+            handler.setPolicies( policies );
         }
     }
 
     private void updateConnectors() {
         List<ProxyConnectorConfiguration> proxyConnectorConfigurations =
-                getArchivaConfiguration().getConfiguration().getProxyConnectors();
+            getArchivaConfiguration().getConfiguration().getProxyConnectors();
+
         connectorList = proxyConnectorConfigurations.stream()
                 .map(configuration -> buildProxyConnector(configuration))
                 .sorted(comparator).collect(Collectors.toList());
         connectorMap = connectorList.stream().collect(Collectors.groupingBy(a -> a.getSourceRepository().getId()));
+        for (RepositoryProxyHandler handler : repositoryProxyHandlers) {
+            handler.setProxyConnectors( connectorList );
+        }
+    }
+
+
+    private Map<Policy, PolicyOption> getPolicyMap(ProxyConnectorConfiguration configuration) {
+        Map<String, String> policyConfig = configuration.getPolicies( );
+        return policies.stream().collect( Collectors.toMap( Function.identity(), p -> PolicyUtil.findOption( policyConfig.get(p.getId()), p ) ) );
     }
 
     private ProxyConnector buildProxyConnector(ProxyConnectorConfiguration configuration) {
@@ -121,8 +144,12 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
         proxyConnector.setOrder(configuration.getOrder());
         proxyConnector.setBlacklist(configuration.getBlackListPatterns());
         proxyConnector.setWhitelist(configuration.getWhiteListPatterns());
-        proxyConnector.setDisabled(configuration.isDisabled());
-        proxyConnector.setPolicies(configuration.getPolicies());
+        if (configuration.isDisabled()) {
+            proxyConnector.disable();
+        } else {
+            proxyConnector.enable();
+        }
+        proxyConnector.setPolicies(getPolicyMap( configuration ));
         proxyConnector.setProperties(configuration.getProperties());
         proxyConnector.setProxyId(configuration.getProxyId());
         ManagedRepository srcRepo = repositoryRegistry.getManagedRepository(configuration.getSourceRepoId());
@@ -159,8 +186,7 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
     @Override
     public void configurationEvent(ConfigurationEvent event) {
         log.debug("Config changed updating proxy list");
-        updateNetworkProxies();
-        updateConnectors();
+        init( );
     }
 
     @Override
@@ -172,5 +198,11 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
     @Override
     public Map<String, List<ProxyConnector>> getProxyConnectorAsMap() {
         return connectorMap;
+    }
+
+    @Override
+    public void reload( )
+    {
+        init();
     }
 }
