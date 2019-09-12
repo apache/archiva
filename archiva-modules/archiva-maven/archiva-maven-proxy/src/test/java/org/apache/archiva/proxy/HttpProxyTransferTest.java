@@ -219,6 +219,8 @@ public class HttpProxyTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         addConnector();
 
+        managedDefaultRepository = repositoryRegistry.getManagedRepository(MANAGED_ID).getContent();
+
         Path expectedFile = Paths.get( managedDefaultRepository.getRepoRoot() ).resolve( path );
         Files.deleteIfExists( expectedFile );
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );

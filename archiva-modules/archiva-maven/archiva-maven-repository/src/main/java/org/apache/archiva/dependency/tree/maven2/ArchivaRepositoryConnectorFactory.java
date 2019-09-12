@@ -19,6 +19,7 @@ package org.apache.archiva.dependency.tree.maven2;
  */
 
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
+import org.eclipse.aether.internal.impl.DefaultRepositoryLayoutProvider;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,7 @@ public class ArchivaRepositoryConnectorFactory
     public ArchivaRepositoryConnectorFactory()
     {
         // no op but empty constructor needed by aether
+        delegate.setRepositoryLayoutProvider(new DefaultRepositoryLayoutProvider());
     }
 
     @Override

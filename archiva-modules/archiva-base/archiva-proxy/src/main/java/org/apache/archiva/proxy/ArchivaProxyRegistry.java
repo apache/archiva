@@ -27,6 +27,9 @@ import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.events.Event;
+import org.apache.archiva.repository.events.RepositoryEventListener;
+import org.apache.archiva.repository.events.RepositoryRegistryEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -44,7 +47,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings( "SpringJavaInjectionPointsAutowiringInspection" )
 @Service("proxyRegistry#default")
-public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListener {
+public class ArchivaProxyRegistry implements ProxyRegistry, RepositoryEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(ArchivaProxyRegistry.class);
 
@@ -74,10 +77,10 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
         if (repositoryProxyHandlers == null) {
             repositoryProxyHandlers = new ArrayList<>();
         }
-        archivaConfiguration.addListener( this );
         updateHandler();
         updateConnectors();
         updateNetworkProxies();
+        repositoryRegistry.register(this, RepositoryRegistryEvent.RegistryEventType.RELOADED);
     }
 
     private ArchivaConfiguration getArchivaConfiguration() {
@@ -125,7 +128,9 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
             getArchivaConfiguration().getConfiguration().getProxyConnectors();
 
         connectorList = proxyConnectorConfigurations.stream()
-                .map(configuration -> buildProxyConnector(configuration))
+                .map(this::buildProxyConnector)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .sorted(comparator).collect(Collectors.toList());
         connectorMap = connectorList.stream().collect(Collectors.groupingBy(a -> a.getSourceRepository().getId()));
         for (RepositoryProxyHandler handler : repositoryProxyHandlers) {
@@ -139,7 +144,7 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
         return policies.stream().collect( Collectors.toMap( Function.identity(), p -> PolicyUtil.findOption( policyConfig.get(p.getId()), p ) ) );
     }
 
-    private ProxyConnector buildProxyConnector(ProxyConnectorConfiguration configuration) {
+    private Optional<ProxyConnector> buildProxyConnector(ProxyConnectorConfiguration configuration) {
         ProxyConnector proxyConnector = new ProxyConnector();
         proxyConnector.setOrder(configuration.getOrder());
         proxyConnector.setBlacklist(configuration.getBlackListPatterns());
@@ -153,10 +158,16 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
         proxyConnector.setProperties(configuration.getProperties());
         proxyConnector.setProxyId(configuration.getProxyId());
         ManagedRepository srcRepo = repositoryRegistry.getManagedRepository(configuration.getSourceRepoId());
+        if (srcRepo==null) {
+            return Optional.empty();
+        }
         proxyConnector.setSourceRepository(srcRepo);
         RemoteRepository targetRepo = repositoryRegistry.getRemoteRepository(configuration.getTargetRepoId());
+        if (targetRepo==null) {
+            return Optional.empty();
+        }
         proxyConnector.setTargetRepository(targetRepo);
-        return proxyConnector;
+        return Optional.of(proxyConnector);
     }
 
     @Override
@@ -183,11 +194,6 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
         return this.handlerMap.containsKey(type);
     }
 
-    @Override
-    public void configurationEvent(ConfigurationEvent event) {
-        log.debug("Config changed updating proxy list");
-        init( );
-    }
 
     @Override
     public List<ProxyConnector> getProxyConnectors() {
@@ -204,5 +210,13 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
     public void reload( )
     {
         init();
+    }
+
+    @Override
+    public void raise(Event event) {
+        log.debug("Reload happened, updating proxy list");
+        if (event.getType()== RepositoryRegistryEvent.RegistryEventType.RELOADED) {
+            init();
+        }
     }
 }

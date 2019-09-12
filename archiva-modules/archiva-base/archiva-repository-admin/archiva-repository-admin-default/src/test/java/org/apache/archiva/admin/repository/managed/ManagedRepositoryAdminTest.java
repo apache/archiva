@@ -316,7 +316,6 @@ public class ManagedRepositoryAdminTest
         managedRepositoryAdmin.updateManagedRepository( repo, true, getFakeAuditInformation(), false );
 
         repo = managedRepositoryAdmin.getManagedRepository( repoId );
-        System.err.println("REPOSITORY "+repo.getLocation());
         assertNotNull( repo );
         assertEquals( newName, repo.getName() );
         assertEquals( Paths.get( repoLocation ).toAbsolutePath(), Paths.get( repo.getLocation() ).toAbsolutePath() );

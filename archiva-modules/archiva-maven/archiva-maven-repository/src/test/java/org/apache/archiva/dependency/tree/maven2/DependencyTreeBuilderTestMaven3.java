@@ -81,6 +81,8 @@ public class DependencyTreeBuilderTestMaven3
         repoConfig.setId( TEST_REPO_ID );
         repoConfig.setLocation(Paths.get("target/test-repository").toAbsolutePath().toString() );
         configuration.addManagedRepository( repoConfig );
+
+        config.getConfiguration().getProxyConnectors().clear();
         config.save( configuration );
 
         repositoryRegistry.reload();
