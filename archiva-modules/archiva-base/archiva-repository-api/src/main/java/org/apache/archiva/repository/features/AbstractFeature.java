@@ -19,8 +19,8 @@ package org.apache.archiva.repository.features;
  * under the License.
  */
 
-import org.apache.archiva.repository.RepositoryEvent;
-import org.apache.archiva.repository.RepositoryEventListener;
+import org.apache.archiva.repository.events.Event;
+import org.apache.archiva.repository.events.RepositoryEventListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +56,7 @@ public class AbstractFeature {
         this.listener.clear();
     }
 
-    protected <T> void raiseEvent(RepositoryEvent<T> event) {
+    public void pushEvent(Event event) {
         for(RepositoryEventListener listr : listener) {
             listr.raise(event);
         }

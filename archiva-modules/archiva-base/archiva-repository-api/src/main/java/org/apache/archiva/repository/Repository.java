@@ -20,12 +20,12 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.events.RepositoryEventHandler;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Set;
 

@@ -32,7 +32,8 @@ import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
-import org.apache.archiva.repository.RepositoryEvent;
+import org.apache.archiva.repository.events.Event;
+import org.apache.archiva.repository.events.RepositoryValueEvent;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryProvider;
@@ -284,7 +285,7 @@ public class RepositoryProviderMock implements RepositoryProvider
     }
 
     @Override
-    public <T> void raise(RepositoryEvent<T> event) {
+    public void raise(Event event) {
 
     }
 }

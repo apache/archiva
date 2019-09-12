@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.events;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,51 +19,30 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import java.time.LocalDateTime;
+import org.apache.archiva.repository.Repository;
 
 /**
  * Repository event. Repository events are used for providing information about repository changes.
  *
- * @param <T>
+ * @param <V>
  */
-public class RepositoryEvent<T> {
+public class RepositoryValueEvent<O, V> extends RepositoryEvent<O> {
 
-    final EventType type;
-    final Repository repo;
-    final T value;
-    final T oldValue;
-    final LocalDateTime instant;
+    final V value;
+    final V oldValue;
 
-    public RepositoryEvent(EventType type, Repository repo, T oldValue, T value) {
-        this.type = type;
-        this.repo = repo;
+    public RepositoryValueEvent(EventType type, O origin, Repository repo, V oldValue, V value) {
+        super(type, origin, repo);
         this.value = value;
         this.oldValue = oldValue;
-        this.instant = LocalDateTime.now();
     }
 
-    public interface EventType {
-        String name();
-    }
-
-
-    public EventType getType() {
-        return type;
-    };
-
-    public Repository getRepository() {
-        return repo;
-    };
-
-    public T getValue() {
+    public V getValue() {
         return value;
     }
 
-    public T getOldValue() {
+    public V getOldValue() {
         return oldValue;
     }
 
-    public LocalDateTime getInstant() {
-        return instant;
-    }
 }

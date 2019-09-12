@@ -22,6 +22,7 @@ package org.apache.archiva.repository;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.repository.events.RepositoryEventListener;
 
 import java.io.IOException;
 import java.util.Set;

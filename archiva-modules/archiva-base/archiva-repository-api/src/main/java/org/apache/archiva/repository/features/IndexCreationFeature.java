@@ -21,7 +21,7 @@ package org.apache.archiva.repository.features;
 
 
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.RepositoryEventListener;
+import org.apache.archiva.repository.events.RepositoryEventListener;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 
@@ -113,7 +113,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
     {
         URI oldVal = this.indexPath;
         this.indexPath = indexPath;
-        raiseEvent(IndexCreationEvent.indexUriChange(repo, oldVal, this.indexPath));
+        pushEvent(IndexCreationEvent.indexUriChange(this, repo, oldVal, this.indexPath));
 
     }
 
@@ -157,7 +157,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
     public void setPackedIndexPath(URI packedIndexPath) {
         URI oldVal = this.packedIndexPath;
         this.packedIndexPath = packedIndexPath;
-        raiseEvent(IndexCreationEvent.packedIndexUriChange(repo, oldVal, this.packedIndexPath));
+        pushEvent(IndexCreationEvent.packedIndexUriChange(this, repo, oldVal, this.packedIndexPath));
     }
 
     /**

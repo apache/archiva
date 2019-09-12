@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.events;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,14 +19,12 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.events.RepositoryValueEvent;
+
 /**
- * Implementations of this interface are able to handle repository event listeners
+ * Listener that accepts repository events.
  */
-public interface RepositoryEventHandler {
+public interface RepositoryEventListener {
 
-    void addListener(RepositoryEventListener listener);
-
-    void removeListener(RepositoryEventListener listener);
-
-    void clearListeners();
+    void raise(Event event);
 }
