@@ -24,6 +24,7 @@ import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.events.*;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.features.RepositoryFeature;
@@ -39,7 +40,6 @@ import java.net.URI;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.CopyOption;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,6 +76,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     private String layout = "default";
     public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
     private List<RepositoryEventListener> listeners = new ArrayList<>();
+    private Map<EventType, List<RepositoryEventListener>> listenerTypeMap = new HashMap<>();
 
 
     Map<Class<? extends RepositoryFeature<?>>, RepositoryFeature<?>> featureMap = new HashMap<>(  );
@@ -315,24 +316,65 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     }
 
     @Override
-    public <T> void raise(RepositoryEvent<T> event) {
-        for(RepositoryEventListener listener : listeners) {
-            listener.raise(event);
+    public void raise(Event event) {
+        callListeners(event, listeners);
+        if (listenerTypeMap.containsKey(event.getType())) {
+            callListeners(event, listenerTypeMap.get(event.getType()));
         }
     }
 
-    public void addListener(RepositoryEventListener listener) {
+    private void callListeners(Event event, List<RepositoryEventListener> evtListeners) {
+        for(RepositoryEventListener listener : evtListeners) {
+            try {
+                listener.raise(event);
+            } catch (Throwable e) {
+                log.error("Could not raise event {} on listener {}: {}", event, listener, e.getMessage());
+            }
+        }
+
+    }
+
+    @Override
+    public void register(RepositoryEventListener listener) {
         if (!this.listeners.contains(listener)) {
             this.listeners.add(listener);
         }
     }
 
-    public void removeListener(RepositoryEventListener listener) {
-        this.removeListener(listener);
+    @Override
+    public void register(RepositoryEventListener listener, EventType type) {
+        List<RepositoryEventListener> listeners;
+        if (listenerTypeMap.containsKey(type)) {
+            listeners = listenerTypeMap.get(type);
+        } else {
+            listeners = new ArrayList<>();
+            listenerTypeMap.put(type, listeners);
+        }
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+
     }
 
+    @Override
+    public void register(RepositoryEventListener listener, Set<? extends EventType> types) {
+        for (EventType type : types) {
+            register(listener, type);
+        }
+    }
+
+    @Override
+    public void unregister(RepositoryEventListener listener) {
+        listeners.remove(listener);
+        for (List<RepositoryEventListener> listeners : listenerTypeMap.values()) {
+            listeners.remove(listener);
+        }
+    }
+
+    @Override
     public void clearListeners() {
         this.listeners.clear();
+        this.listenerTypeMap.clear();
     }
 
     @Override

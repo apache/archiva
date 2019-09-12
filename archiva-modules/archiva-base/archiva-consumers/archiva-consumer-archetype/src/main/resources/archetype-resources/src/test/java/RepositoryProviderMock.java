@@ -36,6 +36,7 @@ import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.events.Event;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -255,7 +256,7 @@ public class RepositoryProviderMock implements RepositoryProvider
     }
 
     @Override
-    public <T> void raise(org.apache.archiva.repository.RepositoryEvent<T> event) {
+    public void raise(Event event) {
 
     }
 

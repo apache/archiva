@@ -23,6 +23,7 @@ package org.apache.archiva.repository.features;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.Duration;
 
 /**
@@ -32,6 +33,15 @@ public class RemoteIndexFeature implements RepositoryFeature<RemoteIndexFeature>
 
     private boolean downloadRemoteIndex = false;
     private URI indexUri;
+
+    {
+        try {
+            indexUri = new URI(".index");
+        } catch (URISyntaxException e) {
+            // Ignore
+        }
+    }
+
     private boolean downloadRemoteIndexOnStartup = false;
     private Duration downloadTimeout = Duration.ofSeconds( 600 );
     private String proxyId = "";
