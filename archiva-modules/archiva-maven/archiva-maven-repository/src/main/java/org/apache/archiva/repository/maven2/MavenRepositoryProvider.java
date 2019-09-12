@@ -22,6 +22,8 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.*;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.events.Event;
+import org.apache.archiva.repository.events.RepositoryValueEvent;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -347,7 +349,9 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         cfg.setPackedIndexDir(convertUriToPath(indexCreationFeature.getPackedIndexPath()));
 
         RemoteIndexFeature remoteIndexFeature = remoteRepository.getFeature(RemoteIndexFeature.class).get();
-        cfg.setRemoteIndexUrl(remoteIndexFeature.getIndexUri().toString());
+        if (remoteIndexFeature.getIndexUri()!=null) {
+            cfg.setRemoteIndexUrl(remoteIndexFeature.getIndexUri().toString());
+        }
         cfg.setRemoteDownloadTimeout((int) remoteIndexFeature.getDownloadTimeout().get(ChronoUnit.SECONDS));
         cfg.setDownloadRemoteIndexOnStartup(remoteIndexFeature.isDownloadRemoteIndexOnStartup());
         cfg.setDownloadRemoteIndex(remoteIndexFeature.isDownloadRemoteIndex());
@@ -495,7 +499,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     }
 
     @Override
-    public <T> void raise(RepositoryEvent<T> event) {
+    public void raise(Event event) {
         //
     }
 
