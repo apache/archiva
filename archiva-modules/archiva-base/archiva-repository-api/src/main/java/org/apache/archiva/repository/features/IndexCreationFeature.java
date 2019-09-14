@@ -21,6 +21,7 @@ package org.apache.archiva.repository.features;
 
 
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.events.IndexCreationEvent;
 import org.apache.archiva.repository.events.RepositoryEventListener;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +34,17 @@ import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_PACKED_INDE
 
 /**
  *
- * This feature provides some information about index creation.
+ * This feature provides information about index creation.
+ *
+ * Repositories that support this feature are able to create indexes and download them from remote repositories.
+ *
+ * Repositories may have a normal and packed index. A normal index is used by repository search utilities, the packed
+ * index is for downloading purpose.
+ *
+ * A index may have a remote and a local representation. The remote representation is used for downloading and
+ * updating the local representation.
+ *
+ * The feature is throwing a {@link IndexCreationEvent}, if the URI of the index has been changed.
  *
  */
 public class IndexCreationFeature extends AbstractFeature implements RepositoryFeature<IndexCreationFeature>{
@@ -51,9 +62,9 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
 
     private Repository repo;
 
-    public IndexCreationFeature(Repository repoId, RepositoryEventListener listener) {
+    public IndexCreationFeature(Repository repository, RepositoryEventListener listener) {
         super(listener);
-        this.repo = repoId;
+        this.repo = repository;
         try {
             this.indexPath = new URI(DEFAULT_INDEX_PATH);
             this.packedIndexPath = new URI(DEFAULT_PACKED_INDEX_PATH);
@@ -97,7 +108,9 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
     }
 
     /**
-     * Returns the path that is used to store the index.
+     * Returns the path that is used to store the index. The path may be a absolute URI or relative to the
+     * base URI of the repository.
+     *
      * @return the uri (may be relative or absolute)
      */
     public URI getIndexPath( )
@@ -106,18 +119,26 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
     }
 
     /**
-     * Sets the path that is used to store the index.
+     * Sets the path that is used to store the index. The path may be either absolute or a
+     * path that is relative to the repository storage path (either a local or remote path).
+     *
      * @param indexPath the uri to the index path (may be relative)
      */
     public void setIndexPath( URI indexPath )
     {
-        URI oldVal = this.indexPath;
-        this.indexPath = indexPath;
-        pushEvent(IndexCreationEvent.indexUriChange(this, repo, oldVal, this.indexPath));
+        if ((this.indexPath==null && indexPath!=null) || !this.indexPath.equals(indexPath)) {
+            URI oldVal = this.indexPath;
+            this.indexPath = indexPath;
+            pushEvent(IndexCreationEvent.indexUriChange(this, repo, oldVal, this.indexPath));
+        }
 
     }
 
-
+    /**
+     * Returns true, if this repository has a index defined.
+     *
+     * @return <code>true</code>, if a index path is set, otherwise <code>false</code>
+     */
     public boolean hasIndex() {
         return this.indexPath!=null && !StringUtils.isEmpty( this.indexPath.getPath() );
     }
@@ -132,8 +153,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
     }
 
     /**
-     * Sets the path where the index is stored physically. This method should only be used by the
-     * MavenIndexProvider implementations.
+     * Sets the path where the index is stored locally.
      *
      * @param localIndexPath
      */
@@ -152,7 +172,10 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
 
     /**
      * Sets the path (relative or absolute) of the packed index.
-     * @param packedIndexPath
+     *
+     * Throws a {@link IndexCreationEvent.Index#PACKED_INDEX_URI_CHANGE}, if the value changes.
+     *
+     * @param packedIndexPath the new path uri for the packed index
      */
     public void setPackedIndexPath(URI packedIndexPath) {
         URI oldVal = this.packedIndexPath;

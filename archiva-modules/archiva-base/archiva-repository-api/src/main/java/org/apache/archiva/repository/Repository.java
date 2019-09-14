@@ -175,5 +175,12 @@ public interface Repository extends RepositoryEventHandler, RepositoryStorage {
      */
     void close();
 
+    /**
+     * Returns the current status of this repository.
+     *
+     * @return <code>true</code>, if repository has not been closed, otherwise <code>false</code>
+     */
+    boolean isOpen();
+
 
 }

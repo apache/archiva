@@ -20,6 +20,9 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -28,6 +31,18 @@ import java.util.List;
 public class ArchivaSpringJUnit4ClassRunner
     extends SpringJUnit4ClassRunner
 {
+
+    static {
+
+        if (System.getProperty("archiva.user.configFileName")!=null && !"".equals(System.getProperty("archiva.user.configFileName").trim())) {
+            try {
+                Path file = Files.createTempFile("archiva-test-conf", ".xml");
+                System.setProperty("archiva.user.configFileName", file.toAbsolutePath().toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public ArchivaSpringJUnit4ClassRunner( Class<?> clazz )
         throws InitializationError

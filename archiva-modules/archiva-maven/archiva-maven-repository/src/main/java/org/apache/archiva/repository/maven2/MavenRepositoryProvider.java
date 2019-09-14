@@ -23,12 +23,11 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.*;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.events.Event;
-import org.apache.archiva.repository.events.RepositoryValueEvent;
-import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,9 +183,13 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         repo.setScanned(cfg.isScanned());
         if (cfg.isReleases()) {
             repo.addActiveReleaseScheme(ReleaseScheme.RELEASE);
+        } else {
+            repo.removeActiveReleaseScheme(ReleaseScheme.RELEASE);
         }
         if (cfg.isSnapshots()) {
             repo.addActiveReleaseScheme(ReleaseScheme.SNAPSHOT);
+        } else {
+            repo.removeActiveReleaseScheme(ReleaseScheme.SNAPSHOT);
         }
 
         StagingRepositoryFeature stagingRepositoryFeature = repo.getFeature(StagingRepositoryFeature.class).get();
@@ -349,13 +352,20 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         cfg.setPackedIndexDir(convertUriToPath(indexCreationFeature.getPackedIndexPath()));
 
         RemoteIndexFeature remoteIndexFeature = remoteRepository.getFeature(RemoteIndexFeature.class).get();
-        if (remoteIndexFeature.getIndexUri()!=null) {
+        if (remoteIndexFeature.getIndexUri() != null) {
             cfg.setRemoteIndexUrl(remoteIndexFeature.getIndexUri().toString());
         }
         cfg.setRemoteDownloadTimeout((int) remoteIndexFeature.getDownloadTimeout().get(ChronoUnit.SECONDS));
         cfg.setDownloadRemoteIndexOnStartup(remoteIndexFeature.isDownloadRemoteIndexOnStartup());
         cfg.setDownloadRemoteIndex(remoteIndexFeature.isDownloadRemoteIndex());
         cfg.setRemoteDownloadNetworkProxyId(remoteIndexFeature.getProxyId());
+        if (!StringUtils.isEmpty(remoteIndexFeature.getProxyId())) {
+            cfg.setRemoteDownloadNetworkProxyId(remoteIndexFeature.getProxyId());
+        } else {
+            cfg.setRemoteDownloadNetworkProxyId("");
+        }
+
+
 
 
         return cfg;

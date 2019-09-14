@@ -61,7 +61,7 @@ public class MavenRepositorySearchOSGITest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        // EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
         EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();

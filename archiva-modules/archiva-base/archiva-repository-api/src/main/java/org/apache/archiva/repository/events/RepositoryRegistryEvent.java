@@ -19,13 +19,13 @@ package org.apache.archiva.repository.events;
  * under the License.
  */
 
-public class RepositoryRegistryEvent<O> extends Event {
+public class RepositoryRegistryEvent<O> extends Event<O> {
 
     public enum RegistryEventType implements EventType {
         RELOADED,DESTROYED
     }
 
-    public RepositoryRegistryEvent(RegistryEventType type, O origin) {
+    public <OO extends O> RepositoryRegistryEvent(RegistryEventType type, OO origin) {
         super(type, origin);
     }
 }

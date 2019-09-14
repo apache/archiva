@@ -90,6 +90,14 @@ public interface ArchivaIndexingContext {
     void close() throws IOException;
 
     /**
+     * Returns the status of this context. This method will return <code>false</code>, after the {@link #close()} method
+     * has been called.
+     *
+     * @return <code>true</code>, if the <code>close()</code> method has not been called, otherwise <code>false</code>
+     */
+    boolean isOpen();
+
+    /**
      * Removes all entries from the index. After this method finished,
      * isEmpty() should return true.
      * @throws IOException

@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.features;
+package org.apache.archiva.repository.events;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,8 +20,6 @@ package org.apache.archiva.repository.features;
  */
 
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.events.EventType;
-import org.apache.archiva.repository.events.RepositoryValueEvent;
 
 import java.net.URI;
 

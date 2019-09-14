@@ -25,7 +25,7 @@ public class RepositoryEvent<O> extends Event<O> {
 
     private final Repository repository;
 
-    public RepositoryEvent(EventType type, O origin, Repository repository) {
+    public <OO extends O> RepositoryEvent(EventType type, OO origin, Repository repository) {
         super(type, origin);
         this.repository = repository;
     }

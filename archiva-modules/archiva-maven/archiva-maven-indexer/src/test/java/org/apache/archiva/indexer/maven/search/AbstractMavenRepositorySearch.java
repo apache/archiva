@@ -26,6 +26,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.repository.Repository;
@@ -145,7 +146,7 @@ public abstract class AbstractMavenRepositorySearch
         EasyMock.expectLastCall().anyTimes();
         archivaConfigControl.replay();
         repositoryRegistry.reload();
-        archivaConfigControl.reset();
+
     }
 
     @After
@@ -210,11 +211,12 @@ public abstract class AbstractMavenRepositorySearch
         IndexCreationFeature icf = rRepo.getFeature(IndexCreationFeature.class).get();
 
 
-        IndexingContext context = rRepo.getIndexingContext().getBaseContext(IndexingContext.class);
+        ArchivaIndexingContext archivaCtx = rRepo.getIndexingContext();
+        IndexingContext context = archivaCtx.getBaseContext(IndexingContext.class);
 
-        if ( context != null )
+        if ( archivaCtx != null )
         {
-            context.close(true);
+            archivaCtx.close(true);
         }
 
         Path repoDir = Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir()).resolve("target").resolve("repos").resolve(repository);
@@ -233,13 +235,7 @@ public abstract class AbstractMavenRepositorySearch
         {
             Files.delete(lockFile);
         }
-
         assertFalse( Files.exists(lockFile) );
-
-        Path repo = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository );
-        assertTrue( Files.exists(repo) );
-        org.apache.commons.io.FileUtils.copyDirectory(repo.toFile(), repoDir.toFile());
-
         if (indexDir==null) {
             Path indexDirectory =
                     Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/index/test-" + Long.toString(System.currentTimeMillis()));
@@ -250,7 +246,28 @@ public abstract class AbstractMavenRepositorySearch
 
             icf.setIndexPath(indexDir.toUri());
         }
-        context = rRepo.getIndexingContext().getBaseContext(IndexingContext.class);
+        Path repo = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository );
+        assertTrue( Files.exists(repo) );
+        org.apache.commons.io.FileUtils.copyDirectory(repo.toFile(), repoDir.toFile());
+
+
+
+
+        archivaConfigControl.reset();
+        archivaConfig.addListener( EasyMock.anyObject( ConfigurationListener.class ) );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn(config).anyTimes();
+        archivaConfig.save(EasyMock.anyObject(Configuration.class));
+        EasyMock.expectLastCall().anyTimes();
+        archivaConfigControl.replay();
+        repositoryRegistry.reload();
+        archivaConfigControl.reset();
+
+        rRepo = repositoryRegistry.getRepository(repository);
+        icf = rRepo.getFeature(IndexCreationFeature.class).get();
+
+
+        archivaCtx = rRepo.getIndexingContext();
+        context = archivaCtx.getBaseContext(IndexingContext.class);
 
 
         // minimize datas in memory
