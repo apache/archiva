@@ -22,6 +22,7 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.PathUtil;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.content.maven2.MavenRepositoryRequestInfo;
@@ -131,4 +132,10 @@ public class MavenManagedRepository extends AbstractManagedRepository
         FilesystemStorage storage = new FilesystemStorage(basePath.resolve(id), lockManager);
         return new MavenManagedRepository(id, name, storage);
     }
+
+    @Override
+    public void setIndexingContext(ArchivaIndexingContext context) {
+        super.setIndexingContext(context);
+    }
+
 }

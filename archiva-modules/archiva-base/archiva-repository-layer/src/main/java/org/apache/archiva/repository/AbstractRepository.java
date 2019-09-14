@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -60,6 +61,9 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
 
 
     Logger log = LoggerFactory.getLogger(AbstractRepository.class);
+
+    private final AtomicBoolean openStatus = new AtomicBoolean(false);
+
 
     private final RepositoryType type;
     private final String id;
@@ -90,6 +94,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
         this.type = type;
         this.storage = repositoryStorage;
         this.location = repositoryStorage.getLocation();
+        this.openStatus.compareAndSet(false, true);
     }
 
     public AbstractRepository(Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage repositoryStorage) {
@@ -99,6 +104,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
         this.type = type;
         this.storage = repositoryStorage;
         this.location = repositoryStorage.getLocation();
+        this.openStatus.compareAndSet(false, true);
     }
 
     protected void setPrimaryLocale(Locale locale) {
@@ -288,6 +294,9 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
 
     @Override
     public void setIndexingContext(ArchivaIndexingContext context) {
+        if (this.indexingContext!=null) {
+
+        }
         this.indexingContext = context;
     }
 
@@ -298,21 +307,30 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
 
     @Override
     public void close() {
-        ArchivaIndexingContext ctx = getIndexingContext();
-        if (ctx!=null) {
-            try {
-                ctx.close();
-            } catch (IOException e) {
-                log.warn("Error during index context close.",e);
+        if (this.openStatus.compareAndSet(true, false)) {
+            ArchivaIndexingContext ctx = getIndexingContext();
+            if (ctx != null) {
+                try {
+                    ctx.close();
+                } catch (IOException e) {
+                    log.warn("Error during index context close.", e);
+                }
+                this.indexingContext = null;
+
             }
-        }
-        if (supportsFeature(StagingRepositoryFeature.class)) {
-            StagingRepositoryFeature sf = getFeature(StagingRepositoryFeature.class).get();
-            if (sf.getStagingRepository()!=null) {
-                sf.getStagingRepository().close();
+            if (supportsFeature(StagingRepositoryFeature.class)) {
+                StagingRepositoryFeature sf = getFeature(StagingRepositoryFeature.class).get();
+                if (sf.getStagingRepository() != null) {
+                    sf.getStagingRepository().close();
+                }
             }
+            clearListeners();
         }
-        clearListeners();
+    }
+
+    @Override
+    public boolean isOpen() {
+        return openStatus.get();
     }
 
     @Override
@@ -326,7 +344,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     private void callListeners(Event event, List<RepositoryEventListener> evtListeners) {
         for(RepositoryEventListener listener : evtListeners) {
             try {
-                listener.raise(event);
+                listener.raise(event.recreate(this));
             } catch (Throwable e) {
                 log.error("Could not raise event {} on listener {}: {}", event, listener, e.getMessage());
             }

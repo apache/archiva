@@ -190,7 +190,9 @@ public abstract class AbstractRepositoryServletTestCase
         ArchivaIndexingContext ctx = repositoryRegistry.getManagedRepository( REPOID_INTERNAL ).getIndexingContext( );
         try
         {
-            repositoryRegistry.getIndexManager( RepositoryType.MAVEN ).pack( ctx );
+            if (repositoryRegistry.getIndexManager(RepositoryType.MAVEN)!=null) {
+                repositoryRegistry.getIndexManager(RepositoryType.MAVEN).pack(ctx);
+            }
         } finally
         {
             ctx.close(  );
@@ -810,6 +812,8 @@ public abstract class AbstractRepositoryServletTestCase
         repo.setLocation( location.toAbsolutePath().toString() );
         repo.setBlockRedeployments( blockRedeployments );
         repo.setType( "MAVEN" );
+        repo.setIndexDir(".indexer");
+        repo.setPackedIndexDir(".index");
 
         return repo;
     }
@@ -835,7 +839,7 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
         repositoryRegistry.setArchivaConfiguration(archivaConfiguration);
-        repositoryRegistry.reload();
+        // repositoryRegistry.reload();
         archivaConfiguration.save( archivaConfiguration.getConfiguration() );
 
     }

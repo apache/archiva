@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -157,7 +158,7 @@ public class NetworkProxyAdminTest
 
         remoteRepository = remoteRepositoryAdmin.getRemoteRepository( getRemoteRepository().getId() );
 
-        assertNull( remoteRepository.getRemoteDownloadNetworkProxyId() );
+        assertTrue(StringUtils.isEmpty(remoteRepository.getRemoteDownloadNetworkProxyId()) );
 
         remoteRepositoryAdmin.deleteRemoteRepository( getRemoteRepository().getId(), getFakeAuditInformation() );
     }

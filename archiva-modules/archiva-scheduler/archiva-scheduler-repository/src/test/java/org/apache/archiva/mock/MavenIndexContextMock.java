@@ -40,6 +40,8 @@ import java.util.Set;
  */
 public class MavenIndexContextMock implements ArchivaIndexingContext {
 
+    private boolean open = true;
+
     private IndexingContext delegate;
     private Repository repository;
     private FilesystemStorage filesystemStorage;
@@ -93,6 +95,7 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
 
     @Override
     public void close(boolean deleteFiles) throws IOException {
+        this.open = false;
         try {
             delegate.close(deleteFiles);
         } catch (NoSuchFileException e) {
@@ -102,11 +105,17 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
 
     @Override
     public void close() throws IOException {
+        this.open = false;
         try {
             delegate.close(false);
         } catch (NoSuchFileException e) {
             // Ignore missing directory
         }
+    }
+
+    @Override
+    public boolean isOpen() {
+        return open;
     }
 
     @Override

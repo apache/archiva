@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Maven implementation of index context
@@ -45,6 +46,8 @@ public class MavenIndexContext implements ArchivaIndexingContext {
 
     private static final Logger log = LoggerFactory.getLogger(ArchivaIndexingContext.class);
 
+
+    private AtomicBoolean openStatus = new AtomicBoolean(false);
     private IndexingContext delegate;
     private Repository repository;
     private StorageAsset dir = null;
@@ -52,6 +55,7 @@ public class MavenIndexContext implements ArchivaIndexingContext {
     protected MavenIndexContext(Repository repository, IndexingContext delegate) {
         this.delegate = delegate;
         this.repository = repository;
+        this.openStatus.set(true);
 
     }
 
@@ -107,20 +111,29 @@ public class MavenIndexContext implements ArchivaIndexingContext {
 
     @Override
     public void close(boolean deleteFiles) throws IOException {
-        try {
-            delegate.close(deleteFiles);
-        } catch (NoSuchFileException e) {
-            // Ignore missing directory
+        if (openStatus.compareAndSet(true,false)) {
+            try {
+                delegate.close(deleteFiles);
+            } catch (NoSuchFileException e) {
+                // Ignore missing directory
+            }
         }
     }
 
     @Override
     public void close() throws IOException {
-        try {
-            delegate.close(false);
-        } catch (NoSuchFileException e) {
-            // Ignore missing directory
+        if (openStatus.compareAndSet(true,false)) {
+            try {
+                delegate.close(false);
+            } catch (NoSuchFileException e) {
+                // Ignore missing directory
+            }
         }
+    }
+
+    @Override
+    public boolean isOpen() {
+        return openStatus.get();
     }
 
     @Override

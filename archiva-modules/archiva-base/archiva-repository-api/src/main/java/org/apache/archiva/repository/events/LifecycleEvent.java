@@ -27,7 +27,7 @@ public class LifecycleEvent<O> extends RepositoryEvent<O> {
         REGISTERED,UNREGISTERED,UPDATED
     }
 
-    public LifecycleEvent(LifecycleEventType type, O origin, Repository repository) {
+    public <OO extends O> LifecycleEvent(LifecycleEventType type, OO origin, Repository repository) {
         super(type, origin, repository);
     }
 }

@@ -332,6 +332,7 @@
             <openjpa.Log>${openjpa.Log}</openjpa.Log>
             <org.apache.jackrabbit.core.state.validatehierarchy>true</org.apache.jackrabbit.core.state.validatehierarchy>
           </systemPropertyVariables>
+          <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
     </plugins>

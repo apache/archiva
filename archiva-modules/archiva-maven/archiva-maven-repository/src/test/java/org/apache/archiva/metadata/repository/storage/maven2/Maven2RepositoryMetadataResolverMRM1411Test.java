@@ -36,6 +36,7 @@ import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryRequest;
+import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
@@ -311,6 +312,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         testRepo.setSnapshots( false );
         configuration.save( c );
         repositoryRegistry.reload();
+        assertFalse(repositoryRegistry.getManagedRepository(testRepo.getId()).getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT));
         assertFalse( c.getManagedRepositories().get( 0 ).isSnapshots() );
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-module-a",
                                     "target/test-repository/com/example/test/test-snapshot-artifact-module-a" );

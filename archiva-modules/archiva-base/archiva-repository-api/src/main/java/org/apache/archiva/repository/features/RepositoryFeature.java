@@ -21,21 +21,57 @@ package org.apache.archiva.repository.features;
 
 
 /**
- * Created by martin on 30.09.17.
+ *
+ * The repository feature holds information about specific features. The may not be available by all repository implementations.
+ * Features should be simple objects for storing additional data, the should not implement too much functionality.
+ * Additional functionality the uses the information in the feature objects should be implemented in the specific repository
+ * provider and repository implementations, or in the repository registry if it is generic.
+ *
+ * But features may throw events, if it's data is changed.
+ *
+ *
+ * This interface is to get access to a concrete feature by accessing the generic interface.
+ *
+ * @param <T> the concrete feature implementation.
+ *
+ * @author Martin Stockhammer <martin_s@apache.org>
+ * @since 3.0
  */
 public interface RepositoryFeature<T extends RepositoryFeature<T>> {
 
+    /**
+     * Unique Identifier of this feature. Each feature implementation has its own unique identifier.
+     *
+     * @return the identifier string which should be unique for the implementation class.
+     */
     default String getId() {
         return this.getClass().getName();
     }
 
+    /**
+     * Tells, if this instance is a feature of the given identifier.
+     *
+     * @param featureId the feature identifier string to check
+     * @return true, if this instance is a instance with the feature id, otherwise <code>false</code>
+     */
     default boolean isFeature(String featureId) {
         return this.getClass().getName().equals(featureId);
     }
 
+    /**
+     * Tells, if the this instance is a feature of the given feature class.
+     *
+     * @param clazz The class to check against.
+     * @param <K> the concrete feature implementation.
+     * @return
+     */
     default <K extends RepositoryFeature<K>> boolean isFeature(Class<K> clazz) {
         return this.getClass().equals(clazz);
     }
 
+    /**
+     * Returns the concrete feature instance.
+     * @return the feature instance.
+     */
     T get();
 }

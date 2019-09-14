@@ -28,7 +28,7 @@ public class Event<O> {
     final EventType type;
     final LocalDateTime instant;
 
-    public Event(EventType type, O originator) {
+    public <OO extends O> Event(EventType type, OO originator) {
         this.originator = originator;
         this.type = type;
         this.instant = LocalDateTime.now();
