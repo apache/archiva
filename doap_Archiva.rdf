@@ -38,6 +38,17 @@ security access management, build artifact storage, delivery, browsing, indexing
 
     <release>
       <Version>
+        <name>Apache Archiva 2.2.4</name>
+        <created>2019-04-30</created>
+        <revision>2.2.4</revision>
+        <file-release>http://archive.apache.org/dist/archiva/2.2.4/binaries/apache-archiva-2.2.4-bin.zip</file-release>
+        <file-release>http://archive.apache.org/dist/archiva/2.2.4/binaries/apache-archiva-2.2.4-bin.tar.gz</file-release>
+        <file-release>http://archive.apache.org/dist/archiva/2.2.4/binaries/apache-archiva-2.2.4.war</file-release>
+      </Version>
+    </release>
+           
+    <release>
+      <Version>
         <name>Apache Archiva 2.2.3</name>
         <created>2017-05-16</created>
         <revision>2.2.3</revision>
