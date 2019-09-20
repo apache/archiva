@@ -897,7 +897,7 @@ public class MavenRepositorySearchTest
 
         Path repo = Paths.get( "target/repo-release" );
         FileUtils.deleteDirectory(repo.toFile());
-        Path indexDirectory = repo.resolve(".index" );
+        Path indexDirectory = repo.resolve(".indexer" );
         FileUtils.copyDirectoryStructure( Paths.get( "src/test/repo-release" ).toFile(), repo.toFile() );
 
         IndexUpgrader.main( new String[]{ indexDirectory.toAbsolutePath().toString() } );
