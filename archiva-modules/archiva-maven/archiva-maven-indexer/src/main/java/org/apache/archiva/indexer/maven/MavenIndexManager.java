@@ -149,12 +149,17 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
     public static IndexingContext getMvnContext( ArchivaIndexingContext context ) throws UnsupportedBaseContextException
     {
-        if ( !context.supports( IndexingContext.class ) )
+        if (context!=null)
         {
-            log.error( "The provided archiva index context does not support the maven IndexingContext" );
-            throw new UnsupportedBaseContextException( "The context does not support the Maven IndexingContext" );
+            if ( !context.supports( IndexingContext.class ) )
+            {
+                log.error( "The provided archiva index context does not support the maven IndexingContext" );
+                throw new UnsupportedBaseContextException( "The context does not support the Maven IndexingContext" );
+            }
+            return context.getBaseContext( IndexingContext.class );
+        } else {
+            return null;
         }
-        return context.getBaseContext( IndexingContext.class );
     }
 
     private StorageAsset getIndexPath( ArchivaIndexingContext ctx )
@@ -175,6 +180,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
      */
     private void executeUpdateFunction( ArchivaIndexingContext context, IndexUpdateConsumer function ) throws IndexUpdateFailedException
     {
+        if (context==null) {
+            throw new IndexUpdateFailedException( "Given context is null" );
+        }
         IndexingContext indexingContext = null;
         try
         {
