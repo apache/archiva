@@ -79,6 +79,7 @@ public class RepositoryServletTest
         Configuration c = archivaConfiguration.getConfiguration();
         c.removeManagedRepository( c.findManagedRepositoryById( REPOID_INTERNAL ) );
         saveConfiguration( archivaConfiguration );
+        repositoryRegistry.removeRepository( REPOID_INTERNAL );
 
         org.apache.archiva.repository.ManagedRepository repository = servlet.getRepository( REPOID_INTERNAL );
         assertNull( repository );
@@ -117,9 +118,9 @@ public class RepositoryServletTest
     public void testGetRepositoryInvalidPathPassthroughPresent()
         throws Exception
     {
-        String path = REQUEST_PATH + ".index/filecontent/segments.gen";
+        String path = REQUEST_PATH + ".indexer/filecontent/segments.gen";
 
-        populateRepo( repoRootInternal, ".index/filecontent/segments.gen", "index file" );
+        populateRepo( repoRootInternal, ".indexer/filecontent/segments.gen", "index file" );
 
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -131,7 +132,7 @@ public class RepositoryServletTest
     public void testGetRepositoryInvalidPathPassthroughMissing()
         throws Exception
     {
-        String path = REQUEST_PATH + ".index/filecontent/foo.bar";
+        String path = REQUEST_PATH + ".indexer/filecontent/foo.bar";
 
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );

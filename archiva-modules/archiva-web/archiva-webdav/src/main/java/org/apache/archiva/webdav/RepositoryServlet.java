@@ -26,7 +26,6 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
@@ -51,10 +50,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 /**
  * RepositoryServlet
@@ -68,8 +64,6 @@ public class RepositoryServlet
     private ArchivaConfiguration configuration;
 
     RepositoryRegistry repositoryRegistry;
-
-    private Map<String, ManagedRepository> repositoryMap;
 
     private DavLocatorFactory locatorFactory;
 
@@ -176,23 +170,6 @@ public class RepositoryServlet
             configuration.addListener(this);
 
             repositoryRegistry = wac.getBean(RepositoryRegistry.class);
-            repositoryMap = new LinkedHashMap<>();
-
-            fillRepositoryMap();
-
-            for (ManagedRepository repo : repositoryMap.values()) {
-                StorageAsset repoDir = repo.getAsset("");
-
-                if (!repoDir.exists()) {
-                    try {
-                        repoDir.create();
-                    } catch (IOException e) {
-                        log.info("Unable to create missing directory for {}", repo.getLocation());
-                        continue;
-                    }
-                }
-            }
-
             resourceFactory = wac.getBean("davResourceFactory#archiva", DavResourceFactory.class);
             locatorFactory = new ArchivaDavLocatorFactory();
 
@@ -206,17 +183,6 @@ public class RepositoryServlet
         long end = System.currentTimeMillis();
 
         log.debug( "initServers done in {} ms", (end - start) );
-    }
-
-    private void fillRepositoryMap() {
-        final Map<String, ManagedRepository> repos = repositoryRegistry.getManagedRepositories().stream().collect(Collectors.toMap(r -> r.getId(), r -> r));
-        rwLock.writeLock().lock();
-        try {
-            repositoryMap.clear();
-            repositoryMap.putAll(repos);
-        } finally {
-            rwLock.writeLock().unlock();
-        }
     }
 
     @Override
@@ -245,17 +211,7 @@ public class RepositoryServlet
     public ManagedRepository getRepository( String prefix )
         throws RepositoryAdminException
     {
-        rwLock.readLock().lock();
-        try {
-            if (repositoryMap.isEmpty()) {
-                rwLock.readLock().unlock();
-                fillRepositoryMap();
-                rwLock.readLock().lock();
-            }
-            return repositoryMap.get(prefix);
-        } finally {
-            rwLock.readLock().unlock();
-        }
+        return repositoryRegistry.getManagedRepository( prefix );
     }
 
     ArchivaConfiguration getConfiguration()
@@ -329,8 +285,6 @@ public class RepositoryServlet
             configuration = null;
             locatorFactory = null;
             sessionProvider = null;
-            repositoryMap.clear();
-            repositoryMap = null;
 
             WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 

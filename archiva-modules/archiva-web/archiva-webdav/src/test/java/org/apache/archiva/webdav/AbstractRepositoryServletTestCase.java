@@ -195,7 +195,10 @@ public abstract class AbstractRepositoryServletTestCase
             }
         } finally
         {
-            ctx.close(  );
+            if (ctx!=null)
+            {
+                ctx.close( );
+            }
         }
 
         CacheManager.getInstance().clearAll();
@@ -727,18 +730,18 @@ public abstract class AbstractRepositoryServletTestCase
 
         if ( Files.exists(repoRootInternal) )
         {
-            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootInternal );
+            org.apache.archiva.common.utils.FileUtils.deleteQuietly( repoRootInternal );
         }
 
         if ( Files.exists(repoRootLegacy) )
         {
-            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootLegacy );
+            org.apache.archiva.common.utils.FileUtils.deleteQuietly( repoRootLegacy );
         }
 
         String appserverBase = System.getProperty( "appserver.base" );
         if ( StringUtils.isNotEmpty( appserverBase ) )
         {
-            org.apache.archiva.common.utils.FileUtils.deleteDirectory( Paths.get( appserverBase ) );
+            org.apache.archiva.common.utils.FileUtils.deleteQuietly( Paths.get( appserverBase ) );
         }
 
     }
