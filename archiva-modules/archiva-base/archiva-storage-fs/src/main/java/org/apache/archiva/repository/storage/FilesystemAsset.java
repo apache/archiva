@@ -118,6 +118,10 @@ public class FilesystemAsset implements StorageAsset, Comparable {
         this.setPermissionsForNew = false;
         this.basePath = null;
         this.storage = storage;
+        // The base directory is always a directory
+        if ("".equals(path) || "/".equals(path)) {
+            this.directoryHint = true;
+        }
         init();
     }
 
