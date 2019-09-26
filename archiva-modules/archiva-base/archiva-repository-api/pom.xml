@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-common</artifactId>
-    </dependency>
+     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-storage-api</artifactId>
@@ -58,6 +58,14 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback.components.registry</groupId>
+      <artifactId>spring-registry-api</artifactId>
     </dependency>
   </dependencies>
   <build>
