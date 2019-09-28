@@ -250,11 +250,6 @@
 
     <!-- End of Selenium dependencies -->
 
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-    </dependency>
-
     <!-- Dependency for MavenConnectionTest -->
     <dependency>
       <groupId>jdom</groupId>

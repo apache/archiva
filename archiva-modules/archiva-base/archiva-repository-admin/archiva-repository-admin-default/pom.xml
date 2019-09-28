@@ -253,12 +253,6 @@
     </dependency>
 
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-mock</artifactId>
       <scope>test</scope>
