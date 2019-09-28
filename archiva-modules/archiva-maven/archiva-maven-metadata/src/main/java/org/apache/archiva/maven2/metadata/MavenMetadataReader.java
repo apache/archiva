@@ -24,10 +24,12 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLReader;
+import org.apache.archiva.xml.XmlUtil;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -115,22 +117,28 @@ public class MavenMetadataReader
         if ( snapshotElem != null )
         {
             SnapshotVersion snapshot = new SnapshotVersion();
-            snapshot.setTimestamp( snapshotElem.elementTextTrim( "timestamp" ) );
-            String tmp = snapshotElem.elementTextTrim( "buildNumber" );
-            if ( NumberUtils.isNumber( tmp ) )
+            snapshot.setTimestamp(XmlUtil.getChildText(snapshotElem, "timestamp"));
+            String buildNumber = XmlUtil.getChildText(snapshotElem, "buildNumber");
+            if ( NumberUtils.isCreatable( buildNumber ) )
             {
-                snapshot.setBuildNumber( NumberUtils.toInt( tmp ) );
+                snapshot.setBuildNumber( NumberUtils.toInt( buildNumber ) );
             }
             metadata.setSnapshotVersion( snapshot );
         }
 
-        for ( Element plugin : xml.getElementList( "//metadata/plugins/plugin" ) )
+        for ( Node node : xml.getElementList( "//metadata/plugins/plugin" ) )
         {
-            Plugin p = new Plugin();
-            p.setPrefix( plugin.elementTextTrim( "prefix" ) );
-            p.setArtifactId( plugin.elementTextTrim( "artifactId" ) );
-            p.setName( plugin.elementTextTrim( "name" ) );
-            metadata.addPlugin( p );
+            if (node instanceof Element) {
+                Element plugin = (Element) node;
+                Plugin p = new Plugin();
+                String prefix = plugin.getElementsByTagName("prefix").item(0).getTextContent().trim();
+                p.setPrefix(prefix);
+                String artifactId = plugin.getElementsByTagName("artifactId").item(0).getTextContent().trim();
+                p.setArtifactId(artifactId);
+                String name = plugin.getElementsByTagName("name").item(0).getTextContent().trim();
+                p.setName(name);
+                metadata.addPlugin(p);
+            }
         }
 
         return metadata;

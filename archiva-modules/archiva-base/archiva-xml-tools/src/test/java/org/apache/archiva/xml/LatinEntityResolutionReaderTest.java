@@ -19,8 +19,6 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -204,30 +202,6 @@ public class LatinEntityResolutionReaderTest
         assertProperRead( expected, "no-prolog-with-entities.xml", 409600 );
     }
 
-    @Test
-    public void testReaderLeftOver()
-        throws IOException
-    {
-        Path inputFile = getExampleXml( "maven-metadata-leftover.xml" );
-        //Bits from RepositoryMetadataReader.read
-        InputStream in = null;
-        SAXReader reader = new SAXReader();
-        URL url = inputFile.toUri().toURL();
-        in = url.openStream();
-        InputStreamReader inReader = new InputStreamReader( in, Charset.forName( "UTF-8" ) );
-        LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
-        try
-        {
-            reader.read( latinReader );
-        }
-        catch ( DocumentException e )
-        {
-            Assert.fail( "Should not have failed here." + e );
-            IOException ioe = new IOException();
-            ioe.initCause( e );
-            throw ioe;
-        }
-    }
 
     @Test
     public void testNoLatinEntitiesHugeLine()

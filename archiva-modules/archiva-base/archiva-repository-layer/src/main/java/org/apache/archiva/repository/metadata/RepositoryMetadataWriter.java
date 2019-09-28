@@ -19,25 +19,23 @@ package org.apache.archiva.repository.metadata;
  * under the License.
  */
 
-import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLWriter;
+import org.apache.archiva.xml.XmlUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import java.io.FileWriter;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -81,10 +79,15 @@ public class RepositoryMetadataWriter
     public static void write( ArchivaRepositoryMetadata metadata, Writer writer )
         throws RepositoryMetadataException
     {
-        Document doc = DocumentHelper.createDocument();
+        Document doc = null;
+        try {
+            doc = XmlUtil.createDocument();
+        } catch (ParserConfigurationException e) {
+            throw new RepositoryMetadataException("Could not create xml doc " + e.getMessage(), e);
+        }
 
-        Element root = DocumentHelper.createElement( "metadata" );
-        doc.setRootElement( root );
+        Element root = doc.createElement( "metadata" );
+        doc.appendChild(root);
 
         addOptionalElementText( root, "groupId", metadata.getGroupId() );
         addOptionalElementText( root, "artifactId", metadata.getArtifactId() );
@@ -92,16 +95,16 @@ public class RepositoryMetadataWriter
 
         if ( CollectionUtils.isNotEmpty( metadata.getPlugins() ) )
         {
-            Element plugins = root.addElement( "plugins" );
+            Element plugins = XmlUtil.addChild(root, "plugins" );
 
             List<Plugin> pluginList = metadata.getPlugins();
             Collections.sort( pluginList, PluginComparator.INSTANCE );
 
             for ( Plugin plugin : metadata.getPlugins() )
             {
-                Element p = plugins.addElement( "plugin" );
-                p.addElement( "prefix" ).setText( plugin.getPrefix() );
-                p.addElement( "artifactId" ).setText( plugin.getArtifactId() );
+                Element p = XmlUtil.addChild(plugins, "plugin" );
+                XmlUtil.addChild(doc, p, "prefix" ).setTextContent( plugin.getPrefix() );
+                XmlUtil.addChild(doc, p, "artifactId" ).setTextContent( plugin.getArtifactId() );
                 addOptionalElementText( p, "name", plugin.getName() );
             }
         }
@@ -112,14 +115,14 @@ public class RepositoryMetadataWriter
             || StringUtils.isNotBlank( metadata.getLastUpdated() ) //
             || ( metadata.getSnapshotVersion() != null ) )
         {
-            Element versioning = root.addElement( "versioning" );
+            Element versioning = XmlUtil.addChild(root, "versioning" );
 
             addOptionalElementText( versioning, "latest", metadata.getLatestVersion() );
             addOptionalElementText( versioning, "release", metadata.getReleasedVersion() );
 
             if ( metadata.getSnapshotVersion() != null )
             {
-                Element snapshot = versioning.addElement( "snapshot" );
+                Element snapshot = XmlUtil.addChild(versioning, "snapshot" );
                 String bnum = String.valueOf( metadata.getSnapshotVersion().getBuildNumber() );
                 addOptionalElementText( snapshot, "buildNumber", bnum );
                 addOptionalElementText( snapshot, "timestamp", metadata.getSnapshotVersion().getTimestamp() );
@@ -127,12 +130,12 @@ public class RepositoryMetadataWriter
 
             if ( CollectionUtils.isNotEmpty( metadata.getAvailableVersions() ) )
             {
-                Element versions = versioning.addElement( "versions" );
+                Element versions = XmlUtil.addChild(versioning, "versions" );
                 Iterator<String> it = metadata.getAvailableVersions().iterator();
                 while ( it.hasNext() )
                 {
                     String version = it.next();
-                    versions.addElement( "version" ).setText( version );
+                    XmlUtil.addChild(versions, "version" ).setTextContent( version );
                 }
             }
 
@@ -156,7 +159,7 @@ public class RepositoryMetadataWriter
             return;
         }
 
-        elem.addElement( elemName ).setText( text );
+        XmlUtil.addChild(elem, elemName ).setTextContent( text );
     }
 
     private static class PluginComparator

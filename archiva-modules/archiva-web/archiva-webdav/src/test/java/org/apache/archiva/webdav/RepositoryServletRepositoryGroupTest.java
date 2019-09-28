@@ -258,7 +258,6 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResource( request );
 
         Path returnedMetadata = getProjectBase().resolve( "target/test-classes/retrievedMetadataFile.xml" );
-        System.out.println( response.getContentAsString() );
         org.apache.archiva.common.utils.FileUtils.writeStringToFile( returnedMetadata, Charset.defaultCharset(), response.getContentAsString() );
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
 
@@ -285,7 +284,7 @@ public class RepositoryServletRepositoryGroupTest
         assertResponseOK( response );
 
         assertThat( response.getContentAsString() )
-            .startsWith( "add113b0d7f8c6adb92a5015a7a3701081edf998" );
+            .startsWith( "f8a7a858a46887368adf0b30874de1f807d91453" );
 
         // request the md5 checksum of the metadata
         request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
@@ -295,7 +294,7 @@ public class RepositoryServletRepositoryGroupTest
         assertResponseOK( response );
 
         assertThat( response.getContentAsString() )
-            .startsWith( "5b85ea4aa5f52bb76760041a52f98de8" );
+            .startsWith( "cec864b66849153dd45fddb7cdde12b2" );
     }
 
     // MRM-901

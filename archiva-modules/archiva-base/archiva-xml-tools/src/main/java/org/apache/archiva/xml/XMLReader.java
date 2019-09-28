@@ -20,29 +20,28 @@ package org.apache.archiva.xml;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Namespace;
-import org.dom4j.Node;
-import org.dom4j.QName;
-import org.dom4j.XPath;
-import org.dom4j.io.SAXReader;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.*;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * XMLReader - a set of common xml utility methods for reading content out of an xml file.
@@ -56,6 +55,25 @@ public class XMLReader
     private Document document;
 
     private Map<String, String> namespaceMap = new HashMap<>();
+    private Map<String, String> reverseNamespaceMap = new HashMap<>();
+
+    private class NamespaceCtx implements NamespaceContext {
+
+        @Override
+        public String getNamespaceURI(String prefix) {
+            return namespaceMap.get(prefix);
+        }
+
+        @Override
+        public String getPrefix(String namespaceURI) {
+            return reverseNamespaceMap.get(namespaceURI);
+        }
+
+        @Override
+        public Iterator getPrefixes(String namespaceURI) {
+            return namespaceMap.keySet().iterator();
+        }
+    }
 
     public XMLReader( String type, Path file )
         throws XMLException
@@ -97,41 +115,69 @@ public class XMLReader
         this.documentType = type;
         this.xmlUrl = url;
 
-        SAXReader reader = new SAXReader();
+        // SAXReader reader = new SAXReader();
 
-        try (InputStream in = url.openStream())
+
+
+        try (InputStream in = url.openStream(); Reader reader = new LatinEntityResolutionReader(new BufferedReader(new InputStreamReader(in, "UTF-8"))))
         {
-            InputStreamReader inReader = new InputStreamReader( in, Charset.forName( "UTF-8" ) );
-            LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
-            this.document = reader.read( latinReader );
-        }
-        catch ( DocumentException e )
-        {
-            throw new XMLException( "Unable to parse " + documentType + " xml " + xmlUrl + ": " + e.getMessage(), e );
+
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setNamespaceAware(true);
+            dbf.setExpandEntityReferences(false);
+            dbf.setValidating(false);
+            // dbf.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD,"false");
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING,true);
+            // dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            // To suppress error output at System.err
+            db.setErrorHandler(new ErrorHandler() {
+                @Override
+                public void warning(SAXParseException exception) throws SAXException {
+
+                }
+
+                @Override
+                public void error(SAXParseException exception) throws SAXException {
+                    throw exception;
+                }
+
+                @Override
+                public void fatalError(SAXParseException exception) throws SAXException {
+                    throw exception;
+                }
+            });
+            this.document = db.parse(new InputSource(reader));
+
         }
         catch ( IOException e )
         {
             throw new XMLException( "Unable to open stream to " + url + ": " + e.getMessage(), e );
+        } catch (ParserConfigurationException e) {
+            throw new XMLException("Unable to start parser "+e.getMessage());
+        } catch (SAXException e) {
+            throw new XMLException("Unable to parse file "+e.getMessage());
         }
 
-        Element root = this.document.getRootElement();
+        Element root = this.document.getDocumentElement();
         if ( root == null )
         {
             throw new XMLException( "Invalid " + documentType + " xml: root element is null." );
         }
 
-        if ( !StringUtils.equals( root.getName(), documentType ) )
+        if ( !StringUtils.equals( root.getLocalName(), documentType ) )
         {
             throw new XMLException(
-                "Invalid " + documentType + " xml: Unexpected root element <" + root.getName() + ">, expected <"
-                    + documentType + ">" );
+                "Invalid " + documentType + " xml: Unexpected root element <" + root.getLocalName() + ">, expected <"
+                    + documentType + ">" + root.getNodeName() );
         }
     }
 
     public String getDefaultNamespaceURI()
     {
-        Namespace namespace = this.document.getRootElement().getNamespace();
-        return namespace.getURI();
+        String namespace = this.document.getNamespaceURI();
+        return namespace;
     }
 
     public void addNamespaceMapping( String elementName, String uri )
@@ -142,48 +188,55 @@ public class XMLReader
     public Element getElement( String xpathExpr )
         throws XMLException
     {
-        XPath xpath = createXPath( xpathExpr );
-        Object evaluated = xpath.selectSingleNode( document );
+        XPathExpression xpath = null;
+        try {
+            xpath = createXPath( xpathExpr );
+            Object evaluated = xpath.evaluate( document, XPathConstants.NODE);
 
-        if ( evaluated == null )
-        {
-            return null;
-        }
+            if ( evaluated == null )
+            {
+                return null;
+            }
 
-        if ( evaluated instanceof Element )
-        {
-            return (Element) evaluated;
-        }
-        else
-        {
-            // Unknown evaluated type.
-            throw new XMLException( ".getElement( Expr: " + xpathExpr + " ) resulted in non-Element type -> ("
-                                        + evaluated.getClass().getName() + ") " + evaluated );
+            if ( evaluated instanceof Element )
+            {
+                return (Element) evaluated;
+            }
+            else
+            {
+                // Unknown evaluated type.
+                throw new XMLException( ".getElement( Expr: " + xpathExpr + " ) resulted in non-Element type -> ("
+                        + evaluated.getClass().getName() + ") " + evaluated );
+            }
+        } catch (XPathExpressionException e) {
+            throw new XMLException("Could not parse xpath expression");
         }
     }
 
-    private XPath createXPath( String xpathExpr )
-    {
-        XPath xpath = document.createXPath( xpathExpr );
+    private XPathExpression createXPath(String xpathExpr ) throws XPathExpressionException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
         if ( !this.namespaceMap.isEmpty() )
         {
-            xpath.setNamespaceURIs( this.namespaceMap );
+            xpath.setNamespaceContext(new NamespaceCtx());
         }
-        return xpath;
+        return xpath.compile(xpathExpr);
     }
 
     public boolean hasElement( String xpathExpr )
         throws XMLException
     {
-        XPath xpath = createXPath( xpathExpr );
-        Object evaluated = xpath.selectSingleNode( document );
-
-        if ( evaluated == null )
-        {
-            return false;
+        XPathExpression xpath = null;
+        try {
+            xpath = createXPath( xpathExpr );
+            Object evaluated = xpath.evaluate( document, XPathConstants.NODE );
+            if ( evaluated == null )
+            {
+                return false;
+            }
+            return true;
+        } catch (XPathExpressionException e) {
+            throw new XMLException("Could not create xpath expression");
         }
-
-        return true;
     }
 
     /**
@@ -191,32 +244,26 @@ public class XMLReader
      */
     public void removeNamespaces()
     {
-        removeNamespaces( this.document.getRootElement() );
+        removeNamespaces( this.document.getDocumentElement() );
     }
 
     /**
      * Remove namespaces from element recursively.
      */
     @SuppressWarnings("unchecked")
-    public void removeNamespaces( Element elem )
+    public void removeNamespaces( Node elem )
     {
-        elem.setQName( QName.get( elem.getName(), Namespace.NO_NAMESPACE, elem.getQualifiedName() ) );
+        if (elem.getNodeType() == Node.ELEMENT_NODE || elem.getNodeType() == Node.ATTRIBUTE_NODE) {
+            document.renameNode(elem, null, elem.getLocalName());
 
-        Node n;
+            Node n;
 
-        Iterator<Node> it = elem.elementIterator();
-        while ( it.hasNext() )
-        {
-            n = it.next();
+            NodeList nodeList = elem.getChildNodes();
 
-            switch ( n.getNodeType() )
-            {
-                case Node.ATTRIBUTE_NODE:
-                    ( (Attribute) n ).setNamespace( Namespace.NO_NAMESPACE );
-                    break;
-                case Node.ELEMENT_NODE:
-                    removeNamespaces( (Element) n );
-                    break;
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                n = nodeList.item(i);
+                removeNamespaces(n);
             }
         }
     }
@@ -224,102 +271,74 @@ public class XMLReader
     public String getElementText( Node context, String xpathExpr )
         throws XMLException
     {
-        XPath xpath = createXPath( xpathExpr );
-        Object evaluated = xpath.selectSingleNode( context );
+        XPathExpression xpath = null;
+        try {
+            xpath = createXPath( xpathExpr );
+            Object evaluated = xpath.evaluate( context, XPathConstants.NODE );
 
-        if ( evaluated == null )
-        {
-            return null;
-        }
+            if ( evaluated == null )
+            {
+                return null;
+            }
 
-        if ( evaluated instanceof Element )
-        {
-            Element evalElem = (Element) evaluated;
-            return evalElem.getTextTrim();
-        }
-        else
-        {
-            // Unknown evaluated type.
-            throw new XMLException( ".getElementText( Node, Expr: " + xpathExpr + " ) resulted in non-Element type -> ("
-                                        + evaluated.getClass().getName() + ") " + evaluated );
+            if ( evaluated instanceof Element )
+            {
+                Element evalElem = (Element) evaluated;
+                return XmlUtil.getText(evalElem);
+            }
+            else
+            {
+                // Unknown evaluated type.
+                throw new XMLException( ".getElementText( Node, Expr: " + xpathExpr + " ) resulted in non-Element type -> ("
+                        + evaluated.getClass().getName() + ") " + evaluated );
+            }
+        } catch (XPathExpressionException e) {
+            throw new XMLException("Could not parse xpath expression");
         }
     }
 
     public String getElementText( String xpathExpr )
         throws XMLException
     {
-        XPath xpath = createXPath( xpathExpr );
-        Object evaluated = xpath.selectSingleNode( document );
-
-        if ( evaluated == null )
-        {
-            return null;
-        }
-
-        if ( evaluated instanceof Element )
-        {
-            Element evalElem = (Element) evaluated;
-            return evalElem.getTextTrim();
-        }
-        else
-        {
-            // Unknown evaluated type.
-            throw new XMLException( ".getElementText( Expr: " + xpathExpr + " ) resulted in non-Element type -> ("
-                                        + evaluated.getClass().getName() + ") " + evaluated );
-        }
+        return getElementText(document, xpathExpr);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Element> getElementList( String xpathExpr )
+    public List<Node> getElementList( String xpathExpr )
         throws XMLException
     {
-        XPath xpath = createXPath( xpathExpr );
-        Object evaluated = xpath.evaluate( document );
+        XPathExpression xpath = null;
+        try {
+            xpath = createXPath( xpathExpr );
+            Object evaluated = xpath.evaluate( document, XPathConstants.NODESET);
 
-        if ( evaluated == null )
-        {
-            return null;
-        }
+            if ( evaluated == null )
+            {
+                return Collections.emptyList();
+            }
 
-        /* The xpath.evaluate(Context) method can return:
-         *   1) A Collection or List of dom4j Nodes. 
-         *   2) A single dom4j Node.
-         */
+            NodeList nl = (NodeList) evaluated;
+            List<Node> nodeList = new ArrayList<>();
+            for (int i = 0 ; i<nl.getLength(); i++) {
+                nodeList.add(nl.item(i));
+            }
+            return nodeList;
 
-        if ( evaluated instanceof List )
-        {
-            return (List<Element>) evaluated;
-        }
-        else if ( evaluated instanceof Node )
-        {
-            List<Element> ret = new ArrayList<>();
-            ret.add( (Element) evaluated );
-            return ret;
-        }
-        else
-        {
-            // Unknown evaluated type.
-            throw new XMLException( ".getElementList( Expr: " + xpathExpr + " ) resulted in non-List type -> ("
-                                        + evaluated.getClass().getName() + ") " + evaluated );
+        } catch (XPathExpressionException e) {
+            throw new XMLException("Could not parse xpath expression");
         }
     }
 
     public List<String> getElementListText( String xpathExpr )
         throws XMLException
     {
-        List<Element> elemList = getElementList( xpathExpr );
+        List<Node> elemList = getElementList( xpathExpr );
         if ( elemList == null )
         {
             return null;
         }
 
-        List<String> ret = new ArrayList<>();
-        for ( Iterator<Element> iter = elemList.iterator(); iter.hasNext(); )
-        {
-            Element listelem = iter.next();
-            ret.add( listelem.getTextTrim() );
-        }
-        return ret;
+        return elemList.stream().filter(n -> n instanceof Element).map(n -> XmlUtil.getText(n)).collect(Collectors.toList());
     }
 
 }

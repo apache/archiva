@@ -19,11 +19,12 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringWriter;
 
 /**
@@ -41,7 +42,6 @@ public class XMLWriterTest
         StringBuilder expected = new StringBuilder();
 
         expected.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
-        expected.append( "\n" );
         expected.append( "<basic>\n" );
         expected.append( "  <names>\n" );
         expected.append( "    <name>" ).append( TRYGVIS ).append( "</name>\n" );
@@ -49,12 +49,19 @@ public class XMLWriterTest
         expected.append( "  </names>\n" );
         expected.append( "</basic>\n" );
 
-        Element basic = DocumentHelper.createElement( "basic" );
-        Document doc = DocumentHelper.createDocument( basic );
+        DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = docBuilder.newDocument();
+        Element basic = doc.createElement("basic");
+        doc.appendChild(basic);
+        Element names = doc.createElement( "names" );
+        basic.appendChild(names);
+        Element name = doc.createElement("name");
+        name.setTextContent(TRYGVIS);
+        names.appendChild(name);
+        name = doc.createElement("name");
+        name.setTextContent(INFINITE_ARCHIVA);
 
-        Element names = basic.addElement( "names" );
-        names.addElement( "name" ).setText( TRYGVIS );
-        names.addElement( "name" ).setText( INFINITE_ARCHIVA );
+        names.appendChild(name);
 
         StringWriter actual = new StringWriter();
         XMLWriter.write( doc, actual );
