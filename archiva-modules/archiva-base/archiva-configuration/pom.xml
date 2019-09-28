@@ -172,6 +172,7 @@
           <systemPropertyVariables>
             <basedir>${basedir}</basedir>
           </systemPropertyVariables>
+          <trimStackTrace>false</trimStackTrace>
         </configuration>
       </plugin>
     </plugins>
