@@ -30,7 +30,7 @@
 
   <artifactId>archiva-storage-api</artifactId>
 
-  <name>Archiva Base :: Repository API</name>
+  <name>Archiva Base :: Storage API</name>
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
