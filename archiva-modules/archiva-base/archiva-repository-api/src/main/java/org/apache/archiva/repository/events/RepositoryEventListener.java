@@ -19,12 +19,10 @@ package org.apache.archiva.repository.events;
  * under the License.
  */
 
-import org.apache.archiva.repository.events.RepositoryValueEvent;
-
 /**
- * Listener that accepts repository events.
+ * A listener that accepts repository events.
  */
-public interface RepositoryEventListener {
+public interface RepositoryEventListener<T extends Event> {
 
-    void raise(Event event);
+    void raise(T event);
 }

@@ -56,7 +56,7 @@ import java.util.function.Consumer;
  * No features are provided. Capabilities and features must be implemented by concrete classes.
  *
  */
-public abstract class AbstractRepository implements EditableRepository, RepositoryEventListener
+public abstract class AbstractRepository implements EditableRepository, RepositoryEventListener<RepositoryEvent>
 {
 
 
@@ -79,8 +79,8 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     String schedulingDefinition = "0 0 02 * * ?";
     private String layout = "default";
     public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-    private List<RepositoryEventListener> listeners = new ArrayList<>();
-    private Map<EventType, List<RepositoryEventListener>> listenerTypeMap = new HashMap<>();
+
+    private Map<EventType<? extends RepositoryEvent>, List<RepositoryEventListener<? extends RepositoryEvent>>> listenerTypeMap = new HashMap<>();
 
 
     Map<Class<? extends RepositoryFeature<?>>, RepositoryFeature<?>> featureMap = new HashMap<>(  );
@@ -334,14 +334,16 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     }
 
     @Override
-    public void raise(Event event) {
-        callListeners(event, listeners);
-        if (listenerTypeMap.containsKey(event.getType())) {
-            callListeners(event, listenerTypeMap.get(event.getType()));
+    public void raise(RepositoryEvent event) {
+        final EventType<? extends Event> currentType = event.getType();
+        for (EventType<? extends RepositoryEvent> type : listenerTypeMap.keySet()) {
+            if (EventType.isInstanceOf(currentType, type)) {
+                callListeners(event, listenerTypeMap.get(type));
+            }
         }
     }
 
-    private void callListeners(Event event, List<RepositoryEventListener> evtListeners) {
+    private void callListeners(RepositoryEvent event, List<RepositoryEventListener<? extends RepositoryEvent>> evtListeners) {
         for(RepositoryEventListener listener : evtListeners) {
             try {
                 listener.raise(event.recreate(this));
@@ -353,15 +355,14 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     }
 
     @Override
-    public void register(RepositoryEventListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
+    public <T extends Event> void register(EventType<T> eventType, RepositoryEventListener<? super T> listener) {
+        if (!EventType.isInstanceOf(eventType, RepositoryEvent.ANY)) {
+            throw new IllegalArgumentException("Can only register RepositoryEvent Handlers");
         }
-    }
+        final RepositoryEventListener<? extends RepositoryEvent> myListener = (RepositoryEventListener<? extends RepositoryEvent>) listener;
+        final EventType<? extends RepositoryEvent> type = (EventType<? extends RepositoryEvent>) eventType;
 
-    @Override
-    public void register(RepositoryEventListener listener, EventType type) {
-        List<RepositoryEventListener> listeners;
+        List<RepositoryEventListener<? extends RepositoryEvent>> listeners;
         if (listenerTypeMap.containsKey(type)) {
             listeners = listenerTypeMap.get(type);
         } else {
@@ -369,29 +370,19 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
             listenerTypeMap.put(type, listeners);
         }
         if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
-
-    }
-
-    @Override
-    public void register(RepositoryEventListener listener, Set<? extends EventType> types) {
-        for (EventType type : types) {
-            register(listener, type);
+            listeners.add(myListener);
         }
     }
 
     @Override
-    public void unregister(RepositoryEventListener listener) {
-        listeners.remove(listener);
-        for (List<RepositoryEventListener> listeners : listenerTypeMap.values()) {
+    public <T extends Event> void unregister(EventType<T> type, RepositoryEventListener<? super T> listener) {
+        for (List<RepositoryEventListener<? extends RepositoryEvent>> listeners : listenerTypeMap.values()) {
             listeners.remove(listener);
         }
     }
 
     @Override
     public void clearListeners() {
-        this.listeners.clear();
         this.listenerTypeMap.clear();
     }
 

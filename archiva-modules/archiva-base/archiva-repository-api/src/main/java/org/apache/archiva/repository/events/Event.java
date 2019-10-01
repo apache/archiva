@@ -20,28 +20,33 @@ package org.apache.archiva.repository.events;
  */
 
 import java.time.LocalDateTime;
+import java.util.EventObject;
 
-public class Event<O> {
+public class Event extends EventObject {
+
+    public static final EventType<Event> ANY = new EventType(null, "ANY");
 
     Event previous;
-    final O originator;
-    final EventType type;
+    final Object originator;
+    final EventType<? extends Event> type;
     final LocalDateTime instant;
 
-    public <OO extends O> Event(EventType type, OO originator) {
+    public Event(EventType<? extends Event> type, Object originator) {
+        super(originator);
         this.originator = originator;
         this.type = type;
         this.instant = LocalDateTime.now();
     }
 
-    private <OO> Event(Event<OO> previous, O originator) {
+    private Event(Event previous, Object originator) {
+        super(originator);
         this.previous = previous;
         this.originator = originator;
         this.type = previous.getType();
         this.instant = previous.getInstant();
     }
 
-    public EventType getType() {
+    public EventType<? extends Event> getType() {
         return type;
     };
 
@@ -49,11 +54,11 @@ public class Event<O> {
         return instant;
     }
 
-    public O getOriginator() {
+    public Object getOriginator() {
         return originator;
     }
 
-    public <NO> Event<NO> recreate(NO newOrigin) {
+    public Event recreate(Object newOrigin) {
         return new Event(this, newOrigin);
     }
 

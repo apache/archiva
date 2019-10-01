@@ -53,7 +53,7 @@ import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
  * @since 3.0
  */
 @Service("repositoryRegistry")
-public class RepositoryRegistry implements ConfigurationListener, RepositoryEventHandler, RepositoryEventListener {
+public class RepositoryRegistry implements ConfigurationListener, RepositoryEventSource, RepositoryEventListener<Event> {
 
     private static final Logger log = LoggerFactory.getLogger(RepositoryRegistry.class);
 
@@ -73,8 +73,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     @Named("repositoryContentFactory#default")
     RepositoryContentFactory repositoryContentFactory;
 
-    private List<RepositoryEventListener> listeners = new ArrayList<>();
-    private Map<EventType, List<RepositoryEventListener>> typeListenerMap = new HashMap<>();
+    private Map<EventType<? extends Event>, List<RepositoryEventListener<? extends Event>>> typeListenerMap = new HashMap<>();
 
 
     private Map<String, ManagedRepository> managedRepositories = new HashMap<>();
@@ -111,7 +110,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         } finally {
             rwLock.writeLock().unlock();
         }
-        pushEvent(new RepositoryRegistryEvent<>(RepositoryRegistryEvent.RegistryEventType.RELOADED, this));
+        pushEvent(new RepositoryRegistryEvent(RepositoryRegistryEvent.RELOADED, this));
     }
 
     @PreDestroy
@@ -124,7 +123,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             repo.close();
         }
         remoteRepositories.clear();
-        pushEvent(new RepositoryRegistryEvent<>(RepositoryRegistryEvent.RegistryEventType.DESTROYED, this));
+        pushEvent(new RepositoryRegistryEvent(RepositoryRegistryEvent.DESTROYED, this));
     }
 
 
@@ -182,7 +181,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     private ManagedRepository createNewManagedRepository(RepositoryProvider provider, ManagedRepositoryConfiguration cfg) throws RepositoryException {
         log.debug("Creating repo {}", cfg.getId());
         ManagedRepository repo = provider.createManagedInstance(cfg);
-        repo.register(this);
+        repo.register(RepositoryEvent.ANY,  this);
         updateRepositoryReferences(provider, repo, cfg, null);
         return repo;
 
@@ -205,7 +204,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                     if (configuration != null) {
                         replaceOrAddRepositoryConfig(provider.getManagedConfiguration(stageRepo), configuration);
                     }
-                    pushEvent(new LifecycleEvent(LifecycleEvent.LifecycleEventType.REGISTERED, this, stageRepo));
+                    pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, stageRepo));
                 }
                 feature.setStagingRepository(stageRepo);
             }
@@ -222,7 +221,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 createIndexingContext(editableRepo);
             }
         }
-        repo.register(this);
+        repo.register(RepositoryEvent.ANY, this);
     }
 
     public ArchivaIndexManager getIndexManager(RepositoryType type) {
@@ -297,7 +296,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 createIndexingContext(editableRepo);
             }
         }
-        repo.register(this);
+        repo.register(RepositoryEvent.ANY, this);
     }
 
     private Map<String, RepositoryGroup> getRepositorGroupsFromConfig() {
@@ -332,7 +331,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     private RepositoryGroup createNewRepositoryGroup(RepositoryProvider provider, RepositoryGroupConfiguration config) throws RepositoryException {
         RepositoryGroup repositoryGroup = provider.createRepositoryGroup(config);
-        repositoryGroup.register(this);
+        repositoryGroup.register(RepositoryEvent.ANY, this);
         updateRepositoryReferences(provider, repositoryGroup, config);
         return repositoryGroup;
     }
@@ -511,9 +510,9 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 configuration.addManagedRepository(newCfg);
                 saveConfiguration(configuration);
                 if (originRepo != managedRepository) {
-                    pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.REGISTERED, this, managedRepository));
+                    pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, managedRepository));
                 } else {
-                    pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.UPDATED, this, managedRepository));
+                    pushEvent(new LifecycleEvent(LifecycleEvent.UPDATED, this, managedRepository));
                 }
                 return managedRepository;
             } catch (Exception e) {
@@ -595,9 +594,9 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             updateRepositoryReferences(getProvider(repoType), repo, managedRepositoryConfiguration, configuration);
             replaceOrAddRepositoryConfig(managedRepositoryConfiguration, configuration);
             if (registeredNew) {
-                pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.REGISTERED, this, repo));
+                pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, repo));
             } else {
-                pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.UPDATED, this, repo));
+                pushEvent(new LifecycleEvent(LifecycleEvent.UPDATED, this, repo));
             }
             return repo;
         } finally {
@@ -780,9 +779,9 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 }
                 configuration.addRemoteRepository(newCfg);
                 if (remoteRepository != originRepo) {
-                    pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.REGISTERED, this, remoteRepository));
+                    pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, remoteRepository));
                 } else {
-                    pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.UPDATED, this, remoteRepository));
+                    pushEvent(new LifecycleEvent(LifecycleEvent.UPDATED, this, remoteRepository));
                 }
                 return remoteRepository;
             } catch (Exception e) {
@@ -896,9 +895,9 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             updateRepositoryReferences(getProvider(repoType), repo, remoteRepositoryConfiguration, configuration);
             replaceOrAddRepositoryConfig(remoteRepositoryConfiguration, configuration);
             if (registeredNew) {
-                pushEvent(new LifecycleEvent(LifecycleEvent.LifecycleEventType.REGISTERED, this, repo));
+                pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, repo));
             } else {
-                pushEvent(new LifecycleEvent(LifecycleEvent.LifecycleEventType.UPDATED, this, repo));
+                pushEvent(new LifecycleEvent(LifecycleEvent.UPDATED, this, repo));
             }
             return repo;
         } finally {
@@ -958,7 +957,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                     }
                     saveConfiguration(configuration);
                 }
-                pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.UNREGISTERED, this, repo));
+                pushEvent(new LifecycleEvent(LifecycleEvent.UNREGISTERED, this, repo));
             } catch (RegistryException | IndeterminateConfigurationException e) {
                 // Rollback
                 log.error("Could not save config after repository removal: {}", e.getMessage(), e);
@@ -995,7 +994,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                         configuration.removeManagedRepository(cfg);
                     }
                 }
-                pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.UNREGISTERED, this, repo));
+                pushEvent(new LifecycleEvent(LifecycleEvent.UNREGISTERED, this, repo));
             } finally {
                 rwLock.writeLock().unlock();
             }
@@ -1102,7 +1101,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                     doRemoveRepo(repo, configuration);
                     saveConfiguration(configuration);
                 }
-                pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.UNREGISTERED, this, repo));
+                pushEvent(new LifecycleEvent(LifecycleEvent.UNREGISTERED, this, repo));
             } catch (RegistryException | IndeterminateConfigurationException e) {
                 // Rollback
                 log.error("Could not save config after repository removal: {}", e.getMessage(), e);
@@ -1127,7 +1126,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 if (repo != null) {
                     doRemoveRepo(repo, configuration);
                 }
-                pushEvent(new LifecycleEvent<>(LifecycleEvent.LifecycleEventType.UNREGISTERED, this, repo));
+                pushEvent(new LifecycleEvent(LifecycleEvent.UNREGISTERED, this, repo));
             } finally {
                 rwLock.writeLock().unlock();
             }
@@ -1172,7 +1171,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration(repo);
         cfg.setId(newId);
         ManagedRepository cloned = provider.createManagedInstance(cfg);
-        cloned.register(this);
+        cloned.register(RepositoryEvent.ANY, this);
         return cloned;
     }
 
@@ -1201,7 +1200,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         RemoteRepositoryConfiguration cfg = provider.getRemoteConfiguration(repo);
         cfg.setId(newId);
         RemoteRepository cloned = provider.createRemoteInstance(cfg);
-        cloned.register(this);
+        cloned.register(RepositoryEvent.ANY, this);
         return cloned;
     }
 
@@ -1216,15 +1215,8 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
 
     @Override
-    public void register(RepositoryEventListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-        }
-    }
-
-    @Override
-    public void register(RepositoryEventListener listener, EventType type) {
-        List<RepositoryEventListener> listeners;
+    public <T extends Event> void register(EventType<T> type, RepositoryEventListener<? super T> listener) {
+        List<RepositoryEventListener<?>> listeners;
         if (typeListenerMap.containsKey(type)) {
             listeners = typeListenerMap.get(type);
         } else {
@@ -1236,28 +1228,19 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         }
     }
 
-    @Override
-    public void register(RepositoryEventListener listener, Set<? extends EventType> types) {
-        for (EventType type : types) {
-            register(listener, type);
-        }
-    }
 
     @Override
-    public void unregister(RepositoryEventListener listener) {
-        this.listeners.remove(listener);
-        for (List<RepositoryEventListener> listeners : typeListenerMap.values()) {
+    public <T extends Event> void unregister(EventType<T> type, RepositoryEventListener<? super T> listener) {
+        for (List<RepositoryEventListener<?>> listeners : typeListenerMap.values()) {
             listeners.remove(listener);
         }
     }
 
     @Override
     public void clearListeners() {
-        this.listeners.clear();
         this.typeListenerMap.clear();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void raise(Event event) {
         // To avoid event cycles:
@@ -1302,20 +1285,18 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         }
     }
 
-    private void pushEvent(Event<RepositoryRegistry> event) {
-        callListeners(event, listeners);
-        if (typeListenerMap.containsKey(event.getType())) {
-            callListeners(event, typeListenerMap.get(event.getType()));
+    private void pushEvent(Event event) {
+        final EventType<? extends Event> currentType = event.getType();
+        for (EventType<? extends Event> type : typeListenerMap.keySet()) {
+            if (EventType.isInstanceOf(currentType, type)) {
+                callListeners(event, typeListenerMap.get(type));
+            }
         }
     }
 
-    private void callListeners(final Event<RepositoryRegistry> event, final List<RepositoryEventListener> evtListeners) {
-        for (RepositoryEventListener listener : evtListeners) {
-            try {
-                listener.raise(event);
-            } catch (Throwable e) {
-                log.error("Could not raise event {} on listener {}: {}", event, listener, e.getMessage());
-            }
+    private void callListeners(Event event, List<RepositoryEventListener<? extends Event>> listeners) {
+        for (RepositoryEventListener listener : listeners) {
+            listener.raise(event);
         }
     }
 

@@ -19,29 +19,26 @@ package org.apache.archiva.repository.events;
  * under the License.
  */
 
+
 import org.apache.archiva.repository.Repository;
 
 import java.net.URI;
 
-public class IndexCreationEvent<O> extends RepositoryValueEvent<O, URI> {
+public class IndexCreationEvent extends RepositoryValueEvent<URI> {
 
-    public enum Index implements EventType {
-        INDEX_URI_CHANGE, PACKED_INDEX_URI_CHANGE
-    }
+    public static EventType<IndexCreationEvent> ANY = new EventType<>(RepositoryValueEvent.ANY, "REPOSITORY.VALUE.INDEX");
+    public static EventType<IndexCreationEvent> INDEX_URI_CHANGED = new EventType<>(ANY, "REPOSITORY.VALUE.INDEX.URI_CHANGED");
+    public static EventType<IndexCreationEvent> PACKED_INDEX_URI_CHANGED = new EventType<>(ANY, "REPOSITORY.VALUE.INDEX.PACKED_URI_CHANGED");
 
-    IndexCreationEvent(Repository repo, O origin, URI oldValue, URI value) {
-        super(Index.INDEX_URI_CHANGE, origin, repo, oldValue, value);
-    }
-
-    IndexCreationEvent(Index type, O origin, Repository repo, URI oldValue, URI value) {
+    IndexCreationEvent(EventType<? extends IndexCreationEvent> type, Object origin, Repository repo, URI oldValue, URI value) {
         super(type, origin, repo, oldValue, value);
     }
 
     public static final <O> IndexCreationEvent indexUriChange(O origin, Repository repo, URI oldValue, URI newValue) {
-        return new IndexCreationEvent(Index.INDEX_URI_CHANGE, origin, repo, oldValue, newValue);
+        return new IndexCreationEvent(INDEX_URI_CHANGED, origin, repo, oldValue, newValue);
     }
 
     public static final <O> IndexCreationEvent packedIndexUriChange(O origin, Repository repo, URI oldValue, URI newValue) {
-        return new IndexCreationEvent(Index.PACKED_INDEX_URI_CHANGE, origin, repo, oldValue, newValue);
+        return new IndexCreationEvent(PACKED_INDEX_URI_CHANGED, origin, repo, oldValue, newValue);
     }
 }

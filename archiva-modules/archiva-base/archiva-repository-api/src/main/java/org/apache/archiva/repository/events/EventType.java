@@ -19,7 +19,46 @@ package org.apache.archiva.repository.events;
  * under the License.
  */
 
-public interface EventType {
+import java.util.ArrayList;
+import java.util.List;
 
-    String name();
+public class EventType<T extends Event> {
+
+    private final String name;
+    private final EventType<? super T> superType;
+
+    public EventType(EventType<? super T> superType, String name) {
+        this.name = name;
+        this.superType = superType;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public EventType<? super T> getSuperType() {
+        return superType;
+    }
+
+
+    public static List<EventType<?>> fetchSuperTypes(EventType<?> type) {
+        List<EventType<?>> typeList = new ArrayList<>();
+        EventType<?> cType = type;
+        while (cType!=null) {
+            typeList.add(cType);
+            cType = cType.getSuperType();
+        }
+        return typeList;
+    }
+
+    public static boolean isInstanceOf(EventType<?> type, EventType<?> baseType) {
+        EventType<?> cType = type;
+        while(cType!=null) {
+            if (cType == baseType) {
+                return true;
+            }
+            cType = cType.getSuperType();
+        }
+        return false;
+    }
 }

@@ -19,15 +19,19 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.archiva.configuration.*;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.NetworkProxyConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.policies.Policy;
 import org.apache.archiva.policies.PolicyOption;
 import org.apache.archiva.policies.PolicyUtil;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.events.Event;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.events.RepositoryEventListener;
 import org.apache.archiva.repository.events.RepositoryRegistryEvent;
 import org.slf4j.Logger;
@@ -47,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings( "SpringJavaInjectionPointsAutowiringInspection" )
 @Service("proxyRegistry#default")
-public class ArchivaProxyRegistry implements ProxyRegistry, RepositoryEventListener {
+public class ArchivaProxyRegistry implements ProxyRegistry, RepositoryEventListener<RepositoryRegistryEvent> {
 
     private static final Logger log = LoggerFactory.getLogger(ArchivaProxyRegistry.class);
 
@@ -80,7 +84,7 @@ public class ArchivaProxyRegistry implements ProxyRegistry, RepositoryEventListe
         updateHandler();
         updateConnectors();
         updateNetworkProxies();
-        repositoryRegistry.register(this, RepositoryRegistryEvent.RegistryEventType.RELOADED);
+        repositoryRegistry.register(RepositoryRegistryEvent.RELOADED, this);
     }
 
     private ArchivaConfiguration getArchivaConfiguration() {
@@ -213,9 +217,9 @@ public class ArchivaProxyRegistry implements ProxyRegistry, RepositoryEventListe
     }
 
     @Override
-    public void raise(Event event) {
+    public void raise(RepositoryRegistryEvent event) {
         log.debug("Reload happened, updating proxy list");
-        if (event.getType()== RepositoryRegistryEvent.RegistryEventType.RELOADED) {
+        if (event.getType()== RepositoryRegistryEvent.RELOADED) {
             init();
         }
     }

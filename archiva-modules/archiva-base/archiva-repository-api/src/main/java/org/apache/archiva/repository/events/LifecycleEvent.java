@@ -21,13 +21,14 @@ package org.apache.archiva.repository.events;
 
 import org.apache.archiva.repository.Repository;
 
-public class LifecycleEvent<O> extends RepositoryEvent<O> {
+public class LifecycleEvent extends RepositoryEvent {
 
-    public enum LifecycleEventType implements EventType {
-        REGISTERED,UNREGISTERED,UPDATED
-    }
+    public static EventType<LifecycleEvent> ANY = new EventType<>(RepositoryEvent.ANY, "REPOSITORY.LIFECYCLE");
+    public static EventType<LifecycleEvent> REGISTERED = new EventType<>(ANY, "REPOSITORY.LIFECYCLE.REGISTERED");
+    public static EventType<LifecycleEvent> UNREGISTERED = new EventType<>(ANY, "REPOSITORY.LIFECYCLE.UNREGISTERED");
+    public static EventType<LifecycleEvent> UPDATED = new EventType<>(ANY, "REPOSITORY.LIFECYCLE.UPDATED");
 
-    public <OO extends O> LifecycleEvent(LifecycleEventType type, OO origin, Repository repository) {
+    public LifecycleEvent(EventType<? extends LifecycleEvent> type, Object origin, Repository repository) {
         super(type, origin, repository);
     }
 }

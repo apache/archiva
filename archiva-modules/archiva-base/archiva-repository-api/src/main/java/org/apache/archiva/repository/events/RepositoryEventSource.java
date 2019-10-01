@@ -26,15 +26,11 @@ import java.util.Set;
  * Listeners may register for all events that are raised or only to a subset of events.
  *
  */
-public interface RepositoryEventHandler {
+public interface RepositoryEventSource {
 
-    void register(RepositoryEventListener listener);
+    <T extends Event> void register(EventType<T> type, RepositoryEventListener<? super T> listener);
 
-    void register(RepositoryEventListener listener, EventType type);
-
-    void register(RepositoryEventListener listener, Set<? extends EventType> types);
-
-    void unregister(RepositoryEventListener listener);
+    <T extends Event> void unregister(EventType<T> type, RepositoryEventListener<? super T> listener);
 
     void clearListeners();
 }

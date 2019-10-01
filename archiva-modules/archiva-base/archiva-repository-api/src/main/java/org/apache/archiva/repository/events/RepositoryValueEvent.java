@@ -26,12 +26,14 @@ import org.apache.archiva.repository.Repository;
  *
  * @param <V>
  */
-public class RepositoryValueEvent<O, V> extends RepositoryEvent<O> {
+public class RepositoryValueEvent<V> extends RepositoryEvent {
+
+    public static final EventType<RepositoryValueEvent<?>> ANY = new EventType(RepositoryEvent.ANY, "REPOSITORY.VALUE.UPDATED");
 
     final V value;
     final V oldValue;
 
-    public RepositoryValueEvent(EventType type, O origin, Repository repo, V oldValue, V value) {
+    public RepositoryValueEvent(EventType<? extends RepositoryValueEvent<V>> type, Object origin, Repository repo, V oldValue, V value) {
         super(type, origin, repo);
         this.value = value;
         this.oldValue = oldValue;

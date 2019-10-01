@@ -21,16 +21,23 @@ package org.apache.archiva.repository.events;
 
 import org.apache.archiva.repository.Repository;
 
-public class RepositoryEvent<O> extends Event<O> {
+public class RepositoryEvent extends Event {
+
+    public static final EventType<RepositoryEvent> ANY = new EventType<>(Event.ANY, "REPOSITORY.UPDATED");
 
     private final Repository repository;
 
-    public <OO extends O> RepositoryEvent(EventType type, OO origin, Repository repository) {
+    public RepositoryEvent(EventType<? extends RepositoryEvent> type, Object origin, Repository repository) {
         super(type, origin);
         this.repository = repository;
     }
 
     public Repository getRepository() {
         return repository;
+    }
+
+    @Override
+    public EventType<? extends RepositoryEvent> getType() {
+        return (EventType<? extends RepositoryEvent>) super.getType();
     }
 }
