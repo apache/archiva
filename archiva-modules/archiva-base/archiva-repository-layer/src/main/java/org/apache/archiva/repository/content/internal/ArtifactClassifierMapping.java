@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.content;
+package org.apache.archiva.repository.internal.content;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

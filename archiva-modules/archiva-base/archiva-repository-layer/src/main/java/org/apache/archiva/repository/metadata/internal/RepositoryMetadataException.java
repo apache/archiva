@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.metadata;
+package org.apache.archiva.repository.internal.metadata;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
