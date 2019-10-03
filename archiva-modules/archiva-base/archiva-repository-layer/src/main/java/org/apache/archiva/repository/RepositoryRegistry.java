@@ -23,6 +23,7 @@ import org.apache.archiva.configuration.*;
 import org.apache.archiva.indexer.*;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.repository.events.*;
+import org.apache.archiva.repository.events.EventHandler;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +54,7 @@ import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
  * @since 3.0
  */
 @Service("repositoryRegistry")
-public class RepositoryRegistry implements ConfigurationListener, RepositoryEventSource, RepositoryEventListener<Event> {
+public class RepositoryRegistry implements ConfigurationListener, EventSource, EventHandler<Event> {
 
     private static final Logger log = LoggerFactory.getLogger(RepositoryRegistry.class);
 
@@ -73,7 +74,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     @Named("repositoryContentFactory#default")
     RepositoryContentFactory repositoryContentFactory;
 
-    private Map<EventType<? extends Event>, List<RepositoryEventListener<? extends Event>>> typeListenerMap = new HashMap<>();
+    private final EventManager eventManager;
 
 
     private Map<String, ManagedRepository> managedRepositories = new HashMap<>();
@@ -88,6 +89,10 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
 
     private volatile boolean ignoreConfigEvents = false;
+
+    public RepositoryRegistry() {
+        this.eventManager = new EventManager(this);
+    }
 
     public void setArchivaConfiguration(ArchivaConfiguration archivaConfiguration) {
         this.archivaConfiguration = archivaConfiguration;
@@ -181,7 +186,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     private ManagedRepository createNewManagedRepository(RepositoryProvider provider, ManagedRepositoryConfiguration cfg) throws RepositoryException {
         log.debug("Creating repo {}", cfg.getId());
         ManagedRepository repo = provider.createManagedInstance(cfg);
-        repo.register(RepositoryEvent.ANY,  this);
+        repo.registerEventHandler(RepositoryEvent.ANY,  this);
         updateRepositoryReferences(provider, repo, cfg, null);
         return repo;
 
@@ -221,7 +226,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 createIndexingContext(editableRepo);
             }
         }
-        repo.register(RepositoryEvent.ANY, this);
+        repo.registerEventHandler(RepositoryEvent.ANY, this);
     }
 
     public ArchivaIndexManager getIndexManager(RepositoryType type) {
@@ -296,7 +301,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 createIndexingContext(editableRepo);
             }
         }
-        repo.register(RepositoryEvent.ANY, this);
+        repo.registerEventHandler(RepositoryEvent.ANY, this);
     }
 
     private Map<String, RepositoryGroup> getRepositorGroupsFromConfig() {
@@ -331,7 +336,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     private RepositoryGroup createNewRepositoryGroup(RepositoryProvider provider, RepositoryGroupConfiguration config) throws RepositoryException {
         RepositoryGroup repositoryGroup = provider.createRepositoryGroup(config);
-        repositoryGroup.register(RepositoryEvent.ANY, this);
+        repositoryGroup.registerEventHandler(RepositoryEvent.ANY, this);
         updateRepositoryReferences(provider, repositoryGroup, config);
         return repositoryGroup;
     }
@@ -1171,7 +1176,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration(repo);
         cfg.setId(newId);
         ManagedRepository cloned = provider.createManagedInstance(cfg);
-        cloned.register(RepositoryEvent.ANY, this);
+        cloned.registerEventHandler(RepositoryEvent.ANY, this);
         return cloned;
     }
 
@@ -1200,7 +1205,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         RemoteRepositoryConfiguration cfg = provider.getRemoteConfiguration(repo);
         cfg.setId(newId);
         RemoteRepository cloned = provider.createRemoteInstance(cfg);
-        cloned.register(RepositoryEvent.ANY, this);
+        cloned.registerEventHandler(RepositoryEvent.ANY, this);
         return cloned;
     }
 
@@ -1215,47 +1220,32 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
 
     @Override
-    public <T extends Event> void register(EventType<T> type, RepositoryEventListener<? super T> listener) {
-        List<RepositoryEventListener<?>> listeners;
-        if (typeListenerMap.containsKey(type)) {
-            listeners = typeListenerMap.get(type);
-        } else {
-            listeners = new ArrayList<>();
-            typeListenerMap.put(type, listeners);
-        }
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
-        }
+    public <T extends Event> void registerEventHandler(EventType<T> type, EventHandler<? super T> eventHandler) {
+        eventManager.registerEventHandler(type, eventHandler);
     }
 
 
     @Override
-    public <T extends Event> void unregister(EventType<T> type, RepositoryEventListener<? super T> listener) {
-        for (List<RepositoryEventListener<?>> listeners : typeListenerMap.values()) {
-            listeners.remove(listener);
-        }
+    public <T extends Event> void unregisterEventHandler(EventType<T> type, EventHandler<? super T> eventHandler) {
+        eventManager.unregisterEventHandler(type, eventHandler);
     }
 
-    @Override
-    public void clearListeners() {
-        this.typeListenerMap.clear();
-    }
 
     @Override
-    public void raise(Event event) {
+    public void handle(Event event) {
         // To avoid event cycles:
         if (sameOriginator(event)) {
             return;
         }
-        if (event instanceof IndexCreationEvent) {
-            handleIndexCreationEvent((IndexCreationEvent) event);
+        if (event instanceof RepositoryIndexEvent) {
+            handleIndexCreationEvent((RepositoryIndexEvent) event);
         }
         // We propagate all events to our listeners, but with context of repository registry
-        pushEvent(event.recreate(this));
+        pushEvent(event);
     }
 
-    private void handleIndexCreationEvent(IndexCreationEvent event) {
-        IndexCreationEvent idxEvent = event;
+    private void handleIndexCreationEvent(RepositoryIndexEvent event) {
+        RepositoryIndexEvent idxEvent = event;
         if (managedRepositories.containsKey(idxEvent.getRepository().getId()) ||
                 remoteRepositories.containsKey(idxEvent.getRepository().getId())) {
             EditableRepository repo = (EditableRepository) idxEvent.getRepository();
@@ -1276,7 +1266,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     }
 
     private boolean sameOriginator(Event event) {
-        if (event.getOriginator() == this) {
+        if (event.getSource() == this) {
             return true;
         } else if (event.hasPreviousEvent()) {
             return sameOriginator(event.getPreviousEvent());
@@ -1286,19 +1276,9 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     }
 
     private void pushEvent(Event event) {
-        final EventType<? extends Event> currentType = event.getType();
-        for (EventType<? extends Event> type : typeListenerMap.keySet()) {
-            if (EventType.isInstanceOf(currentType, type)) {
-                callListeners(event, typeListenerMap.get(type));
-            }
-        }
+        eventManager.fireEvent(event);
     }
 
-    private void callListeners(Event event, List<RepositoryEventListener<? extends Event>> listeners) {
-        for (RepositoryEventListener listener : listeners) {
-            listener.raise(event);
-        }
-    }
 
 
 }

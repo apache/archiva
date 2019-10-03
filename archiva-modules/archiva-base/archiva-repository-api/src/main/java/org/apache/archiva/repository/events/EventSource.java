@@ -20,9 +20,14 @@ package org.apache.archiva.repository.events;
  */
 
 /**
- * A listener that accepts repository events.
+ * A repository event source raises events to its registered listeners.
+ * Listeners register to event types that are structured hierarchical.
+ *
  */
-public interface RepositoryEventListener<T extends Event> {
+public interface EventSource {
 
-    void raise(T event);
+    <T extends Event> void registerEventHandler(EventType<T> type, EventHandler<? super T> eventHandler);
+
+    <T extends Event> void unregisterEventHandler(EventType<T> type, EventHandler<? super T> eventHandler);
+
 }

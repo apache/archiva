@@ -19,18 +19,12 @@ package org.apache.archiva.repository.events;
  * under the License.
  */
 
-import java.util.Set;
+import java.util.EventListener;
 
 /**
- * A repository event handler raises events to its registered listeners.
- * Listeners may register for all events that are raised or only to a subset of events.
- *
+ * A listener that accepts events.
  */
-public interface RepositoryEventSource {
+public interface EventHandler<T extends Event> extends EventListener {
 
-    <T extends Event> void register(EventType<T> type, RepositoryEventListener<? super T> listener);
-
-    <T extends Event> void unregister(EventType<T> type, RepositoryEventListener<? super T> listener);
-
-    void clearListeners();
+    void handle(T event);
 }

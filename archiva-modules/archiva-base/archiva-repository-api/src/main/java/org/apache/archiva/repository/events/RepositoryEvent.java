@@ -21,9 +21,15 @@ package org.apache.archiva.repository.events;
 
 import org.apache.archiva.repository.Repository;
 
+/**
+ * A repository event is specific to a repository and holds a reference to the repository that
+ * is related to this event.
+ */
 public class RepositoryEvent extends Event {
 
-    public static final EventType<RepositoryEvent> ANY = new EventType<>(Event.ANY, "REPOSITORY.UPDATED");
+    private static final long serialVersionUID = 4676673476606414834L;
+
+    public static final EventType<RepositoryEvent> ANY = new EventType<>(Event.ANY, "REPOSITORY");
 
     private final Repository repository;
 

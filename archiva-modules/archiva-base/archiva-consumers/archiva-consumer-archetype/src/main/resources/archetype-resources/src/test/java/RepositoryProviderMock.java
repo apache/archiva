@@ -256,7 +256,7 @@ public class RepositoryProviderMock implements RepositoryProvider
     }
 
     @Override
-    public void raise(Event event) {
+    public void handle(Event event) {
 
     }
 

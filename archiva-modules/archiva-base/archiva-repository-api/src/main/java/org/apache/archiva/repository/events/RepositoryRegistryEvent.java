@@ -19,11 +19,29 @@ package org.apache.archiva.repository.events;
  * under the License.
  */
 
+/**
+ * Repository registry events are raised by the repository registry itself.
+ */
 public class RepositoryRegistryEvent extends Event {
 
-    public static EventType<RepositoryRegistryEvent> ANY = new EventType(Event.ANY, "REGISTRY");
+    private static final long serialVersionUID = -4740127827269612094L;
+
+    /**
+     * All repository registry events
+     */
+    public static EventType<RepositoryRegistryEvent> ANY = new EventType(EventType.ROOT, "REGISTRY");
+    /**
+     * When the registry has reloaded the registry data from the configuration
+     */
     public static EventType<RepositoryRegistryEvent> RELOADED = new EventType(ANY, "REGISTRY.RELOADED");
+    /**
+     * When the registry was destroyed. Repository instances may still be referenced, but are not updated.
+     */
     public static EventType<RepositoryRegistryEvent> DESTROYED = new EventType(ANY, "REGISTRY.DESTROYED");
+    /**
+     * When the registry was initialized
+     */
+    public static EventType<RepositoryRegistryEvent> INITIALIZED = new EventType(ANY, "REGISTRY.INITIALIZED");
 
     public RepositoryRegistryEvent(EventType<? extends RepositoryRegistryEvent> type, Object origin) {
         super(type, origin);

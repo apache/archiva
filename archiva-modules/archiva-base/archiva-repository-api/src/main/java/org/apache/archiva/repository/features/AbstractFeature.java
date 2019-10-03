@@ -20,35 +20,35 @@ package org.apache.archiva.repository.features;
  */
 
 import org.apache.archiva.repository.events.Event;
-import org.apache.archiva.repository.events.RepositoryEventListener;
+import org.apache.archiva.repository.events.EventHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class AbstractFeature {
-    private List<RepositoryEventListener> listener = new ArrayList<>();
+    private List<EventHandler> listener = new ArrayList<>();
 
     AbstractFeature() {
 
     }
 
-    AbstractFeature(RepositoryEventListener listener) {
+    AbstractFeature(EventHandler listener) {
         this.listener.add(listener);
     }
 
-    AbstractFeature(Collection<RepositoryEventListener> listeners) {
+    AbstractFeature(Collection<EventHandler> listeners) {
         this.listener.addAll(listeners);
     }
 
-    public void addListener(RepositoryEventListener listener) {
+    public void addListener(EventHandler listener) {
         if (!this.listener.contains(listener)) {
             this.listener.add(listener);
         }
         this.listener.add(listener);
     }
 
-    public void removeListener(RepositoryEventListener listener) {
+    public void removeListener(EventHandler listener) {
         this.listener.remove(listener);
     }
 
@@ -57,8 +57,8 @@ public class AbstractFeature {
     }
 
     public void pushEvent(Event event) {
-        for(RepositoryEventListener listr : listener) {
-            listr.raise(event);
+        for(EventHandler listr : listener) {
+            listr.handle(event);
         }
     }
 

@@ -509,7 +509,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     }
 
     @Override
-    public void raise(Event event) {
+    public void handle(Event event) {
         //
     }
 

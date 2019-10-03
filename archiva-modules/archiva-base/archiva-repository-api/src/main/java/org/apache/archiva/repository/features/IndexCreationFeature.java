@@ -21,8 +21,8 @@ package org.apache.archiva.repository.features;
 
 
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.events.IndexCreationEvent;
-import org.apache.archiva.repository.events.RepositoryEventListener;
+import org.apache.archiva.repository.events.RepositoryIndexEvent;
+import org.apache.archiva.repository.events.EventHandler;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,7 +44,7 @@ import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_PACKED_INDE
  * A index may have a remote and a local representation. The remote representation is used for downloading and
  * updating the local representation.
  *
- * The feature is throwing a {@link IndexCreationEvent}, if the URI of the index has been changed.
+ * The feature is throwing a {@link RepositoryIndexEvent}, if the URI of the index has been changed.
  *
  */
 public class IndexCreationFeature extends AbstractFeature implements RepositoryFeature<IndexCreationFeature>{
@@ -62,7 +62,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
 
     private Repository repo;
 
-    public IndexCreationFeature(Repository repository, RepositoryEventListener listener) {
+    public IndexCreationFeature(Repository repository, EventHandler listener) {
         super(listener);
         this.repo = repository;
         try {
@@ -129,7 +129,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
         if ((this.indexPath==null && indexPath!=null) || !this.indexPath.equals(indexPath)) {
             URI oldVal = this.indexPath;
             this.indexPath = indexPath;
-            pushEvent(IndexCreationEvent.indexUriChange(this, repo, oldVal, this.indexPath));
+            pushEvent(RepositoryIndexEvent.indexUriChange(this, repo, oldVal, this.indexPath));
         }
 
     }
@@ -173,14 +173,14 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
     /**
      * Sets the path (relative or absolute) of the packed index.
      *
-     * Throws a {@link IndexCreationEvent.Index#PACKED_INDEX_URI_CHANGE}, if the value changes.
+     * Throws a {@link RepositoryIndexEvent.Index#PACKED_INDEX_URI_CHANGE}, if the value changes.
      *
      * @param packedIndexPath the new path uri for the packed index
      */
     public void setPackedIndexPath(URI packedIndexPath) {
         URI oldVal = this.packedIndexPath;
         this.packedIndexPath = packedIndexPath;
-        pushEvent(IndexCreationEvent.packedIndexUriChange(this, repo, oldVal, this.packedIndexPath));
+        pushEvent(RepositoryIndexEvent.packedIndexUriChange(this, repo, oldVal, this.packedIndexPath));
     }
 
     /**

@@ -32,7 +32,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.events.RepositoryEventListener;
+import org.apache.archiva.repository.events.EventHandler;
 import org.apache.archiva.repository.events.RepositoryRegistryEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings( "SpringJavaInjectionPointsAutowiringInspection" )
 @Service("proxyRegistry#default")
-public class ArchivaProxyRegistry implements ProxyRegistry, RepositoryEventListener<RepositoryRegistryEvent> {
+public class ArchivaProxyRegistry implements ProxyRegistry, EventHandler<RepositoryRegistryEvent> {
 
     private static final Logger log = LoggerFactory.getLogger(ArchivaProxyRegistry.class);
 
@@ -84,7 +84,7 @@ public class ArchivaProxyRegistry implements ProxyRegistry, RepositoryEventListe
         updateHandler();
         updateConnectors();
         updateNetworkProxies();
-        repositoryRegistry.register(RepositoryRegistryEvent.RELOADED, this);
+        repositoryRegistry.registerEventHandler(RepositoryRegistryEvent.RELOADED, this);
     }
 
     private ArchivaConfiguration getArchivaConfiguration() {
@@ -217,7 +217,7 @@ public class ArchivaProxyRegistry implements ProxyRegistry, RepositoryEventListe
     }
 
     @Override
-    public void raise(RepositoryRegistryEvent event) {
+    public void handle(RepositoryRegistryEvent event) {
         log.debug("Reload happened, updating proxy list");
         if (event.getType()== RepositoryRegistryEvent.RELOADED) {
             init();

@@ -22,7 +22,7 @@ package org.apache.archiva.repository;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.archiva.repository.events.RepositoryEventListener;
+import org.apache.archiva.repository.events.EventHandler;
 
 import java.io.IOException;
 import java.util.Set;
@@ -40,7 +40,7 @@ import java.util.Set;
  *
  *
  */
-public interface RepositoryProvider extends RepositoryEventListener
+public interface RepositoryProvider extends EventHandler
 {
 
     /**

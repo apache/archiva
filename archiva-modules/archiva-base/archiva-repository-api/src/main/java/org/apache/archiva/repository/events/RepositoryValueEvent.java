@@ -22,21 +22,27 @@ package org.apache.archiva.repository.events;
 import org.apache.archiva.repository.Repository;
 
 /**
- * Repository event. Repository events are used for providing information about repository changes.
+ * Repository value events are used for providing information about repository attribute changes.
+ * The value event gives information of the attribute value before and after the change.
  *
- * @param <V>
+ * @param <V> The type of the changed attribute
  */
 public class RepositoryValueEvent<V> extends RepositoryEvent {
 
-    public static final EventType<RepositoryValueEvent<?>> ANY = new EventType(RepositoryEvent.ANY, "REPOSITORY.VALUE.UPDATED");
+    private static final long serialVersionUID = 4176597620699304794L;
+
+    public static final EventType<RepositoryValueEvent<?>> ANY = new EventType(RepositoryEvent.ANY, "REPOSITORY.VALUE");
 
     final V value;
     final V oldValue;
+    final String attributeName;
 
-    public RepositoryValueEvent(EventType<? extends RepositoryValueEvent<V>> type, Object origin, Repository repo, V oldValue, V value) {
+    public RepositoryValueEvent(EventType<? extends RepositoryValueEvent<V>> type, Object origin, Repository repo, V oldValue, V value,
+                                String attributeName) {
         super(type, origin, repo);
         this.value = value;
         this.oldValue = oldValue;
+        this.attributeName = attributeName;
     }
 
     public V getValue() {
@@ -45,6 +51,10 @@ public class RepositoryValueEvent<V> extends RepositoryEvent {
 
     public V getOldValue() {
         return oldValue;
+    }
+
+    public String getAttributeName() {
+        return attributeName;
     }
 
 }

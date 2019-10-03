@@ -21,8 +21,17 @@ package org.apache.archiva.repository.events;
 
 import org.apache.archiva.repository.Repository;
 
+/**
+ * Raises events about the repository lifecycle. The following events are raised:
+ * <ul>
+ *     <li>REGISTERED: a repository has been registered by the repository registry</li>
+ *     <li>UNREGISTERED: a repository has been removed by the repository registry</li>
+ *     <li>UPDATED: A repository attribute was updated</li>
+ * </ul>
+ */
 public class LifecycleEvent extends RepositoryEvent {
 
+    private static final long serialVersionUID = -2520982087439428714L;
     public static EventType<LifecycleEvent> ANY = new EventType<>(RepositoryEvent.ANY, "REPOSITORY.LIFECYCLE");
     public static EventType<LifecycleEvent> REGISTERED = new EventType<>(ANY, "REPOSITORY.LIFECYCLE.REGISTERED");
     public static EventType<LifecycleEvent> UNREGISTERED = new EventType<>(ANY, "REPOSITORY.LIFECYCLE.UNREGISTERED");

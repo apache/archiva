@@ -22,51 +22,91 @@ package org.apache.archiva.repository.events;
 import java.time.LocalDateTime;
 import java.util.EventObject;
 
-public class Event extends EventObject {
+/**
+ * Base class for events. Events have a type and a source.
+ * The source is the instance that raised the event.
+ *
+ * There are different event types for a given event. The types are represented in a hierarchical structure.
+ *
+ * Events can be chained, which means a event listener can catch events and rethrow them as its own event.
+ *
+ */
+public class Event extends EventObject implements Cloneable {
 
-    public static final EventType<Event> ANY = new EventType(null, "ANY");
+    private static final long serialVersionUID = -7171846575892044990L;
 
-    Event previous;
-    final Object originator;
-    final EventType<? extends Event> type;
-    final LocalDateTime instant;
+    public static final EventType<Event> ANY = EventType.ROOT;
+
+    private Event previous;
+    private final EventType<? extends Event> type;
+    private final LocalDateTime createTime;
 
     public Event(EventType<? extends Event> type, Object originator) {
         super(originator);
-        this.originator = originator;
         this.type = type;
-        this.instant = LocalDateTime.now();
+        this.createTime = LocalDateTime.now();
     }
 
     private Event(Event previous, Object originator) {
         super(originator);
         this.previous = previous;
-        this.originator = originator;
         this.type = previous.getType();
-        this.instant = previous.getInstant();
+        this.createTime = previous.getCreateTime();
     }
 
+    /**
+     * Returns the event type that is associated with this event instance.
+     * @return the event type
+     */
     public EventType<? extends Event> getType() {
         return type;
     };
 
-    public LocalDateTime getInstant() {
-        return instant;
+    /**
+     * Returns the time, when the event was created.
+     * @return
+     */
+    public LocalDateTime getCreateTime() {
+        return createTime;
     }
 
-    public Object getOriginator() {
-        return originator;
+
+    /**
+     * Recreates the event with the given instance as the new source. The
+     * current source is stored in the previous event.
+     * @param newSource The new source
+     * @return a new event instance, where <code>this</code> is stored as previous event
+     */
+    public Event copyFor(Object newSource) {
+        Event newEvent = (Event) this.clone();
+        newEvent.previous = this;
+        newEvent.source = newSource;
+        return newEvent;
     }
 
-    public Event recreate(Object newOrigin) {
-        return new Event(this, newOrigin);
-    }
-
+    /**
+     * Returns the previous event or <code>null</code>, if this is a root event.
+     * @return the previous event or <code>null</code>, if it does not exist
+     */
     public Event getPreviousEvent() {
         return previous;
     }
 
+    /**
+     * Returns <code>true</code>, if the event has a previous event.
+     * @return <code>true</code>, if this has a previous event, otherwise <code>false</code>
+     */
     public boolean hasPreviousEvent() {
         return previous!=null;
+    }
+
+    @Override
+    protected Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            // this should not happen
+            throw new RuntimeException("Event is not clonable");
+        }
     }
 }
