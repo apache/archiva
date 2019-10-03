@@ -27,7 +27,7 @@ import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.event.RepositoryListener;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.events;
+package org.apache.archiva.event;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,6 +18,8 @@ package org.apache.archiva.repository.events;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import org.apache.archiva.event.Event;
 
 import java.util.EventListener;
 

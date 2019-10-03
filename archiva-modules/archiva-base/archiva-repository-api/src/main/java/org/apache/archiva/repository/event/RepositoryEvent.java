@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.events;
+package org.apache.archiva.repository.event;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,13 +19,16 @@ package org.apache.archiva.repository.events;
  * under the License.
  */
 
+import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventType;
 import org.apache.archiva.repository.Repository;
 
 /**
  * A repository event is specific to a repository and holds a reference to the repository that
  * is related to this event.
  */
-public class RepositoryEvent extends Event {
+public class RepositoryEvent extends Event
+{
 
     private static final long serialVersionUID = 4676673476606414834L;
 

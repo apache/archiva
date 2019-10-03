@@ -21,8 +21,8 @@ package org.apache.archiva.repository.features;
 
 
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.events.RepositoryIndexEvent;
-import org.apache.archiva.repository.events.EventHandler;
+import org.apache.archiva.repository.event.RepositoryIndexEvent;
+import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 

@@ -23,8 +23,12 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
+import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventHandler;
+import org.apache.archiva.event.EventManager;
+import org.apache.archiva.event.EventType;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
-import org.apache.archiva.repository.events.*;
+import org.apache.archiva.repository.event.*;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.features.RepositoryFeature;
@@ -40,11 +44,9 @@ import java.net.URI;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.CopyOption;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -341,7 +343,7 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
     }
 
     @Override
-    public <T extends Event> void registerEventHandler(EventType<T> eventType, EventHandler<? super T> eventHandler) {
+    public <T extends Event> void registerEventHandler( EventType<T> eventType, EventHandler<? super T> eventHandler) {
         if (!EventType.isInstanceOf(eventType, RepositoryEvent.ANY)) {
             throw new IllegalArgumentException("Can only register RepositoryEvent Handlers");
         }

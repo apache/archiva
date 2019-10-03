@@ -53,7 +53,7 @@ import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.StorageUtil;
-import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.event.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;

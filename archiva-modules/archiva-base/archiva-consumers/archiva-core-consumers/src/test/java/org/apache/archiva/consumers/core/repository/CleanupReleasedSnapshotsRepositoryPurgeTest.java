@@ -27,7 +27,7 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.event.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.EasyMock;

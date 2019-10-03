@@ -36,7 +36,7 @@ import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.events.Event;
+import org.apache.archiva.event.Event;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;

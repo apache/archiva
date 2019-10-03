@@ -20,7 +20,7 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.indexer.ArchivaIndexingContext;
-import org.apache.archiva.repository.events.EventSource;
+import org.apache.archiva.event.EventSource;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.storage.StorageAsset;

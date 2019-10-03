@@ -20,10 +20,14 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.configuration.*;
+import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventManager;
+import org.apache.archiva.event.EventSource;
+import org.apache.archiva.event.EventType;
 import org.apache.archiva.indexer.*;
 import org.apache.archiva.redback.components.registry.RegistryException;
-import org.apache.archiva.repository.events.*;
-import org.apache.archiva.repository.events.EventHandler;
+import org.apache.archiva.repository.event.*;
+import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.commons.lang3.StringUtils;
@@ -1220,7 +1224,7 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
 
 
     @Override
-    public <T extends Event> void registerEventHandler(EventType<T> type, EventHandler<? super T> eventHandler) {
+    public <T extends Event> void registerEventHandler( EventType<T> type, EventHandler<? super T> eventHandler) {
         eventManager.registerEventHandler(type, eventHandler);
     }
 

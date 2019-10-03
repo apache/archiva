@@ -19,15 +19,28 @@ package org.apache.archiva.event;
  * under the License.
  */
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
- * A repository event source raises events to its registered listeners.
- * Listeners register to event types that are structured hierarchical.
- *
+ * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface EventSource {
+public class EventManagerTest
+{
 
-    <T extends Event> void registerEventHandler( EventType<T> type, EventHandler<? super T> eventHandler);
+    @Test
+    public void registerEventHandler( )
+    {
+    }
 
-    <T extends Event> void unregisterEventHandler(EventType<T> type, EventHandler<? super T> eventHandler);
+    @Test
+    public void unregisterEventHandler( )
+    {
+    }
 
+    @Test
+    public void fireEvent( )
+    {
+    }
 }

@@ -28,7 +28,7 @@ import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryContentProvider;
-import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.event.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
@@ -57,7 +57,6 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  */

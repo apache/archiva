@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.events;
+package org.apache.archiva.event;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,7 +25,8 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EventManager implements EventSource {
+public class EventManager implements EventSource
+{
 
     private static final Logger log = LoggerFactory.getLogger(EventManager.class);
 

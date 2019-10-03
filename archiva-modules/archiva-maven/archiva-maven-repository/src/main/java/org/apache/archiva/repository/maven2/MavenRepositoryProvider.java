@@ -22,7 +22,7 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.*;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.events.Event;
+import org.apache.archiva.event.Event;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;

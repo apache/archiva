@@ -19,8 +19,8 @@ package org.apache.archiva.repository.features;
  * under the License.
  */
 
-import org.apache.archiva.repository.events.Event;
-import org.apache.archiva.repository.events.EventHandler;
+import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;

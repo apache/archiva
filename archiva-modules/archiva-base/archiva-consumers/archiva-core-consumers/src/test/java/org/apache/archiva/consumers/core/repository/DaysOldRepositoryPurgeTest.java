@@ -20,9 +20,8 @@ package org.apache.archiva.consumers.core.repository;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.event.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
-import org.apache.commons.lang3.time.DateUtils;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Test;
