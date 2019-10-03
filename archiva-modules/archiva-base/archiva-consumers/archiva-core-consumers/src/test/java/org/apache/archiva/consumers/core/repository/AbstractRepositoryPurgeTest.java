@@ -28,7 +28,7 @@ import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryContentProvider;
-import org.apache.archiva.repository.event.RepositoryListener;
+import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;

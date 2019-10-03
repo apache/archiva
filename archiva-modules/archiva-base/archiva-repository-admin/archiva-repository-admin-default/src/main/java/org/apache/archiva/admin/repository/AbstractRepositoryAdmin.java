@@ -30,7 +30,7 @@ import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.metadata.audit.AuditListener;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;

@@ -40,7 +40,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.metadata.audit.AuditListener;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.ArtifactBuilder;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;

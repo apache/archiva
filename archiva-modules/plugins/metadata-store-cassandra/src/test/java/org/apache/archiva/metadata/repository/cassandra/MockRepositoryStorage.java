@@ -36,7 +36,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.event.RepositoryListener;
+import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.xml.XMLException;
 
 import java.io.IOException;

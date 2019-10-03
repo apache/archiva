@@ -68,7 +68,7 @@ import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRequestInfo;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.metadata.audit.AuditListener;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;

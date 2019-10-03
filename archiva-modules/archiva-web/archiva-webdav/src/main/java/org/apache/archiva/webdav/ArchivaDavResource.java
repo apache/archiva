@@ -23,7 +23,7 @@ import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.metadata.audit.AuditListener;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;

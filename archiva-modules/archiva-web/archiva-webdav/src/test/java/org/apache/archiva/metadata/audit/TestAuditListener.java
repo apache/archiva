@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.audit;
+package org.apache.archiva.metadata.audit;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,7 +20,6 @@ package org.apache.archiva.repository.audit;
  */
 
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.repository.events.AuditListener;
 
 import java.util.ArrayList;
 import java.util.List;

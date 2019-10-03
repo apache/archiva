@@ -19,7 +19,7 @@ package org.apache.archiva.admin.mock;
  */
 
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.metadata.audit.AuditListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

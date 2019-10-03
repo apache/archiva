@@ -26,7 +26,7 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataException;
-import org.apache.archiva.repository.event.RepositoryListener;
+import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

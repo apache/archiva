@@ -27,7 +27,7 @@ import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.event.RepositoryListener;
+import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.commons.lang3.StringUtils;

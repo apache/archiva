@@ -33,7 +33,7 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.event.RepositoryListener;
+import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 
