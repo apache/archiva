@@ -123,8 +123,14 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>1.7.1</version>
+        <version>3.13.2</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.junit</groupId>
+            <artifactId>junit-bom</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
