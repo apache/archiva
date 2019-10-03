@@ -27,8 +27,8 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
@@ -100,7 +100,7 @@ public abstract class AbstractRepositoryServletTestCase
 
 
     @Inject
-    RepositoryRegistry repositoryRegistry;
+    ArchivaRepositoryRegistry repositoryRegistry;
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 

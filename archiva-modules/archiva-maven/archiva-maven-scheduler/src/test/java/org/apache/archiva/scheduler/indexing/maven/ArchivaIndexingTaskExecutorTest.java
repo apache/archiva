@@ -22,10 +22,10 @@ package org.apache.archiva.scheduler.indexing.maven;
 import junit.framework.TestCase;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
@@ -71,7 +71,7 @@ public class ArchivaIndexingTaskExecutorTest
     private ArchivaIndexingTaskExecutor indexingExecutor;
 
     @Inject
-    RepositoryRegistry repositoryRegistry;
+    ArchivaRepositoryRegistry repositoryRegistry;
 
     @Inject
     private IndexUpdater indexUpdater;

@@ -24,9 +24,9 @@ import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -94,7 +94,7 @@ public class NexusIndexerConsumerTest
     private ApplicationContext applicationContext;
 
     @Inject
-    RepositoryRegistry repositoryRegistry;
+    ArchivaRepositoryRegistry repositoryRegistry;
 
 
     @Override

@@ -24,6 +24,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationEvent;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.security.ServletAuthenticator;
@@ -169,7 +170,7 @@ public class RepositoryServlet
             configuration = wac.getBean("archivaConfiguration#default", ArchivaConfiguration.class);
             configuration.addListener(this);
 
-            repositoryRegistry = wac.getBean(RepositoryRegistry.class);
+            repositoryRegistry = wac.getBean( ArchivaRepositoryRegistry.class);
             resourceFactory = wac.getBean("davResourceFactory#archiva", DavResourceFactory.class);
             locatorFactory = new ArchivaDavLocatorFactory();
 

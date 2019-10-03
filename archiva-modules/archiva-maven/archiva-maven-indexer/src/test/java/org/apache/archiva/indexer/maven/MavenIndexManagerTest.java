@@ -22,7 +22,7 @@ package org.apache.archiva.indexer.maven;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
-import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -59,7 +59,7 @@ import static org.junit.Assert.*;
 public class MavenIndexManagerTest {
 
     @Inject
-    RepositoryRegistry repositoryRegistry;
+    ArchivaRepositoryRegistry repositoryRegistry;
 
 
     private Path indexPath;

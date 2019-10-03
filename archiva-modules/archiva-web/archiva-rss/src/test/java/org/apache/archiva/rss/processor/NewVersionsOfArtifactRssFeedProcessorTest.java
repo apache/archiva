@@ -27,6 +27,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
@@ -42,7 +43,6 @@ import org.junit.runner.RunWith;
 import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,7 +106,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         sessionControl.replay();
 
         repositoryRegistryControl = EasyMock.createControl();
-        repositoryRegistry = repositoryRegistryControl.createMock( RepositoryRegistry.class );
+        repositoryRegistry = repositoryRegistryControl.createMock( ArchivaRepositoryRegistry.class );
 
         List<Repository> reg = new ArrayList<>( );
         reg.add( new BasicManagedRepository( TEST_REPO, TEST_REPO, new FilesystemStorage( Paths.get("target/test-storage"), new DefaultFileLockManager() ) ) );

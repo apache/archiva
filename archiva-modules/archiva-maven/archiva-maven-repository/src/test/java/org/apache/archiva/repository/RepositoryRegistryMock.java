@@ -22,7 +22,8 @@ package org.apache.archiva.repository;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class RepositoryRegistryMock extends RepositoryRegistry {
+public class RepositoryRegistryMock extends ArchivaRepositoryRegistry
+{
 
     private Map<String, ManagedRepository> managedRepositories = new TreeMap<>();
 

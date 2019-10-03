@@ -22,7 +22,7 @@ package org.apache.archiva.indexer.maven.search;
 import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
-import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Test;
@@ -32,7 +32,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -42,7 +41,7 @@ public class MavenRepositorySearchOSGITest
 {
 
     @Inject
-    RepositoryRegistry repositoryRegistry;
+    ArchivaRepositoryRegistry repositoryRegistry;
 
     @After
     @Override

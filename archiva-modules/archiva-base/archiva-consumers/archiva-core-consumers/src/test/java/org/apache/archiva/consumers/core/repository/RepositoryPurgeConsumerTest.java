@@ -27,6 +27,7 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -260,14 +261,14 @@ public class RepositoryPurgeConsumerTest
     private void addRepoToConfiguration( String configHint, org.apache.archiva.repository.ManagedRepository repoConfiguration )
         throws Exception
     {
-        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean( ArchivaRepositoryRegistry.class);
         repositoryRegistry.putRepository( repoConfiguration );
     }
 
     private void removeRepoFromConfiguration( String configHint, org.apache.archiva.repository.ManagedRepository repoConfiguration )
         throws Exception
     {
-        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean( ArchivaRepositoryRegistry.class);
         repositoryRegistry.removeRepository( repoConfiguration );
     }
 

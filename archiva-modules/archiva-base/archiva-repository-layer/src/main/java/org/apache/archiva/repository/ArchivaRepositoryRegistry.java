@@ -58,7 +58,9 @@ import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
  * @since 3.0
  */
 @Service("repositoryRegistry")
-public class RepositoryRegistry implements ConfigurationListener, EventSource, EventHandler<Event> {
+public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHandler<Event>,
+    RepositoryRegistry
+{
 
     private static final Logger log = LoggerFactory.getLogger(RepositoryRegistry.class);
 
@@ -94,11 +96,12 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
 
     private volatile boolean ignoreConfigEvents = false;
 
-    public RepositoryRegistry() {
+    public ArchivaRepositoryRegistry() {
         this.eventManager = new EventManager(this);
     }
 
-    public void setArchivaConfiguration(ArchivaConfiguration archivaConfiguration) {
+    @Override
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration ) {
         this.archivaConfiguration = archivaConfiguration;
     }
 
@@ -233,7 +236,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
         repo.registerEventHandler(RepositoryEvent.ANY, this);
     }
 
-    public ArchivaIndexManager getIndexManager(RepositoryType type) {
+    @Override
+    public ArchivaIndexManager getIndexManager( RepositoryType type ) {
         return indexManagerFactory.getIndexManager(type);
     }
 
@@ -361,7 +365,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      *
      * @return a list of managed and remote repositories
      */
-    public Collection<Repository> getRepositories() {
+    @Override
+    public Collection<Repository> getRepositories( ) {
         rwLock.readLock().lock();
         try {
             return Stream.concat(managedRepositories.values().stream(), remoteRepositories.values().stream()).collect(Collectors.toList());
@@ -375,7 +380,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      *
      * @return a list of managed repositories
      */
-    public Collection<ManagedRepository> getManagedRepositories() {
+    @Override
+    public Collection<ManagedRepository> getManagedRepositories( ) {
         rwLock.readLock().lock();
         try {
             return uManagedRepository.values();
@@ -389,7 +395,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      *
      * @return a list of remote repositories
      */
-    public Collection<RemoteRepository> getRemoteRepositories() {
+    @Override
+    public Collection<RemoteRepository> getRemoteRepositories( ) {
         rwLock.readLock().lock();
         try {
             return uRemoteRepositories.values();
@@ -398,7 +405,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
         }
     }
 
-    public Collection<RepositoryGroup> getRepositoryGroups() {
+    @Override
+    public Collection<RepositoryGroup> getRepositoryGroups( ) {
         rwLock.readLock().lock();
         try {
             return uRepositoryGroups.values();
@@ -414,7 +422,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param repoId the repository id
      * @return the repository if found, otherwise null
      */
-    public Repository getRepository(String repoId) {
+    @Override
+    public Repository getRepository( String repoId ) {
         rwLock.readLock().lock();
         try {
             log.debug("getRepository {}", repoId);
@@ -441,7 +450,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param repoId the repository id
      * @return the managed repository if found, otherwise null
      */
-    public ManagedRepository getManagedRepository(String repoId) {
+    @Override
+    public ManagedRepository getManagedRepository( String repoId ) {
         rwLock.readLock().lock();
         try {
             return managedRepositories.get(repoId);
@@ -457,7 +467,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param repoId the repository id
      * @return the remote repository if found, otherwise null
      */
-    public RemoteRepository getRemoteRepository(String repoId) {
+    @Override
+    public RemoteRepository getRemoteRepository( String repoId ) {
         rwLock.readLock().lock();
         try {
             return remoteRepositories.get(repoId);
@@ -466,7 +477,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
         }
     }
 
-    public RepositoryGroup getRepositoryGroup(String groupId) {
+    @Override
+    public RepositoryGroup getRepositoryGroup( String groupId ) {
         rwLock.readLock().lock();
         try {
             return repositoryGroups.get(groupId);
@@ -496,7 +508,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param managedRepository the new repository.
      * @throws RepositoryException if the new repository could not be saved to the configuration.
      */
-    public ManagedRepository putRepository(ManagedRepository managedRepository) throws RepositoryException {
+    @Override
+    public ManagedRepository putRepository( ManagedRepository managedRepository ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = managedRepository.getId();
@@ -547,7 +560,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @return the updated or created repository
      * @throws RepositoryException if an error occurs, or the configuration is not valid.
      */
-    public ManagedRepository putRepository(ManagedRepositoryConfiguration managedRepositoryConfiguration) throws RepositoryException {
+    @Override
+    public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = managedRepositoryConfiguration.getId();
@@ -581,7 +595,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @return the new or updated repository
      * @throws RepositoryException if the configuration cannot be saved or updated
      */
-    public ManagedRepository putRepository(ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration) throws RepositoryException {
+    @Override
+    public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = managedRepositoryConfiguration.getId();
@@ -622,7 +637,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param repositoryGroup the new repository group.
      * @throws RepositoryException if the new repository group could not be saved to the configuration.
      */
-    public RepositoryGroup putRepositoryGroup(RepositoryGroup repositoryGroup) throws RepositoryException {
+    @Override
+    public RepositoryGroup putRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = repositoryGroup.getId();
@@ -665,7 +681,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @return the updated or created repository
      * @throws RepositoryException if an error occurs, or the configuration is not valid.
      */
-    public RepositoryGroup putRepositoryGroup(RepositoryGroupConfiguration repositoryGroupConfiguration) throws RepositoryException {
+    @Override
+    public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = repositoryGroupConfiguration.getId();
@@ -699,7 +716,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @return The new or updated repository group
      * @throws RepositoryException if the configuration cannot be saved or updated
      */
-    public RepositoryGroup putRepositoryGroup(RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration) throws RepositoryException {
+    @Override
+    public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = repositoryGroupConfiguration.getId();
@@ -765,7 +783,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
         configuration.addRepositoryGroup(repositoryGroupConfiguration);
     }
 
-    public RemoteRepository putRepository(RemoteRepository remoteRepository, Configuration configuration) throws RepositoryException {
+    @Override
+    public RemoteRepository putRepository( RemoteRepository remoteRepository, Configuration configuration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = remoteRepository.getId();
@@ -822,7 +841,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param remoteRepository the remote repository to add
      * @throws RepositoryException if an error occurs during configuration save
      */
-    public RemoteRepository putRepository(RemoteRepository remoteRepository) throws RepositoryException {
+    @Override
+    public RemoteRepository putRepository( RemoteRepository remoteRepository ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             Configuration configuration = getArchivaConfiguration().getConfiguration();
@@ -847,7 +867,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @return the updated or created repository
      * @throws RepositoryException if an error occurs, or the configuration is not valid.
      */
-    public RemoteRepository putRepository(RemoteRepositoryConfiguration remoteRepositoryConfiguration) throws RepositoryException {
+    @Override
+    public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = remoteRepositoryConfiguration.getId();
@@ -881,8 +902,9 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @return the new or updated repository
      * @throws RepositoryException if the configuration cannot be saved or updated
      */
+    @Override
     @SuppressWarnings("unchecked")
-    public RemoteRepository putRepository(RemoteRepositoryConfiguration remoteRepositoryConfiguration, Configuration configuration) throws RepositoryException {
+    public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration, Configuration configuration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
             final String id = remoteRepositoryConfiguration.getId();
@@ -916,14 +938,16 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
 
     }
 
-    public void removeRepository(String repoId) throws RepositoryException {
+    @Override
+    public void removeRepository( String repoId ) throws RepositoryException {
         Repository repo = getRepository(repoId);
         if (repo != null) {
             removeRepository(repo);
         }
     }
 
-    public void removeRepository(Repository repo) throws RepositoryException {
+    @Override
+    public void removeRepository( Repository repo ) throws RepositoryException {
         if (repo == null) {
             log.warn("Trying to remove null repository");
             return;
@@ -946,7 +970,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param managedRepository the managed repository to remove
      * @throws RepositoryException if a error occurs during configuration save
      */
-    public void removeRepository(ManagedRepository managedRepository) throws RepositoryException {
+    @Override
+    public void removeRepository( ManagedRepository managedRepository ) throws RepositoryException {
         if (managedRepository == null) {
             return;
         }
@@ -985,7 +1010,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
         }
     }
 
-    public void removeRepository(ManagedRepository managedRepository, Configuration configuration) throws RepositoryException {
+    @Override
+    public void removeRepository( ManagedRepository managedRepository, Configuration configuration ) throws RepositoryException {
         if (managedRepository == null) {
             return;
         }
@@ -1019,7 +1045,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param repositoryGroup the repository group to remove
      * @throws RepositoryException if a error occurs during configuration save
      */
-    public void removeRepositoryGroup(RepositoryGroup repositoryGroup) throws RepositoryException {
+    @Override
+    public void removeRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException {
         if (repositoryGroup == null) {
             return;
         }
@@ -1050,7 +1077,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
         }
     }
 
-    public void removeRepositoryGroup(RepositoryGroup repositoryGroup, Configuration configuration) throws RepositoryException {
+    @Override
+    public void removeRepositoryGroup( RepositoryGroup repositoryGroup, Configuration configuration ) throws RepositoryException {
         if (repositoryGroup == null) {
             return;
         }
@@ -1095,7 +1123,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param remoteRepository the remote repository to remove
      * @throws RepositoryException if a error occurs during configuration save
      */
-    public void removeRepository(RemoteRepository remoteRepository) throws RepositoryException {
+    @Override
+    public void removeRepository( RemoteRepository remoteRepository ) throws RepositoryException {
         if (remoteRepository == null) {
             return;
         }
@@ -1122,7 +1151,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
         }
     }
 
-    public void removeRepository(RemoteRepository remoteRepository, Configuration configuration) throws RepositoryException {
+    @Override
+    public void removeRepository( RemoteRepository remoteRepository, Configuration configuration ) throws RepositoryException {
         if (remoteRepository == null) {
             return;
         }
@@ -1146,7 +1176,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
     /**
      * Reloads the registry from the configuration.
      */
-    public void reload() {
+    @Override
+    public void reload( ) {
         initialize();
     }
 
@@ -1156,7 +1187,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param repository The repository
      * @throws IndexUpdateFailedException If the index could not be resetted.
      */
-    public void resetIndexingContext(Repository repository) throws IndexUpdateFailedException {
+    @Override
+    public void resetIndexingContext( Repository repository ) throws IndexUpdateFailedException {
         if (repository.hasIndex() && repository instanceof EditableRepository) {
             EditableRepository eRepo = (EditableRepository) repository;
             ArchivaIndexingContext newCtx = getIndexManager(repository.getType()).reset(repository.getIndexingContext());
@@ -1172,7 +1204,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param repo The origin repository
      * @return The cloned repository.
      */
-    public ManagedRepository clone(ManagedRepository repo, String newId) throws RepositoryException {
+    @Override
+    public ManagedRepository clone( ManagedRepository repo, String newId ) throws RepositoryException {
         if (managedRepositories.containsKey(newId) || remoteRepositories.containsKey(newId)) {
             throw new RepositoryException("The given id exists already " + newId);
         }
@@ -1184,7 +1217,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
         return cloned;
     }
 
-    public <T extends Repository> Repository clone(T repo, String newId) throws RepositoryException {
+    @Override
+    public <T extends Repository> Repository clone( T repo, String newId ) throws RepositoryException {
         if (repo instanceof RemoteRepository) {
             return this.clone((RemoteRepository) repo, newId);
         } else if (repo instanceof ManagedRepository) {
@@ -1201,7 +1235,8 @@ public class RepositoryRegistry implements ConfigurationListener, EventSource, E
      * @param repo The origin repository
      * @return The cloned repository.
      */
-    public RemoteRepository clone(RemoteRepository repo, String newId) throws RepositoryException {
+    @Override
+    public RemoteRepository clone( RemoteRepository repo, String newId ) throws RepositoryException {
         if (managedRepositories.containsKey(newId) || remoteRepositories.containsKey(newId)) {
             throw new RepositoryException("The given id exists already " + newId);
         }

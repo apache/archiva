@@ -24,6 +24,7 @@ import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
@@ -102,7 +103,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         sessionControl.replay();
         repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools,
                                                                  applicationContext.getBean(
-                                                                     RepositoryRegistry.class ),
+                                                                     ArchivaRepositoryRegistry.class ),
                                                                  repositorySession, listeners );
 
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
@@ -113,7 +114,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testReleasedSnapshotsExistsInSameRepo()
         throws Exception
     {
-        RepositoryRegistry repositoryRegistry = applicationContext.getBean( RepositoryRegistry.class );
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean( ArchivaRepositoryRegistry.class );
         repositoryRegistry.removeRepository( TEST_REPO_ID );
         repositoryRegistry.putRepository(
             getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));
@@ -191,7 +192,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         throws Exception
     {
 
-        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean( ArchivaRepositoryRegistry.class);
         ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
         repositoryRegistry.removeRepository( managedRepository );
         repositoryRegistry.putRepository(
@@ -223,7 +224,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         throws Exception
     {
 
-        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean( ArchivaRepositoryRegistry.class);
         ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
         repositoryRegistry.removeRepository( TEST_REPO_ID );
         repositoryRegistry.putRepository(
@@ -304,7 +305,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         throws Exception
     {
 
-        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean( ArchivaRepositoryRegistry.class);
         ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
         repositoryRegistry.removeRepository( TEST_REPO_ID );
         repositoryRegistry.putRepository(

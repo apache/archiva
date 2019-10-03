@@ -28,9 +28,9 @@ import org.apache.archiva.policies.PolicyUtil;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
+import org.apache.archiva.repository.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.event.RepositoryRegistryEvent;
@@ -65,7 +65,7 @@ public class ArchivaProxyRegistry implements ProxyRegistry, EventHandler<Reposit
     List<Policy> policies;
 
     @Inject
-    RepositoryRegistry repositoryRegistry;
+    ArchivaRepositoryRegistry repositoryRegistry;
 
     private Map<String, NetworkProxy> networkProxyMap = new HashMap<>();
     private Map<RepositoryType, List<RepositoryProxyHandler>> handlerMap = new HashMap<>();
