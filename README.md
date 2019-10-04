@@ -1,6 +1,20 @@
 Apache Archiva
 ==============
 
+Licensing information
+=====================
+
+Archiva is developed under the Apache License Version 2.0 
+
+Please notice, the download distribution includes third party Java libraries that are not covered by Apache license, namely:
+- Common Development and Distribution License (CDDL)
+- Mozilla License
+- Day Specification License
+
+
+Archiva Development
+===================
+
 To get involved in Archiva development, contact dev@archiva.apache.org.
 
 NOTE: you will need a MAVEN_OPTS with some memory setup as sample :
