@@ -19,7 +19,6 @@ package org.apache.archiva.proxy.maven;
  * under the License.
  */
 
-import org.apache.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.proxy.DefaultRepositoryProxyHandler;
 import org.apache.archiva.proxy.NotFoundException;
@@ -29,6 +28,7 @@ import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.base.PasswordCredentials;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.ConnectionException;
@@ -322,7 +322,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
         String username = "";
         String password = "";
         RepositoryCredentials repCred = remoteRepository.getLoginCredentials();
-        if (repCred != null && repCred instanceof PasswordCredentials) {
+        if (repCred != null && repCred instanceof PasswordCredentials ) {
             PasswordCredentials pwdCred = (PasswordCredentials) repCred;
             username = pwdCred.getUsername();
             password = pwdCred.getPassword() == null ? "" : new String(pwdCred.getPassword());

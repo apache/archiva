@@ -35,7 +35,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.maven2.MavenSystemManager;
-import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang3.StringUtils;

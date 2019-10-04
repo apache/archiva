@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,6 +18,8 @@ package org.apache.archiva.repository;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import org.apache.archiva.repository.RepositoryCredentials;
 
 /**
  * Simple credentials that hold username and password

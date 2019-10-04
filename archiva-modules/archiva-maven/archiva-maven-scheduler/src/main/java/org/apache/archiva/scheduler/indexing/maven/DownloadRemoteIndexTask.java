@@ -21,7 +21,7 @@ package org.apache.archiva.scheduler.indexing.maven;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryRequest;
 import org.apache.archiva.proxy.model.NetworkProxy;
-import org.apache.archiva.repository.PasswordCredentials;
+import org.apache.archiva.repository.base.PasswordCredentials;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryType;

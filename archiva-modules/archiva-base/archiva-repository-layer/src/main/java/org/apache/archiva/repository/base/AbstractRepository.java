@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,6 +28,10 @@ import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.event.EventManager;
 import org.apache.archiva.event.EventType;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.EditableRepository;
+import org.apache.archiva.repository.RepositoryCapabilities;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.UnsupportedFeatureException;
 import org.apache.archiva.repository.event.*;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;

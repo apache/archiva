@@ -26,7 +26,7 @@
 
   <bean name="archivaConfiguration#mock" class="org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration"/>
   <alias name="archivaConfiguration#mock" alias="archivaConfiguration#default"/>
-  <bean name="metadataTools#test" class="org.apache.archiva.repository.metadata.MetadataTools">
+  <bean name="metadataTools#test" class="org.apache.archiva.repository.metadata.base.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#mock"/>
   </bean>
 </beans>

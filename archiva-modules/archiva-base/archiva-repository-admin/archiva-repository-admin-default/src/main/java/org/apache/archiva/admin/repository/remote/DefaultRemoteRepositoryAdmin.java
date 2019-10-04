@@ -28,7 +28,7 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryCheckPath;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.repository.PasswordCredentials;
+import org.apache.archiva.repository.base.PasswordCredentials;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryException;

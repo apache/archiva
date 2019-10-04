@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +20,10 @@ package org.apache.archiva.repository;
  */
 
 
+import org.apache.archiva.repository.EditableManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 
 import java.util.Collections;
@@ -37,7 +41,7 @@ public abstract class AbstractManagedRepository extends AbstractRepository imple
     private Set<ReleaseScheme> activeReleaseSchemes = new HashSet<>(  );
     private Set<ReleaseScheme> uActiveReleaseSchemes = Collections.unmodifiableSet( activeReleaseSchemes );
 
-    public AbstractManagedRepository(RepositoryType type, String id, String name, RepositoryStorage storage)
+    public AbstractManagedRepository( RepositoryType type, String id, String name, RepositoryStorage storage)
     {
         super( type, id, name, storage );
     }

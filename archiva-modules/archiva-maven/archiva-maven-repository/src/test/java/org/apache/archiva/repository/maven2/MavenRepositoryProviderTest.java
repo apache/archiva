@@ -19,7 +19,6 @@ package org.apache.archiva.repository.maven2;
  * under the License.
  */
 
-import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
@@ -27,11 +26,11 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.content.maven2.MavenContentProvider;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.apache.archiva.repository.base.PasswordCredentials;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +46,6 @@ import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -188,7 +186,7 @@ public class MavenRepositoryProviderTest
         assertEquals(50, mr.getTimeout().get( ChronoUnit.SECONDS ));
         assertTrue(mr.isScanned());
         assertNotNull(mr.getLoginCredentials());
-        assertTrue(mr.getLoginCredentials() instanceof PasswordCredentials);
+        assertTrue(mr.getLoginCredentials() instanceof PasswordCredentials );
         PasswordCredentials creds = (PasswordCredentials) mr.getLoginCredentials();
         assertEquals("testuser001", creds.getUsername());
         assertEquals("pwd0000abc", new String(creds.getPassword()));

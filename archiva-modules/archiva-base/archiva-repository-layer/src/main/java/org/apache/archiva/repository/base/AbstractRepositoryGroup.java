@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,10 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.EditableRepositoryGroup;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RepositoryCapabilities;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.commons.collections4.map.ListOrderedMap;
 
@@ -31,7 +35,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * Abstract repository group implementation.
  *
  */
-public class AbstractRepositoryGroup extends AbstractRepository implements EditableRepositoryGroup  {
+public class AbstractRepositoryGroup extends AbstractRepository implements EditableRepositoryGroup
+{
 
     private ListOrderedMap<String, ManagedRepository> repositories = new ListOrderedMap<>();
 
@@ -41,7 +46,7 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
 
     private RepositoryCapabilities capabilities;
 
-    public AbstractRepositoryGroup(RepositoryType type, String id, String name, RepositoryStorage storage) {
+    public AbstractRepositoryGroup( RepositoryType type, String id, String name, RepositoryStorage storage) {
         super(type, id, name, storage);
     }
 

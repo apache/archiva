@@ -23,7 +23,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.features.RepositoryFeature;
-import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.commons.lang3.StringUtils;
 
 /**

@@ -27,6 +27,8 @@ import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.apache.archiva.repository.base.BasicManagedRepository;
+import org.apache.archiva.repository.base.PasswordCredentials;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -374,7 +376,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Override
     public ManagedRepositoryConfiguration getManagedConfiguration(ManagedRepository managedRepository) throws RepositoryException {
-        if (!(managedRepository instanceof MavenManagedRepository || managedRepository instanceof BasicManagedRepository)) {
+        if (!(managedRepository instanceof MavenManagedRepository || managedRepository instanceof BasicManagedRepository )) {
             log.error("Wrong remote repository type " + managedRepository.getClass().getName());
             throw new RepositoryException("The given repository type cannot be handled by the maven provider: " + managedRepository.getClass().getName());
         }

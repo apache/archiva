@@ -21,6 +21,7 @@ package org.apache.archiva.repository.metadata;
 
 import junit.framework.TestCase;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;

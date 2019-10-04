@@ -37,7 +37,7 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
 import org.apache.archiva.repository.storage.FilesystemAsset;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;

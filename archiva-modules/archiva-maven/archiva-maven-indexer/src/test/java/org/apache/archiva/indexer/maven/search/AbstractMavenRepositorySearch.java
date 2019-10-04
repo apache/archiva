@@ -29,7 +29,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
-import org.apache.archiva.repository.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;

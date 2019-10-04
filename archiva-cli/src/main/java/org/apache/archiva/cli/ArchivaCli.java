@@ -27,7 +27,7 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.converter.RepositoryConversionException;
 import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
-import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;

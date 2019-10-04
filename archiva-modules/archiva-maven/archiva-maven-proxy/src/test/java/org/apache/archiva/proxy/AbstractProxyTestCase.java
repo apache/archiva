@@ -24,6 +24,7 @@ import org.apache.archiva.configuration.*;
 import org.apache.archiva.policies.*;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.wagon.Wagon;

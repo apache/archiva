@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.merger;
+package org.apache.archiva.indexer.merger.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +20,8 @@ package org.apache.archiva.indexer.merger;
  */
 
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.indexer.merger.IndexMerger;
+import org.apache.archiva.indexer.merger.IndexMergerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

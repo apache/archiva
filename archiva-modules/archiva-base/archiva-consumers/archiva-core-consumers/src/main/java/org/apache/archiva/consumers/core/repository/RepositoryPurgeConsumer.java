@@ -35,7 +35,7 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
-import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;

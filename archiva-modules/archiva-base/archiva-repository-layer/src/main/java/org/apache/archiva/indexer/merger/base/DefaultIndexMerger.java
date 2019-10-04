@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.merger;
+package org.apache.archiva.indexer.merger.base;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,7 +18,6 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
@@ -38,8 +37,6 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;

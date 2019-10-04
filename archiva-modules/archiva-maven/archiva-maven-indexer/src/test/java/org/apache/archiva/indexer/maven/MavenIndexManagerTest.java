@@ -22,7 +22,7 @@ package org.apache.archiva.indexer.maven;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
-import org.apache.archiva.repository.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;

@@ -57,11 +57,11 @@
 
   <alias name="repositoryProxyHandler#test" alias="repositoryProxyHandler#maven"/>
 
-  <bean name="metadataTools#default" class="org.apache.archiva.repository.metadata.MetadataTools">
+  <bean name="metadataTools#default" class="org.apache.archiva.repository.metadata.base.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#mock"/>
   </bean>
 
-  <bean name="metadataTools#mocked" class="org.apache.archiva.repository.metadata.MetadataTools">
+  <bean name="metadataTools#mocked" class="org.apache.archiva.repository.metadata.base.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#mock"/>
   </bean>
 

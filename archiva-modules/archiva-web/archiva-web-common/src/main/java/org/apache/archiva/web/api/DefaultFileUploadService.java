@@ -38,10 +38,10 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
-import org.apache.archiva.repository.content.ArtifactUtil;
-import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.content.base.ArtifactUtil;
+import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.AbstractRestService;
@@ -76,7 +76,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  *

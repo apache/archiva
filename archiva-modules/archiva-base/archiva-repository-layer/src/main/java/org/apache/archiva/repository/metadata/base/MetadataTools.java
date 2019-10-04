@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.internal.metadata;
+package org.apache.archiva.repository.metadata.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -41,6 +41,7 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.collections4.CollectionUtils;

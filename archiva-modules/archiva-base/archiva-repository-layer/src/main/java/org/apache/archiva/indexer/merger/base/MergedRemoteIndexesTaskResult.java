@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.merger;
+package org.apache.archiva.indexer.merger.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

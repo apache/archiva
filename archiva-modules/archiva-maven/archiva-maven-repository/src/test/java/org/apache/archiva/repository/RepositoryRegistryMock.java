@@ -19,6 +19,8 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+
 import java.util.Map;
 import java.util.TreeMap;
 

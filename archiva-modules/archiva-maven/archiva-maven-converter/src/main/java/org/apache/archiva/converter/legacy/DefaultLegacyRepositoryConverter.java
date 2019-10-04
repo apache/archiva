@@ -27,7 +27,7 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.converter.RepositoryConversionException;
-import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.scanner.RepositoryScanner;

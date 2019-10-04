@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.merger;
+package org.apache.archiva.indexer.merger.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,6 +18,9 @@ package org.apache.archiva.indexer.merger;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import org.apache.archiva.indexer.merger.IndexMerger;
+import org.apache.archiva.indexer.merger.IndexMergerRequest;
 
 /**
  * @author Olivier Lamy

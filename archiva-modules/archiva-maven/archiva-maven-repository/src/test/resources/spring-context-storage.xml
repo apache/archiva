@@ -51,7 +51,7 @@
     </property>
   </bean>
 
-  <bean name="metadataTools#default" class="org.apache.archiva.repository.metadata.MetadataTools">
+  <bean name="metadataTools#default" class="org.apache.archiva.repository.metadata.base.MetadataTools">
     <property name="configuration" ref="archivaConfiguration#default"/>
   </bean>
 

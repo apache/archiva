@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.merger;
+package org.apache.archiva.indexer.merger.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,9 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
+import org.apache.archiva.indexer.merger.IndexMerger;
+import org.apache.archiva.indexer.merger.IndexMergerRequest;
+import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.features.IndexCreationFeature;

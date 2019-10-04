@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,10 +22,22 @@ package org.apache.archiva.repository;
 import org.apache.archiva.configuration.*;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventManager;
-import org.apache.archiva.event.EventSource;
 import org.apache.archiva.event.EventType;
 import org.apache.archiva.indexer.*;
 import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.repository.EditableManagedRepository;
+import org.apache.archiva.repository.EditableRemoteRepository;
+import org.apache.archiva.repository.EditableRepository;
+import org.apache.archiva.repository.EditableRepositoryGroup;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryGroup;
+import org.apache.archiva.repository.RepositoryProvider;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.event.*;
 import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -151,7 +163,8 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         return map;
     }
 
-    private RepositoryProvider getProvider(RepositoryType type) throws RepositoryException {
+    private RepositoryProvider getProvider(RepositoryType type) throws RepositoryException
+    {
         return repositoryProviders.stream().filter(repositoryProvider -> repositoryProvider.provides().contains(type)).findFirst().orElseThrow(() -> new RepositoryException("Repository type cannot be handled: " + type));
     }
 
@@ -221,7 +234,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
                 feature.setStagingRepository(stageRepo);
             }
         }
-        if (repo instanceof EditableManagedRepository) {
+        if (repo instanceof EditableManagedRepository ) {
             EditableManagedRepository editableRepo = (EditableManagedRepository) repo;
             if (repo.getContent() == null) {
                 editableRepo.setContent(repositoryContentFactory.getManagedRepositoryContent(repo));
@@ -241,7 +254,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         return indexManagerFactory.getIndexManager(type);
     }
 
-    private void createIndexingContext(EditableRepository editableRepo) throws RepositoryException {
+    private void createIndexingContext( EditableRepository editableRepo) throws RepositoryException {
         if (editableRepo.supportsFeature(IndexCreationFeature.class)) {
             ArchivaIndexManager idxManager = getIndexManager(editableRepo.getType());
             try {
@@ -350,7 +363,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     }
 
     private void updateRepositoryReferences(RepositoryProvider provider, RepositoryGroup group, RepositoryGroupConfiguration configuration) {
-        if (group instanceof EditableRepositoryGroup) {
+        if (group instanceof EditableRepositoryGroup ) {
             EditableRepositoryGroup eGroup = (EditableRepositoryGroup) group;
             eGroup.setRepositories(configuration.getRepositories().stream().map(r -> getManagedRepository(r)).collect(Collectors.toList()));
         }

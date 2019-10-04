@@ -2,7 +2,7 @@ package org.apache.archiva.repository.maven2;
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.repository.AbstractRemoteRepository;
+import org.apache.archiva.repository.base.AbstractRemoteRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCapabilities;

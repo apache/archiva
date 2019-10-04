@@ -28,6 +28,9 @@ import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.apache.archiva.repository.base.BasicManagedRepository;
+import org.apache.archiva.repository.base.BasicRemoteRepository;
+import org.apache.archiva.repository.base.PasswordCredentials;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

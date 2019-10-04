@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,11 +20,14 @@ package org.apache.archiva.repository;
  */
 
 
+import org.apache.archiva.repository.EditableRemoteRepository;
+import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.RepositoryCredentials;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,7 +51,7 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
     private String proxyId;
     private RemoteRepositoryContent content;
 
-    public AbstractRemoteRepository(RepositoryType type, String id, String name , RepositoryStorage storage)
+    public AbstractRemoteRepository( RepositoryType type, String id, String name , RepositoryStorage storage)
     {
         super( type, id, name, storage );
     }
