@@ -173,15 +173,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity-tools</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva.maven</groupId>
       <!--  FIXME: temporary coupling to plugin, should be runtime -->
       <artifactId>archiva-maven-repository</artifactId>
