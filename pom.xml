@@ -70,7 +70,7 @@
 
     <!-- dependencies of maven modules -->
     <jsoup.version>1.12.1</jsoup.version>
-    <rome.version>0.9</rome.version>
+    <rome.version>1.12.2</rome.version>
     <cronutils.version>9.0.1</cronutils.version>
 
     <spring.version>4.3.10.RELEASE</spring.version>
@@ -1667,7 +1667,7 @@
       </dependency>
 
       <dependency>
-        <groupId>rome</groupId>
+        <groupId>com.rometools</groupId>
         <artifactId>rome</artifactId>
         <version>${rome.version}</version>
       </dependency>

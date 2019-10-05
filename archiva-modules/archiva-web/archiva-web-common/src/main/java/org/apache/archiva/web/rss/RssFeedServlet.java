@@ -19,10 +19,9 @@ package org.apache.archiva.web.rss;
  * under the License.
  */
 
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.SyndFeedOutput;
-import org.apache.archiva.metadata.repository.RepositorySession;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedOutput;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
