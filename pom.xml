@@ -702,7 +702,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.10</version>
+        <version>${commons.configuration.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-beanutils</groupId>
@@ -1683,25 +1683,25 @@
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-launcher</artifactId>
-        <version>1.5.2</version>
+        <version>${junit.platform.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.junit.platform</groupId>
         <artifactId>junit-platform-console-standalone</artifactId>
-        <version>1.5.2</version>
+        <version>${junit.platform.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter-engine</artifactId>
-        <version>5.5.2</version>
+        <version>${junit.jupiter.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
-        <version>5.5.2</version>
+        <version>${junit.jupiter.version}</version>
         <scope>test</scope>
       </dependency>
 
