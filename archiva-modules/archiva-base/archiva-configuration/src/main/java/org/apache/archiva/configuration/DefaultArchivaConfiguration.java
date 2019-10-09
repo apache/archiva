@@ -25,10 +25,6 @@ import org.apache.archiva.configuration.io.registry.ConfigurationRegistryWriter;
 import org.apache.archiva.policies.AbstractUpdatePolicy;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
-import org.apache.archiva.policies.DownloadErrorPolicy;
-import org.apache.archiva.policies.Policy;
-import org.apache.archiva.policies.PostDownloadPolicy;
-import org.apache.archiva.policies.PreDownloadPolicy;
 import org.apache.archiva.redback.components.evaluator.DefaultExpressionEvaluator;
 import org.apache.archiva.redback.components.evaluator.EvaluatorException;
 import org.apache.archiva.redback.components.evaluator.ExpressionEvaluator;
@@ -37,10 +33,8 @@ import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry;
-import org.apache.archiva.redback.components.springutils.ComponentContainer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,18 +49,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * <p>
@@ -108,35 +92,10 @@ public class DefaultArchivaConfiguration
     @Named(value = "commons-configuration")
     private Registry registry;
 
-    @Inject
-    private ComponentContainer componentContainer;
-
     /**
      * The configuration that has been converted.
      */
     private Configuration configuration;
-
-    /**
-     * see #initialize
-     *
-     * @todo these don't strictly belong in here
-     */
-    private Map<String, PreDownloadPolicy> prePolicies;
-
-    /**
-     * see #initialize
-     *
-     * @todo these don't strictly belong in here
-     */
-    private Map<String, PostDownloadPolicy> postPolicies;
-
-    /**
-     * see #initialize
-     *
-     * @todo these don't strictly belong in here
-     */
-    private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
-
 
     /**
      * see #initialize
@@ -340,17 +299,7 @@ public class DefaultArchivaConfiguration
                     }
 
                     // Validate existance of policy key.
-                    if (policyExists(policyId)) {
-                        Policy policy = findPolicy(policyId);
-                        // Does option exist?
-                        if (!policy.getOptions().contains(setting)) {
-                            setting = policy.getDefaultOption().getId();
-                        }
-                        connector.addPolicy(policyId, setting);
-                    } else {
-                        // Policy key doesn't exist. Don't add it to golden version.
-                        log.warn("Policy [{}] does not exist.", policyId);
-                    }
+                    connector.addPolicy(policyId, setting);
                 }
 
                 if (connectorValid) {
@@ -429,51 +378,6 @@ public class DefaultArchivaConfiguration
         return value;
     }
 
-    private Policy findPolicy(String policyId) {
-        if (MapUtils.isEmpty(prePolicies)) {
-            log.error("No PreDownloadPolicies found!");
-            return null;
-        }
-
-        if (MapUtils.isEmpty(postPolicies)) {
-            log.error("No PostDownloadPolicies found!");
-            return null;
-        }
-
-        Policy policy;
-
-        policy = prePolicies.get(policyId);
-        if (policy != null) {
-            return policy;
-        }
-
-        policy = postPolicies.get(policyId);
-        if (policy != null) {
-            return policy;
-        }
-
-        policy = downloadErrorPolicies.get(policyId);
-        if (policy != null) {
-            return policy;
-        }
-
-        return null;
-    }
-
-    private boolean policyExists(String policyId) {
-        if (MapUtils.isEmpty(prePolicies)) {
-            log.error("No PreDownloadPolicies found!");
-            return false;
-        }
-
-        if (MapUtils.isEmpty(postPolicies)) {
-            log.error("No PostDownloadPolicies found!");
-            return false;
-        }
-
-        return (prePolicies.containsKey(policyId) || postPolicies.containsKey(policyId)
-                || downloadErrorPolicies.containsKey(policyId));
-    }
 
     private Registry readDefaultConfiguration() {
         // if it contains some old configuration, remove it (Archiva 0.9)
@@ -734,9 +638,6 @@ public class DefaultArchivaConfiguration
     @PostConstruct
     public void initialize() {
 
-        this.postPolicies = componentContainer.buildMapWithRole(PostDownloadPolicy.class);
-        this.prePolicies = componentContainer.buildMapWithRole(PreDownloadPolicy.class);
-        this.downloadErrorPolicies = componentContainer.buildMapWithRole(DownloadErrorPolicy.class);
         // Resolve expressions in the userConfigFilename and altConfigFilename
         try {
             ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();

@@ -51,8 +51,6 @@
 
   <alias name="registry#default" alias="commons-configuration"/>
 
-  <bean name="componentContainer" class="org.apache.archiva.redback.components.springutils.ComponentContainer"/>
-
   <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
   <alias name="authorizer#rbac" alias="authorizer#default"/>
   <alias name="userManager#configurable" alias="userManager#default"/>
