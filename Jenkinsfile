@@ -34,7 +34,7 @@ buildJdk10 = 'JDK 10 (latest)'
 buildJdk11 = 'JDK 11 (latest)'
 buildMvn = 'Maven 3.5.4'
 //localRepository = ".repository"
-localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
+//localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
 mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'
 publishers = [artifactsPublisher(disabled: false),
               junitPublisher(disabled: false, ignoreAttachments: false),
@@ -53,6 +53,9 @@ pipeline {
     parameters {
         booleanParam(name: 'PRECLEANUP', defaultValue: false, description: 'Clears the local maven repository before build.')
     }
+    environment {          
+        LOCAL_REPOSITORY = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
+    }
 
 
     stages {
@@ -64,7 +67,7 @@ pipeline {
                 }
             }
             steps {
-                sh "rm -rf ${localRepository}"
+                sh "rm -rf ${env.LOCAL_REPOSITORY}"
             }
         }
 
@@ -76,7 +79,7 @@ pipeline {
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
-                            mavenLocalRepo: localRepository,
+                            mavenLocalRepo: env.LOCAL_REPOSITORY,
                             publisherStrategy: 'EXPLICIT',
                             mavenOpts: mavenOpts,
                             options: publishers )
