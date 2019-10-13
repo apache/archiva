@@ -52,6 +52,7 @@ pipeline {
     }
     parameters {
         booleanParam(name: 'PRECLEANUP', defaultValue: false, description: 'Clears the local maven repository before build.')
+        string(name: 'THREADS', defaultValue: '3', description: 'Number of threads for the mvn build (-T option). Must be a integer value>0.')
     }
     environment {          
         LOCAL_REPOSITORY = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
@@ -98,7 +99,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
+                                sh "mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
                             }
                 }
             }
@@ -139,7 +140,7 @@ pipeline {
                                           options: publishers
                                 )
                                         {
-                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
+                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
                                         }
                             }
                         }
