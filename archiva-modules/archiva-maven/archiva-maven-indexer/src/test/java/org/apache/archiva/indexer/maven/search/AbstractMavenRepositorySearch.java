@@ -201,10 +201,10 @@ public abstract class AbstractMavenRepositorySearch
     }
 
     protected void createIndex( String repository, List<Path> filesToBeIndexed, boolean scan) throws Exception {
-        createIndex(repository, filesToBeIndexed, scan, null);
+        createIndex(repository, filesToBeIndexed, scan, null, true);
     }
 
-    protected void createIndex( String repository, List<Path> filesToBeIndexed, boolean scan, Path indexDir)
+    protected void createIndex( String repository, List<Path> filesToBeIndexed, boolean scan, Path indexDir, boolean copyFiles)
         throws Exception
     {
         Repository rRepo = repositoryRegistry.getRepository(repository);
@@ -246,9 +246,11 @@ public abstract class AbstractMavenRepositorySearch
 
             icf.setIndexPath(indexDir.toUri());
         }
-        Path repo = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository );
-        assertTrue( Files.exists(repo) );
-        org.apache.commons.io.FileUtils.copyDirectory(repo.toFile(), repoDir.toFile());
+        if (copyFiles) {
+            Path repo = Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository);
+            assertTrue(Files.exists(repo));
+            org.apache.commons.io.FileUtils.copyDirectory(repo.toFile(), repoDir.toFile());
+        }
 
 
 

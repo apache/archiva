@@ -19,6 +19,7 @@ package org.apache.archiva.indexer.maven.search;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.search.SearchResultHit;
@@ -27,7 +28,6 @@ import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index_shaded.lucene.index.IndexUpgrader;
-import org.codehaus.plexus.util.FileUtils;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -895,47 +895,48 @@ public class MavenRepositorySearchTest
         throws Exception
     {
 
-        Path repo = Paths.get( "target/repo-release" );
-        FileUtils.deleteDirectory(repo.toFile());
-        Path indexDirectory = repo.resolve(".indexer" );
-        FileUtils.copyDirectoryStructure( Paths.get( "src/test/repo-release" ).toFile(), repo.toFile() );
-
-        IndexUpgrader.main( new String[]{ indexDirectory.toAbsolutePath().toString() } );
-
-        createIndex(REPO_RELEASE, Collections.emptyList(), false, indexDirectory );
+        Path repo = Paths.get("target/repo-release");
+        try {
+            Path indexDirectory = repo.resolve(".indexer");
+            Path zipFile = Paths.get(Thread.currentThread().getContextClassLoader().getResource("repo-release.zip").toURI());
+            FileUtils.unzip(zipFile, repo.getParent());
+            IndexUpgrader.main(new String[]{indexDirectory.toAbsolutePath().toString()});
+            createIndex(REPO_RELEASE, Collections.emptyList(), false, indexDirectory, false);
 
 //        indexer.addIndexingContext( REPO_RELEASE, REPO_RELEASE, repo.toFile(), indexDirectory.toFile(),
 //                                         repo.toUri().toURL().toExternalForm(),
 //                                         indexDirectory.toUri().toURL().toString(), indexCreators );
 
 
+            SearchResultLimits limits = new SearchResultLimits(SearchResultLimits.ALL_PAGES);
+            limits.setPageSize(300);
 
-        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
-        limits.setPageSize( 300 );
+            // EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+            EasyMock.expect(archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
-        // EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
-        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
+            archivaConfigControl.replay();
 
-        archivaConfigControl.replay();
+            SearchResults searchResults = search.search(null, Arrays.asList(REPO_RELEASE), //
+                    "org.example", limits, //
+                    Collections.emptyList());
 
-        SearchResults searchResults = search.search( null, Arrays.asList( REPO_RELEASE ), //
-                                                     "org.example", limits, //
-                                                     Collections.emptyList() );
+            log.info("results: {}", searchResults.getHits().size());
 
-        log.info( "results: {}", searchResults.getHits().size() );
+            assertEquals(255, searchResults.getHits().size());
 
-        assertEquals( 255, searchResults.getHits().size() );
+            SearchFields searchFields = new SearchFields();
+            searchFields.setGroupId("org.example");
+            searchFields.setRepositories(Arrays.asList(REPO_RELEASE));
 
-        SearchFields searchFields = new SearchFields();
-        searchFields.setGroupId( "org.example" );
-        searchFields.setRepositories( Arrays.asList( REPO_RELEASE ) );
+            searchResults = search.search(null, searchFields, limits);
 
-        searchResults = search.search( null, searchFields, limits );
+            log.info("results: {}", searchResults.getHits().size());
 
-        log.info( "results: {}", searchResults.getHits().size() );
+            assertEquals(255, searchResults.getHits().size());
 
-        assertEquals( 255, searchResults.getHits().size() );
-
-        archivaConfigControl.verify();
+            archivaConfigControl.verify();
+        } finally {
+            FileUtils.deleteQuietly(repo);
+        }
     }
 }
