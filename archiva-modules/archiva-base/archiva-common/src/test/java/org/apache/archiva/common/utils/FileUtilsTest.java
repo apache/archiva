@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -153,6 +154,31 @@ public class FileUtilsTest
             Files.deleteIfExists( tmpFile );
             Files.deleteIfExists( tmpDir2 );
             Files.deleteIfExists( tmpDir );
+        }
+    }
+
+    @Test
+    public void unzip() throws URISyntaxException, IOException {
+        Path destPath = Paths.get("target/unzip");
+        try {
+            Path zipFile = Paths.get(Thread.currentThread().getContextClassLoader().getResource("test-repository.zip").toURI());
+            if (Files.exists(destPath)) {
+                org.apache.commons.io.FileUtils.deleteQuietly(destPath.toFile());
+            }
+            FileUtils.unzip(zipFile, destPath);
+            assertTrue(Files.exists(destPath.resolve("org/apache/maven/A/1.0/A-1.0.pom")));
+            assertTrue(Files.isRegularFile(destPath.resolve("org/apache/maven/A/1.0/A-1.0.pom")));
+            assertTrue(Files.exists(destPath.resolve("org/apache/maven/A/1.0/A-1.0.war")));
+            assertTrue(Files.isRegularFile(destPath.resolve("org/apache/maven/A/1.0/A-1.0.war")));
+            assertTrue(Files.exists(destPath.resolve("org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar")));
+            assertTrue(Files.isRegularFile(destPath.resolve("org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar")));
+            assertTrue(Files.exists(destPath.resolve("KEYS")));
+            assertTrue(Files.isRegularFile(destPath.resolve("KEYS")));
+            assertTrue(Files.isDirectory(destPath.resolve("invalid")));
+            assertTrue(Files.isDirectory(destPath.resolve("javax")));
+            assertTrue(Files.isDirectory(destPath.resolve("org")));
+        } finally {
+            org.apache.commons.io.FileUtils.deleteQuietly(destPath.toFile());
         }
     }
 
