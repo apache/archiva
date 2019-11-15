@@ -68,7 +68,6 @@ public class NewArtifactsRssFeedProcessor
 
     private Logger log = LoggerFactory.getLogger( NewArtifactsRssFeedProcessor.class );
 
-    private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone( "GMT" );
 
     /**
      * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
@@ -93,7 +92,7 @@ public class NewArtifactsRssFeedProcessor
         throws FeedException
     {
 
-        ZonedDateTime greaterThanThisDate = ZonedDateTime.now(GMT_TIME_ZONE.toZoneId()).minusDays(
+        ZonedDateTime greaterThanThisDate = ZonedDateTime.now().minusDays(
                 getNumberOfDaysBeforeNow()
         ).truncatedTo(ChronoUnit.SECONDS);
         List<ArtifactMetadata> artifacts;
