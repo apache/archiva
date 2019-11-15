@@ -92,7 +92,6 @@ import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.apache.jackrabbit.webdav.DavSession;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
-import org.codehaus.plexus.digest.DigesterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
@@ -378,12 +377,6 @@ public class ArchivaDavResourceFactory
                         {
                             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                                     "Error occurred while generating checksum files." );
-                        }
-                        catch ( DigesterException de )
-                        {
-                            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                                    "Error occurred while generating checksum files."
-                                                        + de.getMessage() );
                         }
                         catch ( LayoutException e )
                         {
@@ -1250,7 +1243,7 @@ public class ArchivaDavResourceFactory
     }
 
     private StorageAsset writeMergedMetadataToFile( RepositoryGroup repoGroup, ArchivaRepositoryMetadata mergedMetadata, String outputFilename )
-        throws RepositoryMetadataException, DigesterException, IOException
+        throws RepositoryMetadataException, IOException
     {
         StorageAsset asset = repoGroup.addAsset( outputFilename, false );
         OutputStream stream = asset.getWriteStream( true );

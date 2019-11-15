@@ -97,7 +97,7 @@ public class NewArtifactsRssFeedProcessorTest
         throws Exception
     {
         List<ArtifactMetadata> newArtifacts = new ArrayList<>();
-        ZonedDateTime whenGathered = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault());
+        ZonedDateTime whenGathered = ZonedDateTime.now();
 
         newArtifacts.add( createArtifact( "artifact-one", "1.0", whenGathered ) );
         newArtifacts.add( createArtifact( "artifact-one", "1.1", whenGathered ) );
@@ -116,8 +116,10 @@ public class NewArtifactsRssFeedProcessorTest
 
         SyndFeed feed = newArtifactsProcessor.process( reqParams );
 
+
         // check that the date used in the call is close to the one passed (5 seconds difference at most)
-        ZonedDateTime cal = ZonedDateTime.of(LocalDateTime.now(), ZoneId.systemDefault()).minusDays(30);
+        ZonedDateTime cal = ZonedDateTime.now().minusDays(30);
+
         assertTrue(ChronoUnit.SECONDS.between(cal.toInstant(), metadataRepository.getFrom().toInstant())<5);
         assertEquals( null, metadataRepository.getTo() );
         assertEquals( TEST_REPO, metadataRepository.getRepoId() );
