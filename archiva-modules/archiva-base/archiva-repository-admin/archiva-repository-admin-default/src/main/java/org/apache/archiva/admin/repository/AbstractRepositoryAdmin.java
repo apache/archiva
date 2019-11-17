@@ -27,7 +27,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.metadata.audit.AuditListener;
@@ -89,7 +89,7 @@ public abstract class AbstractRepositoryAdmin
         {
             getArchivaConfiguration().save( config );
         }
-        catch ( org.apache.archiva.redback.components.registry.RegistryException e )
+        catch ( org.apache.archiva.components.registry.RegistryException e )
         {
             throw new RepositoryAdminException( "Error occurred in the registry: " + e.getLocalizedMessage(), e );
         }
@@ -190,7 +190,7 @@ public abstract class AbstractRepositoryAdmin
         return registry;
     }
 
-    public void setRegistry( org.apache.archiva.redback.components.registry.Registry registry )
+    public void setRegistry( org.apache.archiva.components.registry.Registry registry )
     {
         this.registry = registry;
     }

@@ -55,7 +55,7 @@
     </constructor-arg>
   </bean>
 
-  <bean name="registry#default" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="registry#default" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[

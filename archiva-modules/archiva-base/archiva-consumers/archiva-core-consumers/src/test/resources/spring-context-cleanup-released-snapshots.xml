@@ -37,7 +37,7 @@
   <alias name="repositoryContentFactory#cleanup-released-snapshots" alias="repositoryContentFactory#default" />
 
 
-  <bean name="registry#cleanup-released-snapshots" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="registry#cleanup-released-snapshots" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[
@@ -54,7 +54,7 @@
     <property name="archivaConfiguration" ref="archivaConfiguration#cleanup-released-snapshots"/>
   </bean>
 
-  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="commons-configuration" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[

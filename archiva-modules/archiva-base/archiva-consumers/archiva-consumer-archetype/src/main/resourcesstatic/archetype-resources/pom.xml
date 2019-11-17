@@ -42,6 +42,8 @@
     <httpclient.version>${httpclientVersion}</httpclient.version>
     <httpclient.core.version>${httpcoreVersion}</httpclient.core.version>
     <asm.version>${asmVersion}</asm.version>
+    <archiva.comp.version>${archivaCompVersion}</archiva.comp.version>
+    <commons.beanutils.version>${beanUtilsVersion}</commons.beanutils.version>
   </properties>
   <dependencies>
     <dependency>
@@ -95,9 +97,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback.components.registry</groupId>
-      <artifactId>spring-registry-api</artifactId>
-      <version>${redback.registry.version}</version>
+      <groupId>org.apache.archiva.components.registry</groupId>
+      <artifactId>archiva-components-spring-registry-api</artifactId>
+      <version>${archiva.comp.version}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -171,6 +173,11 @@
         <scope>test</scope>
       </dependency>
 
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>${commons.beanutils.version}</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

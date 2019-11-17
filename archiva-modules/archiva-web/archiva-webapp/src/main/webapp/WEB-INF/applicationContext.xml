@@ -69,7 +69,7 @@
   </bean>
 
   <!-- START SNIPPET: configuration-files-list -->
-  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"
+  <bean name="commons-configuration" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry"
     init-method="initialize">
     <property name="properties">
       <value>

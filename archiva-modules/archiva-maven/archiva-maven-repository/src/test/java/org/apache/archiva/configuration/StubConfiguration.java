@@ -19,8 +19,8 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.registry.RegistryException;
-import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.components.registry.RegistryException;
+import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

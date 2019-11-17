@@ -32,7 +32,7 @@
     <constructor-arg ref="archivaConfiguration#test-conf"/>
   </bean>
 
-  <bean name="registry#configured" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
+  <bean name="registry#configured" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>
         <![CDATA[

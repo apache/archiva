@@ -23,7 +23,7 @@ import org.apache.archiva.common.ArchivaException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.UserAssignment;
@@ -97,7 +97,7 @@ public class SecuritySynchronization
     }
 
     @Override
-    public void afterConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,
+    public void afterConfigurationChange( org.apache.archiva.components.registry.Registry registry,
                                           String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isManagedRepositories( propertyName ) && propertyName.endsWith( ".id" ) )
@@ -110,7 +110,7 @@ public class SecuritySynchronization
     }
 
     @Override
-    public void beforeConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,
+    public void beforeConfigurationChange( org.apache.archiva.components.registry.Registry registry,
                                            String propertyName, Object propertyValue )
     {
         /* do nothing */

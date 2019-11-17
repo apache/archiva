@@ -98,6 +98,11 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.maven</groupId>
       <artifactId>archiva-maven-repository</artifactId>
       <scope>test</scope>

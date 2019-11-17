@@ -19,8 +19,8 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.registry.RegistryException;
-import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.components.registry.RegistryException;
+import org.apache.archiva.components.registry.RegistryListener;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -47,7 +47,7 @@ public interface ArchivaConfiguration
      * Save any updated configuration.
      *
      * @param configuration the configuration to save
-     * @throws org.apache.archiva.redback.components.registry.RegistryException
+     * @throws org.apache.archiva.components.registry.RegistryException
      *          if there is a problem saving the registry data
      * @throws IndeterminateConfigurationException
      *          if the configuration cannot be saved because it was read from two sources

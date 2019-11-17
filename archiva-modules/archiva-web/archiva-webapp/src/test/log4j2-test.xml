@@ -82,7 +82,7 @@
 
     <logger name="org.apache.archiva.redback.rest.services.DefaultRoleManagementService" level="debug"/>
 
-    <logger name="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
+    <logger name="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
 
     <logger name="org.apache.archiva.redback.components.taskqueue.DefaultTaskQueue" level="info" />
 

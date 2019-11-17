@@ -42,8 +42,8 @@
       <artifactId>archiva-policies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback.components.registry</groupId>
-      <artifactId>spring-registry-api</artifactId>
+      <groupId>org.apache.archiva.components.registry</groupId>
+      <artifactId>archiva-components-spring-registry-api</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -62,8 +62,12 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback.components.registry</groupId>
-      <artifactId>spring-registry-commons</artifactId>
+      <groupId>org.apache.archiva.components.registry</groupId>
+      <artifactId>archiva-components-spring-registry-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.components.registry</groupId>
+      <artifactId>archiva-components-spring-registry-commons</artifactId>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>
@@ -72,8 +76,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback.components</groupId>
-      <artifactId>expression-evaluator</artifactId>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-expression-evaluator</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-configuration</groupId>
@@ -142,6 +146,11 @@
     </dependency>
 
     <!-- Test scope -->
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>

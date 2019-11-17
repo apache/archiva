@@ -20,9 +20,9 @@ package org.apache.archiva.proxy;
  */
 
 import org.apache.archiva.configuration.*;
-import org.apache.archiva.redback.components.registry.Registry;
-import org.apache.archiva.redback.components.registry.RegistryException;
-import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.components.registry.Registry;
+import org.apache.archiva.components.registry.RegistryException;
+import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.commons.lang3.StringUtils;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
@@ -86,7 +86,7 @@ public class MockConfiguration
     }
 
     @Override
-    public void addChangeListener( org.apache.archiva.redback.components.registry.RegistryListener listener )
+    public void addChangeListener( org.apache.archiva.components.registry.RegistryListener listener )
     {
         registryListeners.add( listener );
     }
@@ -113,7 +113,7 @@ public class MockConfiguration
 
     public void triggerChange( String name, String value )
     {
-        for ( org.apache.archiva.redback.components.registry.RegistryListener listener : registryListeners )
+        for ( org.apache.archiva.components.registry.RegistryListener listener : registryListeners )
         {
             try
             {

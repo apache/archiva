@@ -83,6 +83,11 @@
 
     <!-- test dependencies -->
     <dependency>
+      <groupId>org.apache.archiva.components.registry</groupId>
+      <artifactId>archiva-components-spring-registry-commons</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.maven</groupId>
       <artifactId>archiva-maven-repository</artifactId>
       <scope>test</scope>

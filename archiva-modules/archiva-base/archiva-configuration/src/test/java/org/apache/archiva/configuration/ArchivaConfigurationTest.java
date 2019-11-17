@@ -19,7 +19,7 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;

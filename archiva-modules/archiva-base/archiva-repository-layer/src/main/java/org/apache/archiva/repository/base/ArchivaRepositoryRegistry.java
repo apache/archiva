@@ -24,7 +24,7 @@ import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventManager;
 import org.apache.archiva.event.EventType;
 import org.apache.archiva.indexer.*;
-import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.EditableRepository;

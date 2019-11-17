@@ -21,7 +21,7 @@ package org.apache.archiva.configuration.io.registry;
  */
 
 import org.apache.archiva.configuration.*;
-import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.components.registry.Registry;
 
 import java.util.Iterator;
 import java.util.List;

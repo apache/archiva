@@ -400,21 +400,13 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.archiva.redback.components.registry</groupId>
-      <artifactId>spring-registry-api</artifactId>
+      <groupId>org.apache.archiva.components.registry</groupId>
+      <artifactId>archiva-components-spring-registry-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback.components.registry</groupId>
-      <artifactId>spring-registry-commons</artifactId>
+      <groupId>org.apache.archiva.components.registry</groupId>
+      <artifactId>archiva-components-spring-registry-commons</artifactId>
       <exclusions>
-        <exclusion>
-          <groupId>ant</groupId>
-          <artifactId>ant-optional</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>jdom</groupId>
-          <artifactId>jdom</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging-api</artifactId>

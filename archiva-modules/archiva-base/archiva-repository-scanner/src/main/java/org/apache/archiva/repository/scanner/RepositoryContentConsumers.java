@@ -28,7 +28,7 @@ import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
-import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;

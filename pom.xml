@@ -931,15 +931,9 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.archiva.redback.components</groupId>
-        <artifactId>expression-evaluator</artifactId>
-        <version>${plexus-expression-evaluator.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.apache.archiva.components</groupId>
+        <artifactId>archiva-components-expression-evaluator</artifactId>
+        <version>${archiva.comp.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -1268,29 +1262,15 @@
       <!-- redback components -->
 
       <dependency>
-        <groupId>org.apache.archiva.redback.components.registry</groupId>
-        <artifactId>spring-registry-api</artifactId>
-        <version>${redback.registry.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.apache.archiva.components.registry</groupId>
+        <artifactId>archiva-components-spring-registry-api</artifactId>
+        <version>${archiva.comp.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva.redback.components.registry</groupId>
-        <artifactId>spring-registry-commons</artifactId>
-        <version>${redback.registry.version}</version>
+        <groupId>org.apache.archiva.components.registry</groupId>
+        <artifactId>archiva-components-spring-registry-commons</artifactId>
+        <version>${archiva.comp.version}</version>
         <exclusions>
-          <exclusion>
-            <groupId>ant</groupId>
-            <artifactId>ant-optional</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>jdom</groupId>
-            <artifactId>jdom</artifactId>
-          </exclusion>
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging-api</artifactId>
@@ -1298,10 +1278,6 @@
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

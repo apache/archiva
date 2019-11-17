@@ -28,7 +28,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.redback.components.cache.Cache;
-import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.components.registry.RegistryException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

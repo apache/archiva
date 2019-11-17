@@ -29,8 +29,8 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.redback.components.registry.Registry;
-import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.components.registry.Registry;
+import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -160,7 +160,7 @@ public class SimpleArtifactConsumer
         return super.isProcessUnmodified();
     }
 
-    public void afterConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry, String propertyName, Object propertyValue )
+    public void afterConfigurationChange( org.apache.archiva.components.registry.Registry registry, String propertyName, Object propertyValue )
     {
         if ( propertyNameTriggers.contains( propertyName ) )
         {
