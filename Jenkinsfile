@@ -40,7 +40,10 @@ publishers = [artifactsPublisher(disabled: false),
               junitPublisher(disabled: false, ignoreAttachments: false),
               pipelineGraphPublisher(disabled: false),mavenLinkerPublisher(disabled: false)]
 
-INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
+cmdLine = (env.NONAPACHEORG_RUN != 'y' && env.BRANCH_NAME == 'master') ? "clean deploy" : "clean install"
+
+
+        INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
 pipeline {
     agent {
@@ -103,7 +106,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
+                                sh "mvn ${cmdLine} -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
                             }
                 }
             }
