@@ -101,22 +101,22 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
-      <version>5.5.5</version>
+      <version>8.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-highlighter</artifactId>
-      <version>5.5.5</version>
+      <version>8.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-memory</artifactId>
-      <version>5.5.5</version>
+      <version>8.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-queries</artifactId>
-      <version>5.5.5</version>
+      <version>8.3.0</version>
     </dependency>
 
     <!-- for some reasons this help sonar to run -->

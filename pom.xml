@@ -77,7 +77,7 @@
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-    <lucene.version>4.10.4</lucene.version>
+    <lucene.version>8.3.0</lucene.version>
 
     <!-- JCR modules -->
     <javax.jcr.version>2.0</javax.jcr.version>
