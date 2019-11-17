@@ -63,10 +63,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.components.registry</groupId>
-      <artifactId>archiva-components-spring-registry-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.components.registry</groupId>
       <artifactId>archiva-components-spring-registry-commons</artifactId>
       <exclusions>
         <exclusion>
