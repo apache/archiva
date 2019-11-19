@@ -37,7 +37,7 @@ import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.redback.components.cache.Cache;
+import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryException;

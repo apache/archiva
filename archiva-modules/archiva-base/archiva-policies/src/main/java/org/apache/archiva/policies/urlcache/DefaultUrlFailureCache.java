@@ -19,7 +19,7 @@ package org.apache.archiva.policies.urlcache;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.cache.Cache;
+import org.apache.archiva.components.cache.Cache;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

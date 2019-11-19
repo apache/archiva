@@ -120,7 +120,7 @@
   </bean>
   -->
   <!-- for change configuration of the users cache -->
-  <bean name="cache#users" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#users" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -133,7 +133,7 @@
 
 
 
-  <bean name="cache#url-failures-cache" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache" lazy-init="true"
+  <bean name="cache#url-failures-cache" class="org.apache.archiva.components.cache.ehcache.EhcacheCache" lazy-init="true"
         destroy-method="dispose">
     <property name="diskExpiryThreadIntervalSeconds" value="600"/>
     <property name="diskPersistent" value="true"/>
@@ -148,7 +148,7 @@
     <property name="timeToLiveSeconds" value="1800"/>
   </bean>
 
-  <bean name="cache#keys" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#keys" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -159,7 +159,7 @@
     <property name="timeToLiveSeconds" value="14400"/>
   </bean>
 
-  <bean name="cache#operations" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#operations" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -170,7 +170,7 @@
     <property name="timeToLiveSeconds" value="14400"/>
   </bean>
 
-  <bean name="cache#permissions" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#permissions" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -181,7 +181,7 @@
     <property name="timeToLiveSeconds" value="14400"/>
   </bean>
 
-  <bean name="cache#resources" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#resources" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -192,7 +192,7 @@
     <property name="timeToLiveSeconds" value="14400"/>
   </bean>
 
-  <bean name="cache#roles" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#roles" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -203,7 +203,7 @@
     <property name="timeToLiveSeconds" value="14400"/>
   </bean>
 
-  <bean name="cache#effectiveRoleSet" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#effectiveRoleSet" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -218,7 +218,7 @@
          Caches with Short Term entries
        ================================================================ -->
 
-  <bean name="cache#userAssignments" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#userAssignments" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -229,7 +229,7 @@
     <property name="timeToLiveSeconds" value="600"/>
   </bean>
 
-  <bean name="cache#userPermissions" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#userPermissions" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -240,7 +240,7 @@
     <property name="timeToLiveSeconds" value="600"/>
   </bean>
 
-  <bean name="cache#ldapRoles" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#ldapRoles" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
@@ -251,7 +251,7 @@
     <property name="timeToLiveSeconds" value="600"/>
   </bean>
 
-  <bean name="cache#namespaces" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+  <bean name="cache#namespaces" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>

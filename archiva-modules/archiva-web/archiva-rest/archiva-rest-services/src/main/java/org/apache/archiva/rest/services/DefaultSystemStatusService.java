@@ -20,8 +20,8 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.redback.components.cache.Cache;
-import org.apache.archiva.redback.components.cache.CacheStatistics;
+import org.apache.archiva.components.cache.Cache;
+import org.apache.archiva.components.cache.CacheStatistics;
 import org.apache.archiva.redback.components.taskqueue.TaskQueue;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.scanner.RepositoryScanner;

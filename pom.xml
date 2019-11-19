@@ -1002,9 +1002,9 @@
         <version>${plexus-utils.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva.redback.components.cache</groupId>
-        <artifactId>spring-cache-api</artifactId>
-        <version>${redback.cache.version}</version>
+        <groupId>org.apache.archiva.components.cache</groupId>
+        <artifactId>archiva-components-spring-cache-api</artifactId>
+        <version>${archiva.comp.version}</version>
         <exclusions>
           <exclusion>
             <groupId>javax.annotation</groupId>
@@ -1013,9 +1013,9 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva.redback.components.cache</groupId>
-        <artifactId>spring-cache-ehcache</artifactId>
-        <version>${redback.cache.version}</version>
+        <groupId>org.apache.archiva.components.cache</groupId>
+        <artifactId>archiva-components-spring-cache-ehcache</artifactId>
+        <version>${archiva.comp.version}</version>
       </dependency>
 
       <!-- redback -->

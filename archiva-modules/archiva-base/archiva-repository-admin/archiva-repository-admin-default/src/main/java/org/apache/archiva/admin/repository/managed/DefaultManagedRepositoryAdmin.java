@@ -34,7 +34,7 @@ import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
-import org.apache.archiva.redback.components.cache.Cache;
+import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;

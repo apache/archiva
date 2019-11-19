@@ -79,9 +79,9 @@
 
     <!-- Test scope -->
     <dependency>
-      <groupId>org.apache.archiva.redback.components.cache</groupId>
-      <artifactId>spring-cache-ehcache</artifactId>
-      <version>${redbackCacheVersion}</version>
+      <groupId>org.apache.archiva.components.cache</groupId>
+      <artifactId>archiva-components-spring-cache-ehcache</artifactId>
+      <version>${archiva.comp.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
