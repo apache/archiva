@@ -37,7 +37,7 @@ import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.components.cache.Cache;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;

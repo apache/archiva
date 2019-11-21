@@ -951,15 +951,9 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.archiva.redback.components</groupId>
-        <artifactId>spring-taskqueue</artifactId>
-        <version>${redback.taskqueue.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.apache.archiva.components</groupId>
+        <artifactId>archiva-components-spring-taskqueue</artifactId>
+        <version>${archiva.comp.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback.components</groupId>

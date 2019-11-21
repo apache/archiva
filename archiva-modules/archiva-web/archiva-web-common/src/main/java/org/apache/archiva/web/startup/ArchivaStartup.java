@@ -21,8 +21,8 @@ package org.apache.archiva.web.startup;
 
 import org.apache.archiva.common.ArchivaException;
 import org.apache.archiva.redback.components.scheduler.DefaultScheduler;
-import org.apache.archiva.redback.components.taskqueue.Task;
-import org.apache.archiva.redback.components.taskqueue.execution.ThreadedTaskQueueExecutor;
+import org.apache.archiva.components.taskqueue.Task;
+import org.apache.archiva.components.taskqueue.execution.ThreadedTaskQueueExecutor;
 import org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler;
 import org.quartz.SchedulerException;
 import org.springframework.web.context.WebApplicationContext;

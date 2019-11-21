@@ -20,7 +20,7 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.archiva.indexer.ArchivaIndexingContext;
-import org.apache.archiva.redback.components.taskqueue.Task;
+import org.apache.archiva.components.taskqueue.Task;
 import org.apache.archiva.repository.ManagedRepository;
 
 import java.nio.file.Path;

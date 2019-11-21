@@ -25,7 +25,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.mock.MockRepositorySessionFactory;
-import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
+import org.apache.archiva.components.taskqueue.execution.TaskExecutor;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;

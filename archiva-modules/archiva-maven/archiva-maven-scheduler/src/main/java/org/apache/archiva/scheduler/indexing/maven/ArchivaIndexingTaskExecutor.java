@@ -22,9 +22,9 @@ package org.apache.archiva.scheduler.indexing.maven;
 
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.redback.components.taskqueue.Task;
-import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
-import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
+import org.apache.archiva.components.taskqueue.Task;
+import org.apache.archiva.components.taskqueue.execution.TaskExecutionException;
+import org.apache.archiva.components.taskqueue.execution.TaskExecutor;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;

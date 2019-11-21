@@ -30,7 +30,7 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;

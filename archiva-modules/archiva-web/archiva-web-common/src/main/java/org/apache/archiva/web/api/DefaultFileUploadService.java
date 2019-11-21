@@ -35,7 +35,7 @@ import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.content.base.ArtifactUtil;

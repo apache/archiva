@@ -29,6 +29,6 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.scheduler.indexing"/>
 
-  <bean name="taskQueue#indexing" class="org.apache.archiva.redback.components.taskqueue.DefaultTaskQueue"/>
+  <bean name="taskQueue#indexing" class="org.apache.archiva.components.taskqueue.DefaultTaskQueue"/>
 
 </beans>

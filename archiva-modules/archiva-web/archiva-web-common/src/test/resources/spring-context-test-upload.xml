@@ -75,7 +75,7 @@
   </bean>
 
   <bean name="taskQueueExecutor#repository-scanning"
-        class="org.apache.archiva.redback.components.taskqueue.execution.ThreadedTaskQueueExecutor" lazy-init="false">
+        class="org.apache.archiva.components.taskqueue.execution.ThreadedTaskQueueExecutor" lazy-init="false">
     <property name="name" value="repository-scanning"/>
     <property name="executor" ref="taskExecutor#repository-scanning"/>
     <property name="queue" ref="taskQueue#repository-scanning"/>

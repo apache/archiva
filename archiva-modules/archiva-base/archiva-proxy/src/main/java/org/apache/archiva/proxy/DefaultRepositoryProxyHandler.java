@@ -41,7 +41,7 @@ import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;

@@ -29,7 +29,7 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryListener;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;

@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;

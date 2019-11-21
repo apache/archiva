@@ -18,7 +18,7 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.springframework.stereotype.Service;

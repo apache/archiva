@@ -87,14 +87,8 @@
       <artifactId>javax.inject</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback.components</groupId>
-      <artifactId>spring-taskqueue</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>jsr250-api</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-taskqueue</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.components.registry</groupId>

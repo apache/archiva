@@ -36,7 +36,7 @@ import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.components.registry.RegistryException;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.repository.ReleaseScheme;
