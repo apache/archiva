@@ -560,11 +560,6 @@
         <artifactId>stage-repository-merge</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.archiva.redback.components</groupId>
-        <artifactId>spring-utils</artifactId>
-        <version>${redback.spring-utils.version}</version>
-      </dependency>
 
       <dependency>
         <groupId>com.lmax</groupId>
