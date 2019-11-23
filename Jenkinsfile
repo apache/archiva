@@ -51,7 +51,7 @@ pipeline {
     }
     // Build should also start, if redback has been built successfully
     triggers { 
-        upstream(upstreamProjects: 'Archiva-TLP-Gitbox/archiva-redback-core/master', threshold: hudson.model.Result.SUCCESS) 
+        upstream(upstreamProjects: 'Archiva-TLP-Gitbox/archiva-redback-core/master,Archiva-TLP-Gitbox/archiva-parent/master', threshold: hudson.model.Result.SUCCESS) 
     }
     options {
         disableConcurrentBuilds()
