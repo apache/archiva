@@ -78,13 +78,6 @@
       <artifactId>maven-artifact</artifactId>
       <scope>test</scope>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.apache.archiva.redback.components</groupId>
-      <artifactId>spring-utils</artifactId>
-      <scope>test</scope>
-    </dependency>
--->
 
   </dependencies>
 </project>

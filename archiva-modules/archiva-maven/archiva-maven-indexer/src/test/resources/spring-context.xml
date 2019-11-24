@@ -33,7 +33,7 @@
 
   <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>
 
-  <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
+  <bean name="scheduler" class="org.apache.archiva.components.scheduler.DefaultScheduler">
     <property name="properties">
       <props>
         <prop key="org.quartz.scheduler.instanceName">scheduler1</prop>

@@ -52,12 +52,6 @@
     <requiredProperty key="guavaVersion">
       <defaultValue>${guava.version}</defaultValue>
     </requiredProperty>
-    <requiredProperty key="redbackRegistryVersion">
-      <defaultValue>${redback.registry.version}</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="redbackCacheVersion">
-      <defaultValue>${redback.cache.version}</defaultValue>
-    </requiredProperty>
     <requiredProperty key="springockitoVersion">
       <defaultValue>${springockito.version}</defaultValue>
     </requiredProperty>

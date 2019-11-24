@@ -34,8 +34,6 @@
     <slf4j.version>${slf4jVersion}</slf4j.version>
     <log4j.version>${log4jVersion}</log4j.version>
     <spring.version>${springVersion}</spring.version>
-    <redback.registry.version>${redbackRegistryVersion}</redback.registry.version>
-    <redback.cache.version>${redbackCacheVersion}</redback.cache.version>
     <guava.version>${guavaVersion}</guava.version>
     <springockito.version>${springockitoVersion}</springockito.version>
     <mockito.version>${mockitoVersion}</mockito.version>

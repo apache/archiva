@@ -62,11 +62,6 @@
     <wagon.version>3.3.3</wagon.version>
 
     <redback.version>3.0.0-SNAPSHOT</redback.version>
-    <redback.cache.version>2.2</redback.cache.version>
-    <redback.quartz.version>2.1</redback.quartz.version>
-    <redback.registry.version>2.4</redback.registry.version>
-    <redback.spring-utils.version>2.1</redback.spring-utils.version>
-    <redback.taskqueue.version>2.1</redback.taskqueue.version>
 
     <!-- dependencies of maven modules -->
     <jsoup.version>1.12.1</jsoup.version>
@@ -956,27 +951,28 @@
         <version>${archiva.comp.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva.redback.components</groupId>
-        <artifactId>spring-quartz</artifactId>
-        <version>${redback.quartz.version}</version>
+        <groupId>org.apache.archiva.components</groupId>
+        <artifactId>archiva-components-spring-quartz</artifactId>
+        <version>${archiva.comp.version}</version>
         <exclusions>
           <exclusion>
             <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
+            <artifactId>javax.annotation-api</artifactId>
           </exclusion>
-        </exclusions>      </dependency>
+        </exclusions>
+      </dependency>
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
-        <version>2.2.1</version>
+        <version>${quartz.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>c3p0</groupId>
+            <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP-java7</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

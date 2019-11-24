@@ -19,7 +19,7 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.scheduler.AbstractJob;
+import org.apache.archiva.components.scheduler.AbstractJob;
 import org.apache.archiva.components.taskqueue.TaskQueue;
 import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;

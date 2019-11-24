@@ -105,7 +105,7 @@
 
   <bean name="archivaTaskScheduler#repository" class="org.apache.archiva.security.mock.MockBeanServices"/>
 
-  <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
+  <bean name="scheduler" class="org.apache.archiva.components.scheduler.DefaultScheduler">
     <property name="properties">
       <props>
         <prop key="org.quartz.scheduler.instanceName">scheduler1</prop>

@@ -119,12 +119,6 @@
       <artifactId>commons-collections</artifactId>
       <version>3.2.2</version>
     </dependency>
-<!--
-    <dependency>
-      <groupId>org.apache.archiva.redback.components</groupId>
-      <artifactId>spring-utils</artifactId>
-    </dependency>
--->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>

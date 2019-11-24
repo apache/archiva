@@ -18,7 +18,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
+import org.apache.archiva.components.scheduler.CronExpressionValidator;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.api.services.UtilServices;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
