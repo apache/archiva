@@ -53,7 +53,7 @@
       <gitHub>
         <projectId>apache/archiva</projectId>
         <ribbonOrientation>right</ribbonOrientation>
-        <ribbonColor>black</ribbonColor>
+        <ribbonColor>gray</ribbonColor>
       </gitHub>
     </fluidoSkin>
 
@@ -66,7 +66,7 @@
 
     <breadcrumbs>
       <item name="Apache" href="https://www.apache.org" />
-      <item name="Archiva" href="https://archiva.apache.org" />
+      <item name="Archiva" href="https://archiva.apache.org/index.html" />
       <item name="Archiva Documentation" href="index.html" />
     </breadcrumbs>
 
@@ -74,7 +74,7 @@
       <item name="Quick Start"   href="/quick-start.html" />
       <item name="Feature Tour"  href="/tour/index.html" />
       <item name="Release Notes" href="/release-notes.html" />
-      <item name="Downloads"     href="http://archiva.apache.org/download.html" />
+      <item name="Downloads"     href="https://archiva.apache.org/download.html" />
     </menu>
 
     <menu name="Users Guide">
@@ -143,23 +143,33 @@
     </menu>
 
     <menu name="More Information">
-      <item name="Archiva Wiki"              href="http://cwiki.apache.org/confluence/display/ARCHIVA/Index" />
+      <item name="Archiva Wiki"              href="https://cwiki.apache.org/confluence/display/ARCHIVA/Index" />
     </menu>
 
     <menu name="ASF">
-      <item name="How Apache Works" href="http://www.apache.org/foundation/how-it-works.html"/>
-      <item name="Foundation" href="http://www.apache.org/foundation/"/>
-      <item name="Sponsoring Apache" href="http://www.apache.org/foundation/sponsorship.html"/>
-      <item name="Thanks" href="http://www.apache.org/foundation/thanks.html"/>
+      <item name="How Apache Works" href="https://www.apache.org/foundation/how-it-works.html"/>
+      <item name="Foundation" href="https://www.apache.org/foundation/"/>
+      <item name="Sponsoring Apache" href="https://www.apache.org/foundation/sponsorship.html"/>
+      <item name="Thanks" href="https://www.apache.org/foundation/thanks.html"/>
     </menu>
     <footer>
       <![CDATA[
-      <div class="row span12">Apache ${project.name}, ${project.name}, Apache, the Apache feather logo, and the Apache ${project.name} project logos are trademarks of The Apache Software Foundation.</div>
-      <div class="row span12">
+      <div class="row">
+      <div class="span6 offset1">Apache Archiva, Archiva, Apache, the Apache feather logo, and the Apache Archiva project logos are trademarks of The Apache Software Foundation.</div>
+      </div>
+      <div class="row">
+        &nbsp;
+      </div>
+      <div class="row">
+      <div class="span6 offset2">
+      <p>
         <a href="${project.url}privacy-policy.html">Privacy Policy</a>
+        </p>
+      </div>
       </div>
       ]]>
     </footer>
+
 
   </body>
 </project>

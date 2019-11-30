@@ -40,7 +40,7 @@
       <gitHub>
         <projectId>apache/archiva</projectId>
         <ribbonOrientation>right</ribbonOrientation>
-        <ribbonColor>black</ribbonColor>
+        <ribbonColor>gray</ribbonColor>
       </gitHub>
     </fluidoSkin>
 
@@ -50,9 +50,12 @@
   <version position="right" />
   
   <body>
+    <head>
+      <![CDATA[<link rel="stylesheet" type="text/css" href="https://archiva.apache.org/css/site.css" />]]>
+    </head>
     <breadcrumbs>
       <item name="Apache" href="https://www.apache.org" />
-      <item name="Archiva" href="https://archiva.apache.org" />
+      <item name="Archiva" href="https://archiva.apache.org/index.html" />
       <item name="Archiva Modules" href="index.html" />
     </breadcrumbs>
 

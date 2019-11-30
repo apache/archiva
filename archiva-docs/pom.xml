@@ -36,6 +36,8 @@
     <!-- The git repository, where the site content is placed -->
     <siteRepositoryUrl>scm:git:https://gitbox.apache.org/repos/asf/archiva-web-content.git</siteRepositoryUrl>
     <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
+    <scmPublishBranch>asf-staging</scmPublishBranch>
+    <scmPublishPath>/docs/${project.version}</scmPublishPath>
   </properties>
 
   <build>
@@ -94,7 +96,7 @@
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
           <skipDeploy>true</skipDeploy>
-          <stagingDirectory>${project.build.directory}/staging/docs/${project.version}/</stagingDirectory>
+          <stagingDirectory>${project.build.directory}/staging${scmPublishPath}/</stagingDirectory>
         </configuration>
         <executions>
           <execution>
@@ -212,6 +214,8 @@
                   <arguments>
                     <argument>-d</argument>
                     <argument>${scmPubCheckoutDirectory}</argument>
+                    <argument>-b</argument>
+                    <argument>${scmPublishBranch}</argument>
                     <argument>${siteRepositoryUrl}</argument>
                   </arguments>
                 </configuration>

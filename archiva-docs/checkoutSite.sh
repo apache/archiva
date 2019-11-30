@@ -42,6 +42,7 @@ CLONE=1
 FORCE=1
 MODULE_DIR="${MY_PWD}"
 PATTERN=""
+BRANCH="master"
 while [ ! -z "$1" ]; do
   case "$1" in
     -f) 
@@ -65,6 +66,11 @@ while [ ! -z "$1" ]; do
     -m)
       shift
       MODULE_DIR="$1"
+      shift
+      ;;
+    -b)
+      shift
+      BRANCH="$1"
       shift
       ;;
     *)
@@ -118,6 +124,8 @@ if [ $CLONE -eq 0 ]; then
 fi
 
 cd "${SITE_DIR}" || { echo "Could not change to site dir ${SITE_DIR}"; exit 1; }
+
+git checkout "${BRANCH}"
 
 git config core.sparsecheckout true
 git config user.name "${GIT_USER}"

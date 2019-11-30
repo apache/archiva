@@ -31,7 +31,9 @@
   <url>https://archiva.apache.org/ref/${project.version}</url>
 
   <properties>
-    <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
+    <scmPubCheckoutDirectory>.site-content</scmPubCheckoutDirectory>
+    <scmPublishBranch>asf-staging</scmPublishBranch>
+    <scmPublishPath>/ref/${project.version}</scmPublishPath>
     <!-- The git repository, where the site content is placed -->
     <siteRepositoryUrl>scm:git:https://gitbox.apache.org/repos/asf/archiva-web-content.git</siteRepositoryUrl>
     <site.staging.base>${project.basedir}</site.staging.base>
@@ -64,7 +66,7 @@
         <artifactId>maven-scm-publish-plugin</artifactId>
         <inherited>false</inherited>
         <configuration>
-          <checkinComment>Apache Archiva versioned module docs for ${project.version}</checkinComment>
+          <checkinComment>Apache Archiva Module Documentation for ${project.version}</checkinComment>
           <skipDeletedFiles>true</skipDeletedFiles>
           <content>${project.build.directory}/staging</content>
           <tryUpdate>true</tryUpdate>
@@ -90,7 +92,7 @@
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
           <skipDeploy>true</skipDeploy>
-          <stagingDirectory>${site.staging.base}/target/staging/ref/${project.version}/</stagingDirectory>
+          <stagingDirectory>${site.staging.base}/target/staging${scmPublishPath}/</stagingDirectory>
         </configuration>
         <executions>
           <execution>
@@ -180,6 +182,7 @@
           <javadocVersion>1.8</javadocVersion>
           <source>1.8</source>
           <doclint>none</doclint>
+          <excludePackageNames>*.test</excludePackageNames>
           <links>
             <link>https://docs.oracle.com/javase/8/docs/api</link>
             <link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_0/</link>
@@ -195,7 +198,7 @@
           </links>
 
           <linksource>true</linksource>
-          <show>private</show>
+          <show>protected</show>
           <tags>
             <tag>
               <name>todo</name>
@@ -272,6 +275,8 @@
                   <arguments>
                     <argument>-d</argument>
                     <argument>${scmPubCheckoutDirectory}</argument>
+                    <argument>-b</argument>
+                    <argument>${scmPublishBranch}</argument>
                     <argument>${siteRepositoryUrl}</argument>
                   </arguments>
                 </configuration>

@@ -27,35 +27,41 @@
 THIS_DIR=$(dirname $0)
 THIS_DIR=$(readlink -f ${THIS_DIR})
 CONTENT_DIR=".site-content"
-
-PROJECT_VERSION=$(grep '<version>' pom.xml |head -1 | sed -e 's/.*<version>\(.*\)<\/version>.*/\1/g')
-SUB_DIR="ref/${PROJECT_VERSION}"
+BRANCH="asf-staging-3.0"
+VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+PUBLISH_PATH=$(mvn help:evaluate -Dexpression=scmPublishPath -q -DforceStdout)
+BRANCH=$(mvn help:evaluate -Dexpression=scmPublishBranch -q -DforceStdout)
+CONTENT_DIR=$(mvn help:evaluate -Dexpression=scmPubCheckoutDirectory -q -DforceStdout)
 
 if [ -d "${CONTENT_DIR}/.git" ]; then
   git -C "${CONTENT_DIR}" fetch origin
-  git -C "${CONTENT_DIR}" reset --hard origin/master
+  git -C "${CONTENT_DIR}" checkout ${BRANCH}
+  git -C "${CONTENT_DIR}" reset --hard origin/${BRANCH}
+  git -C "${CONTENT_DIR}" clean -f -d
 fi
 
 echo ">>>> Creating site and reports <<<<" 
-mvn clean site site:stage -Preporting "$@"
+mvn clean site "$@"
+mvn site:stage "$@"
 
 echo "*****************************************"
 echo ">>>> Finished the site stage process <<<<"
 echo "> You can check the content in the folder target/staging or by opening the following url"
-echo "> file://${THIS_DIR}/target/staging/${SUB_DIR}/index.html"
+echo "> file://${THIS_DIR}/target/staging${PUBLISH_PATH}/index.html"
 echo "> "
 echo "> If everything is fine enter yes. After that the publish process will be started."
 echo -n "Do you want to publish (yes/no)? "
 read ANSWER
 
-if [ "${ANSWER}" == "yes" -o "${ANSWER}" == "YES" ]; then
+if [ "${ANSWER}" == "yes" -o "${ANSWER}" == "YES" -o "${ANSWER}" == "y" -o "${ANSWER}" == "Y" ]; then
   echo "> Starting publish process"
   mvn scm-publish:publish-scm "$@"
 else
   echo "> Aborting now"
   echo "> Running git reset in .site-content directory" 
   git -C "${CONTENT_DIR}" fetch origin
-  git -C "${CONTENT_DIR}" reset --hard origin/master
+  git -C "${CONTENT_DIR}" reset --hard origin/${BRANCH}
+  git -C "${CONTENT_DIR}" clean -f -d
   echo ">>>> Finished <<<<"
 fi
 
