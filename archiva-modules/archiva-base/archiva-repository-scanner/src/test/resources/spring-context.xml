@@ -33,7 +33,7 @@
   </bean>
 
   <bean name="registry#configured" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
-    <property name="properties">
+    <property name="initialConfiguration">
       <value>
         <![CDATA[
       <configuration>

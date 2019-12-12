@@ -31,7 +31,7 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <bean name="commons-configuration" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
-    <property name="properties">
+    <property name="initialConfiguration">
       <value>
         <![CDATA[
         <configuration>

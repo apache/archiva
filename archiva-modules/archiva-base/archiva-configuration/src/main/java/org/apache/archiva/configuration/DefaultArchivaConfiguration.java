@@ -35,7 +35,6 @@ import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -522,7 +521,7 @@ public class DefaultArchivaConfiguration
         contents = "<configuration><xml fileName=\"" + fileLocation
                 + "\" config-forceCreate=\"true\" config-name=\"org.apache.archiva.user\"/>" + "</configuration>";
 
-        ((CommonsConfigurationRegistry) registry).setProperties(contents);
+        ((CommonsConfigurationRegistry) registry).setInitialConfiguration(contents);
 
         registry.initialize();
 
@@ -533,7 +532,11 @@ public class DefaultArchivaConfiguration
         triggerEvent(ConfigurationEvent.SAVED);
 
         Registry section = registry.getSection(KEY + ".user");
-        return section == null ? new CommonsConfigurationRegistry(new BaseConfiguration()) : section;
+        if (section == null) {
+            return new CommonsConfigurationRegistry( );
+        } else {
+            return section;
+        }
     }
 
     private boolean writeFile(String filetype, String path, String contents) {
@@ -796,9 +799,9 @@ public class DefaultArchivaConfiguration
 
     @Override
     public synchronized void afterConfigurationChange(Registry registry, String propertyName, Object propertyValue) {
-        configuration = null;
-        this.dataDirectory = null;
-        this.repositoryBaseDirectory = null;
+        // configuration = null;
+        // this.dataDirectory = null;
+        // this.repositoryBaseDirectory = null;
     }
 
     private String removeExpressions(String directory) {

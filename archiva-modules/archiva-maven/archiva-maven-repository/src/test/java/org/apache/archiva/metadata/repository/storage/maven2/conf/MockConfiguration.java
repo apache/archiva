@@ -26,12 +26,15 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.registry.RegistryListener;
+import org.apache.archiva.configuration.FileType;
+import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -66,6 +69,19 @@ public class MockConfiguration
         configuration.getArchivaRuntimeConfiguration().addChecksumType("sha1");
         configuration.getArchivaRuntimeConfiguration().addChecksumType("sha256");
         configuration.getArchivaRuntimeConfiguration().addChecksumType("md5");
+        RepositoryScanningConfiguration rpsc = new RepositoryScanningConfiguration( );
+        FileType ft = new FileType( );
+        ft.setId( "artifacts" );
+        ArrayList<String> plist = new ArrayList<>( );
+        plist.add( "**/*.jar" );
+        plist.add( "**/*.pom" );
+        plist.add( "**/*.war" );
+        ft.setPatterns( plist );
+        rpsc.addFileType( ft  );
+        ArrayList<FileType> ftList = new ArrayList<>( );
+        ftList.add( ft );
+        rpsc.setFileTypes( ftList );
+        configuration.setRepositoryScanning( rpsc );
     }
 
     @Override

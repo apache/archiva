@@ -30,7 +30,6 @@ import org.apache.archiva.components.registry.commons.CommonsConfigurationRegist
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
-import org.apache.commons.configuration.CombinedConfiguration;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -169,48 +168,7 @@ public class FileTypes
     @PostConstruct
     public void initialize()
     {
-        // TODO: why is this done by hand?
-
-        // TODO: ideally, this would be instantiated by configuration instead, and not need to be a component
-
-        String errMsg = "Unable to load default archiva configuration for FileTypes: ";
-
-        try
-        {
-            CommonsConfigurationRegistry commonsRegistry = new CommonsConfigurationRegistry();
-
-            // Configure commonsRegistry
-            Field fld = commonsRegistry.getClass().getDeclaredField( "configuration" );
-            fld.setAccessible( true );
-            fld.set( commonsRegistry, new CombinedConfiguration() );
-            commonsRegistry.addConfigurationFromResource( "org/apache/archiva/configuration/default-archiva.xml" );
-
-            // Read configuration as it was intended.
-            ConfigurationRegistryReader configReader = new ConfigurationRegistryReader();
-            Configuration defaultConfig = configReader.read( commonsRegistry );
-
-            initialiseTypeMap( defaultConfig );
-        }
-        catch ( RegistryException e )
-        {
-            throw new RuntimeException( errMsg + e.getMessage(), e );
-        }
-        catch ( SecurityException e )
-        {
-            throw new RuntimeException( errMsg + e.getMessage(), e );
-        }
-        catch ( NoSuchFieldException e )
-        {
-            throw new RuntimeException( errMsg + e.getMessage(), e );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            throw new RuntimeException( errMsg + e.getMessage(), e );
-        }
-        catch ( IllegalAccessException e )
-        {
-            throw new RuntimeException( errMsg + e.getMessage(), e );
-        }
+        initialiseTypeMap( this.archivaConfiguration.getConfiguration() );
 
         this.archivaConfiguration.addChangeListener( this );
     }

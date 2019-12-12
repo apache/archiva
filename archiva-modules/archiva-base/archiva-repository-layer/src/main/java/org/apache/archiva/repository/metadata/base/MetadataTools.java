@@ -25,6 +25,8 @@ import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ConfigurationEvent;
+import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
@@ -71,7 +73,7 @@ import java.util.stream.Stream;
  */
 @Service( "metadataTools#default" )
 public class MetadataTools
-    implements RegistryListener
+    implements RegistryListener, ConfigurationListener
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
@@ -351,6 +353,7 @@ public class MetadataTools
         initConfigVariables();
 
         configuration.addChangeListener( this );
+        configuration.addListener( this );
     }
 
     public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
@@ -978,5 +981,11 @@ public class MetadataTools
     public void setFiletypes( FileTypes filetypes )
     {
         this.filetypes = filetypes;
+    }
+
+    @Override
+    public void configurationEvent( ConfigurationEvent event )
+    {
+        log.debug( "Configuration event {}", event );
     }
 }

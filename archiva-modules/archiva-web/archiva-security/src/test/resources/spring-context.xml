@@ -87,7 +87,7 @@
   <alias name="commons-configuration" alias="registry#test"/>
 
   <bean name="commons-configuration" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
-    <property name="properties">
+    <property name="initialConfiguration">
       <value>
         <![CDATA[
         <configuration>

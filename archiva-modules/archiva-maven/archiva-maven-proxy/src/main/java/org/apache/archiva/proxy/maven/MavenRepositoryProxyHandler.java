@@ -39,6 +39,8 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -58,6 +60,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 @Service( "repositoryProxyHandler#maven" )
 public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
+
+    private static final Logger log = LoggerFactory.getLogger( MavenRepositoryProxyHandler.class );
 
     private static final List<RepositoryType> REPOSITORY_TYPES = new ArrayList<>();
 

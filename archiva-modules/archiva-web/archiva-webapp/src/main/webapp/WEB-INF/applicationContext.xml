@@ -71,7 +71,7 @@
   <!-- START SNIPPET: configuration-files-list -->
   <bean name="commons-configuration" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry"
     init-method="initialize">
-    <property name="properties">
+    <property name="initialConfiguration">
       <value>
         <![CDATA[
         <configuration>

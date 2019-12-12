@@ -50,7 +50,7 @@
   </bean>
 
   <bean name="registry#retention-count" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
-    <property name="properties">
+    <property name="initialConfiguration">
       <value>
         <![CDATA[
         <configuration>
@@ -84,7 +84,7 @@
   </bean>
 
   <bean name="registry#days-old" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
-    <property name="properties">
+    <property name="initialConfiguration">
       <value>
         <![CDATA[
         <configuration>
@@ -101,7 +101,7 @@
   </bean>
 
   <bean name="commons-configuration" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
-    <property name="properties">
+    <property name="initialConfiguration">
       <value>
         <![CDATA[
         <configuration>
