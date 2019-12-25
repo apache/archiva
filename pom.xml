@@ -1107,6 +1107,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-keys-cached</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-model</artifactId>
         <version>${redback.version}</version>
         <exclusions>
