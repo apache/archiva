@@ -27,7 +27,7 @@
  *
  * Only the war and zip artifacts are archived in the jenkins build archive.
  */
-LABEL = 'ubuntu'
+LABEL = 'ubuntu && !H23'
 buildJdk = 'JDK 1.8 (latest)'
 buildJdk9 = 'JDK 1.9 (latest)'
 buildJdk10 = 'JDK 10 (latest)'
