@@ -238,7 +238,7 @@ public class RemoteRepositoriesServiceTest
 
     RemoteRepository getRemoteMavenRepository()
     {
-        return new RemoteRepository( Locale.getDefault( ),"id-maven1", "Maven1", "http://repo.maven.apache.org/maven2", "default", "foo", "foopassword", 120,
+        return new RemoteRepository( Locale.getDefault( ),"id-maven1", "Maven1", "https://repo.maven.apache.org/maven2", "default", "foo", "foopassword", 120,
                 "cool repo3" );
     }
 
