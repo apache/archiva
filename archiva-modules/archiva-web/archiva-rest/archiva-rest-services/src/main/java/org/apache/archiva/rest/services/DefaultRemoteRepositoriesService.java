@@ -129,7 +129,7 @@ public class DefaultRemoteRepositoriesService
         try {
             RemoteRepository remoteRepository = remoteRepositoryAdmin.getRemoteRepository(repositoryId);
             if (remoteRepository == null) {
-                log.warn("ignore scheduleDownloadRemote for repo with id {} as not exists", repositoryId);
+                log.warn("Remote repository {} does not exist. Connectivity check returns false.", repositoryId);
                 return Boolean.FALSE;
             }
             NetworkProxy networkProxy = null;
@@ -137,8 +137,8 @@ public class DefaultRemoteRepositoriesService
                 networkProxy = proxyRegistry.getNetworkProxy(remoteRepository.getRemoteDownloadNetworkProxyId());
                 if (networkProxy == null) {
                     log.warn(
-                            "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",
-                            remoteRepository.getRemoteDownloadNetworkProxyId());
+                            "A network proxy {} was configured for repository {}. But the proxy with the given id does not exist.",
+                            remoteRepository.getRemoteDownloadNetworkProxyId(), repositoryId);
                 }
             }
 
