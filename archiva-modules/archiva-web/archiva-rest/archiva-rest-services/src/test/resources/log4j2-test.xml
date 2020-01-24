@@ -22,7 +22,7 @@
 <configuration> <!-- status="debug" -->
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%L] [%t] %-5level %logger{3} - %msg%n}" />
+      <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%L] [%t] %-5level %logger{6} - %msg%n}" />
     </Console>
     <RollingRandomAccessFile name="rolling" fileName="/tmp/archiva.log"
                              filePattern="/tmp/archiva-%d{yyyyMMdd}.log"
@@ -38,12 +38,18 @@
 
   <loggers>
 
-    <logger name="org.apache.archiva.redback.rest.services" level="error"/>
+    <logger name="jaxrs" level="info" />
+    <logger name="org.apache.cxf" level="info" />
+    <logger name="org.apache.archiva" level="debug" />
+    <logger name="org.apache.archiva.redback" level="debug"/>
+    <logger name="com.fasterxml.jackson" level="info" />
+    <logger name="org.apache.archiva.components.registry.commons" level="error" />
+
     <logger name="JPOX" level="error"/>
     <logger name="org.apache.archiva.rest.services" level="info"/>
-    <logger name="org.springframework" level="info"/>
+    <logger name="org.springframework" level="error"/>
     <logger name="org.apache.commons.configuration" level="info"/>
-    <logger name="org.apache.archiva.metadata.repository.storage.maven2" level="DEBUG" />
+    <logger name="org.apache.archiva.metadata.repository.storage.maven2" level="error" />
 
     <root level="info">
       <appender-ref ref="console"/>

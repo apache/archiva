@@ -37,26 +37,22 @@
 
   <context:annotation-config/>
   <context:component-scan
-      base-package="org.apache.archiva.rest.services"/>
+      base-package="org.apache.archiva.rest.services,org.apache.archiva.redback.rest.services"/>
 
-  <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
-    <property name="mapper" ref="redbackJacksonMapper"/>
-  </bean>
 
-  <bean id="redbackJacksonMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
-  </bean>
-
-  <jaxrs:server id="archivaServices" address="/archivaServices">
+  <jaxrs:server id="archivaServices" address="/archivaServices" >
 
     <jaxrs:providers>
-      <ref bean="jsonProvider"/>
+      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider"/>
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
       <ref bean="requestValidationInterceptor#rest" />
       <ref bean="archivaRestServiceExceptionMapper"/>
+      <ref bean="threadLocalUserCleaner#rest" />
     </jaxrs:providers>
 
     <jaxrs:serviceBeans>
+      <ref bean="browseService#rest"/>
       <ref bean="pingService#rest"/>
       <ref bean="repositoriesService#rest"/>
       <ref bean="managedRepositoriesService#rest"/>
@@ -67,7 +63,6 @@
       <ref bean="archivaAdministrationService#default"/>
       <ref bean="searchService#rest"/>
       <ref bean="commonServices#rest"/>
-      <ref bean="browseService#rest"/>
       <ref bean="pluginsService#rest"/>
       <ref bean="systemStatusService#rest"/>
       <ref bean="reportRepositoriesService#rest" />
@@ -77,13 +72,6 @@
       <ref bean="redbackRuntimeConfigurationService#rest"/>
     </jaxrs:serviceBeans>
 
-    <jaxrs:outInterceptors>
-      <ref bean="threadLocalUserCleaner#rest"/>
-    </jaxrs:outInterceptors>
-
-    <jaxrs:outFaultInterceptors>
-
-    </jaxrs:outFaultInterceptors>
   </jaxrs:server>
 
   <bean name="browse#versionMetadata" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"

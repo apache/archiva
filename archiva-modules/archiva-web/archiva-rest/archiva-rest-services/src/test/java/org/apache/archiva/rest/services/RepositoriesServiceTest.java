@@ -21,6 +21,8 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
+import org.apache.archiva.redback.rest.api.services.UserService;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.VersionsList;
@@ -402,11 +404,14 @@ public class RepositoriesServiceTest
     public void notAuthorizedToDeleteArtifacts()
         throws Exception
     {
+        UserService userService = getUserService( getAdminAuthzHeader() );
+        userService.createGuestUser( );
+
         ManagedRepository managedRepository = getTestManagedRepository( "SOURCE_REPO_ID", "SOURCE_REPO_ID" );
         try
         {
             getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
-            RepositoriesService repositoriesService = getRepositoriesService( guestAuthzHeader );
+            RepositoriesService repositoriesService = getRepositoriesService(  );
             assertFalse( repositoriesService.isAuthorizedToDeleteArtifacts( managedRepository.getId() ) );
         }
         finally

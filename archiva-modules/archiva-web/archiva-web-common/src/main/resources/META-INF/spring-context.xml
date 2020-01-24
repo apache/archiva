@@ -34,9 +34,10 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.redback.keys,org.apache.archiva.web.startup, org.apache.archiva.web.runtime, org.apache.archiva.web.api,, org.apache.archiva.web.security"/>
+  <context:component-scan base-package="org.apache.archiva.redback.keys,org.apache.archiva.web.startup,org.apache.archiva.web.runtime,org.apache.archiva.web.api,org.apache.archiva.web.security,org.apache.archiva.redback.rest,org.apache.archiva.rest.services.interceptors"/>
 
   <util:properties id="archivaRuntimeProperties" location="classpath:application.properties" />
+
 
   <jaxrs:server id="archivaUiServices" address="/archivaUiServices">
 
@@ -45,6 +46,7 @@
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
       <ref bean="archivaRestServiceExceptionMapper"/>
+      <ref bean="threadLocalUserCleaner#rest" />
     </jaxrs:providers>
 
     <jaxrs:serviceBeans>
@@ -54,13 +56,6 @@
       <ref bean="javascriptLogger#default"/>
     </jaxrs:serviceBeans>
 
-    <jaxrs:outInterceptors>
-      <ref bean="threadLocalUserCleaner#rest"/>
-    </jaxrs:outInterceptors>
-
-    <jaxrs:outFaultInterceptors>
-
-    </jaxrs:outFaultInterceptors>
   </jaxrs:server>
 
 </beans>
