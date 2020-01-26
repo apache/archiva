@@ -52,6 +52,8 @@
 
     <!-- Java Enterprise APIs -->
     <javax.servlet.version>4.0.1</javax.servlet.version>
+    <javax.activation.version>1.1.1</javax.activation.version>
+    <javax.jaxb.version>2.3.1</javax.jaxb.version>
 
 
     <commons-codec.version>1.13</commons-codec.version>
@@ -138,22 +140,38 @@
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>${javax.inject.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.transaction</groupId>
         <artifactId>javax.transaction-api</artifactId>
         <version>${javax.transaction.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.persistence</groupId>
         <artifactId>javax.persistence-api</artifactId>
         <version>${javax.persistence.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
         <version>${javax.annotation.version}</version>
+        <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <version>${javax.activation.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${javax.jaxb.version}</version>
+      </dependency>
+
 
       <dependency>
         <groupId>org.apache.openjpa</groupId>
@@ -179,11 +197,7 @@
         </exclusions>
       </dependency>
 
-      <dependency>
-        <groupId>javax.activation</groupId>
-        <artifactId>activation</artifactId>
-        <version>1.1</version>
-      </dependency>
+
       <dependency>
         <groupId>org.apache.archiva.maven</groupId>
         <artifactId>archiva-maven-common</artifactId>
@@ -1668,11 +1682,6 @@
       </dependency>
 
       <!-- Dependencies for JDK >=9 update -->
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>2.3.0</version>
-      </dependency>
 
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
