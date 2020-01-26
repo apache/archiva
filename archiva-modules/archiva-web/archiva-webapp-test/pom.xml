@@ -252,10 +252,6 @@
 
     <!-- Dependency for MavenConnectionTest -->
     <dependency>
-      <groupId>jdom</groupId>
-      <artifactId>jdom</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
     </dependency>

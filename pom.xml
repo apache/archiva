@@ -123,18 +123,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-core</artifactId>
-        <version>3.13.2</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>org.junit</groupId>
-            <artifactId>junit-bom</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+
 
       <dependency>
         <groupId>javax.inject</groupId>
@@ -170,6 +159,11 @@
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
         <version>${javax.jaxb.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.0</version>
       </dependency>
 
 
@@ -352,141 +346,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-test-utils</artifactId>
-        <version>${project.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>oak-jcr</artifactId>
-        <version>${jcr-oak.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>oak-segment-tar</artifactId>
-        <version>${jcr-oak.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>oak-lucene</artifactId>
-        <version>${jcr-oak.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-misc</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-facet</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-webdav</artifactId>
-        <version>${jackrabbit.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-jcr-commons</artifactId>
-        <version>${jackrabbit.version}</version>
-      </dependency>
-
-
-      <dependency>
-        <groupId>org.apache.maven.indexer</groupId>
-        <artifactId>indexer-reader</artifactId>
-        <version>${maven.indexer.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.indexer</groupId>
-        <artifactId>indexer-core</artifactId>
-        <version>${maven.indexer.version}</version>
-        <classifier>shaded-lucene</classifier>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>classworlds</groupId>
-            <artifactId>classworlds</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>velocity</groupId>
-            <artifactId>velocity-dep</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-registry</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-settings</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.code.atinject</groupId>
-            <artifactId>atinject</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.sonatype.sisu</groupId>
-            <artifactId>sisu-guava</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.sonatype.sisu</groupId>
-            <artifactId>sisu-guice</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven.resolver</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>aopalliance</groupId>
-            <artifactId>aopalliance</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.archetype</groupId>
-        <artifactId>archetype-common</artifactId>
-        <version>3.0.1</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>asm</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-           <exclusion>
-            <groupId>org.sonatype.sisu</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-plexus-bridge</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -608,12 +467,150 @@
         <artifactId>archiva-rss</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>stage-repository-merge</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-test-utils</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+
+      <!-- Jackrabbit OAK JCR Provider -->
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-jcr</artifactId>
+        <version>${jcr-oak.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-segment-tar</artifactId>
+        <version>${jcr-oak.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-lucene</artifactId>
+        <version>${jcr-oak.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-misc</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-facet</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>${jackrabbit.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-jcr-commons</artifactId>
+        <version>${jackrabbit.version}</version>
+      </dependency>
+
+
+      <!-- Maven dependencies -->
+      <dependency>
+        <groupId>org.apache.maven.indexer</groupId>
+        <artifactId>indexer-reader</artifactId>
+        <version>${maven.indexer.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.indexer</groupId>
+        <artifactId>indexer-core</artifactId>
+        <version>${maven.indexer.version}</version>
+        <classifier>shaded-lucene</classifier>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>classworlds</groupId>
+            <artifactId>classworlds</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>velocity</groupId>
+            <artifactId>velocity-dep</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-registry</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-settings</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.google.code.atinject</groupId>
+            <artifactId>atinject</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guava</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guice</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-common</artifactId>
+        <version>3.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+           <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
 
       <dependency>
         <groupId>com.lmax</groupId>
@@ -660,11 +657,7 @@
         </exclusions>
       </dependency>
 
-      <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>2.0</version>
-      </dependency>
+
 
       <!-- normally not needed as we are 1.6 required
         but due to http://jira.codehaus.org/browse/MODELLO-266
@@ -1624,11 +1617,6 @@
         <version>2.2.2</version>
       </dependency>
       <dependency>
-        <groupId>jdom</groupId>
-        <artifactId>jdom</artifactId>
-        <version>1.0</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.maven.shared</groupId>
         <artifactId>maven-model-converter</artifactId>
         <version>${maven-model-converter.version}</version>
@@ -1643,31 +1631,13 @@
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache</artifactId>
-        <version>2.7.5</version>
+        <version>${ehcache.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-core</artifactId>
-        <version>${mockito.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.kubek2k</groupId>
-        <artifactId>springockito</artifactId>
-        <version>${springockito.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jsoup</groupId>
@@ -1712,6 +1682,40 @@
         <artifactId>metrics-core</artifactId>
         <version>${metrics-core.version}</version>
       </dependency>
+
+      <!-- Testing and mock frameworks -->
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>3.13.2</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.junit</groupId>
+            <artifactId>junit-bom</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.kubek2k</groupId>
+        <artifactId>springockito</artifactId>
+        <version>${springockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+
 
       <!-- JUNIT 5 -->
       <dependency>
