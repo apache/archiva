@@ -48,6 +48,12 @@
   </scm>
 
   <properties>
+    <redback.version>3.0.0-SNAPSHOT</redback.version>
+
+    <!-- Java Enterprise APIs -->
+    <javax.servlet.version>4.0.1</javax.servlet.version>
+
+
     <commons-codec.version>1.13</commons-codec.version>
     <commons-collections.version>4.4</commons-collections.version>
     <commons-fileupload.version>1.4</commons-fileupload.version>
@@ -60,17 +66,14 @@
     <maven-model-converter.version>2.3</maven-model-converter.version>
     <wagon.version>3.3.3</wagon.version>
 
-    <redback.version>3.0.0-SNAPSHOT</redback.version>
+
+
 
     <!-- dependencies of maven modules -->
     <jsoup.version>1.12.1</jsoup.version>
     <rome.version>1.12.2</rome.version>
     <cronutils.version>9.0.1</cronutils.version>
 
-    <spring.version>4.3.10.RELEASE</spring.version>
-
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>4.10.4</lucene.version>
 
     <!-- JCR modules -->
@@ -94,6 +97,10 @@
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
+
 
     <sisu-inject-plexus.version>0.3.3</sisu-inject-plexus.version>
     <plexus-digest.version>1.1</plexus-digest.version>
@@ -1342,7 +1349,7 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>3.1.0</version>
+        <version>${javax.servlet.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
