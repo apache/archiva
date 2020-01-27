@@ -114,7 +114,7 @@
     <springockito.version>1.0.9</springockito.version>
     <mockito.version>1.9.5</mockito.version>
 
-    <easymock.version>3.2</easymock.version>
+    <easymock.version>4.1</easymock.version>
     
     <openjpa.Log>DefaultLevel=INFO,Runtime=ERROR,Tool=ERROR,SQL=ERROR,Schema=ERROR,MetaData=ERROR</openjpa.Log>
 
@@ -1747,12 +1747,6 @@
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
-        <version>${easymock.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymockclassextension</artifactId>
         <version>${easymock.version}</version>
         <scope>test</scope>
       </dependency>
