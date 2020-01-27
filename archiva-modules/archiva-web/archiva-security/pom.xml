@@ -112,6 +112,16 @@
 
     <!-- Test Scoped -->
     <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymockclassextension</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-keys-jpa</artifactId>
       <scope>test</scope>

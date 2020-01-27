@@ -59,7 +59,6 @@
     <commons-codec.version>1.13</commons-codec.version>
     <commons-collections.version>4.4</commons-collections.version>
     <commons-fileupload.version>1.4</commons-fileupload.version>
-    <commons-io.version>2.6</commons-io.version>
     <commons-lang.version>3.9</commons-lang.version>
 
     <maven3x.version>3.5.4</maven3x.version>
@@ -114,6 +113,8 @@
     <release.preparationGoals>clean install</release.preparationGoals>
     <springockito.version>1.0.9</springockito.version>
     <mockito.version>1.9.5</mockito.version>
+
+    <easymock.version>3.2</easymock.version>
     
     <openjpa.Log>DefaultLevel=INFO,Runtime=ERROR,Tool=ERROR,SQL=ERROR,Schema=ERROR,MetaData=ERROR</openjpa.Log>
 
@@ -804,7 +805,7 @@
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>${commons-io.version}</version>
+        <version>${commons.io.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -1743,10 +1744,32 @@
         <scope>test</scope>
       </dependency>
 
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>${easymock.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymockclassextension</artifactId>
+        <version>${easymock.version}</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <!-- These dependencies are used throughout the modules -->
+
+    <!-- slf4j -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- JUNIT 5 -->
     <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
@@ -1767,6 +1790,8 @@
       <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!--
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
@@ -1779,6 +1804,7 @@
       <version>3.2</version>
       <scope>test</scope>
     </dependency>
+    -->
   </dependencies>
 
 
