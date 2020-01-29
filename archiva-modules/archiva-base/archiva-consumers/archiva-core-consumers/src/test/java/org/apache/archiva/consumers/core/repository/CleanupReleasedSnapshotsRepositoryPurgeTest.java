@@ -30,11 +30,11 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+import org.xmlunit.assertj.XmlAssert;
 
 import javax.inject.Inject;
 import java.nio.charset.Charset;
@@ -179,12 +179,18 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         String expectedVersions =
             "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";
 
-        XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/release", metadataXml );
-        XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
-        System.out.println(metadataXml);
-        XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
-                                     "//metadata/versioning/versions/version", metadataXml );
-        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/release" ).isEqualTo( "2.3" );
+        // XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/release", metadataXml );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/latest" ).isEqualTo( "2.3" );
+        // XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
+        XmlAssert.assertThat( metadataXml ).nodesByXPath( "//metadata/versioning/versions/version" ).hasSize( 2 );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/versions/version[1]" ).isEqualTo( "2.2" );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/versions/version[2]" ).isEqualTo( "2.3" );
+
+        // XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
+        //                             "//metadata/versioning/versions/version", metadataXml );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/lastUpdated" ).isEqualTo( "20070315032817" );
+        // XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
     }
 
     @Test
@@ -377,9 +383,14 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         String expectedVersions = "<expected><versions><version>2.0.3-SNAPSHOT</version>"
             + "<version>2.0.4-SNAPSHOT</version></versions></expected>";
 
-        XMLAssert.assertXpathEvaluatesTo( "2.0.4-SNAPSHOT", "//metadata/versioning/latest", metadataXml );
-        XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
-                                     "//metadata/versioning/versions/version", metadataXml );
-        XMLAssert.assertXpathEvaluatesTo( "20070427033345", "//metadata/versioning/lastUpdated", metadataXml );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/latest" ).isEqualTo( "2.0.4-SNAPSHOT" );
+        // XMLAssert.assertXpathEvaluatesTo( "2.0.4-SNAPSHOT", "//metadata/versioning/latest", metadataXml );
+        XmlAssert.assertThat( metadataXml ).nodesByXPath( "//metadata/versioning/versions/version" ).hasSize( 2 );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/versions/version[1]" ).isEqualTo( "2.0.3-SNAPSHOT" );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/versions/version[2]" ).isEqualTo( "2.0.4-SNAPSHOT" );
+        // XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
+        //                             "//metadata/versioning/versions/version", metadataXml );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/lastUpdated" ).isEqualTo( "20070427033345" );
+        // XMLAssert.assertXpathEvaluatesTo( "20070427033345", "//metadata/versioning/lastUpdated", metadataXml );
     }
 }

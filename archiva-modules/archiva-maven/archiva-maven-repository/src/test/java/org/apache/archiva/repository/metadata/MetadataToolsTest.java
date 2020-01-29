@@ -37,11 +37,12 @@ import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.xml.sax.SAXException;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.Difference;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -397,9 +398,12 @@ public class MetadataToolsTest
         Path metadataFile = Paths.get( repository.getRepoRoot(), tools.toPath( reference ) );
         String actualMetadata = org.apache.archiva.common.utils.FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
 
-        DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
-        if ( !detailedDiff.similar() )
+        Diff detailedDiff = DiffBuilder.compare( expectedMetadata ).withTest( actualMetadata ).checkForSimilar().build();
+        if ( detailedDiff.hasDifferences() )
         {
+            for ( Difference diff : detailedDiff.getDifferences() ) {
+                System.out.println( diff );
+            }
             // If it isn't similar, dump the difference.
             assertEquals( expectedMetadata, actualMetadata );
         }
@@ -412,9 +416,12 @@ public class MetadataToolsTest
         Path metadataFile = Paths.get( repository.getRepoRoot(), tools.toPath( reference ) );
         String actualMetadata = org.apache.archiva.common.utils.FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
 
-        DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
-        if ( !detailedDiff.similar() )
+        Diff detailedDiff = DiffBuilder.compare( expectedMetadata ).withTest( actualMetadata ).checkForSimilar().build();
+        if ( detailedDiff.hasDifferences() )
         {
+            for ( Difference diff : detailedDiff.getDifferences() ) {
+                System.out.println( diff );
+            }
             // If it isn't similar, dump the difference.
             assertEquals( expectedMetadata, actualMetadata );
         }

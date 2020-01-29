@@ -25,9 +25,10 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
 import org.junit.Before;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.Difference;
 
 import java.nio.file.Paths;
 
@@ -44,9 +45,12 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
     protected void assertExpectedMetadata( String expectedMetadata, String actualMetadata )
         throws Exception
     {
-        DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
-        if ( !detailedDiff.similar() )
+        Diff detailedDiff = DiffBuilder.compare( expectedMetadata ).withTest( actualMetadata ).checkForSimilar().build();
+        if ( detailedDiff.hasDifferences() )
         {
+            for ( Difference diff : detailedDiff.getDifferences() ) {
+                System.out.println( diff );
+            }
             // If it isn't similar, dump the difference.
             assertEquals( expectedMetadata, actualMetadata );
         }

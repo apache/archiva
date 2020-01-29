@@ -30,7 +30,6 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -39,6 +38,7 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
+import org.xmlunit.assertj.XmlAssert;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -421,12 +421,9 @@ public class RepositoryPurgeConsumerTest
 
         String metadataXml = org.apache.archiva.common.utils.FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
 
-        String expectedVersions = "<expected><versions><version>2.3-SNAPSHOT</version></versions></expected>";
-
-        XMLAssert.assertXpathEvaluatesTo( "2.3-SNAPSHOT", "//metadata/versioning/latest", metadataXml );
-        XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
-                                     "//metadata/versioning/versions/version", metadataXml );
-        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/latest" ).isEqualTo( "2.3-SNAPSHOT" );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/versions/version" ).isEqualTo( "2.3-SNAPSHOT" );
+        XmlAssert.assertThat(metadataXml).valueByXPath("//metadata/versioning/lastUpdated").isEqualTo ( "20070315032817" );
 
         removeRepoFromConfiguration( "retention-count", repoConfiguration );
     }
@@ -492,10 +489,16 @@ public class RepositoryPurgeConsumerTest
         String expectedVersions =
             "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";
 
-        XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
-        XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
-                                     "//metadata/versioning/versions/version", metadataXml );
-        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/latest" ).isEqualTo( "2.3" );
+        // XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
+        XmlAssert.assertThat( metadataXml ).nodesByXPath( "//metadata/versioning/versions/version" ).hasSize( 2 );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/versions/version[1]" ).isEqualTo( "2.2" );
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/versions/version[2]" ).isEqualTo( "2.3" );
+        // XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
+        //                             "//metadata/versioning/versions/version", metadataXml );
+
+        XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/lastUpdated" ).isEqualTo( "20070315032817" );
+        //XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
 
         removeRepoFromConfiguration( "days-old", repoConfiguration );
     }

@@ -61,6 +61,8 @@
     <commons-fileupload.version>1.4</commons-fileupload.version>
     <commons-lang.version>3.9</commons-lang.version>
 
+    <xmlunit.version>2.6.3</xmlunit.version>
+
     <maven3x.version>3.5.4</maven3x.version>
     <maven.resolver.version>1.1.1</maven.resolver.version>
     <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
@@ -1493,10 +1495,18 @@
 
 
       <dependency>
-        <groupId>xmlunit</groupId>
-        <artifactId>xmlunit</artifactId>
-        <version>1.0</version>
+        <groupId>org.xmlunit</groupId>
+        <artifactId>xmlunit-core</artifactId>
+        <version>${xmlunit.version}</version>
+        <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.xmlunit</groupId>
+        <artifactId>xmlunit-assertj</artifactId>
+        <version>${xmlunit.version}</version>
+        <scope>test</scope>
+      </dependency>
+
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>

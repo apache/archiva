@@ -39,10 +39,13 @@ import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.TransferFailedException;
-import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
 import org.easymock.EasyMock;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.Difference;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -1098,9 +1101,13 @@ public class MetadataTransferTest
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFileAsset );
         RepositoryMetadataWriter.write( metadata, actualContents );
 
-        DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadataXml, actualContents.toString() ) );
-        if ( !detailedDiff.similar() )
+        Diff detailedDiff = DiffBuilder.compare( expectedMetadataXml).withTest( actualContents.toString() ).checkForSimilar().build();
+        if ( detailedDiff.hasDifferences() )
         {
+            for ( Difference diff : detailedDiff.getDifferences() )
+            {
+                System.out.println( diff );
+            }
             assertEquals( expectedMetadataXml, actualContents );
         }
 

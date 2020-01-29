@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,6 +30,8 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.xmlunit.assertj.XmlAssert;
 
 /**
  * RepositoryMetadataWriterTest
@@ -61,6 +62,6 @@ public class RepositoryMetadataWriterTest
         StringWriter actual = new StringWriter();
         RepositoryMetadataWriter.write( metadata, actual );
 
-        XMLAssert.assertXMLEqual( "XML Contents", expectedContent, actual.toString() );
+        XmlAssert.assertThat( actual.toString() ).and( expectedContent ).areIdentical();
     }
 }
