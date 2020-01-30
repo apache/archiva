@@ -75,50 +75,34 @@
       <groupId>org.apache.archiva.components</groupId>
       <artifactId>archiva-components-expression-evaluator</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-configuration2</artifactId>
+      <scope>runtime</scope>
       <exclusions>
-        <exclusion>
-          <groupId>commons-beanutils</groupId>
-          <artifactId>commons-beanutils-core</artifactId>
-        </exclusion>
-        <!-- targeting JDK 1.4, xml parser/apis not needed -->
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xerces</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xalan</groupId>
-          <artifactId>xalan</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>servletapi</groupId>
-          <artifactId>servletapi</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>ant</groupId>
-          <artifactId>ant-optional</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
+    <!--
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>3.2.2</version>
     </dependency>
+    -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -131,22 +115,16 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
     </dependency>
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-    </dependency>
-
-
-    <!-- Test scope -->
-
+    <!--
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-text</artifactId>
-    </dependency>
+  -->
+
+
+    <!-- Test scope -->
+
 
     <dependency>
       <groupId>org.easymock</groupId>

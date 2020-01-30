@@ -67,6 +67,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!--
+      NOTE:
+      The multithreadedtc project looks abandoned.
+      But I have no suitable alternative found yet.
+      So we keep this version as long as it works with our java versions.
+      MST
+    -->
     <dependency>
       <groupId>com.googlecode.multithreadedtc</groupId>
       <artifactId>multithreadedtc</artifactId>
