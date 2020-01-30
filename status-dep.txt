@@ -12,3 +12,32 @@ archiva-modules
   archiva-checksum
   archiva-policies
   archiva-configuration
+
+
+
+
+---
+
+Identical package names in different modules:
+
+find . -name *.java -exec grep -H '^package' {} \; |grep -v '/target/'  |awk -F':' '{ print $2 " " $1 }' | sed -e 's/\(.*\)\.\/\(.*\)\/src\/.*/\1 \2/g' |awk '{ if ( x[$2]++ >= 1 && ll[$2] != $3 ) { print "Duplicate entry " $2 " " $3 " --- " ll[$2] ; }; ll[$2] = $3 ; }'
+Duplicate entry org.apache.archiva.metadata.audit; archiva-modules/archiva-web/archiva-webdav --- archiva-modules/metadata/metadata-repository-api
+Duplicate entry org.apache.archiva.security; archiva-modules/archiva-web/archiva-web-common --- archiva-modules/archiva-web/archiva-security
+Duplicate entry org.apache.archiva.metadata.repository.stats; archiva-modules/plugins/repository-statistics --- archiva-modules/plugins/metadata-store-jcr
+Duplicate entry org.apache.archiva.repository.mock; archiva-modules/archiva-base/archiva-consumers/archiva-core-consumers --- archiva-modules/archiva-base/archiva-repository-layer
+Duplicate entry org.apache.archiva.proxy; archiva-modules/archiva-base/archiva-proxy --- archiva-modules/archiva-base/archiva-proxy-api
+Duplicate entry org.apache.archiva.repository.storage; archiva-modules/archiva-base/archiva-storage-api --- archiva-modules/archiva-base/archiva-storage-fs
+Duplicate entry org.apache.archiva.mock; archiva-modules/archiva-scheduler/archiva-scheduler-repository --- archiva-modules/archiva-base/archiva-mock
+Duplicate entry org.apache.archiva.proxy; archiva-modules/archiva-maven/archiva-maven-proxy --- archiva-modules/archiva-base/archiva-proxy
+Duplicate entry org.apache.archiva.metadata.repository; archiva-modules/archiva-maven/archiva-maven-proxy --- archiva-modules/metadata/metadata-repository-api
+Duplicate entry org.apache.archiva.repository.mock; archiva-modules/archiva-maven/archiva-maven-proxy --- archiva-modules/archiva-base/archiva-consumers/archiva-core-consumers
+Duplicate entry org.apache.archiva.proxy.maven; archiva-modules/archiva-maven/archiva-maven-common --- archiva-modules/archiva-maven/archiva-maven-proxy
+Duplicate entry org.apache.archiva.stagerepository.merge; archiva-modules/archiva-maven/archiva-maven-repository --- archiva-modules/plugins/stage-repository-merge
+Duplicate entry org.apache.archiva.metadata.repository; archiva-modules/archiva-maven/archiva-maven-repository --- archiva-modules/archiva-maven/archiva-maven-proxy
+Duplicate entry org.apache.archiva.configuration; archiva-modules/archiva-maven/archiva-maven-repository --- archiva-modules/archiva-base/archiva-configuration
+Duplicate entry org.apache.archiva.repository; archiva-modules/archiva-maven/archiva-maven-repository --- archiva-modules/archiva-base/archiva-repository-api
+Duplicate entry org.apache.archiva.repository.metadata; archiva-modules/archiva-maven/archiva-maven-repository --- archiva-modules/archiva-base/archiva-repository-api
+Duplicate entry org.apache.archiva.indexer.util; archiva-modules/archiva-maven/archiva-maven-indexer --- archiva-modules/archiva-base/archiva-repository-api
+Duplicate entry org.apache.archiva.indexer.search; archiva-modules/archiva-maven/archiva-maven-indexer --- archiva-modules/archiva-base/archiva-repository-api
+
+
