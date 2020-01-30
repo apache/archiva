@@ -1,0 +1,14 @@
+# Just for keeping track of the dependency check status
+# Will be deleted when dependency cleanup is finished
+# MST - 2020-01-30
+
+archiva-modules
+ archiva-base
+  archiva-common
+  archiva-storage-api
+  archiva-storage-fs
+  archiva-filelock
+  archiva-model
+  archiva-checksum
+  archiva-policies
+  archiva-configuration

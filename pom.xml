@@ -1974,6 +1974,7 @@
               <exclude>**/*.log</exclude>
               <exclude>**/.site-content/**</exclude>
               <exclude>**/git-sparse-checkout-pattern</exclude>
+              <exclude>status-dep.txt</exclude>
             </excludes>
           </configuration>
         </plugin>
