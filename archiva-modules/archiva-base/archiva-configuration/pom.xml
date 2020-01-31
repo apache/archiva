@@ -96,13 +96,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.2.2</version>
-    </dependency>
-    -->
+
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
@@ -115,16 +109,9 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-    </dependency>
-  -->
 
 
     <!-- Test scope -->
-
 
     <dependency>
       <groupId>org.easymock</groupId>

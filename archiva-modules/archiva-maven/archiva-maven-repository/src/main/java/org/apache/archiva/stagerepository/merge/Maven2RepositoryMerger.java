@@ -41,7 +41,6 @@ import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
 import org.apache.archiva.repository.storage.FilesystemAsset;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +65,11 @@ public class Maven2RepositoryMerger
     implements RepositoryMerger
 {
 
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    @Inject
+    @Named("metadataReader#maven")
+    private MavenMetadataReader metadataReader;
+
+    private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryMerger.class );
 
     private static final Comparator<ArtifactMetadata> META_COMPARATOR = Comparator.comparing(ArtifactMetadata::getNamespace)
             .thenComparing(ArtifactMetadata::getProject)
@@ -391,14 +394,7 @@ public class Maven2RepositoryMerger
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         if ( Files.exists(metadataFile) )
         {
-            try
-            {
-                metadata = MavenMetadataReader.read( metadataFile );
-            }
-            catch (XMLException e )
-            {
-                throw new RepositoryMetadataException( e.getMessage(), e );
-            }
+            metadata = metadataReader.read( metadataFile );
         }
         return metadata;
     }

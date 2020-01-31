@@ -38,6 +38,10 @@
       <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-storage-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.commons</groupId>
        <artifactId>commons-collections4</artifactId>
     </dependency>

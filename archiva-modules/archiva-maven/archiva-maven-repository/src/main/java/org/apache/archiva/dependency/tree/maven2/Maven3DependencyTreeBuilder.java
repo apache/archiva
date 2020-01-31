@@ -35,9 +35,9 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.maven2.MavenSystemManager;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.bridge.MavenRepositorySystem;
@@ -56,7 +56,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +79,10 @@ public class Maven3DependencyTreeBuilder
     @Inject
     @Named( "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
+
+    @Inject
+    @Named("metadataReader#maven")
+    private MavenMetadataReader metadataReader;
 
     @Inject
     private ProxyConnectorAdmin proxyConnectorAdmin;
@@ -252,7 +255,7 @@ public class Maven3DependencyTreeBuilder
                 {
                     try
                     {
-                        ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile);
+                        ArchivaRepositoryMetadata archivaRepositoryMetadata = metadataReader.read( metadataFile);
                         int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
                         String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
                         // rebuild file name with timestamped version and build number
@@ -269,7 +272,7 @@ public class Maven3DependencyTreeBuilder
                             return managedRepo;
                         }
                     }
-                    catch (XMLException | IOException e )
+                    catch ( RepositoryMetadataException e )
                     {
                         log.warn( "skip fail to find timestamped snapshot pom: {}", e.getMessage() );
                     }

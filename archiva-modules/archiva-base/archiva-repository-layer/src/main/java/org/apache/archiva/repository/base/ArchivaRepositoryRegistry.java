@@ -38,10 +38,13 @@ import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
 import org.apache.archiva.repository.event.*;
 import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.apache.archiva.repository.metadata.MetadataReader;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +90,9 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
 
     @Inject
     ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    List<MetadataReader> metadataReaderList;
 
     @Inject
     @Named("repositoryContentFactory#default")
@@ -252,6 +258,16 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     @Override
     public ArchivaIndexManager getIndexManager( RepositoryType type ) {
         return indexManagerFactory.getIndexManager(type);
+    }
+
+    @Override
+    public MetadataReader getMetadataReader( final RepositoryType type ) throws UnsupportedRepositoryTypeException
+    {
+        if (metadataReaderList!=null) {
+            return metadataReaderList.stream( ).filter( mr -> mr.isValidForType( type ) ).findFirst( ).orElseThrow( ( ) -> new UnsupportedRepositoryTypeException( type ) );
+        } else {
+            throw new UnsupportedRepositoryTypeException( type );
+        }
     }
 
     private void createIndexingContext( EditableRepository editableRepo) throws RepositoryException {
@@ -1259,6 +1275,13 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         RemoteRepository cloned = provider.createRemoteInstance(cfg);
         cloned.registerEventHandler(RepositoryEvent.ANY, this);
         return cloned;
+    }
+
+    @Override
+    public Repository getRepositoryOfAsset( StorageAsset asset )
+    {
+        return getManagedRepositories( ).stream( ).filter( r -> r.getAsset( "" )
+            .getStorage( ).equals( asset.getStorage( ) ) ).findFirst( ).orElse( null );
     }
 
 

@@ -23,11 +23,9 @@ import junit.framework.TestCase;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.apache.archiva.xml.XMLException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -42,11 +40,14 @@ public class RepositoryMetadataReaderTest
 {
     @Test
     public void testLoadSimple()
-            throws XMLException, IOException {
+        throws RepositoryMetadataException
+    {
         Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
         Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile);
+        MavenMetadataReader metadataReader = new MavenMetadataReader( );
+
+        ArchivaRepositoryMetadata metadata = metadataReader.read( metadataFile );
 
         assertNotNull( metadata );
         assertEquals( "Group Id", "org.apache.maven.shared", metadata.getGroupId() );
@@ -59,11 +60,13 @@ public class RepositoryMetadataReaderTest
 
     @Test
     public void testLoadComplex()
-            throws XMLException, IOException {
+        throws RepositoryMetadataException
+    {
         Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
         Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/samplejar/maven-metadata.xml" );
+        MavenMetadataReader metadataReader = new MavenMetadataReader( );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = metadataReader.read( metadataFile );
 
         assertNotNull( metadata );
         assertEquals( "Group Id", "org.apache.maven", metadata.getGroupId() );

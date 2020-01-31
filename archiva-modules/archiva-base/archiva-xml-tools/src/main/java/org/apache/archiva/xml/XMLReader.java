@@ -19,6 +19,7 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,6 +38,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -78,6 +80,10 @@ public class XMLReader
     public XMLReader( String type, Path file )
         throws XMLException
     {
+        initWithFile( type, file );
+    }
+
+    private void initWithFile( String type, Path file) throws XMLException {
         if ( !Files.exists(file) )
         {
             throw new XMLException( "file does not exist: " + file.toAbsolutePath() );
@@ -95,7 +101,7 @@ public class XMLReader
 
         try
         {
-            init( type, file.toUri().toURL() );
+            initWithUrl( type, file.toUri().toURL() );
         }
         catch ( MalformedURLException e )
         {
@@ -103,23 +109,52 @@ public class XMLReader
         }
     }
 
+    public XMLReader( String type, StorageAsset asset) throws XMLException
+    {
+        if (asset.isFileBased()) {
+            initWithFile( type, asset.getFilePath( ) );
+        } else {
+            URI uri = asset.getStorage( ).getLocation( ).resolve( asset.getPath( ) );
+            try(InputStream in = asset.getReadStream()) {
+                initWithStream( type, uri.toURL( ), in );
+            }
+            catch ( IOException e )
+            {
+                throw new XMLException( "Could not open asset stream of " + uri + ": " + e.getMessage( ), e );
+            }
+        }
+
+
+    }
+
+
     public XMLReader( String type, URL url )
         throws XMLException
     {
-        init( type, url );
+        initWithUrl( type, url );
     }
 
-    private void init( String type, URL url )
+
+    private void initWithUrl( String type, URL url ) throws XMLException {
+        try(InputStream in = url.openStream()) {
+            initWithStream( type, url, in );
+        }
+        catch ( IOException e )
+        {
+            throw new XMLException( "Could not open url " + url + ": " + e.getMessage( ), e );
+        }
+    }
+
+    private void initWithStream( String type, URL url, InputStream in  )
         throws XMLException
     {
         this.documentType = type;
         this.xmlUrl = url;
-
         // SAXReader reader = new SAXReader();
 
 
 
-        try (InputStream in = url.openStream(); Reader reader = new LatinEntityResolutionReader(new BufferedReader(new InputStreamReader(in, "UTF-8"))))
+        try (Reader reader = new LatinEntityResolutionReader(new BufferedReader(new InputStreamReader(in, "UTF-8"))))
         {
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

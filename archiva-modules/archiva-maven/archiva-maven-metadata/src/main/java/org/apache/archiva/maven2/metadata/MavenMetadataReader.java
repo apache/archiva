@@ -21,27 +21,37 @@ package org.apache.archiva.maven2.metadata;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.model.SnapshotVersion;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.metadata.MetadataReader;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLReader;
 import org.apache.archiva.xml.XmlUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Date;
 
 /**
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-public class MavenMetadataReader
+@Service("metadataReader#maven")
+public class MavenMetadataReader implements MetadataReader
 {
+    public static final String MAVEN_METADATA = "maven-metadata.xml";
+
+
     /*
     <?xml version="1.0" encoding="UTF-8"?>
     <metadata modelVersion="1.1.0">
@@ -67,81 +77,121 @@ public class MavenMetadataReader
 
     private static final Logger log = LoggerFactory.getLogger( MavenMetadataReader.class );
 
-    public static ArchivaRepositoryMetadata read(StorageAsset metadataFile) throws XMLException, IOException {
-        if (metadataFile.isFileBased()) {
-            return read(metadataFile.getFilePath());
-        } else {
-            throw new IOException("StorageAsset is not file based");
-        }
-    }
 
     /**
      * Read and return the {@link org.apache.archiva.model.ArchivaRepositoryMetadata} object from the provided xml file.
      *
      * @param metadataFile the maven-metadata.xml file to read.
      * @return the archiva repository metadata object that represents the provided file contents.
-     * @throws XMLException
+     * @throws RepositoryMetadataException if the file cannot be read
      */
-    public static ArchivaRepositoryMetadata read( Path metadataFile )
-            throws XMLException {
+    public ArchivaRepositoryMetadata read( StorageAsset metadataFile )
+            throws RepositoryMetadataException {
 
-        XMLReader xml = new XMLReader( "metadata", metadataFile );
+        XMLReader xml;
+        try
+        {
+            xml = new XMLReader( "metadata", metadataFile );
+        }
+        catch ( XMLException e )
+        {
+            throw new RepositoryMetadataException( "Could not open XML metadata file " + metadataFile, e );
+        }
+        return read( xml, metadataFile.getModificationTime(), metadataFile.getSize() );
+
+    }
+
+    public ArchivaRepositoryMetadata read( Path metadataFile )
+        throws RepositoryMetadataException {
+
+        XMLReader xml;
+        try
+        {
+            xml = new XMLReader( "metadata", metadataFile );
+        }
+        catch ( XMLException e )
+        {
+            log.error( "XML error while reading metadata file {}: {}", metadataFile, e.getMessage(), e );
+            throw new RepositoryMetadataException( "Could not open XML metadata file " + metadataFile, e );
+        }
+        try
+        {
+            return read( xml, Files.getLastModifiedTime( metadataFile ).toInstant(), Files.size( metadataFile ) );
+        }
+        catch ( IOException e )
+        {
+            log.error( "IO Error while reading metadata file {}: {}", metadataFile, e.getMessage(), e );
+            throw new RepositoryMetadataException( "Could not open XML metadata file " + metadataFile, e );
+        }
+
+    }
+
+    private ArchivaRepositoryMetadata read( XMLReader xml, Instant modTime, long fileSize) throws RepositoryMetadataException
+    {
         // invoke this to remove namespaces, see MRM-1136
         xml.removeNamespaces();
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
 
-        metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );
-        metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
-        metadata.setVersion( xml.getElementText( "//metadata/version" ) );
-        Date modTime;
-        try {
-            modTime = new Date(Files.getLastModifiedTime(metadataFile).toMillis());
-        } catch (IOException e) {
-            modTime = new Date();
-            log.error("Could not read modification time of {}", metadataFile);
-        }
-        metadata.setFileLastModified( modTime );
-        try {
-            metadata.setFileSize(Files.size(metadataFile));
-        } catch (IOException e) {
-            metadata.setFileSize( 0 );
-            log.error("Could not read file size of {}", metadataFile);
-        }
-        metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
-        metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );
-        metadata.setReleasedVersion( xml.getElementText( "//metadata/versioning/release" ) );
-        metadata.setAvailableVersions( xml.getElementListText( "//metadata/versioning/versions/version" ) );
-
-        Element snapshotElem = xml.getElement( "//metadata/versioning/snapshot" );
-        if ( snapshotElem != null )
+        try
         {
-            SnapshotVersion snapshot = new SnapshotVersion();
-            snapshot.setTimestamp(XmlUtil.getChildText(snapshotElem, "timestamp"));
-            String buildNumber = XmlUtil.getChildText(snapshotElem, "buildNumber");
-            if ( NumberUtils.isCreatable( buildNumber ) )
+            metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );
+            metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
+            metadata.setVersion( xml.getElementText( "//metadata/version" ) );
+            metadata.setFileLastModified( Date.from(modTime) );
+            metadata.setFileSize( fileSize );
+            metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
+            metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );
+            metadata.setReleasedVersion( xml.getElementText( "//metadata/versioning/release" ) );
+            metadata.setAvailableVersions( xml.getElementListText( "//metadata/versioning/versions/version" ) );
+
+            Element snapshotElem = xml.getElement( "//metadata/versioning/snapshot" );
+            if ( snapshotElem != null )
             {
-                snapshot.setBuildNumber( NumberUtils.toInt( buildNumber ) );
+                SnapshotVersion snapshot = new SnapshotVersion( );
+                snapshot.setTimestamp( XmlUtil.getChildText( snapshotElem, "timestamp" ) );
+                String buildNumber = XmlUtil.getChildText( snapshotElem, "buildNumber" );
+                if ( NumberUtils.isCreatable( buildNumber ) )
+                {
+                    snapshot.setBuildNumber( NumberUtils.toInt( buildNumber ) );
+                }
+                metadata.setSnapshotVersion( snapshot );
             }
-            metadata.setSnapshotVersion( snapshot );
-        }
 
-        for ( Node node : xml.getElementList( "//metadata/plugins/plugin" ) )
-        {
-            if (node instanceof Element) {
-                Element plugin = (Element) node;
-                Plugin p = new Plugin();
-                String prefix = plugin.getElementsByTagName("prefix").item(0).getTextContent().trim();
-                p.setPrefix(prefix);
-                String artifactId = plugin.getElementsByTagName("artifactId").item(0).getTextContent().trim();
-                p.setArtifactId(artifactId);
-                String name = plugin.getElementsByTagName("name").item(0).getTextContent().trim();
-                p.setName(name);
-                metadata.addPlugin(p);
+            for ( Node node : xml.getElementList( "//metadata/plugins/plugin" ) )
+            {
+                if ( node instanceof Element )
+                {
+                    Element plugin = (Element) node;
+                    Plugin p = new Plugin( );
+                    String prefix = plugin.getElementsByTagName( "prefix" ).item( 0 ).getTextContent( ).trim( );
+                    p.setPrefix( prefix );
+                    String artifactId = plugin.getElementsByTagName( "artifactId" ).item( 0 ).getTextContent( ).trim( );
+                    p.setArtifactId( artifactId );
+                    String name = plugin.getElementsByTagName( "name" ).item( 0 ).getTextContent( ).trim( );
+                    p.setName( name );
+                    metadata.addPlugin( p );
+                }
             }
+        } catch ( XMLException e) {
+            throw new RepositoryMetadataException( "XML Error while reading metadata file : " + e.getMessage( ), e );
         }
-
         return metadata;
+    }
 
+    @Override
+    public boolean isValidMetadataPath( String path )
+    {
+        if ( StringUtils.isNotEmpty( path ) ) {
+            return path.endsWith( MAVEN_METADATA );
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isValidForType( RepositoryType repositoryType )
+    {
+        return RepositoryType.MAVEN.equals( repositoryType );
     }
 }

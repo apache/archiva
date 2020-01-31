@@ -36,9 +36,13 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.components.taskqueue.TaskQueueException;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.base.ArtifactUtil;
+import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
@@ -112,6 +116,9 @@ public class DefaultFileUploadService
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler<RepositoryTask> scheduler;
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
 
     private String getStringValue(MultipartBody multipartBody, String attachmentId)
             throws IOException {
@@ -527,11 +534,10 @@ public class DefaultFileUploadService
             throws RepositoryMetadataException {
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         if (metadataFile.exists()) {
-            try {
-                metadata = MavenMetadataReader.read(metadataFile);
-            } catch (XMLException | IOException e) {
-                throw new RepositoryMetadataException(e.getMessage(), e);
-            }
+            Repository repo = repositoryRegistry.getRepositoryOfAsset( metadataFile );
+            RepositoryType type = repo == null ? RepositoryType.MAVEN : repo.getType( );
+            MetadataReader metadataReader = repositoryRegistry.getMetadataReader( type );
+            metadata = metadataReader.read(metadataFile);
         }
         return metadata;
     }

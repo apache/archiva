@@ -30,7 +30,7 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+// import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.Plugin;
@@ -43,6 +43,10 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
@@ -75,7 +79,7 @@ import java.util.stream.Stream;
 public class MetadataTools
     implements RegistryListener, ConfigurationListener
 {
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    private static final Logger log = LoggerFactory.getLogger( MetadataTools.class );
 
     public static final String MAVEN_METADATA = "maven-metadata.xml";
 
@@ -84,6 +88,9 @@ public class MetadataTools
     private static final char PATH_SEPARATOR = '/';
 
     private static final char GROUP_SEPARATOR = '.';
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
 
     /**
      *
@@ -359,26 +366,12 @@ public class MetadataTools
     public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
                                                         ProjectReference reference, String proxyId )
     {
+        MetadataReader reader = getMetadataReader( managedRepository );
+
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         StorageAsset metadataFile = managedRepository.getRepository().getAsset( metadataPath );
 
-        if ( !metadataFile.exists() || metadataFile.isContainer())
-        {
-            // Nothing to do. return null.
-            return null;
-        }
-
-        try
-        {
-            return MavenMetadataReader.read( metadataFile );
-        }
-        catch (XMLException | IOException e )
-        {
-            // TODO: [monitor] consider a monitor for this event.
-            // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: {}", metadataFile.getPath(), e );
-            return null;
-        }
+        return readMetadataFile( managedRepository, metadataFile );
     }
 
     public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
@@ -386,24 +379,7 @@ public class MetadataTools
     {
         String metadataPath = getRepositorySpecificName( proxyId, logicalResource );
         StorageAsset metadataFile = managedRepository.getRepository().getAsset( metadataPath );
-
-        if ( !metadataFile.exists() || metadataFile.isContainer())
-        {
-            // Nothing to do. return null.
-            return null;
-        }
-
-        try
-        {
-            return MavenMetadataReader.read( metadataFile );
-        }
-        catch (XMLException | IOException e )
-        {
-            // TODO: [monitor] consider a monitor for this event.
-            // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: {}", metadataFile.getPath(), e );
-            return null;
-        }
+        return readMetadataFile( managedRepository, metadataFile );
     }
 
     public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
@@ -411,24 +387,7 @@ public class MetadataTools
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         StorageAsset metadataFile = managedRepository.getRepository().getAsset( metadataPath );
-
-        if ( !metadataFile.exists() || metadataFile.isContainer())
-        {
-            // Nothing to do. return null.
-            return null;
-        }
-
-        try
-        {
-            return MavenMetadataReader.read( metadataFile );
-        }
-        catch (XMLException | IOException e )
-        {
-            // TODO: [monitor] consider a monitor for this event.
-            // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: {}", metadataFile.getPath(), e );
-            return null;
-        }
+        return readMetadataFile( managedRepository, metadataFile );
     }
 
     public void updateMetadata( ManagedRepositoryContent managedRepository, String logicalResource )
@@ -504,22 +463,10 @@ public class MetadataTools
 
         if ( file.exists() )
         {
-            try
+            ArchivaRepositoryMetadata existingMetadata = readMetadataFile( managedRepository, file );
+            if ( existingMetadata != null )
             {
-                ArchivaRepositoryMetadata existingMetadata = MavenMetadataReader.read( file );
-                if ( existingMetadata != null )
-                {
-                    metadatas.add( existingMetadata );
-                }
-            }
-            catch (XMLException | IOException e )
-            {
-                log.debug( "Could not read metadata at {}. Metadata will be removed.", file.getPath() );
-                try {
-                    file.getStorage().removeAsset(file);
-                } catch (IOException ex) {
-                    log.error("Could not remove asset {}", file.getPath());
-                }
+                metadatas.add( existingMetadata );
             }
         }
 
@@ -563,8 +510,9 @@ public class MetadataTools
     {
 
         StorageAsset metadataFile = managedRepository.getRepository().getAsset( toPath( reference ) );
+        ArchivaRepositoryMetadata existingMetadata = readMetadataFile( managedRepository, metadataFile );
 
-        long lastUpdated = getExistingLastUpdated( metadataFile );
+        long lastUpdated = getExistingLastUpdated( existingMetadata );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
@@ -577,16 +525,9 @@ public class MetadataTools
         // TODO: do we know this information instead?
 //        Set<Plugin> allPlugins = managedRepository.getPlugins( reference );
         Set<Plugin> allPlugins;
-        if ( metadataFile.exists())
+        if ( existingMetadata!=null)
         {
-            try
-            {
-                allPlugins = new LinkedHashSet<Plugin>( MavenMetadataReader.read( metadataFile ).getPlugins() );
-            }
-            catch ( XMLException e )
-            {
-                throw new RepositoryMetadataException( e.getMessage(), e );
-            }
+            allPlugins = new LinkedHashSet<Plugin>( existingMetadata.getPlugins() );
         }
         else
         {
@@ -639,6 +580,16 @@ public class MetadataTools
         RepositoryMetadataWriter.write( metadata, metadataFile );
         ChecksummedFile checksum = new ChecksummedFile( metadataFile.getFilePath() );
         checksum.fixChecksums( algorithms );
+    }
+
+    public MetadataReader getMetadataReader( ManagedRepositoryContent managedRepository )
+    {
+        if (managedRepository!=null)
+        {
+            return repositoryRegistry.getMetadataReader( managedRepository.getRepository( ).getType( ) );
+        } else {
+            return repositoryRegistry.getMetadataReader( RepositoryType.MAVEN );
+        }
     }
 
     private void updateMetadataVersions( Collection<String> allVersions, ArchivaRepositoryMetadata metadata )
@@ -732,25 +683,34 @@ public class MetadataTools
         }
     }
 
-    private long getExistingLastUpdated( StorageAsset metadataFile )
+    ArchivaRepositoryMetadata readMetadataFile( ManagedRepositoryContent repository, StorageAsset asset) {
+        MetadataReader reader = getMetadataReader( repository );
+        try
+        {
+            if (asset.exists() && !asset.isContainer())
+            {
+                return reader.read( asset );
+            } else {
+                log.error( "Trying to read metadata from container: {}", asset.getPath( ) );
+                return null;
+            }
+        }
+        catch ( RepositoryMetadataException e )
+        {
+            log.error( "Could not read metadata file {}", asset, e );
+            return null;
+        }
+    }
+
+    private long getExistingLastUpdated( ArchivaRepositoryMetadata metadata )
     {
-        if ( !metadataFile.exists() )
+        if ( metadata==null )
         {
             // Doesn't exist.
             return 0;
         }
 
-        try
-        {
-            ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
-
-            return getLastUpdated( metadata );
-        }
-        catch (XMLException | IOException e )
-        {
-            // Error.
-            return 0;
-        }
+        return getLastUpdated( metadata );
     }
 
     /**
@@ -773,8 +733,9 @@ public class MetadataTools
         throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
     {
         StorageAsset metadataFile = managedRepository.getRepository().getAsset( toPath( reference ) );
+        ArchivaRepositoryMetadata existingMetadata = readMetadataFile(managedRepository, metadataFile );
 
-        long lastUpdated = getExistingLastUpdated( metadataFile );
+        long lastUpdated = getExistingLastUpdated( existingMetadata );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
@@ -988,4 +949,6 @@ public class MetadataTools
     {
         log.debug( "Configuration event {}", event );
     }
+
+
 }

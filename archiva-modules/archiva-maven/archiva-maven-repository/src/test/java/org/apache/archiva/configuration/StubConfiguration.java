@@ -35,6 +35,10 @@ public class StubConfiguration
 {
     private Configuration configuration = new Configuration();
 
+    StubConfiguration() {
+        configuration.setRepositoryScanning( new RepositoryScanningConfiguration() );
+    }
+
     @Override
     public Configuration getConfiguration()
     {

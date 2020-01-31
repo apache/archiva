@@ -66,6 +66,7 @@ import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRequestInfo;
+import org.apache.archiva.repository.storage.FilesystemAsset;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.metadata.audit.AuditListener;
@@ -103,6 +104,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -340,18 +342,19 @@ public class ArchivaDavResourceFactory
                             try
                             {
                                 Path metadataFile = Paths.get( resourceAbsPath );
-                                ArchivaRepositoryMetadata repoMetadata = MavenMetadataReader.read( metadataFile );
+                                FilesystemStorage storage = new FilesystemStorage( metadataFile.getParent( ), new DefaultFileLockManager( ) );
+                                ArchivaRepositoryMetadata repoMetadata = repositoryRegistry.getMetadataReader( repoGroup.getType( ) ).read( storage.getAsset( metadataFile.getFileName().toString() ) );
                                 mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
-                            }
-                            catch (XMLException e )
-                            {
-                                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                                        "Error occurred while reading metadata file." );
                             }
                             catch ( RepositoryMetadataException r )
                             {
                                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                                         "Error occurred while merging metadata file." );
+                            }
+                            catch ( IOException e )
+                            {
+                                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                    "Error occurred while merging metadata file." );
                             }
                         }
 

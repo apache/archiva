@@ -50,6 +50,7 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.StorageUtil;
@@ -404,7 +405,7 @@ public class DefaultRepositoriesService
             String timestamp = null;
 
             StorageAsset versionMetadataFile = target.getAsset(path + "/" + MetadataTools.MAVEN_METADATA );
-            /* unused */ getMetadata( versionMetadataFile );
+            /* unused */ getMetadata( targetRepository.getRepository().getType(), versionMetadataFile );
 
             if ( !targetDir.exists() )
             {
@@ -454,7 +455,7 @@ public class DefaultRepositoriesService
             // explicitly update only if metadata-updater consumer is not enabled!
             if ( !archivaAdministration.getKnownContentConsumers().contains( "metadata-updater" ) )
             {
-                updateProjectMetadata( target, targetDir, lastUpdatedTimestamp, timestamp, newBuildNumber,
+                updateProjectMetadata( target.getType(), target, targetDir, lastUpdatedTimestamp, timestamp, newBuildNumber,
                                        fixChecksums, artifactTransferRequest );
 
 
@@ -505,20 +506,13 @@ public class DefaultRepositoriesService
         }
     }
 
-    private ArchivaRepositoryMetadata getMetadata( StorageAsset metadataFile )
+    private ArchivaRepositoryMetadata getMetadata( RepositoryType repositoryType, StorageAsset metadataFile )
         throws RepositoryMetadataException
     {
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         if ( metadataFile.exists() )
         {
-            try
-            {
-                metadata = MavenMetadataReader.read( metadataFile.getFilePath() );
-            }
-            catch (XMLException e )
-            {
-                throw new RepositoryMetadataException( e.getMessage(), e );
-            }
+            metadata = repositoryRegistry.getMetadataReader( repositoryType ).read( metadataFile );
         }
         return metadata;
     }
@@ -553,7 +547,7 @@ public class DefaultRepositoriesService
         }
     }
 
-    private void updateProjectMetadata( RepositoryStorage storage, StorageAsset targetPath, Date lastUpdatedTimestamp, String timestamp, int buildNumber,
+    private void updateProjectMetadata( RepositoryType repositoryType, RepositoryStorage storage, StorageAsset targetPath, Date lastUpdatedTimestamp, String timestamp, int buildNumber,
                                         boolean fixChecksums, ArtifactTransferRequest artifactTransferRequest )
         throws RepositoryMetadataException
     {
@@ -563,7 +557,7 @@ public class DefaultRepositoriesService
         StorageAsset projectDir = targetPath.getParent();
         StorageAsset projectMetadataFile = storage.getAsset( projectDir.getPath()+"/"+MetadataTools.MAVEN_METADATA );
 
-        ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetadataFile );
+        ArchivaRepositoryMetadata projectMetadata = getMetadata( repositoryType, projectMetadataFile );
 
         if ( projectMetadataFile.exists() )
         {
@@ -854,7 +848,7 @@ public class DefaultRepositoriesService
                         repository.deleteArtifact( artifactRef );
                     }
                     StorageAsset metadataFile = getMetadata( repo, targetPath.getPath() );
-                    ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
+                    ArchivaRepositoryMetadata metadata = getMetadata( repository.getRepository().getType(), metadataFile );
 
                     updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, artifact );
                 }

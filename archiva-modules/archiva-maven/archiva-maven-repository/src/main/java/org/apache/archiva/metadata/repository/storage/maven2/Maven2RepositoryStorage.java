@@ -42,6 +42,7 @@ import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.maven2.MavenSystemManager;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang3.ArrayUtils;
@@ -87,12 +88,16 @@ import java.util.stream.Collectors;
 public class Maven2RepositoryStorage
         implements RepositoryStorage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Maven2RepositoryStorage.class);
+    private static final Logger log = LoggerFactory.getLogger(Maven2RepositoryStorage.class);
 
     private ModelBuilder builder;
 
     @Inject
     RepositoryRegistry repositoryRegistry;
+
+    @Inject
+    @Named( "metadataReader#maven" )
+    MavenMetadataReader metadataReader;
 
     @Inject
     @Named("repositoryPathTranslator#maven2")
@@ -166,7 +171,7 @@ public class Maven2RepositoryStorage
                     readMetadataRequest.getProjectId(), artifactVersion,
                     METADATA_FILENAME);
             try {
-                ArchivaRepositoryMetadata metadata = MavenMetadataReader.read(metadataFile);
+                ArchivaRepositoryMetadata metadata = metadataReader.read(metadataFile);
 
                 // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
                 SnapshotVersion snapshotVersion = metadata.getSnapshotVersion();
@@ -176,9 +181,9 @@ public class Maven2RepositoryStorage
                     artifactVersion =
                             artifactVersion + snapshotVersion.getTimestamp() + "-" + snapshotVersion.getBuildNumber();
                 }
-            } catch (XMLException | IOException e) {
+            } catch ( RepositoryMetadataException e) {
                 // unable to parse metadata - LOGGER it, and continue with the version as the original SNAPSHOT version
-                LOGGER.warn("Invalid metadata: {} - {}", metadataFile, e.getMessage());
+                log.warn("Invalid metadata: {} - {}", metadataFile, e.getMessage());
             }
         }
 
@@ -236,7 +241,7 @@ public class Maven2RepositoryStorage
         // MRM-1411
         req.setModelResolver(
                 new RepositoryModelResolver(managedRepository, pathTranslator, wagonFactory, remoteRepositories,
-                        networkProxies, managedRepository, mavenSystemManager));
+                        networkProxies, managedRepository, mavenSystemManager, metadataReader));
 
         Model model;
         try {
@@ -255,7 +260,7 @@ public class Maven2RepositoryStorage
                         || problem.getException() instanceof NoSuchFileException
                 ) && e.getModelId() != null &&
                         !e.getModelId().equals(problem.getModelId()))) {
-                    LOGGER.warn("The artifact's parent POM file '{}' cannot be resolved. "
+                    log.warn("The artifact's parent POM file '{}' cannot be resolved. "
                             + "Using defaults for project version metadata..", file);
 
                     ProjectVersionMetadata metadata = new ProjectVersionMetadata();
@@ -514,15 +519,15 @@ public class Maven2RepositoryStorage
                                 readMetadataRequest.getProjectId(), readMetadataRequest.getProjectVersion(),
                                 path));
                     } catch (Exception e) {
-                        LOGGER.debug("Could not create metadata for {}:  {}", path, e.getMessage(), e);
+                        log.debug("Could not create metadata for {}:  {}", path, e.getMessage(), e);
                         return Try.<ArtifactMetadata>failure(e);
                     }
                 }
         ).collect(Collectors.groupingBy(Try::isSuccess));
         if (result.containsKey(Boolean.FALSE) && result.get(Boolean.FALSE).size() > 0 && (!result.containsKey(Boolean.TRUE) || result.get(Boolean.TRUE).size() == 0)) {
-            LOGGER.error("Could not get artifact metadata. Directory: {}. Number of errors {}.", dir, result.get(Boolean.FALSE).size());
+            log.error("Could not get artifact metadata. Directory: {}. Number of errors {}.", dir, result.get(Boolean.FALSE).size());
             Try<ArtifactMetadata> failure = result.get(Boolean.FALSE).get(0);
-            LOGGER.error("Sample exception {}", failure.getError().getMessage(), failure.getError());
+            log.error("Sample exception {}", failure.getError().getMessage(), failure.getError());
             throw new RepositoryStorageRuntimeException(readMetadataRequest.getRepositoryId(), "Could not retrieve metadata of the files");
         } else {
             if (!result.containsKey(Boolean.TRUE) || result.get(Boolean.TRUE) == null) {
@@ -661,7 +666,8 @@ public class Maven2RepositoryStorage
 
     @Override
     public String getFilePathWithVersion(final String requestPath, ManagedRepositoryContent managedRepositoryContent)
-            throws RelocationException, XMLException, IOException {
+            throws RelocationException
+    {
 
         if (StringUtils.endsWith(requestPath, METADATA_FILENAME)) {
             return getFilePath(requestPath, managedRepositoryContent.getRepository());
@@ -686,7 +692,16 @@ public class Maven2RepositoryStorage
             if (!metadataFile.exists()) {
                 return filePath;
             }
-            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read(metadataFile);
+            ArchivaRepositoryMetadata archivaRepositoryMetadata = null;
+            try
+            {
+                archivaRepositoryMetadata = metadataReader.read(metadataFile);
+            }
+            catch ( RepositoryMetadataException e )
+            {
+                log.error( "Could not read metadata {}", e.getMessage( ), e );
+                return filePath;
+            }
             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
             String timestamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
 
@@ -748,12 +763,12 @@ public class Maven2RepositoryStorage
         try {
             metadata.setMd5(checksummedFile.calculateChecksum(ChecksumAlgorithm.MD5));
         } catch (IOException e) {
-            LOGGER.error("Unable to checksum file {}: {},MD5", file, e.getMessage());
+            log.error("Unable to checksum file {}: {},MD5", file, e.getMessage());
         }
         try {
             metadata.setSha1(checksummedFile.calculateChecksum(ChecksumAlgorithm.SHA1));
         } catch (IOException e) {
-            LOGGER.error("Unable to checksum file {}: {},SHA1", file, e.getMessage());
+            log.error("Unable to checksum file {}: {},SHA1", file, e.getMessage());
         }
         metadata.setSize(file.getSize());
     }
@@ -806,9 +821,10 @@ public class Maven2RepositoryStorage
         StorageAsset metadataFile = directory.resolve(METADATA_FILENAME);
         if (metadataFile.exists()) {
             try {
-                metadata = MavenMetadataReader.read(metadataFile);
-            } catch (XMLException | IOException e) {
-                // ignore missing or invalid metadata
+                metadata = metadataReader.read(metadataFile);
+            } catch ( RepositoryMetadataException e )
+            {
+                // Ignore missing or invalid metadata
             }
         }
         return metadata;

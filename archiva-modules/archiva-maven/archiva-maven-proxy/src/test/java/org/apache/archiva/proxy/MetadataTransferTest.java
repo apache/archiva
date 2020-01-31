@@ -1098,7 +1098,7 @@ public class MetadataTransferTest
         StringWriter actualContents = new StringWriter();
         FilesystemStorage fsStorage = new FilesystemStorage(actualFile.getParent(), new DefaultFileLockManager());
         StorageAsset actualFileAsset = fsStorage.getAsset(actualFile.getFileName().toString());
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFileAsset );
+        ArchivaRepositoryMetadata metadata = metadataTools.getMetadataReader( null ).read( actualFileAsset );
         RepositoryMetadataWriter.write( metadata, actualContents );
 
         Diff detailedDiff = DiffBuilder.compare( expectedMetadataXml).withTest( actualContents.toString() ).checkForSimilar().build();

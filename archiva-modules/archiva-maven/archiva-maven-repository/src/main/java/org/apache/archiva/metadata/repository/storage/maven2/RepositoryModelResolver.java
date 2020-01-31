@@ -32,8 +32,8 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.maven2.MavenSystemManager;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.maven.model.Dependency;
@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,21 +94,24 @@ public class RepositoryModelResolver
 
     private MavenSystemManager mavenSystemManager;
 
+    private MavenMetadataReader metadataReader;
+
 
 
     private ManagedRepository managedRepository;
 
-    public RepositoryModelResolver(StorageAsset basedir, RepositoryPathTranslator pathTranslator )
+    public RepositoryModelResolver(StorageAsset basedir, RepositoryPathTranslator pathTranslator)
     {
         this.basedir = basedir;
 
         this.pathTranslator = pathTranslator;
+
     }
 
     public RepositoryModelResolver(ManagedRepository managedRepository, RepositoryPathTranslator pathTranslator,
                                    WagonFactory wagonFactory, List<RemoteRepository> remoteRepositories,
                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository,
-                                   MavenSystemManager mavenSystemManager)
+                                   MavenSystemManager mavenSystemManager, MavenMetadataReader metadataReader)
     {
         this( managedRepository.getAsset(""), pathTranslator );
 
@@ -129,6 +131,7 @@ public class RepositoryModelResolver
         this.versionRangeResolver = mavenSystemManager.getLocator().getService(VersionRangeResolver.class);
 
         this.mavenSystemManager = mavenSystemManager;
+        this.metadataReader = metadataReader;
     }
 
 
@@ -236,7 +239,7 @@ public class RepositoryModelResolver
         {
             try
             {
-                ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( mavenMetadata);
+                ArchivaRepositoryMetadata archivaRepositoryMetadata = metadataReader.read( mavenMetadata );
                 SnapshotVersion snapshotVersion = archivaRepositoryMetadata.getSnapshotVersion();
                 if ( snapshotVersion != null )
                 {
@@ -258,7 +261,7 @@ public class RepositoryModelResolver
                     }
                 }
             }
-            catch (XMLException e )
+            catch ( RepositoryMetadataException e )
             {
                 log.warn( "fail to read {}, {}", mavenMetadata.toAbsolutePath(), e.getCause() );
             }
@@ -286,7 +289,7 @@ public class RepositoryModelResolver
     public ModelResolver newCopy()
     {
         return new RepositoryModelResolver( managedRepository,  pathTranslator, wagonFactory, remoteRepositories, 
-                                            networkProxyMap, targetRepository, mavenSystemManager);
+                                            networkProxyMap, targetRepository, mavenSystemManager, metadataReader);
     }
 
     // FIXME: we need to do some refactoring, we cannot re-use the proxy components of archiva-proxy in maven2-repository
@@ -294,7 +297,7 @@ public class RepositoryModelResolver
     private boolean getModelFromProxy( RemoteRepository remoteRepository, String groupId, String artifactId,
                                        String version, String filename )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException, WagonFactoryException,
-        XMLException, IOException
+        IOException, RepositoryMetadataException
     {
         boolean success = false;
         Path tmpMd5 = null;
@@ -339,7 +342,7 @@ public class RepositoryModelResolver
 
                         log.debug( "Successfully downloaded metadata." );
 
-                        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( tmpMetadataResource );
+                        ArchivaRepositoryMetadata metadata = metadataReader.read( tmpMetadataResource );
 
                         // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
                         SnapshotVersion snapshotVersion = metadata.getSnapshotVersion();

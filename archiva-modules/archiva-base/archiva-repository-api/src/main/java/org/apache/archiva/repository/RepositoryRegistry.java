@@ -27,6 +27,8 @@ import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.event.EventSource;
 import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
+import org.apache.archiva.repository.metadata.MetadataReader;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.util.Collection;
 
@@ -41,12 +43,36 @@ import java.util.Collection;
  */
 public interface RepositoryRegistry extends EventSource
 {
+    /**
+     * Set the configuration for the registry
+     * @param archivaConfiguration
+     */
     void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration );
 
+    /**
+     * Return the index manager for the given repository type
+     * @param type the repository type
+     * @return the index manager, if it exists
+     */
     ArchivaIndexManager getIndexManager( RepositoryType type );
 
+    /**
+     * Returns the metadatareader for the given repository type
+     * @param type the repository type
+     * @return the metadata reader instance
+     */
+    MetadataReader getMetadataReader(RepositoryType type) throws UnsupportedRepositoryTypeException;
+
+    /**
+     * Returns all registered repositories
+     * @return the list of repositories
+     */
     Collection<Repository> getRepositories( );
 
+    /**
+     * Returns all managed repositories
+     * @return the list of managed repositories
+     */
     Collection<ManagedRepository> getManagedRepositories( );
 
     Collection<RemoteRepository> getRemoteRepositories( );
@@ -106,4 +132,11 @@ public interface RepositoryRegistry extends EventSource
     <T extends Repository> Repository clone( T repo, String newId ) throws RepositoryException;
 
     RemoteRepository clone( RemoteRepository repo, String newId ) throws RepositoryException;
+
+    /**
+     * Return the repository that stores the given asset.
+     * @param asset the asset
+     * @return the repository or <code>null</code> if no matching repository is found
+     */
+    Repository getRepositoryOfAsset( StorageAsset asset );
 }

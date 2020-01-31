@@ -259,7 +259,8 @@ public class RepositoryServletRepositoryGroupTest
 
         Path returnedMetadata = getProjectBase().resolve( "target/test-classes/retrievedMetadataFile.xml" );
         org.apache.archiva.common.utils.FileUtils.writeStringToFile( returnedMetadata, Charset.defaultCharset(), response.getContentAsString() );
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
+        MavenMetadataReader metadataReader = new MavenMetadataReader( );
+        ArchivaRepositoryMetadata metadata = metadataReader.read( returnedMetadata );
 
         assertResponseOK( response );
 

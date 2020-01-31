@@ -42,6 +42,8 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.StorageUtil;
@@ -85,6 +87,9 @@ public class DefaultBrowseService
 
     @Inject
     ProxyRegistry proxyRegistry;
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
 
     @Inject
     @Named( value = "browse#versionMetadata" )
@@ -919,30 +924,24 @@ public class DefaultBrowseService
                     StorageAsset metadataFile = file.getStorage().getAsset(file.getParent().getPath()+"/"+MetadataTools.MAVEN_METADATA );
                     if ( metadataFile.exists() )
                     {
-                        try
-                        {
-                            ArchivaRepositoryMetadata archivaRepositoryMetadata =
-                                MavenMetadataReader.read( metadataFile );
-                            int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
-                            String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
-                            // rebuild file name with timestamped version and build number
-                            String timeStampFileName = new StringBuilder( artifactId ).append( '-' ) //
-                                .append( StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) ) //
-                                .append( '-' ).append( timeStamp ) //
-                                .append( '-' ).append( Integer.toString( buildNumber ) ) //
-                                .append( ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ) //
-                                .append( ".jar" ).toString();
+                        MetadataReader metadataReader = repositoryRegistry.getMetadataReader( managedRepositoryContent.getRepository( ).getType( ) );
+                        ArchivaRepositoryMetadata archivaRepositoryMetadata =
+                            metadataReader.read( metadataFile );
+                        int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
+                        String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
+                        // rebuild file name with timestamped version and build number
+                        String timeStampFileName = new StringBuilder( artifactId ).append( '-' ) //
+                            .append( StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) ) //
+                            .append( '-' ).append( timeStamp ) //
+                            .append( '-' ).append( Integer.toString( buildNumber ) ) //
+                            .append( ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ) //
+                            .append( ".jar" ).toString();
 
-                            StorageAsset timeStampFile = file.getStorage().getAsset(file.getParent().getPath() + "/" + timeStampFileName );
-                            log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
-                            if ( timeStampFile.exists() )
-                            {
-                                return true;
-                            }
-                        }
-                        catch (XMLException | IOException e )
+                        StorageAsset timeStampFile = file.getStorage().getAsset(file.getParent().getPath() + "/" + timeStampFileName );
+                        log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
+                        if ( timeStampFile.exists() )
                         {
-                            log.warn( "skip fail to find timestamped snapshot file: {}", e.getMessage() );
+                            return true;
                         }
                     }
                 }
