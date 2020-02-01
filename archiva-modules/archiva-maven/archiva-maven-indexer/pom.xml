@@ -33,11 +33,12 @@
   </properties>
 
   <dependencies>
-
+    <!--
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-admin-api</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-common</artifactId>
@@ -45,6 +46,10 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-proxy-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -182,10 +187,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-repository</artifactId>
+    </dependency>
+    <!--
+    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-admin-default</artifactId>
       <scope>test</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>

@@ -20,7 +20,6 @@ package org.apache.archiva.indexer.maven.search;
 */
 
 import junit.framework.TestCase;
-import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
@@ -29,6 +28,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -93,6 +93,9 @@ public abstract class AbstractMavenRepositorySearch
     ArchivaRepositoryRegistry repositoryRegistry;
 
     @Inject
+    ProxyRegistry proxyRegistry;
+
+    @Inject
     private IndexerEngine indexerEngine;
 
     IMocksControl archivaConfigControl;
@@ -125,11 +128,9 @@ public abstract class AbstractMavenRepositorySearch
 
         archivaConfig = archivaConfigControl.createMock( ArchivaConfiguration.class );
 
-        DefaultProxyConnectorAdmin defaultProxyConnectorAdmin = new DefaultProxyConnectorAdmin();
-        defaultProxyConnectorAdmin.setArchivaConfiguration( archivaConfig );
         repositoryRegistry.setArchivaConfiguration( archivaConfig );
 
-        search = new MavenRepositorySearch( indexer, repositoryRegistry, defaultProxyConnectorAdmin,
+        search = new MavenRepositorySearch( indexer, repositoryRegistry, proxyRegistry,
                                             queryCreator );
 
         assertNotNull( repositoryRegistry );

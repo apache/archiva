@@ -136,11 +136,7 @@
       <artifactId>log4j-jcl</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.components.cache</groupId>
-      <artifactId>archiva-components-spring-cache-ehcache</artifactId>
-      <scope>test</scope>
-    </dependency>
+
   </dependencies>
   <build>
     <plugins>

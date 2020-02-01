@@ -48,16 +48,6 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduler-indexing</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.components.registry</groupId>
@@ -68,70 +58,52 @@
       <artifactId>archiva-components-spring-taskqueue</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.lucene</groupId>
-          <artifactId>lucene-queryparser</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.lucene</groupId>
-          <artifactId>lucene-analyzers-common</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.indexer</groupId>
-      <artifactId>indexer-core</artifactId>
-      <classifier>shaded-lucene</classifier>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.lucene</groupId>
-          <artifactId>lucene-queryparser</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.lucene</groupId>
-          <artifactId>lucene-analyzers-common</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-role-manager</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-api</artifactId>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
     </dependency>
 
     <!-- Test scope -->
     <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-default</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http-lightweight</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-scheduler-repository</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.maven</groupId>
-      <artifactId>archiva-maven-repository</artifactId>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-store-jcr</artifactId>
@@ -140,18 +112,6 @@
     <dependency>
       <groupId>org.apache.archiva.maven</groupId>
       <artifactId>archiva-maven-indexer</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.archiva.components.cache</groupId>
-      <artifactId>archiva-components-spring-cache-ehcache</artifactId>
       <scope>test</scope>
     </dependency>
 

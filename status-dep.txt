@@ -21,6 +21,10 @@ archiva-modules
   archiva-security-common
   archiva-consumers
     archiva-consumers-api
+    archiva-core-consumers
+    archiva-metadata-consumer
+    archiva-signature-consumer
+    archiva-lucene-consumer
 
 
 

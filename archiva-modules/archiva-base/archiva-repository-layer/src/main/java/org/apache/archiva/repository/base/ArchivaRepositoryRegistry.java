@@ -1280,8 +1280,13 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     @Override
     public Repository getRepositoryOfAsset( StorageAsset asset )
     {
-        return getManagedRepositories( ).stream( ).filter( r -> r.getAsset( "" )
-            .getStorage( ).equals( asset.getStorage( ) ) ).findFirst( ).orElse( null );
+        if (asset instanceof Repository) {
+            return (Repository)asset;
+        } else
+        {
+            return getRepositories( ).stream( ).filter( r -> r.getAsset( "" )
+                .getStorage( ).equals( asset.getStorage( ) ) ).findFirst( ).orElse( null );
+        }
     }
 
 

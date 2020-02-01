@@ -19,9 +19,6 @@ package org.apache.archiva.indexer.maven.search;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ProxyConnector;
-import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.indexer.search.ArtifactInfoFilter;
 import org.apache.archiva.indexer.search.NoClassifierArtifactInfoFilter;
@@ -33,6 +30,8 @@ import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.model.ArchivaArtifactModel;
+import org.apache.archiva.proxy.ProxyRegistry;
+import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
@@ -82,9 +81,9 @@ public class MavenRepositorySearch
     private QueryCreator queryCreator;
 
 
-    RepositoryRegistry repositoryRegistry;
+    private RepositoryRegistry repositoryRegistry;
 
-    private ProxyConnectorAdmin proxyConnectorAdmin;
+    private ProxyRegistry proxyRegistry;
 
     protected MavenRepositorySearch()
     {
@@ -93,13 +92,12 @@ public class MavenRepositorySearch
 
     @Inject
     public MavenRepositorySearch( Indexer nexusIndexer, RepositoryRegistry repositoryRegistry,
-
-                                  ProxyConnectorAdmin proxyConnectorAdmin, QueryCreator queryCreator )
+                                  ProxyRegistry proxyRegistry, QueryCreator queryCreator )
     {
         this.indexer = nexusIndexer;
         this.queryCreator = queryCreator;
         this.repositoryRegistry = repositoryRegistry;
-        this.proxyConnectorAdmin = proxyConnectorAdmin;
+        this.proxyRegistry = proxyRegistry;
     }
 
     /**
@@ -339,10 +337,6 @@ public class MavenRepositorySearch
         {
             throw new RepositorySearchException( e.getMessage(), e );
         }
-        catch ( RepositoryAdminException e )
-        {
-            throw new RepositorySearchException( e.getMessage(), e );
-        }
 
     }
 
@@ -460,14 +454,7 @@ public class MavenRepositorySearch
         Set<String> ids = new HashSet<>();
 
         List<ProxyConnector> proxyConnectors = null;
-        try
-        {
-            proxyConnectors = proxyConnectorAdmin.getProxyConnectorAsMap().get( managedRepoId );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new RepositorySearchException( e.getMessage(), e );
-        }
+        proxyConnectors = proxyRegistry.getProxyConnectorAsMap( ).get( managedRepoId );
 
         if ( proxyConnectors == null || proxyConnectors.isEmpty() )
         {
@@ -476,8 +463,8 @@ public class MavenRepositorySearch
 
         for ( ProxyConnector proxyConnector : proxyConnectors )
         {
-            String remoteId = "remote-" + proxyConnector.getTargetRepoId();
-            RemoteRepository repo = repositoryRegistry.getRemoteRepository(proxyConnector.getTargetRepoId());
+            String remoteId = "remote-" + proxyConnector.getTargetRepository().getId();
+            RemoteRepository repo = repositoryRegistry.getRemoteRepository(proxyConnector.getTargetRepository().getId());
             if (repo.getType()==RepositoryType.MAVEN) {
                 try {
                     IndexingContext context = repo.getIndexingContext() != null ? repo.getIndexingContext().getBaseContext(IndexingContext.class) : null;
@@ -523,7 +510,6 @@ public class MavenRepositorySearch
     private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits,
                                                   List<? extends ArtifactInfoFilter> artifactInfoFilters,
                                                   List<String> selectedRepos, boolean includePoms )
-        throws RepositoryAdminException
     {
         SearchResults results = new SearchResults();
         Set<ArtifactInfo> artifactInfos = response.getResults();
@@ -605,7 +591,6 @@ public class MavenRepositorySearch
      * @return
      */
     protected String getBaseUrl( ArtifactInfo artifactInfo, List<String> selectedRepos )
-        throws RepositoryAdminException
     {
         StringBuilder sb = new StringBuilder();
         if ( StringUtils.startsWith( artifactInfo.getContext(), "remote-" ) )
@@ -653,12 +638,10 @@ public class MavenRepositorySearch
      * @param remoteRepo
      * @param selectedRepos
      * @return
-     * @throws RepositoryAdminException
      */
     private String getManagedRepoId( String remoteRepo, List<String> selectedRepos )
-        throws RepositoryAdminException
     {
-        Map<String, List<ProxyConnector>> proxyConnectorMap = proxyConnectorAdmin.getProxyConnectorAsMap();
+        Map<String, List<ProxyConnector>> proxyConnectorMap = proxyRegistry.getProxyConnectorAsMap();
         if ( proxyConnectorMap == null || proxyConnectorMap.isEmpty() )
         {
             return null;
@@ -671,9 +654,9 @@ public class MavenRepositorySearch
                 {
                     for ( ProxyConnector proxyConnector : entry.getValue() )
                     {
-                        if ( StringUtils.equals( remoteRepo, proxyConnector.getTargetRepoId() ) )
+                        if ( StringUtils.equals( remoteRepo, proxyConnector.getTargetRepository().getId() ) )
                         {
-                            return proxyConnector.getSourceRepoId();
+                            return proxyConnector.getSourceRepository().getId();
                         }
                     }
                 }
@@ -686,9 +669,9 @@ public class MavenRepositorySearch
 
             for ( ProxyConnector proxyConnector : entry.getValue() )
             {
-                if ( StringUtils.equals( remoteRepo, proxyConnector.getTargetRepoId() ) )
+                if ( StringUtils.equals( remoteRepo, proxyConnector.getTargetRepository().getId() ) )
                 {
-                    return proxyConnector.getSourceRepoId();
+                    return proxyConnector.getSourceRepository().getId();
                 }
             }
 
