@@ -33,6 +33,7 @@ ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer\
  archiva-modules/metadata/metadata-model-maven2\
  archiva-modules/plugins/maven2-repository\
  archiva-modules/archiva-base/archiva-converter\
+ archiva-modules/archiva-base/archiva-consumers/archiva-lucene-consumer\
 "
 REMOVE_DIRS=".indexer"
 TMP_DIRECTORY=".tmp"

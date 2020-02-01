@@ -37,7 +37,7 @@
   <modules>
     <module>archiva-consumer-api</module>
     <module>archiva-core-consumers</module>
-    <module>archiva-lucene-consumers</module>
+    <module>archiva-indexer-consumers</module>
     <module>archiva-signature-consumers</module>
     <module>archiva-metadata-consumer</module>
     <module>archiva-consumer-archetype</module>
