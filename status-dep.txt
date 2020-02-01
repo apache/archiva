@@ -16,6 +16,7 @@ archiva-modules
   archiva-xml-tools
   archiva-repository-layer
   archiva-proxy-api
+  archiva-proxy
 
 
 
