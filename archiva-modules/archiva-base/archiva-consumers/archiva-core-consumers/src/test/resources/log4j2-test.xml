@@ -17,87 +17,25 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
+<configuration>
+  <Properties>
 
-
-<configuration status="debug">
-
-  <properties>
-    <property name="logsDirectory">${sys:appserver.base}/logs</property>
-  </properties>
-
+  </Properties>
   <appenders>
-    <Console name="console" target="SYSTEM_OUT" level="info">
-      <!--PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/-->
-      <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}" />
+    <Console name="console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{ISO8601_PERIOD} [%L] [%t] %-5level %logger{3} - %msg%n"/>
     </Console>
-    <RollingRandomAccessFile name="rolling" fileName="${logsDirectory}/archiva.log"
-                     filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log"
-
-                             immediateFlush="true" append="true">
-      <PatternLayout>
-        <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
-      </PatternLayout>
-      <Policies>
-        <TimeBasedTriggeringPolicy />
-      </Policies>
-    </RollingRandomAccessFile>
+    <!--
+    <RandomAccessFile name="LogFile" fileName="target/test.log">
+      <PatternLayout pattern="%d{ISO8601_PERIOD} [%L] [%t] %-5level %logger{3} - %msg%n"/>
+    </RandomAccessFile>
+    -->
   </appenders>
   <loggers>
-
-    <!-- apache httpclient debug content transfer-->
-    <!--
-    <logger name="org.apache.http.wire">
-      <level value="debug"/>
-    </logger>
-    <logger name="org.apache.http.headers" level="debug"/>
-    -->
-
-
-
-    <logger name="org.apache.archiva.indexer.maven.search.MavenRepositorySearch" level="info"/>
-
-    <logger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="info"/>
-
-    <logger name="JPOX" level="error"/>
-
-    <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
-
-    <logger name="org.apache.archiva.admin.repository.managed" level="info"/>
-
-    <logger name="org.springframework" level="info"/>
-
-    <logger name="org.codehaus.plexus" level="info"/>
-
-    <logger name="org.codehaus.redback" level="info"/>
-
-    <logger name="org.apache.cxf" level="info"/>
-
-    <logger name="org.quartz" level="info"/>
-
-    <logger name="org.apache.archiva.indexer.merger" level="info"/>
-
-    <logger name="org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager" level="debug" />
-
-    <logger name="org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler" level="debug"/>
-
-    <logger name="org.apache.archiva.web.security.ArchivaAuthorizer" level="debug"/>
-
-    <logger name="org.apache.archiva.redback.rest.services.DefaultRoleManagementService" level="debug"/>
-
-    <logger name="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
-
-    <logger name="org.apache.archiva.components.taskqueue.DefaultTaskQueue" level="info" />
-
-    <logger name="org.apache.archiva" level="debug" />
-    <!--
-    <logger name="org.apache.archiva.scheduler.indexing" level="debug"/>
-    -->
-
-    <root level="info" includeLocation="true">
+    <logger name="org.apache.archiva" level="info"/>
+    <logger name="org.apache.archiva.repository.scanner" level="info"/>
+    <root level="error" includeLocation="true">
       <appender-ref ref="console"/>
-      <appender-ref ref="rolling"/>
     </root>
   </loggers>
 </configuration>
-
-

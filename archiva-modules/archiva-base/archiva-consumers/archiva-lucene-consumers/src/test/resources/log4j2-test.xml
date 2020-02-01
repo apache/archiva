@@ -17,25 +17,25 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-
-
 <configuration>
+  <Properties>
+
+  </Properties>
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d [%t] %-5p %c %x - %m%n"/>
+      <PatternLayout pattern="%d{ISO8601_PERIOD} [%L] [%t] %-5level %logger{3} - %msg%n"/>
     </Console>
+    <!--
+    <RandomAccessFile name="LogFile" fileName="target/test.log">
+      <PatternLayout pattern="%d{ISO8601_PERIOD} [%L] [%t] %-5level %logger{3} - %msg%n"/>
+    </RandomAccessFile>
+    -->
   </appenders>
   <loggers>
-
-    <logger name="org.springframework" level="error"/>
-
-    <!--
-    <logger name="org.apache.http" level="debug"/>
-    -->
-    <root level="info">
+    <logger name="org.apache.archiva" level="info"/>
+    <logger name="org.apache.archiva.repository.scanner" level="info"/>
+    <root level="error" includeLocation="true">
       <appender-ref ref="console"/>
     </root>
   </loggers>
 </configuration>
-
-

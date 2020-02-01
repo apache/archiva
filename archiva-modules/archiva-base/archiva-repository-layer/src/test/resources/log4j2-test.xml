@@ -17,29 +17,25 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
+<configuration>
+  <Properties>
 
-
-<configuration status="debug">
+  </Properties>
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+      <PatternLayout pattern="%d{ISO8601_PERIOD} [%L] [%t] %-5level %logger{3} - %msg%n"/>
     </Console>
+    <!--
+    <RandomAccessFile name="LogFile" fileName="target/test.log">
+      <PatternLayout pattern="%d{ISO8601_PERIOD} [%L] [%t] %-5level %logger{3} - %msg%n"/>
+    </RandomAccessFile>
+    -->
   </appenders>
   <loggers>
-
-    <logger name="org.apache.archiva.admin.repository.managed" level="debug"/>
-    <logger name="org.apache.archiva.repository" level="TRACE" />
-
-    <logger name="JPOX" level="error"/>
-
-
-    <logger name="org.springframework" level="error"/>
-
-
-    <root level="info">
+    <logger name="org.apache.archiva" level="info"/>
+    <logger name="org.apache.archiva.repository.scanner" level="info"/>
+    <root level="error" includeLocation="true">
       <appender-ref ref="console"/>
     </root>
   </loggers>
 </configuration>
-
-

@@ -17,6 +17,10 @@ archiva-modules
   archiva-repository-layer
   archiva-proxy-api
   archiva-proxy
+  archiva-repository-scanner
+  archiva-security-common
+  archiva-consumers
+    archiva-consumers-api
 
 
 

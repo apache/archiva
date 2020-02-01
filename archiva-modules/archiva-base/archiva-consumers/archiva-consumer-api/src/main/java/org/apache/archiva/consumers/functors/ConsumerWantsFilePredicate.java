@@ -20,13 +20,13 @@ package org.apache.archiva.consumers.functors;
  */
 
 import org.apache.archiva.common.utils.BaseFile;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +125,7 @@ public class ConsumerWantsFilePredicate
         {
             for ( String pattern : excludes )
             {
-                if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
+                if ( PathUtil.matchPath( pattern, relativePath, isCaseSensitive ) )
                 {
                     // Definately does NOT WANT FILE.
                     return false;
@@ -166,7 +166,7 @@ public class ConsumerWantsFilePredicate
         // Now test includes.
         for ( String pattern : consumer.getIncludes( ) )
         {
-            if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
+            if ( PathUtil.matchPath( pattern, relativePath, isCaseSensitive ) )
             {
                 // Specifically WANTS FILE.
                 return true;
