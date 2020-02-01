@@ -22,6 +22,7 @@ package org.apache.archiva.proxy;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksumUtil;
 import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorRuleConfiguration;
@@ -54,10 +55,8 @@ import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
@@ -136,6 +135,8 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         return proxyConnectorRuleConfigurations;
     }
 
+
+
     @Override
     public StorageAsset fetchFromProxies( ManagedRepository repository, ArtifactReference artifact )
         throws ProxyDownloadException
@@ -164,7 +165,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             if ( SystemUtils.IS_OS_WINDOWS )
             {
                 // toPath use system PATH_SEPARATOR so on windows url are \ which doesn't work very well :-)
-                targetPath = FilenameUtils.separatorsToUnix( targetPath );
+                targetPath = PathUtil.separatorsToUnix( targetPath );
             }
 
             try
@@ -770,7 +771,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
                 pattern = "/" + pattern;
             }
 
-            if ( SelectorUtils.matchPath( pattern, path, false ) )
+            if ( PathUtil.matchPath( pattern, path, false ) )
             {
                 return true;
             }

@@ -44,16 +44,6 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -67,15 +57,64 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-storage-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-storage-fs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-taskqueue</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-policies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-checksum</artifactId>
+    </dependency>
 
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <!--
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -84,34 +123,43 @@
       <groupId>org.apache.commons</groupId>
        <artifactId>commons-collections4</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.ant</groupId>
-      <artifactId>ant</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.sisu</groupId>
-      <artifactId>org.eclipse.sisu.plexus</artifactId>
-    </dependency>
+    <!--
+        <dependency>
+          <groupId>org.apache.ant</groupId>
+          <artifactId>ant</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.sisu</groupId>
+          <artifactId>org.eclipse.sisu.plexus</artifactId>
+        </dependency>
+        -->
+    <!--
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
       <classifier>no_aop</classifier>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-plexus-bridge</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>org.apache.archiva.components.registry</groupId>
       <artifactId>archiva-components-spring-registry-commons</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.xmlunit</groupId>
       <artifactId>xmlunit-core</artifactId>
       <scope>test</scope>
     </dependency>
+    -->
 
+    <!--
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
@@ -128,6 +176,7 @@
       <artifactId>wagon-http-lightweight</artifactId>
       <scope>provided</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>
@@ -144,25 +193,28 @@
       <artifactId>redback-rbac-cached</artifactId>
       <scope>test</scope>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-security-common</artifactId>
-    </dependency>
+    -->
+
+    <!--
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
+    -->
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
@@ -170,26 +222,6 @@
     </dependency>
 
 
-    <!-- START Needed for JDK >= 9 -->
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- END Needed for JDK >= 9 -->
-
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -225,4 +257,21 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>jdk9+</id>
+      <activation>
+        <jdk>[1.9,)</jdk>
+      </activation>
+      <dependencies>
+        <!-- Needed for JDK >= 9 -->
+        <dependency>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
