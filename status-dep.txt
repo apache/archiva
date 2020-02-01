@@ -12,6 +12,9 @@ archiva-modules
   archiva-checksum
   archiva-policies
   archiva-configuration
+  archiva-repository-api
+  archiva-xml-tools
+  archiva-repository-layer
 
 
 

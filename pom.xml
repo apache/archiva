@@ -53,7 +53,6 @@
     <!-- Java Enterprise APIs -->
     <javax.servlet.version>4.0.1</javax.servlet.version>
     <javax.activation.version>1.1.1</javax.activation.version>
-    <javax.jaxb.version>2.3.1</javax.jaxb.version>
 
 
     <commons-codec.version>1.13</commons-codec.version>
@@ -75,7 +74,7 @@
     <!-- dependencies of maven modules -->
     <jsoup.version>1.12.1</jsoup.version>
     <rome.version>1.12.2</rome.version>
-    <cronutils.version>9.0.1</cronutils.version>
+    <cronutils.version>9.0.2</cronutils.version>
 
     <lucene.version>4.10.4</lucene.version>
 
@@ -786,7 +785,7 @@
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
-        <version>${commons-beanutils.version}</version>
+        <version>${commons.beanutils.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
