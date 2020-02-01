@@ -49,9 +49,6 @@
     <requiredProperty key="springVersion">
       <defaultValue>${spring.version}</defaultValue>
     </requiredProperty>
-    <requiredProperty key="guavaVersion">
-      <defaultValue>${guava.version}</defaultValue>
-    </requiredProperty>
     <requiredProperty key="springockitoVersion">
       <defaultValue>${springockito.version}</defaultValue>
     </requiredProperty>
@@ -63,9 +60,6 @@
     </requiredProperty>
     <requiredProperty key="httpcoreVersion">
       <defaultValue>${httpclient.core.version}</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="asmVersion">
-      <defaultValue>${asm.version}</defaultValue>
     </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>

@@ -37,8 +37,45 @@
     <site.staging.base>${project.parent.parent.parent.basedir}</site.staging.base>
   </properties>
   <dependencies>
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.components.registry</groupId>
+      <artifactId>archiva-components-spring-registry-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+
     <!-- Used by the archetype, so needed to be built before integration
          tests run and use them -->
+    <dependency>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-indexer</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-consumer-api</artifactId>
@@ -48,21 +85,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.maven</groupId>
-      <artifactId>archiva-maven-indexer</artifactId>
-      <version>${archivaVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -97,26 +119,6 @@
       <artifactId>commons-codec</artifactId>
       <version>1.9</version>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>5.5.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-highlighter</artifactId>
-      <version>5.5.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-memory</artifactId>
-      <version>5.5.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queries</artifactId>
-      <version>5.5.5</version>
     </dependency>
 
     <!-- for some reasons this help sonar to run -->

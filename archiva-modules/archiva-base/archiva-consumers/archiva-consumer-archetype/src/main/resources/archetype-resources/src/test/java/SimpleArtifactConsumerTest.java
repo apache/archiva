@@ -19,8 +19,6 @@ package $package;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.repository.base.BasicManagedRepository;
@@ -41,7 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 
-import static org.mockito.Mockito.*;
+// import static org.mockito.Mockito.*;
 
 /**
  * <code>SimpleArtifactConsumerTest</code>
@@ -52,9 +50,6 @@ public class SimpleArtifactConsumerTest
 {
     @Inject
     private SimpleArtifactConsumer consumer;
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     private RepositoryRegistry repositoryRegistry;
@@ -76,7 +71,7 @@ public class SimpleArtifactConsumerTest
     }
 
     private void setUpMockRepository()
-        throws RepositoryAdminException, IOException, RepositoryException
+        throws IOException, RepositoryException
     {
         Path repoDir = Paths.get( "target/test-consumer-repo" );
         Files.createDirectories( repoDir );

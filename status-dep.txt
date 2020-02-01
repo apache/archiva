@@ -25,6 +25,7 @@ archiva-modules
     archiva-metadata-consumer
     archiva-signature-consumer
     archiva-lucene-consumer
+    archiva-consumer-archetype
 
 
 
