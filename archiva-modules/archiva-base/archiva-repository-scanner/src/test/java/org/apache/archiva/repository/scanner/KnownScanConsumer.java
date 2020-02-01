@@ -92,6 +92,7 @@ public class KnownScanConsumer
     public void processFile( String path )
         throws ConsumerException
     {
+        logger.info( "Processing {}", path);
         this.processCount++;
     }
 

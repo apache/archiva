@@ -33,6 +33,7 @@ import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.scanner.mock.ManagedRepositoryContentMock;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -42,6 +43,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,9 +52,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * RepositoryScannerTest
@@ -65,6 +71,22 @@ public class RepositoryScannerTest
 
     @Inject
     ApplicationContext applicationContext;
+
+    Path repoBaseDir;
+
+    private Path getRepoBaseDir() {
+        if (repoBaseDir==null) {
+            try
+            {
+                repoBaseDir =Paths.get(Thread.currentThread( ).getContextClassLoader( ).getResource( "repositories" ).toURI());
+            }
+            catch ( URISyntaxException e )
+            {
+                throw new RuntimeException( "Could not retrieve repository base directory" );
+            }
+        }
+        return repoBaseDir;
+    }
 
     protected EditableManagedRepository createRepository( String id, String name, Path location ) throws IOException {
         FileLockManager lockManager = new DefaultFileLockManager();
@@ -84,9 +106,9 @@ public class RepositoryScannerTest
     private static final String[] ARTIFACT_PATTERNS =
         new String[]{ "**/*.jar", "**/*.pom", "**/*.rar", "**/*.zip", "**/*.war", "**/*.tar.gz" };
 
-    private ManagedRepository createDefaultRepository() throws IOException {
-        Path repoDir =
-            Paths.get( System.getProperty( "basedir" ), "src/test/repositories/default-repository" );
+    private ManagedRepository createDefaultRepository() throws IOException, URISyntaxException
+    {
+        Path repoDir = getRepoBaseDir().resolve("default-repository" );
 
         assertTrue( "Default Test Repository should exist.", Files.exists(repoDir) && Files.isDirectory(repoDir) );
 
@@ -96,7 +118,7 @@ public class RepositoryScannerTest
     private ManagedRepository createSimpleRepository()
         throws IOException, ParseException
     {
-        Path srcDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/simple-repository" );
+        Path srcDir = getRepoBaseDir().resolve("simple-repository" );
 
         Path repoDir = Paths.get( System.getProperty( "basedir" ),  "target/test-repos/simple-repository" );
 
@@ -122,7 +144,7 @@ public class RepositoryScannerTest
     }
 
     private ManagedRepository createLegacyRepository() throws IOException {
-        Path repoDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/legacy-repository" );
+        Path repoDir = getRepoBaseDir().resolve("legacy-repository" );
 
         assertTrue( "Legacy Test Repository should exist.", Files.exists(repoDir) && Files.isDirectory(repoDir) );
 
@@ -260,6 +282,16 @@ public class RepositoryScannerTest
         assertMinimumHits( "Stats.totalFileCount", 17, stats.getTotalFileCount() );
         assertMinimumHits( "Processed Count", 17, consumer.getProcessCount() );
         assertEquals( "Processed Count (of invalid items):" + badconsumer.getPaths(), 6, badconsumer.getProcessCount() );
+        List<String> paths = new ArrayList<>( badconsumer.getPaths() );
+        paths.sort( Comparator.naturalOrder() );
+        List<String> expected = Arrays.asList(
+            "CVS/Root",
+            "invalid/invalid/1/invalid-1",
+            "javax/sql/jdbc/2.0/maven-metadata-repository.xml",
+            "javax/sql/jdbc/maven-metadata-repository.xml",
+            "javax/sql/maven-metadata-repository.xml",
+            "org/apache/maven/maven-parent/4/maven-parent-4-site_en.xml");
+        assertThat( paths, is( expected ) );
     }
 
     @Test
