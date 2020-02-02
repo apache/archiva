@@ -29,9 +29,6 @@
 
   <context:annotation-config/>
 
-  <bean name="managedRepoAdmin#test" class="org.apache.archiva.mock.MockManagedRepositoryAdmin">
-    <property name="archivaConfiguration" ref="archivaConfiguration#test-repository-scanning"/>
-  </bean>
 
   <bean name="archivaAdministration#mock" class="org.apache.archiva.mock.MockArchivaAdministration">
     <property name="archivaConfiguration" ref="archivaConfiguration#test-repository-scanning"/>
@@ -42,7 +39,6 @@
   </bean>
 
   <bean name="taskExecutor#test-repository-scanning" class="org.apache.archiva.scheduler.repository.ArchivaRepositoryScanningTaskExecutor">
-    <property name="managedRepositoryAdmin" ref="managedRepoAdmin#test"/>
   </bean>
 
   <bean name="repositoryContentFactory#default" class="org.apache.archiva.repository.RepositoryContentFactory">

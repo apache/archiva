@@ -24,7 +24,7 @@ import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStati
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -78,7 +78,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         Path newArtifactGroup = repoDir.resolve( "org/apache/archiva" );
         assertFalse( "newArtifactGroup should not exist.", Files.exists(newArtifactGroup) );
 
-        FileUtils.copyDirectoryStructure( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
+        FileUtils.copyDirectory( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
                                           newArtifactGroup.toFile() );
 
         // update last modified date
@@ -123,7 +123,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         Path newArtifactGroup = repoDir.resolve( "org/apache/archiva" );
         assertFalse( "newArtifactGroup should not exist.", Files.exists(newArtifactGroup) );
 
-        FileUtils.copyDirectoryStructure( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
+        FileUtils.copyDirectory( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
                                           newArtifactGroup.toFile() );
 
         // update last modified date, placing shortly after last scan
@@ -170,7 +170,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         Path newArtifactGroup = repoDir.resolve( "org/apache/archiva" );
         assertFalse( "newArtifactGroup should not exist.", Files.exists(newArtifactGroup) );
 
-        FileUtils.copyDirectoryStructure( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
+        FileUtils.copyDirectory( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
                                           newArtifactGroup.toFile() );
 
         // update last modified date, placing in middle of last scan

@@ -33,10 +33,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva.components</groupId>
       <artifactId>archiva-components-spring-taskqueue</artifactId>
     </dependency>

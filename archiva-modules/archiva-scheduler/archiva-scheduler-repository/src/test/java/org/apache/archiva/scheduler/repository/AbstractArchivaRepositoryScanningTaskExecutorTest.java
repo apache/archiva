@@ -20,6 +20,7 @@ package org.apache.archiva.scheduler.repository;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -30,7 +31,6 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -101,12 +101,12 @@ public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
         Path sourceRepoDir = Paths.get( "src/test/repositories/default-repository" );
         repoDir = Paths.get( "target/default-repository" );
 
-        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoDir );
+        FileUtils.deleteDirectory( repoDir );
         assertFalse( "Default Test Repository should not exist.", Files.exists(repoDir) );
 
         Files.createDirectories(repoDir);
 
-        FileUtils.copyDirectoryStructure( sourceRepoDir.toFile(), repoDir.toFile() );
+        org.apache.commons.io.FileUtils.copyDirectory( sourceRepoDir.toFile(), repoDir.toFile() );
         // set the timestamps to a time well in the past
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.YEAR, -1 );

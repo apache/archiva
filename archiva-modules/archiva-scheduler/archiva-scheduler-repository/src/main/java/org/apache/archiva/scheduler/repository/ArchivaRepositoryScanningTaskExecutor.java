@@ -19,8 +19,6 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -59,9 +57,6 @@ public class ArchivaRepositoryScanningTaskExecutor
 
     @Inject
     RepositoryRegistry repositoryRegistry;
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     private RepositoryScanner repoScanner;
@@ -195,12 +190,11 @@ public class ArchivaRepositoryScanningTaskExecutor
                 this.task = null;
             }
         }
-        catch ( RepositoryAdminException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
         catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
+        catch ( org.apache.archiva.consumers.ConsumerException e )
         {
             e.printStackTrace( );
         }
@@ -251,13 +245,4 @@ public class ArchivaRepositoryScanningTaskExecutor
         this.repositoryStatisticsManager = repositoryStatisticsManager;
     }
 
-    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
-    {
-        return managedRepositoryAdmin;
-    }
-
-    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
-    {
-        this.managedRepositoryAdmin = managedRepositoryAdmin;
-    }
 }

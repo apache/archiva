@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
@@ -34,7 +35,6 @@ import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
 import org.apache.commons.collections4.Closure;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.functors.IfClosure;
 import org.springframework.beans.BeansException;
@@ -96,9 +96,16 @@ public class RepositoryContentConsumers
      * @return the list of consumer ids that have been selected by the configuration.
      */
     public List<String> getSelectedKnownConsumerIds()
-        throws RepositoryAdminException
+        throws ConsumerException
     {
-        return archivaAdministration.getKnownContentConsumers();
+        try
+        {
+            return archivaAdministration.getKnownContentConsumers();
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ConsumerException( e.getMessage( ), e );
+        }
     }
 
     /**
@@ -114,9 +121,16 @@ public class RepositoryContentConsumers
      * @return the list of consumer ids that have been selected by the configuration.
      */
     public List<String> getSelectedInvalidConsumerIds()
-        throws RepositoryAdminException
+        throws ConsumerException
     {
-        return archivaAdministration.getInvalidContentConsumers();
+        try
+        {
+            return archivaAdministration.getInvalidContentConsumers();
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ConsumerException( e.getMessage( ), e );
+        }
     }
 
     /**
@@ -126,7 +140,7 @@ public class RepositoryContentConsumers
      * @return the map of String ids to {@link KnownRepositoryContentConsumer} objects.
      */
     public Map<String, KnownRepositoryContentConsumer> getSelectedKnownConsumersMap()
-        throws RepositoryAdminException
+        throws ConsumerException
     {
         Map<String, KnownRepositoryContentConsumer> consumerMap = new HashMap<>();
 
@@ -145,7 +159,7 @@ public class RepositoryContentConsumers
      * @return the map of String ids to {@link InvalidRepositoryContentConsumer} objects.
      */
     public Map<String, InvalidRepositoryContentConsumer> getSelectedInvalidConsumersMap()
-        throws RepositoryAdminException
+        throws ConsumerException
     {
         Map<String, InvalidRepositoryContentConsumer> consumerMap = new HashMap<>();
 
@@ -165,7 +179,7 @@ public class RepositoryContentConsumers
      * by the active configuration.
      */
     public List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
-        throws RepositoryAdminException
+        throws ConsumerException
     {
         // FIXME only for testing
         if ( selectedKnownConsumers != null )
@@ -210,7 +224,7 @@ public class RepositoryContentConsumers
      * by the active configuration.
      */
     public synchronized List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
-        throws RepositoryAdminException
+        throws ConsumerException
     {
 
         // FIXME only for testing
@@ -221,7 +235,15 @@ public class RepositoryContentConsumers
 
         List<InvalidRepositoryContentConsumer> ret = new ArrayList<>();
 
-        List<String> invalidSelected = getSelectedInvalidConsumerIds();
+        List<String> invalidSelected = null;
+        try
+        {
+            invalidSelected = getSelectedInvalidConsumerIds();
+        }
+        catch ( ConsumerException e )
+        {
+            e.printStackTrace( );
+        }
 
         for ( InvalidRepositoryContentConsumer consumer : getAvailableInvalidConsumers() )
         {
@@ -264,13 +286,12 @@ public class RepositoryContentConsumers
      * NOTE: Make sure that there is no repository scanning task executing before invoking this so as to prevent
      * the index writer/reader of the current index-content consumer executing from getting closed. For an example,
      * see ArchivaDavResource#executeConsumers( File ).
-     *
-     * @param repository             the repository configuration to use.
+     *  @param repository             the repository configuration to use.
      * @param localFile              the local file to execute the consumers against.
      * @param updateRelatedArtifacts TODO
      */
     public void executeConsumers( ManagedRepository repository, Path localFile, boolean updateRelatedArtifacts )
-        throws RepositoryAdminException
+        throws ConsumerException
     {
         List<KnownRepositoryContentConsumer> selectedKnownConsumers = null;
         // Run the repository consumers

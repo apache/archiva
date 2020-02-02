@@ -70,6 +70,11 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>repository-statistics</artifactId>
+      <version>${archiva.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.components.cache</groupId>
       <artifactId>archiva-components-spring-cache-ehcache</artifactId>
       <version>${archiva.comp.version}</version>

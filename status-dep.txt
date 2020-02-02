@@ -29,6 +29,9 @@ archiva-modules
   archiva-repository-admin
     archiva-repository-admin-api
     archiva-repository-admin-default
+ archiva-scheduler
+  archiva-scheduler-api
+  archiva-scheduler-repository
 
 
 

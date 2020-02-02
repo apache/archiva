@@ -20,6 +20,7 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
@@ -35,13 +36,13 @@ public class StubRepositoryContentConsumers
     }
 
     @Override
-    public List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
+    public List<KnownRepositoryContentConsumer> getSelectedKnownConsumers() throws ConsumerException
     {
         return getAvailableKnownConsumers();
     }
 
     @Override
-    public synchronized List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
+    public synchronized List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers() throws ConsumerException
     {
         return getAvailableInvalidConsumers();
     }
