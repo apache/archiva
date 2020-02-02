@@ -29,13 +29,9 @@ import org.apache.archiva.configuration.WebappConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -50,26 +46,6 @@ public class DefaultArchivaAdministration
     extends AbstractRepositoryAdmin
     implements ArchivaAdministration
 {
-
-    private PoolingHttpClientConnectionManager poolingClientConnectionManager;
-
-    @PostConstruct
-    public void initialize()
-        throws RepositoryAdminException
-    {
-        // setup wagon on start with initial values
-        NetworkConfiguration networkConfiguration = getNetworkConfiguration();
-        setupWagon( networkConfiguration );
-    }
-
-    @PreDestroy
-    public void shutdown()
-    {
-        if ( this.poolingClientConnectionManager != null )
-        {
-            this.poolingClientConnectionManager.shutdown();
-        }
-    }
 
 
     @Override
@@ -430,31 +406,10 @@ public class DefaultArchivaAdministration
             configuration.setNetworkConfiguration( getModelMapper().map( networkConfiguration,
                                                                          org.apache.archiva.configuration.NetworkConfiguration.class ) );
         }
-        setupWagon( networkConfiguration );
+        // setupWagon( networkConfiguration );
         saveConfiguration( configuration );
     }
 
-    protected void setupWagon( NetworkConfiguration networkConfiguration )
-    {
-        if ( networkConfiguration == null )
-        {
-            // back to default values
-            HttpWagon.setPersistentPool( true );
-            poolingClientConnectionManager = new PoolingHttpClientConnectionManager();
-            poolingClientConnectionManager.setDefaultMaxPerRoute( 30 );
-            poolingClientConnectionManager.setMaxTotal( 30 );
-            HttpWagon.setPoolingHttpClientConnectionManager( poolingClientConnectionManager );
-
-        }
-        else
-        {
-            HttpWagon.setPersistentPool( networkConfiguration.isUsePooling() );
-            poolingClientConnectionManager = new PoolingHttpClientConnectionManager();
-            poolingClientConnectionManager.setDefaultMaxPerRoute( networkConfiguration.getMaxTotalPerHost() );
-            poolingClientConnectionManager.setMaxTotal( networkConfiguration.getMaxTotal() );
-            HttpWagon.setPoolingHttpClientConnectionManager( poolingClientConnectionManager );
-        }
-    }
 
     //-------------------------
     //
