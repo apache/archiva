@@ -71,7 +71,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -89,7 +88,6 @@ import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames
  * @author Olivier Lamy
  * @since 2.0.0
  */
-@ParametersAreNonnullByDefault
 public class CassandraMetadataRepository
     extends AbstractMetadataRepository implements MetadataRepository
 {

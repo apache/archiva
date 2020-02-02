@@ -35,7 +35,6 @@ import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import javax.jcr.*;
 import javax.jcr.query.*;
 import java.io.IOException;
@@ -57,7 +56,6 @@ import static org.apache.archiva.metadata.repository.jcr.JcrConstants.*;
  * TODO below: revise storage format for project version metadata
  * TODO revise reference storage
  */
-@ParametersAreNonnullByDefault
 public class JcrMetadataRepository
         extends AbstractMetadataRepository implements MetadataRepository, RepositoryStatisticsProvider {
 

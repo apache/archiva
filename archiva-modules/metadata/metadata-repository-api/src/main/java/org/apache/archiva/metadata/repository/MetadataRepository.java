@@ -26,8 +26,6 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Stream;
@@ -92,8 +90,6 @@ import java.util.stream.Stream;
  * lazy loading for the retrieved objects. So the streaming methods may be faster and use less memory than the list based methods.
  * But for some backends there is no difference.
  */
-@SuppressWarnings( "NullableProblems" )
-@ParametersAreNonnullByDefault
 public interface MetadataRepository
 {
 
@@ -289,7 +285,7 @@ public interface MetadataRepository
      * uses default query parameters.
      */
     List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repositoryId,
-                                                    @Nullable ZonedDateTime startTime, @Nullable ZonedDateTime endTime )
+                                                    ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
     /**
@@ -306,7 +302,7 @@ public interface MetadataRepository
      * @since 3.0
      */
     List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repositoryId,
-                                                    @Nullable ZonedDateTime startTime, @Nullable ZonedDateTime endTime,
+                                                    ZonedDateTime startTime, ZonedDateTime endTime,
                                                     QueryParameter queryParameter )
         throws MetadataRepositoryException;
 
@@ -325,7 +321,7 @@ public interface MetadataRepository
      * @since 3.0
      */
     Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId,
-                                                           @Nullable ZonedDateTime startTime, @Nullable ZonedDateTime endTime )
+                                                           ZonedDateTime startTime, ZonedDateTime endTime )
         throws MetadataRepositoryException;
 
     /**
@@ -343,7 +339,7 @@ public interface MetadataRepository
      * @since 3.0
      */
     Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId,
-                                                           @Nullable ZonedDateTime startTime, @Nullable ZonedDateTime endTime,
+                                                           ZonedDateTime startTime, ZonedDateTime endTime,
                                                            QueryParameter queryParameter )
         throws MetadataRepositoryException;
 
@@ -371,7 +367,7 @@ public interface MetadataRepository
      * @throws MetadataRepositoryException if the artifact retrieval fails.
      */
     List<ArtifactMetadata> getArtifactsByProjectVersionFacet( RepositorySession session, String key, String value,
-                                                              @Nullable String repositoryId )
+                                                              String repositoryId )
         throws MetadataRepositoryException;
 
     /**
@@ -386,7 +382,7 @@ public interface MetadataRepository
      * @return a list of artifact objects for each artifact that matches the search string
      * @throws MetadataRepositoryException if the artifact retrieval fails.
      */
-    List<ArtifactMetadata> getArtifactsByAttribute( RepositorySession session, String key, String value, @Nullable String repositoryId )
+    List<ArtifactMetadata> getArtifactsByAttribute( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException;
 
     /**
@@ -400,7 +396,7 @@ public interface MetadataRepository
      * @return a list of artifacts or a empty list, if no artifact was found
      * @throws MetadataRepositoryException if the artifact retrieval fails
      */
-    List<ArtifactMetadata> getArtifactsByProjectVersionAttribute( RepositorySession session, String key, String value, @Nullable String repositoryId )
+    List<ArtifactMetadata> getArtifactsByProjectVersionAttribute( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException;
 
     /**

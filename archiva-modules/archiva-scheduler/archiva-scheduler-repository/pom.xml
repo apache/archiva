@@ -88,6 +88,11 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>org.apache.maven.indexer</groupId>
+      <artifactId>indexer-core</artifactId>
+      <classifier>shaded-lucene</classifier>
+    </dependency>
+    <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>
       <scope>test</scope>

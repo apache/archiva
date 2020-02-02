@@ -152,6 +152,12 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>org.apache.maven.indexer</groupId>
+      <artifactId>indexer-core</artifactId>
+      <classifier>shaded-lucene</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.xmlunit</groupId>
       <artifactId>xmlunit-core</artifactId>
       <scope>test</scope>
