@@ -30,8 +30,8 @@ import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorOrderComparator;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.index.context.IndexingContext;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -126,7 +126,7 @@ public class MockRepoAdmin
     }
 
     @Override
-    public IndexingContext createIndexContext( RemoteRepository repository )
+    public ArchivaIndexingContext createIndexContext( RemoteRepository repository )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

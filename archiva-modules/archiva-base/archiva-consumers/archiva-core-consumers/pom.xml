@@ -68,12 +68,6 @@
       <groupId>org.apache.archiva.maven</groupId>
       <artifactId>archiva-maven-metadata</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-plexus-bridge</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-storage-api</artifactId>

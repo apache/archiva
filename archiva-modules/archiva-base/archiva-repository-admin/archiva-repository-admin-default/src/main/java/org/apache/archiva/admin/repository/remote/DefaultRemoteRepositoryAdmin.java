@@ -26,17 +26,16 @@ import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryCheckPath;
-import org.apache.archiva.indexer.UnsupportedBaseContextException;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.repository.base.PasswordCredentials;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.base.PasswordCredentials;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.index.context.IndexingContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -262,16 +261,11 @@ public class DefaultRemoteRepositoryAdmin
     }
 
     @Override
-    public IndexingContext createIndexContext( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository )
+    public ArchivaIndexingContext createIndexContext( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository )
         throws RepositoryAdminException
     {
-        try
-        {
-            RemoteRepository repo = repositoryRegistry.getRemoteRepository(remoteRepository.getId());
-            return repo.getIndexingContext().getBaseContext(IndexingContext.class);
-        } catch (UnsupportedBaseContextException e) {
-            throw new RepositoryAdminException( e.getMessage(), e);
-        }
+        RemoteRepository repo = repositoryRegistry.getRemoteRepository(remoteRepository.getId());
+        return repo.getIndexingContext();
 
     }
 

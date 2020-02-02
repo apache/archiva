@@ -28,11 +28,11 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.scheduler.CronExpressionValidator;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.GenericValidator;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.regex.Pattern;
 
 /**
  * apply basic repository validation : id and name.
@@ -45,6 +45,11 @@ import javax.inject.Named;
 public class DefaultRepositoryCommonValidator
     implements RepositoryCommonValidator
 {
+
+    private static final Pattern REPOSITORY_ID_VALID_EXPRESSION_PATTERN = Pattern.compile( REPOSITORY_ID_VALID_EXPRESSION );
+    private static final Pattern REPOSITORY_NAME_VALID_EXPRESSION_PATTERN = Pattern.compile( REPOSITORY_NAME_VALID_EXPRESSION );
+    private static final Pattern REPOSITORY_LOCATION_VALID_EXPRESSION_PATTERN = Pattern.compile( ManagedRepositoryAdmin.REPOSITORY_LOCATION_VALID_EXPRESSION );
+
 
     @Inject
     private ArchivaConfiguration archivaConfiguration;
@@ -62,27 +67,27 @@ public class DefaultRepositoryCommonValidator
     public void basicValidation( AbstractRepository abstractRepository, boolean update )
         throws RepositoryAdminException
     {
-        Configuration config = archivaConfiguration.getConfiguration();
+        Configuration config = archivaConfiguration.getConfiguration( );
 
-        String repoId = abstractRepository.getId();
+        String repoId = abstractRepository.getId( );
 
         if ( !update )
         {
 
-            if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
+            if ( config.getManagedRepositoriesAsMap( ).containsKey( repoId ) )
             {
                 throw new RepositoryAdminException( "Unable to add new repository with id [" + repoId
-                                                        + "], that id already exists as a managed repository." );
+                    + "], that id already exists as a managed repository." );
             }
-            else if ( config.getRepositoryGroupsAsMap().containsKey( repoId ) )
+            else if ( config.getRepositoryGroupsAsMap( ).containsKey( repoId ) )
             {
                 throw new RepositoryAdminException( "Unable to add new repository with id [" + repoId
-                                                        + "], that id already exists as a repository group." );
+                    + "], that id already exists as a repository group." );
             }
-            else if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
+            else if ( config.getRemoteRepositoriesAsMap( ).containsKey( repoId ) )
             {
                 throw new RepositoryAdminException( "Unable to add new repository with id [" + repoId
-                                                        + "], that id already exists as a remote repository." );
+                    + "], that id already exists as a remote repository." );
             }
         }
 
@@ -91,20 +96,20 @@ public class DefaultRepositoryCommonValidator
             throw new RepositoryAdminException( "Repository ID cannot be empty." );
         }
 
-        if ( !GenericValidator.matchRegexp( repoId, REPOSITORY_ID_VALID_EXPRESSION ) )
+        if ( !REPOSITORY_ID_VALID_EXPRESSION_PATTERN.matcher( repoId ).matches( ) )
         {
             throw new RepositoryAdminException(
                 "Invalid repository ID. Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         }
 
-        String name = abstractRepository.getName();
+        String name = abstractRepository.getName( );
 
         if ( StringUtils.isBlank( name ) )
         {
             throw new RepositoryAdminException( "repository name cannot be empty" );
         }
 
-        if ( !GenericValidator.matchRegexp( name, REPOSITORY_NAME_VALID_EXPRESSION ) )
+        if ( !REPOSITORY_NAME_VALID_EXPRESSION_PATTERN.matcher( name ).matches( ) )
         {
             throw new RepositoryAdminException(
                 "Invalid repository name. Repository Name must only contain alphanumeric characters, white-spaces(' '), "
@@ -123,11 +128,11 @@ public class DefaultRepositoryCommonValidator
     public void validateManagedRepository( ManagedRepository managedRepository )
         throws RepositoryAdminException
     {
-        String cronExpression = managedRepository.getCronExpression();
+        String cronExpression = managedRepository.getCronExpression( );
         // FIXME : olamy can be empty to avoid scheduled scan ?
         if ( StringUtils.isNotBlank( cronExpression ) )
         {
-            CronExpressionValidator validator = new CronExpressionValidator();
+            CronExpressionValidator validator = new CronExpressionValidator( );
 
             if ( !validator.validate( cronExpression ) )
             {
@@ -139,10 +144,9 @@ public class DefaultRepositoryCommonValidator
             throw new RepositoryAdminException( "Cron expression cannot be empty." );
         }
 
-        String repoLocation = removeExpressions( managedRepository.getLocation() );
+        String repoLocation = removeExpressions( managedRepository.getLocation( ) );
 
-        if ( !GenericValidator.matchRegexp( repoLocation,
-                                            ManagedRepositoryAdmin.REPOSITORY_LOCATION_VALID_EXPRESSION ) )
+        if ( !REPOSITORY_LOCATION_VALID_EXPRESSION_PATTERN.matcher( repoLocation ).matches() )
         {
             throw new RepositoryAdminException(
                 "Invalid repository location. Directory must only contain alphanumeric characters, equals(=), question-marks(?), "
@@ -161,13 +165,13 @@ public class DefaultRepositoryCommonValidator
     public String removeExpressions( String directory )
     {
         String value = StringUtils.replace( directory, "${appserver.base}",
-                                            getRegistry().getString( "appserver.base", "${appserver.base}" ) );
+            getRegistry( ).getString( "appserver.base", "${appserver.base}" ) );
         value = StringUtils.replace( value, "${appserver.home}",
-                                     getRegistry().getString( "appserver.home", "${appserver.home}" ) );
+            getRegistry( ).getString( "appserver.home", "${appserver.home}" ) );
         return value;
     }
 
-    public ArchivaConfiguration getArchivaConfiguration()
+    public ArchivaConfiguration getArchivaConfiguration( )
     {
         return archivaConfiguration;
     }
@@ -177,7 +181,7 @@ public class DefaultRepositoryCommonValidator
         this.archivaConfiguration = archivaConfiguration;
     }
 
-    public Registry getRegistry()
+    public Registry getRegistry( )
     {
         return registry;
     }

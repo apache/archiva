@@ -20,9 +20,10 @@ package org.apache.archiva.admin.repository;
 
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.validator.GenericValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.regex.Pattern;
 
 /**
  * @author Eric Barboni
@@ -34,9 +35,9 @@ public  class ValidatorTest
     @Test
     public void testGenericValidator() 
     {
-        // Be sure M
-        assertFalse("A repo location cannot contains space",GenericValidator.matchRegexp( "/opt/ testme/",
-                     ManagedRepositoryAdmin.REPOSITORY_LOCATION_VALID_EXPRESSION ));
+        Pattern pattern = Pattern.compile( ManagedRepositoryAdmin.REPOSITORY_LOCATION_VALID_EXPRESSION );
+        // Checks only the pattern 
+        assertFalse("A repo location cannot contains space",pattern.matcher( "/opt/ testme/" ).matches());
         
     }
 }

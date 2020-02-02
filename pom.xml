@@ -96,6 +96,8 @@
 
     <asm.version>5.0.4</asm.version>
 
+    <modelmapper.version>2.3.5</modelmapper.version>
+
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
@@ -735,7 +737,7 @@
       <dependency>
         <groupId>org.modelmapper</groupId>
         <artifactId>modelmapper</artifactId>
-        <version>0.7.3</version>
+        <version>${modelmapper.version}</version>
       </dependency>
 
       <dependency>
@@ -1061,6 +1063,11 @@
       <dependency>
         <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-users-api</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-configuration</artifactId>
         <version>${redback.version}</version>
       </dependency>
 
@@ -1450,6 +1457,11 @@
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-http-lightweight</artifactId>
+        <version>${wagon.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http-shared</artifactId>
         <version>${wagon.version}</version>
       </dependency>
       <dependency>
