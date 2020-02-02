@@ -1119,6 +1119,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-common-jpa</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-keys-jpa</artifactId>
         <version>${redback.version}</version>
         <exclusions>

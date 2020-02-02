@@ -70,8 +70,12 @@
       <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.components.cache</groupId>
-      <artifactId>archiva-components-spring-cache-api</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -98,12 +102,20 @@
       <artifactId>redback-rbac-role-manager</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva.components.cache</groupId>
+      <artifactId>archiva-components-spring-cache-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.components.registry</groupId>
       <artifactId>archiva-components-spring-registry-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.components</groupId>
       <artifactId>archiva-components-spring-quartz</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-taskqueue</artifactId>
     </dependency>
 
 
@@ -130,13 +142,6 @@
       <artifactId>spring-context</artifactId>
     </dependency>
 
-
-    <!--
-    <dependency>
-      <groupId>commons-validator</groupId>
-      <artifactId>commons-validator</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
@@ -144,33 +149,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
-    </dependency>
-    <!--
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-    -->
-    <!--
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-plexus-bridge</artifactId>
-    </dependency>
-    -->
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-repository-api</artifactId>
-    </dependency>
-    <!--
-
-    -->
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.components</groupId>
-      <artifactId>archiva-components-spring-taskqueue</artifactId>
     </dependency>
 
     <dependency>
@@ -249,13 +227,11 @@
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-jpa</artifactId>
-      <version>${redback.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-jpa</artifactId>
-      <version>${redback.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -266,92 +242,48 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-authentication-api</artifactId>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
-    </dependency>
-    -->
-    <!--
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
-
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-users-memory</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-keys-memory</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-cached</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <!--
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
-
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-mock</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <!--
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
 
   </dependencies>
 
