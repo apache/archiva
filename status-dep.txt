@@ -26,6 +26,9 @@ archiva-modules
     archiva-signature-consumer
     archiva-lucene-consumer
     archiva-consumer-archetype
+  archiva-repository-admin
+    archiva-repository-admin-api
+    archiva-repository-admin-default
 
 
 
