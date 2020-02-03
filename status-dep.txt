@@ -3,35 +3,37 @@
 # MST - 2020-01-30
 
 archiva-modules
- archiva-base
-  archiva-common
-  archiva-storage-api
-  archiva-storage-fs
-  archiva-filelock
-  archiva-model
-  archiva-checksum
-  archiva-policies
-  archiva-configuration
-  archiva-repository-api
-  archiva-xml-tools
-  archiva-repository-layer
-  archiva-proxy-api
-  archiva-proxy
-  archiva-repository-scanner
-  archiva-security-common
-  archiva-consumers
-    archiva-consumers-api
-    archiva-core-consumers
-    archiva-metadata-consumer
-    archiva-signature-consumer
-    archiva-lucene-consumer
-    archiva-consumer-archetype
-  archiva-repository-admin
-    archiva-repository-admin-api
-    archiva-repository-admin-default
- archiva-scheduler
-  archiva-scheduler-api
-  archiva-scheduler-repository
+  archiva-base
+    archiva-common
+    archiva-storage-api
+    archiva-storage-fs
+    archiva-filelock
+    archiva-model
+    archiva-checksum
+    archiva-policies
+    archiva-configuration
+    archiva-repository-api
+    archiva-xml-tools
+    archiva-repository-layer
+    archiva-proxy-api
+    archiva-proxy
+    archiva-repository-scanner
+    archiva-security-common
+    archiva-consumers
+      archiva-consumers-api
+      archiva-core-consumers
+      archiva-metadata-consumer
+      archiva-signature-consumer
+      archiva-lucene-consumer
+      archiva-consumer-archetype
+    archiva-repository-admin
+      archiva-repository-admin-api
+      archiva-repository-admin-default
+  archiva-scheduler
+    archiva-scheduler-api
+    archiva-scheduler-repository-api
+    archiva-scheduler-repository
+    archiva-scheduler-indexer
 
 
 

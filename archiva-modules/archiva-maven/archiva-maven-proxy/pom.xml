@@ -79,6 +79,11 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-quartz</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.maven</groupId>
       <artifactId>archiva-maven-metadata</artifactId>
       <scope>test</scope>

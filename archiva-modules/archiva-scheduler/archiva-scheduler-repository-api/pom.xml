@@ -37,30 +37,48 @@
       <artifactId>archiva-scheduler-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-storage-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-taskqueue</artifactId>
+    </dependency>
+
+    <!--
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>org.apache.archiva.components</groupId>
       <artifactId>archiva-components-spring-quartz</artifactId>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>org.quartz-scheduler</groupId>
       <artifactId>quartz</artifactId>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-statistics-api</artifactId>
     </dependency>
+    -->
+    <!--
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+  -->
 
   </dependencies>
   <build>
