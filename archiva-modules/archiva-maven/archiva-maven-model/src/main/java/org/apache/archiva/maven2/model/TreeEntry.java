@@ -19,9 +19,8 @@ package org.apache.archiva.maven2.model;
  */
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,6 @@ public class TreeEntry
 
     private Artifact artifact;
 
-    @JsonIgnore
     private TreeEntry parent;
 
     public TreeEntry()
@@ -72,13 +70,12 @@ public class TreeEntry
         this.childs = childs;
     }
 
-    @JsonIgnore
+    @XmlTransient
     public TreeEntry getParent()
     {
         return parent;
     }
 
-    @JsonIgnore
     public void setParent( TreeEntry parent )
     {
         this.parent = parent;

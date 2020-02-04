@@ -34,6 +34,10 @@ archiva-modules
     archiva-scheduler-repository-api
     archiva-scheduler-repository
     archiva-scheduler-indexer
+  metadata
+    metadata-statistics-api
+    metadata-repository-api
+    metadata-model
 
 
 
