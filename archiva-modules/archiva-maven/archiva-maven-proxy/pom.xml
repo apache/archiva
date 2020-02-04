@@ -79,6 +79,11 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>javax.persistence-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.components</groupId>
       <artifactId>archiva-components-spring-quartz</artifactId>
       <scope>test</scope>

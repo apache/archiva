@@ -37,6 +37,10 @@
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.maven</groupId>
       <artifactId>archiva-maven-metadata</artifactId>
     </dependency>

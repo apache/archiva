@@ -166,6 +166,11 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>javax.persistence</groupId>
+      <artifactId>javax.persistence-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http-shared</artifactId>
       <scope>test</scope>
