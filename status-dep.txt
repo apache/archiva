@@ -38,6 +38,9 @@ archiva-modules
     metadata-statistics-api
     metadata-repository-api
     metadata-model
+  maven
+    maven-common
+    maven-model
 
 
 

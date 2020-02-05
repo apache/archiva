@@ -37,7 +37,6 @@
 
   <modules>
     <module>archiva-maven-common</module>
-    <module>archiva-maven-converter</module>
     <module>archiva-maven-model</module>
     <module>archiva-maven-metadata</module>
     <module>archiva-maven-indexer</module>
