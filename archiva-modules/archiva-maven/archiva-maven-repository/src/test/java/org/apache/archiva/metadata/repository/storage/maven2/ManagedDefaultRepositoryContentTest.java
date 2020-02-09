@@ -31,12 +31,15 @@ import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -45,8 +48,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * ManagedDefaultRepositoryContentTest
@@ -255,5 +257,104 @@ public class ManagedDefaultRepositoryContentTest
     protected String toPath( ArtifactReference reference )
     {
         return repoContent.toPath( reference );
+    }
+
+    private Path setupRepoCopy( String source, String target) throws IOException
+    {
+        Path defaultRepo = getRepositoryPath( source );
+        Path newRepo = defaultRepo.getParent( ).resolve( target );
+        FileUtils.copyDirectory( defaultRepo.toFile( ), newRepo.toFile( ) );
+
+        MavenManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", newRepo );
+
+        FileType fileType = archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+        fileType.addPattern( "**/*.xml" );
+        assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
+
+        fileTypes.afterConfigurationChange( null, "fileType", null );
+
+        repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
+        return newRepo;
+
+    }
+
+    @Test
+    public void testDeleteArtifactWithType() throws IOException
+    {
+        Path deleteRepo = setupRepoCopy( "delete-repository", "delete-repository-2" );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.md5" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.sha1" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.pom" ) ) );
+
+        ArtifactReference ref = new ArtifactReference( );
+        ref.setGroupId( "org.apache.maven" );
+        ref.setArtifactId( "samplejar" );
+        ref.setVersion( "1.0" );
+        ref.setType( "jar" );
+
+        repoContent.deleteArtifact( ref );
+
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar" ) ) );
+        assertFalse( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar" ) ) );
+        assertFalse( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.md5" ) ) );
+        assertFalse( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.sha1" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.pom" ) ) );
+
+
+    }
+
+
+    @Test
+    public void testDeleteArtifactWithClassifier() throws IOException
+    {
+        Path deleteRepo = setupRepoCopy( "default-repository", "default-repository-2" );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar.sha1" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.md5" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.sha1" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.pom" ) ) );
+
+        ArtifactReference ref = new ArtifactReference( );
+        ref.setGroupId( "org.apache.maven" );
+        ref.setArtifactId( "samplejar" );
+        ref.setVersion( "1.0" );
+        ref.setClassifier( "source" );
+        ref.setType( "jar" );
+
+        repoContent.deleteArtifact( ref );
+
+        assertFalse( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar" ) ) );
+        assertFalse( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar.sha1" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.md5" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.sha1" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.pom" ) ) );
+
+    }
+
+    @Test
+    public void testDeleteArtifactWithoutType() throws IOException
+    {
+        Path deleteRepo = setupRepoCopy( "default-repository", "default-repository-2" );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar.sha1" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.md5" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.sha1" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.pom" ) ) );
+
+        ArtifactReference ref = new ArtifactReference( );
+        ref.setGroupId( "org.apache.maven" );
+        ref.setArtifactId( "samplejar" );
+        ref.setVersion( "1.0" );
+
+        repoContent.deleteArtifact( ref );
+
+        assertFalse( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0" ) ) );
+        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar" ) ) );
+
     }
 }

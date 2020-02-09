@@ -141,6 +141,7 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
                        reference.getClassifier(), reference.getType() );
     }
 
+    @Override
     public String toPath( ArtifactReference reference )
     {
         if ( reference == null )
