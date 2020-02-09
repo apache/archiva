@@ -21,6 +21,7 @@ package org.apache.archiva.repository.content.maven2;
 
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.PathUtil;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
@@ -66,8 +67,6 @@ public class ManagedDefaultRepositoryContent
 
     private ManagedRepository repository;
 
-    private Path repoDir;
-
     FileLockManager lockManager;
 
     public ManagedDefaultRepositoryContent(ManagedRepository repository, FileTypes fileTypes, FileLockManager lockManager) {
@@ -86,18 +85,47 @@ public class ManagedDefaultRepositoryContent
 
     }
 
-    private Path getRepoDir() {
-        return repoDir;
+    /**
+     * Returns a version reference from the coordinates
+     * @param groupId the group id
+     * @param artifactId the artifact id
+     * @param version the version
+     * @return the versioned reference object
+     */
+    @Override
+    public VersionedReference toVersion( String groupId, String artifactId, String version ) {
+        VersionedReference ref = new VersionedReference();
+        ref.setGroupId(groupId);
+        ref.setArtifactId(artifactId);
+        ref.setVersion(version);
+        return ref;
+    }
+
+    /**
+     * Return the version the artifact is part of
+     * @param artifactReference
+     * @return
+     */
+    public VersionedReference toVersion( ArtifactReference artifactReference) {
+        return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), VersionUtil.getBaseVersion( artifactReference.getVersion( ) ));
+    }
+
+    @Override
+    public ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier) {
+        ArtifactReference ar = new ArtifactReference( );
+        ar.setGroupId( groupId );
+        ar.setArtifactId( artifactId );
+        ar.setVersion( version );
+        ar.setType( type );
+        ar.setClassifier( classifier );
+        return ar;
     }
 
 
     @Override
     public void deleteVersion( VersionedReference reference )
     {
-        String path = toMetadataPath( reference );
-        Path projectPath = Paths.get( getRepoRoot(), path );
-
-        Path projectDir = projectPath.getParent();
+        Path projectDir = getRepoDir().resolve(toPath(reference));
         if ( Files.exists(projectDir) && Files.isDirectory(projectDir) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteQuietly( projectDir );
@@ -108,20 +136,19 @@ public class ManagedDefaultRepositoryContent
     public void deleteProject( String namespace, String projectId )
         throws RepositoryException
     {
-        ArtifactReference artifactReference = new ArtifactReference();
-        artifactReference.setGroupId( namespace );
-        artifactReference.setArtifactId( projectId );
-        String path = toPath( artifactReference );
-        Path directory = Paths.get( getRepoRoot(), path );
-        if ( !Files.exists(directory) )
+        ProjectReference ref = new ProjectReference( );
+        ref.setGroupId( namespace );
+        ref.setArtifactId( projectId );
+        Path projDirectory = getRepoDir( ).resolve( toPath(ref) );
+        if ( !Files.exists(projDirectory) )
         {
             throw new ContentNotFoundException( "cannot found project " + namespace + ":" + projectId );
         }
-        if ( Files.isDirectory(directory) )
+        if ( Files.isDirectory(projDirectory) )
         {
             try
             {
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
+                org.apache.archiva.common.utils.FileUtils.deleteDirectory( projDirectory );
             }
             catch ( IOException e )
             {
@@ -138,22 +165,22 @@ public class ManagedDefaultRepositoryContent
     @Override
     public void deleteArtifact( ArtifactReference artifactReference )
     {
-        String path = toPath( artifactReference );
-        Path filePath = Paths.get( getRepoRoot(), path );
-
+        final Path repoDir = getRepoDir( );
+        Path filePath = repoDir.resolve( toPath( artifactReference ) );
+        Path parentPath = filePath.getParent( );
         if ( Files.exists(filePath) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteQuietly( filePath );
         }
 
-        Path filePathmd5 = Paths.get( getRepoRoot(), path + ".md5" );
+        Path filePathmd5 = parentPath.resolve( filePath.getFileName().toString()+".md5" );
 
         if ( Files.exists(filePathmd5) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteQuietly( filePathmd5 );
         }
 
-        Path filePathsha1 = Paths.get( getRepoRoot(), path + ".sha1" );
+        Path filePathsha1 = parentPath.resolve( filePath.getFileName().toString()+ ".sha1" );
 
         if ( Files.exists(filePathsha1) )
         {
@@ -165,11 +192,7 @@ public class ManagedDefaultRepositoryContent
     public void deleteGroupId( String groupId )
         throws ContentNotFoundException
     {
-
-        String path = StringUtils.replaceChars( groupId, '.', '/' );
-
-        Path directory = Paths.get( getRepoRoot(), path );
-
+        Path directory = getRepoDir( ).resolve( toPath( groupId ) );
         if ( Files.exists(directory) )
         {
             try
@@ -190,11 +213,10 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
-    public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
-        throws ContentNotFoundException
+    public List<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
+        throws ContentNotFoundException, LayoutException
     {
         StorageAsset artifactFile = toFile( reference );
-        StorageAsset repoBase = repository.getAsset( "" );
         StorageAsset repoDir = artifactFile.getParent();
 
         if ( !repoDir.exists())
@@ -209,12 +231,10 @@ public class ManagedDefaultRepositoryContent
                 "Unable to get related artifacts using a non-directory: " + repoDir.getPath() );
         }
 
-        Set<ArtifactReference> foundArtifacts;
-
         // First gather up the versions found as artifacts in the managed repository.
 
         try (Stream<StorageAsset> stream = repoDir.list().stream() ) {
-            foundArtifacts = stream.filter(asset -> !asset.isContainer()).map(path -> {
+            return stream.filter(asset -> !asset.isContainer()).map(path -> {
                 try {
                     ArtifactReference artifact = toArtifactReference(path.getPath());
                     if( artifact.getGroupId().equals( reference.getGroupId() ) && artifact.getArtifactId().equals(
@@ -227,9 +247,14 @@ public class ManagedDefaultRepositoryContent
                     log.debug( "Not processing file that is not an artifact: {}", e.getMessage() );
                     return null;
                 }
-            }).filter(Objects::nonNull).collect(Collectors.toSet());
+            }).filter(Objects::nonNull).collect(Collectors.toList());
         }
-        return foundArtifacts;
+    }
+
+    @Override
+    public List<StorageAsset> getRelatedAssets( ArtifactReference reference ) throws ContentNotFoundException, LayoutException
+    {
+        return null;
     }
 
     @Override
@@ -249,7 +274,7 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
-    public org.apache.archiva.repository.ManagedRepository getRepository()
+    public ManagedRepository getRepository()
     {
         return repository;
     }
@@ -265,103 +290,56 @@ public class ManagedDefaultRepositoryContent
     public Set<String> getVersions( ProjectReference reference )
         throws ContentNotFoundException, LayoutException
     {
-        String path = toMetadataPath( reference );
-
-        int idx = path.lastIndexOf( '/' );
-        if ( idx > 0 )
-        {
-            path = path.substring( 0, idx );
-        }
-
-        Path repoDir = PathUtil.getPathFromUri( repository.getLocation() ).resolve( path );
-
-        if ( !Files.exists(repoDir) )
+        final Path projDir = getRepoDir().resolve(toPath(reference));
+        if ( !Files.exists(projDir) )
         {
             throw new ContentNotFoundException(
-                "Unable to get Versions on a non-existant directory: " + repoDir.toAbsolutePath() );
+                "Unable to get Versions on a non-existant directory: " + projDir.toAbsolutePath() );
         }
 
-        if ( !Files.isDirectory(repoDir) )
+        if ( !Files.isDirectory(projDir) )
         {
             throw new ContentNotFoundException(
-                "Unable to get Versions on a non-directory: " + repoDir.toAbsolutePath() );
+                "Unable to get Versions on a non-directory: " + projDir.toAbsolutePath() );
         }
 
         final String groupId = reference.getGroupId();
         final String artifactId = reference.getArtifactId();
-        try(Stream<Path> stream = Files.list(repoDir)) {
+        try(Stream<Path> stream = Files.list(projDir)) {
             return stream.filter(Files::isDirectory).map(
-                    p -> newVersionedRef(groupId, artifactId, p.getFileName().toString())
+                    p -> toVersion(groupId, artifactId, p.getFileName().toString())
             ).filter(this::hasArtifact).map(ref -> ref.getVersion())
                     .collect(Collectors.toSet());
         } catch (IOException e) {
-            log.error("Could not read directory {}: {}", repoDir, e.getMessage(), e);
+            log.error("Could not read directory {}: {}", projDir, e.getMessage(), e);
         } catch (RuntimeException e) {
-            if (e.getCause()!=null && e.getCause() instanceof LayoutException) {
-                throw (LayoutException)e.getCause();
-            } else {
+            if (e.getCause()!=null)
+            {
+                if ( e.getCause( ) instanceof LayoutException )
+                {
+                    throw (LayoutException) e.getCause( );
+                }
+            }else {
                 throw e;
             }
         }
         return Collections.emptySet();
     }
 
-    static final VersionedReference newVersionedRef(final String groupId, final String artifactId, final String version) {
-        VersionedReference ref = new VersionedReference();
-        ref.setGroupId(groupId);
-        ref.setArtifactId(artifactId);
-        ref.setVersion(version);
-        return ref;
-    }
-
     @Override
     public Set<String> getVersions( VersionedReference reference )
         throws ContentNotFoundException
     {
-        String path = toMetadataPath( reference );
-
-        int idx = path.lastIndexOf( '/' );
-        if ( idx > 0 )
+        try(Stream<ArtifactReference> stream = getArtifactStream( reference ))
         {
-            path = path.substring( 0, idx );
+            return stream.filter( Objects::nonNull )
+                .map( ar -> ar.getVersion( ) )
+                .collect( Collectors.toSet( ) );
         }
-
-        Path repoBase = PathUtil.getPathFromUri(repository.getLocation());
-        Path repoDir = repoBase.resolve( path );
-
-        if ( !Files.exists(repoDir) )
+        catch ( LayoutException | IOException e )
         {
-            throw new ContentNotFoundException(
-                "Unable to get versions on a non-existant directory: " + repoDir.toAbsolutePath() );
+            throw new ContentNotFoundException( e.getMessage( ), e );
         }
-
-        if ( !Files.isDirectory(repoDir) )
-        {
-            throw new ContentNotFoundException(
-                "Unable to get versions on a non-directory: " + repoDir.toAbsolutePath() );
-        }
-
-        Set<String> foundVersions = new HashSet<>();
-
-        try(Stream<Path> stream = Files.list(repoDir)) {
-            return stream.filter(Files::isRegularFile)
-                    .map(p -> repoBase.relativize(p).toString())
-                    .filter(p -> !filetypes.matchesDefaultExclusions(p))
-                    .filter(filetypes::matchesArtifactPattern)
-                    .map(path1 -> {
-                        try {
-                            return toArtifactReference(path1);
-                        } catch (LayoutException e) {
-                            log.debug( "Not processing file that is not an artifact: {}", e.getMessage() );
-                            return null;
-                        }
-                    }).filter(Objects::nonNull)
-                    .map(ar -> ar.getVersion())
-                    .collect(Collectors.toSet());
-        } catch (IOException e) {
-            log.error("Could not read directory {}: {}", repoDir, e.getMessage(), e);
-        }
-        return Collections.emptySet();
     }
 
     @Override
@@ -392,23 +370,25 @@ public class ManagedDefaultRepositoryContent
         {
             return ( getFirstArtifact( reference ) != null );
         }
-        catch ( IOException | LayoutException e )
+        catch ( IOException | LayoutException | ContentNotFoundException e )
         {
             return false;
         }
     }
 
     @Override
-    public void setRepository( ManagedRepository repo )
+    public void setRepository( final ManagedRepository repo )
     {
         this.repository = repo;
         if (repo!=null) {
-            this.repoDir = PathUtil.getPathFromUri(repository.getLocation());
             if (repository instanceof EditableManagedRepository) {
                 ((EditableManagedRepository) repository).setContent(this);
             }
         }
+    }
 
+    private Path getRepoDir() {
+        return repository.getAsset( "" ).getFilePath( );
     }
 
     /**
@@ -469,56 +449,59 @@ public class ManagedDefaultRepositoryContent
      * @throws LayoutException
      */
     private ArtifactReference getFirstArtifact( VersionedReference reference )
-        throws LayoutException, IOException
+        throws ContentNotFoundException, LayoutException, IOException
     {
-        String path = toMetadataPath( reference );
-
-        int idx = path.lastIndexOf( '/' );
-        if ( idx > 0 )
+        try(Stream<ArtifactReference> stream = getArtifactStream( reference ))
         {
-            path = path.substring( 0, idx );
-        }
-
-        Path repoBase = PathUtil.getPathFromUri(repository.getLocation()).toAbsolutePath();
-        Path repoDir = repoBase.resolve( path );
-
-        if ( !Files.exists(repoDir) )
-        {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: "
-                                       + repoDir.toAbsolutePath() );
-        }
-
-        if ( !Files.isDirectory(repoDir) )
-        {
-            throw new IOException(
-                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.toAbsolutePath() );
-        }
-        try(Stream<Path> stream = Files.list(repoDir)) {
-            return stream.filter(Files::isRegularFile)
-                .map(p -> repoBase.relativize(p).toString())
-                    .filter(filetypes::matchesArtifactPattern)
-                    .map(this::toArtifactRef).findFirst().orElse(null);
+            return stream.findFirst( ).orElse( null );
         } catch (RuntimeException e) {
-            if (e.getCause()!=null && e.getCause() instanceof LayoutException) {
-                throw (LayoutException)e.getCause();
-            } else {
-                throw e;
-            }
+            throw new ContentNotFoundException( e.getMessage( ), e.getCause( ) );
+        }
+    }
+
+    private Stream<ArtifactReference> getArtifactStream(VersionedReference reference) throws ContentNotFoundException, LayoutException, IOException {
+        final Path repoBase = getRepoDir( );
+        String path = toMetadataPath( reference );
+        Path versionDir = repoBase.resolve( path ).getParent();
+        if ( !Files.exists(versionDir) )
+        {
+            throw new ContentNotFoundException( "Unable to gather the list of artifacts on a non-existant directory: "
+                + versionDir.toAbsolutePath() );
         }
 
+        if ( !Files.isDirectory(versionDir) )
+        {
+            throw new ContentNotFoundException(
+                "Unable to gather the list of snapshot versions on a non-directory: " + versionDir.toAbsolutePath() );
+        }
+        return Files.list(versionDir).filter(Files::isRegularFile)
+                .map(p -> repoBase.relativize(p).toString())
+                .filter(p -> !filetypes.matchesDefaultExclusions(p))
+                .filter(filetypes::matchesArtifactPattern)
+                .map(this::toArtifactRef);
+    }
+
+    public List<ArtifactReference> getArtifacts(VersionedReference reference) throws ContentNotFoundException, LayoutException
+    {
+        try (Stream<ArtifactReference> stream = getArtifactStream( reference ))
+        {
+            return stream.collect( Collectors.toList( ) );
+        } catch ( IOException e )
+        {
+            log.error( "Could not access the repository files: ", e.getMessage( ), e );
+            throw new ContentNotFoundException( e.getMessage( ), e );
+        }
     }
 
     private boolean hasArtifact( VersionedReference reference )
 
     {
-        try
+        try(Stream<ArtifactReference> stream = getArtifactStream( reference ))
         {
-            return ( getFirstArtifact( reference ) != null );
-        }
-        catch ( IOException e )
-        {
+            return stream.anyMatch( e -> true );
+        } catch (ContentNotFoundException e) {
             return false;
-        } catch (LayoutException e) {
+        } catch ( LayoutException | IOException e) {
             // We throw the runtime exception for better stream handling
             throw new RuntimeException(e);
         }

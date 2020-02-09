@@ -25,7 +25,6 @@ import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
@@ -45,6 +44,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
@@ -74,7 +74,6 @@ import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -685,7 +684,7 @@ public class DefaultRepositoriesService
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            Set<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
+            List<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
             log.debug( "related: {}", related );
             for ( ArtifactReference artifactRef : related )
             {
@@ -702,15 +701,7 @@ public class DefaultRepositoriesService
 
             metadataRepository.removeProjectVersion(repositorySession , repositoryId, namespace, projectId, version );
         }
-        catch ( MetadataRepositoryException e )
-        {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
-        }
-        catch ( MetadataResolutionException e )
-        {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
-        }
-        catch ( RepositoryException e )
+        catch ( MetadataRepositoryException | MetadataResolutionException | RepositoryException | LayoutException e )
         {
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
@@ -725,6 +716,7 @@ public class DefaultRepositoriesService
 
             repositorySession.close();
         }
+
 
         return Boolean.TRUE;
     }
@@ -841,7 +833,7 @@ public class DefaultRepositoriesService
                 }
                 else
                 {
-                    Set<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
+                    List<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
                     log.debug( "related: {}", related );
                     for ( ArtifactReference artifactRef : related )
                     {
@@ -960,11 +952,7 @@ public class DefaultRepositoriesService
         {
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
-        catch (MetadataResolutionException | MetadataSessionException e )
-        {
-            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
-        }
-        catch ( MetadataRepositoryException e )
+        catch (MetadataResolutionException | MetadataSessionException | MetadataRepositoryException | LayoutException e )
         {
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }

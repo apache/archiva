@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -68,11 +69,22 @@ public class ManagedDefaultRepositoryContentTest
     @Inject
     FileLockManager fileLockManager;
 
+    private Path getRepositoryPath(String repoName) {
+        try
+        {
+            return Paths.get( Thread.currentThread( ).getContextClassLoader( ).getResource( "repositories/" + repoName ).toURI( ) );
+        }
+        catch ( URISyntaxException e )
+        {
+            throw new RuntimeException( "Could not resolve repository path " + e.getMessage( ), e );
+        }
+    }
+
     @Before
     public void setUp()
         throws Exception
     {
-        Path repoDir = Paths.get( "src/test/repositories/default-repository" );
+        Path repoDir = getRepositoryPath( "default-repository" );
 
         MavenManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
 
@@ -90,7 +102,7 @@ public class ManagedDefaultRepositoryContentTest
     public void testGetVersionsBadArtifact()
         throws Exception
     {
-        assertGetVersions( "bad_artifact", Collections.<String>emptyList() );
+        assertGetVersions( "bad_artifact", Collections.emptyList() );
     }
 
     @Test
@@ -185,7 +197,7 @@ public class ManagedDefaultRepositoryContentTest
 
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
-        Path repoDir = Paths.get( "src/test/repositories/metadata-repository" );
+        Path repoDir = getRepositoryPath( "metadata-repository" );
         (( EditableManagedRepository)repoContent.getRepository()).setLocation( repoDir.toAbsolutePath().toUri() );
 
         // Request the versions.
@@ -210,7 +222,7 @@ public class ManagedDefaultRepositoryContentTest
 
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
-        Path repoDir = Paths.get( "src/test/repositories/metadata-repository" );
+        Path repoDir = getRepositoryPath( "metadata-repository" );
         ((EditableManagedRepository)repoContent.getRepository()).setLocation( repoDir.toAbsolutePath().toUri() );
 
         // Request the versions.

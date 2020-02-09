@@ -79,14 +79,37 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
         return defaultPathParser.toArtifactReference( path );
     }
 
+    public String toPath (ProjectReference reference) {
+        final StringBuilder path = new StringBuilder();
+        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
+        path.append( reference.getArtifactId( ) );
+        return path.toString( );
+    }
+
     public String toMetadataPath( ProjectReference reference )
     {
-        StringBuilder path = new StringBuilder();
-
+        final StringBuilder path = new StringBuilder();
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
         path.append( MAVEN_METADATA );
+        return path.toString();
+    }
 
+    public String toPath( String namespace )
+    {
+        return formatAsDirectory( namespace );
+    }
+
+    public String toPath( VersionedReference reference )
+    {
+        final StringBuilder path = new StringBuilder();
+        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
+        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
+        if ( reference.getVersion() != null )
+        {
+            // add the version only if it is present
+            path.append( VersionUtil.getBaseVersion( reference.getVersion() ) );
+        }
         return path.toString();
     }
 

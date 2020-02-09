@@ -36,7 +36,7 @@ public  class ValidatorTest
     public void testGenericValidator() 
     {
         Pattern pattern = Pattern.compile( ManagedRepositoryAdmin.REPOSITORY_LOCATION_VALID_EXPRESSION );
-        // Checks only the pattern 
+        // Checks only the pattern
         assertFalse("A repo location cannot contains space",pattern.matcher( "/opt/ testme/" ).matches());
         
     }

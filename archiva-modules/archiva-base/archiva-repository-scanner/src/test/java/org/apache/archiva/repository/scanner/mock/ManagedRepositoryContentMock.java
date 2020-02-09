@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -55,6 +56,24 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
     public ManagedRepositoryContentMock(ManagedRepository repo) {
         this.repository = repo;
+    }
+
+    @Override
+    public VersionedReference toVersion( String groupId, String artifactId, String version )
+    {
+        return null;
+    }
+
+    @Override
+    public VersionedReference toVersion( ArtifactReference artifactReference )
+    {
+        return null;
+    }
+
+    @Override
+    public ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier )
+    {
+        return null;
     }
 
     @Override
@@ -88,7 +107,19 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference ) throws ContentNotFoundException
+    public List<ArtifactReference> getRelatedArtifacts( ArtifactReference reference ) throws ContentNotFoundException, LayoutException
+    {
+        return null;
+    }
+
+    @Override
+    public List<StorageAsset> getRelatedAssets( ArtifactReference reference ) throws ContentNotFoundException, LayoutException
+    {
+        return null;
+    }
+
+    @Override
+    public List<ArtifactReference> getArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException
     {
         return null;
     }

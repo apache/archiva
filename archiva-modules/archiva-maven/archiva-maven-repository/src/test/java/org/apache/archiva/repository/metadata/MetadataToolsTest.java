@@ -48,6 +48,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -75,6 +76,17 @@ public class MetadataToolsTest
     @Inject
     @Named ( "archivaConfiguration#mock" )
     protected MockConfiguration config;
+
+    private Path getRepositoryPath(String repoName) {
+        try
+        {
+            return Paths.get( Thread.currentThread( ).getContextClassLoader( ).getResource( "repositories/" + repoName ).toURI( ) );
+        }
+        catch ( URISyntaxException e )
+        {
+            throw new RuntimeException( "Could not resolve repository path " + e.getMessage( ), e );
+        }
+    }
 
     @Test
     public void testGatherSnapshotVersionsA()
@@ -359,7 +371,7 @@ public class MetadataToolsTest
     private void assertSnapshotVersions( String artifactId, String version, String[] expectedVersions )
         throws Exception
     {
-        Path repoRootDir = Paths.get( "src/test/repositories/metadata-repository" );
+        Path repoRootDir = getRepositoryPath( "metadata-repository" );
 
         VersionedReference reference = new VersionedReference();
         reference.setGroupId( "org.apache.archiva.metadata.tests" );
@@ -642,7 +654,7 @@ public class MetadataToolsTest
         String groupDir = StringUtils.replaceChars( reference.getGroupId(), '.', '/' );
         String path = groupDir + "/" + reference.getArtifactId();
 
-        Path srcRepoDir = Paths.get( "src/test/repositories/metadata-repository" );
+        Path srcRepoDir = getRepositoryPath( "metadata-repository" );
         Path srcDir = srcRepoDir.resolve( path );
         Path destDir = Paths.get( repo.getRepoRoot(), path );
 

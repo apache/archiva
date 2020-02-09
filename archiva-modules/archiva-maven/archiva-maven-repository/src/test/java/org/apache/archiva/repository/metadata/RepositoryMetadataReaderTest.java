@@ -26,6 +26,7 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -38,11 +39,23 @@ import java.nio.file.Paths;
 public class RepositoryMetadataReaderTest
     extends TestCase
 {
+
+    private Path getRepositoryPath(String repoName) {
+        try
+        {
+            return Paths.get( Thread.currentThread( ).getContextClassLoader( ).getResource( "repositories/" + repoName ).toURI( ) );
+        }
+        catch ( URISyntaxException e )
+        {
+            throw new RuntimeException( "Could not resolve repository path " + e.getMessage( ), e );
+        }
+    }
+
     @Test
     public void testLoadSimple()
         throws RepositoryMetadataException
     {
-        Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
+        Path defaultRepoDir = getRepositoryPath( "default-repository" );
         Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
         MavenMetadataReader metadataReader = new MavenMetadataReader( );
@@ -62,7 +75,7 @@ public class RepositoryMetadataReaderTest
     public void testLoadComplex()
         throws RepositoryMetadataException
     {
-        Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
+        Path defaultRepoDir = getRepositoryPath( "default-repository" );
         Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/samplejar/maven-metadata.xml" );
         MavenMetadataReader metadataReader = new MavenMetadataReader( );
 

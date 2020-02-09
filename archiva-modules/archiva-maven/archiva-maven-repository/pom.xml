@@ -376,6 +376,7 @@
               <exclude>src/test/resources/test01.properties</exclude>
               <exclude>src/test/resources/target-repo/**</exclude>
               <exclude>src/test/resources/test-repository-with-conflict-artifacts/**</exclude>
+              <exclude>src/test/resources/repositories/**</exclude>
             </excludes>
           </configuration>
         </plugin>

@@ -41,6 +41,7 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -81,13 +82,23 @@ public class MavenRepositoryRequestInfoTest
         return repo;
     }
 
+    private Path getRepositoryPath(String repoName) {
+        try
+        {
+            return Paths.get( Thread.currentThread( ).getContextClassLoader( ).getResource( "repositories/" + repoName ).toURI( ) );
+        }
+        catch ( URISyntaxException e )
+        {
+            throw new RuntimeException( "Could not resolve repository path " + e.getMessage( ), e );
+        }
+    }
 
     @Before
     public void setUp()
         throws Exception
     {
 
-        Path repoDir = Paths.get( "src/test/repositories/default-repository" );
+        Path repoDir = getRepositoryPath( "default-repository" );
         MavenManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
 
         FileType fileType = archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );

@@ -31,6 +31,7 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,6 +41,24 @@ import java.util.Set;
 public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 {
     private ManagedRepository repository;
+
+    @Override
+    public VersionedReference toVersion( String groupId, String artifactId, String version )
+    {
+        return null;
+    }
+
+    @Override
+    public VersionedReference toVersion( ArtifactReference artifactReference )
+    {
+        return null;
+    }
+
+    @Override
+    public ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier )
+    {
+        return null;
+    }
 
     @Override
     public void deleteVersion( VersionedReference reference ) throws ContentNotFoundException
@@ -72,7 +91,19 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference ) throws ContentNotFoundException
+    public List<ArtifactReference> getRelatedArtifacts( ArtifactReference reference ) throws ContentNotFoundException, LayoutException
+    {
+        return null;
+    }
+
+    @Override
+    public List<StorageAsset> getRelatedAssets( ArtifactReference reference ) throws ContentNotFoundException, LayoutException
+    {
+        return null;
+    }
+
+    @Override
+    public List<ArtifactReference> getArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException
     {
         return null;
     }

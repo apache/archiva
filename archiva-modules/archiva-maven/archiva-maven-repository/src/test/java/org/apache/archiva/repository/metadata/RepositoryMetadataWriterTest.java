@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,12 +41,22 @@ import org.xmlunit.assertj.XmlAssert;
 public class RepositoryMetadataWriterTest
     extends TestCase
 {
+    private Path getRepositoryPath(String repoName) {
+        try
+        {
+            return Paths.get( Thread.currentThread( ).getContextClassLoader( ).getResource( "repositories/" + repoName ).toURI( ) );
+        }
+        catch ( URISyntaxException e )
+        {
+            throw new RuntimeException( "Could not resolve repository path " + e.getMessage( ), e );
+        }
+    }
 
     @Test
     public void testWriteSimple()
         throws Exception
     {
-        Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
+        Path defaultRepoDir = getRepositoryPath( "default-repository" );
         Path expectedFile = defaultRepoDir.resolve( "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
         String expectedContent = org.apache.archiva.common.utils.FileUtils.readFileToString( expectedFile, Charset.defaultCharset() );
 
