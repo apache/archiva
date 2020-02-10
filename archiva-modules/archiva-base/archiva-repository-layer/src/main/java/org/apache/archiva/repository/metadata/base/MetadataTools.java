@@ -43,13 +43,11 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
-import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.xml.XMLException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -148,7 +146,15 @@ public class MetadataTools
                                                VersionedReference reference )
         throws LayoutException, IOException, ContentNotFoundException
     {
-        Set<String> foundVersions = managedRepository.getVersions( reference );
+        Set<String> foundVersions = null;
+        try
+        {
+            foundVersions = managedRepository.getVersions( reference );
+        }
+        catch ( org.apache.archiva.repository.ContentAccessException e )
+        {
+            e.printStackTrace( );
+        }
 
         // Next gather up the referenced 'latest' versions found in any proxied repositories
         // maven-metadata-${proxyId}.xml files that may be present.
@@ -519,7 +525,15 @@ public class MetadataTools
         metadata.setArtifactId( reference.getArtifactId() );
 
         // Gather up all versions found in the managed repository.
-        Set<String> allVersions = managedRepository.getVersions( reference );
+        Set<String> allVersions = null;
+        try
+        {
+            allVersions = managedRepository.getVersions( reference );
+        }
+        catch ( org.apache.archiva.repository.ContentAccessException e )
+        {
+            e.printStackTrace( );
+        }
 
         // Gather up all plugins found in the managed repository.
         // TODO: do we know this information instead?

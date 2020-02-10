@@ -48,7 +48,15 @@ public interface ManagedRepositoryContent extends RepositoryContent
     VersionedReference toVersion( String groupId, String artifactId, String version );
 
     /**
-     * Return the version reference the artifact is part of.
+     * Returns the version reference that represents the generic version, which means that
+     * snapshot versions are converted to <VERSION>-SNAPSHOT
+     * @param artifactReference the artifact reference
+     * @return the generic version
+     */
+    VersionedReference toGenericVersion( ArtifactReference artifactReference );
+
+    /**
+     * Return the version reference that matches exactly the version string of the artifact
      *
      * @param artifactReference The artifact reference
      * @return the version reference
@@ -75,7 +83,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ContentNotFoundException
      */
     void deleteVersion( VersionedReference reference )
-        throws ContentNotFoundException;
+        throws ContentNotFoundException, ContentAccessException;
 
     /**
      * delete a specified artifact from the repository
@@ -84,7 +92,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ContentNotFoundException
      */
     void deleteArtifact( ArtifactReference artifactReference )
-        throws ContentNotFoundException;
+        throws ContentNotFoundException, ContentAccessException;
 
     /**
      * @param groupId
@@ -92,7 +100,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @since 1.4-M3
      */
     void deleteGroupId( String groupId )
-        throws ContentNotFoundException;
+        throws ContentNotFoundException, ContentAccessException;
 
     /**
      *
@@ -101,7 +109,15 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ContentNotFoundException
      */
     void deleteProject( String namespace, String projectId )
-        throws RepositoryException;
+        throws ContentNotFoundException, ContentAccessException;
+
+
+    /**
+     * Deletes a project
+     * @param reference
+     */
+    void deleteProject(ProjectReference reference) throws ContentNotFoundException, ContentAccessException;
+
 
     /**
      * <p>
@@ -118,6 +134,26 @@ public interface ManagedRepositoryContent extends RepositoryContent
     /**
      * <p>
      * Gather up the list of related artifacts to the ArtifactReference provided.
+     * If type and / or classifier of the reference is set, this returns only a list of artifacts that is directly
+     * related to the given artifact, like checksums.
+     * If type and classifier is <code>null</code> it will return the same artifacts as 
+     * {@link #getRelatedArtifacts(VersionedReference)}
+     * </p>
+     * <p>
+     * <strong>NOTE:</strong> Some layouts (such as maven 1 "legacy") are not compatible with this query.
+     * </p>
+     *
+     * @param reference the reference to work off of.
+     * @return the list of ArtifactReferences for related artifacts, if
+     * @throws ContentNotFoundException if the initial artifact reference does not exist within the repository.
+     * @see #getRelatedArtifacts(VersionedReference)
+     */
+    List<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
+        throws ContentNotFoundException, LayoutException, ContentAccessException;
+
+    /**
+     * <p>
+     * Gather up the list of related artifacts to the ArtifactReference provided.
      * This typically includes the pom files, and those things with
      * classifiers (such as doc, source code, test libs, etc...). Even if the classifier
      * is set in the artifact reference, it may return artifacts with different classifiers.
@@ -130,9 +166,8 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @return the list of ArtifactReferences for related artifacts, if
      * @throws ContentNotFoundException if the initial artifact reference does not exist within the repository.
      */
-    List<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
-        throws ContentNotFoundException, LayoutException;
-
+    List<ArtifactReference> getRelatedArtifacts( VersionedReference reference )
+        throws ContentNotFoundException, LayoutException, ContentAccessException;
     /**
      * Returns all the assets that belong to a given artifact type. The list returned contain
      * all the files that correspond to the given artifact reference.
@@ -142,14 +177,14 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param reference
      * @return
      */
-    List<StorageAsset> getRelatedAssets(ArtifactReference reference) throws ContentNotFoundException, LayoutException;
+    List<StorageAsset> getRelatedAssets(ArtifactReference reference) throws ContentNotFoundException, LayoutException, ContentAccessException;
 
     /**
      * Returns all artifacts that belong to a given version
      * @param reference the version reference
      * @return the list of artifacts or a empty list
      */
-    List<ArtifactReference> getArtifacts(VersionedReference reference) throws ContentNotFoundException, LayoutException;
+    List<ArtifactReference> getArtifacts(VersionedReference reference) throws ContentNotFoundException, LayoutException, ContentAccessException;
 
 
 
@@ -184,7 +219,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws LayoutException
      */
     Set<String> getVersions( ProjectReference reference )
-        throws ContentNotFoundException, LayoutException;
+        throws ContentNotFoundException, LayoutException, ContentAccessException;
 
 
 
@@ -202,7 +237,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ContentNotFoundException if the versioned reference does not exist within the repository.
      */
     Set<String> getVersions( VersionedReference reference )
-        throws ContentNotFoundException;
+        throws ContentNotFoundException, ContentAccessException, LayoutException;
 
     /**
      * Determines if the artifact referenced exists in the repository.
@@ -210,7 +245,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param reference the artifact reference to check for.
      * @return true if the artifact referenced exists.
      */
-    boolean hasContent( ArtifactReference reference );
+    boolean hasContent( ArtifactReference reference ) throws ContentAccessException;
 
     /**
      * Determines if the project referenced exists in the repository.
@@ -218,7 +253,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param reference the project reference to check for.
      * @return true it the project referenced exists.
      */
-    boolean hasContent( ProjectReference reference );
+    boolean hasContent( ProjectReference reference ) throws ContentAccessException;
 
     /**
      * Determines if the version reference exists in the repository.
@@ -226,7 +261,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param reference the version reference to check for.
      * @return true if the version referenced exists.
      */
-    boolean hasContent( VersionedReference reference );
+    boolean hasContent( VersionedReference reference ) throws ContentAccessException;
 
     /**
      * Set the repository configuration to associate with this
@@ -235,6 +270,14 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param repo the repository to associate with this repository content.
      */
     void setRepository( ManagedRepository repo );
+
+    /**
+     * Given an {@link ArtifactReference}, return the file reference to the artifact.
+     *
+     * @param reference the artifact reference to use.
+     * @return the relative path to the artifact.
+     */
+    StorageAsset toFile( VersionedReference reference );
 
     /**
      * Given an {@link ArtifactReference}, return the file reference to the artifact.

@@ -303,6 +303,7 @@ public class RepositoriesServiceTest
             artifact.setVersion( "1.0.1" );
             artifact.setClassifier( "javadoc" );
             artifact.setPackaging( "jar" );
+            artifact.setType( "javadoc" );
             artifact.setContext( SOURCE_REPO_ID );
 
             RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );

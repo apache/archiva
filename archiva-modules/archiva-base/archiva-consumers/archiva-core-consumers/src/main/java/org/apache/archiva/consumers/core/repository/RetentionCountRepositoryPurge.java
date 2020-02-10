@@ -94,7 +94,8 @@ public class RetentionCountRepositoryPurge
                     {
                         break;
                     }
-                    artifactsToDelete.addAll( repository.getRelatedArtifacts( getNewArtifactReference( artifact, version ) ) );
+                    VersionedReference ref = repository.toVersion( getNewArtifactReference( artifact, version ) );
+                    artifactsToDelete.addAll( repository.getRelatedArtifacts( ref ) );
                 }
                 purge( artifactsToDelete );
             }
@@ -106,6 +107,10 @@ public class RetentionCountRepositoryPurge
         catch ( ContentNotFoundException e )
         {
             log.error( "Repostory artifact not found {}", path );
+        }
+        catch ( org.apache.archiva.repository.ContentAccessException e )
+        {
+            e.printStackTrace( );
         }
     }
 

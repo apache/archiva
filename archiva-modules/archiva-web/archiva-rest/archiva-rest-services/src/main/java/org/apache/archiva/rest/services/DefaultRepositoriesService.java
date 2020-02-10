@@ -96,7 +96,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.TimeZone;
 
 /**
@@ -684,7 +683,7 @@ public class DefaultRepositoriesService
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            List<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
+            List<ArtifactReference> related = repository.getRelatedArtifacts( repository.toVersion(artifactReference) );
             log.debug( "related: {}", related );
             for ( ArtifactReference artifactRef : related )
             {
@@ -793,7 +792,7 @@ public class DefaultRepositoriesService
             artifactReference.setGroupId( artifact.getGroupId() );
             artifactReference.setVersion( artifact.getVersion() );
             artifactReference.setClassifier( artifact.getClassifier() );
-            artifactReference.setType( artifact.getPackaging() );
+            artifactReference.setType( artifact.getType() );
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
@@ -806,8 +805,10 @@ public class DefaultRepositoriesService
                     throw new ArchivaRestServiceException( "You must configure a type/packaging when using classifier",
                                                            400, null );
                 }
-
-                repository.deleteArtifact( artifactReference );
+                List<ArtifactReference> artifacts = repository.getRelatedArtifacts( artifactReference );
+                for (ArtifactReference aRef : artifacts ) {
+                    repository.deleteArtifact( aRef );
+                }
 
             }
             else
@@ -833,11 +834,18 @@ public class DefaultRepositoriesService
                 }
                 else
                 {
-                    List<ArtifactReference> related = repository.getRelatedArtifacts( artifactReference );
+                    // We are deleting all version related artifacts for a snapshot version
+                    VersionedReference versionRef = repository.toVersion( artifactReference );
+                    List<ArtifactReference> related = repository.getRelatedArtifacts( versionRef );
                     log.debug( "related: {}", related );
                     for ( ArtifactReference artifactRef : related )
                     {
-                        repository.deleteArtifact( artifactRef );
+                        try
+                        {
+                            repository.deleteArtifact( artifactRef );
+                        } catch (ContentNotFoundException e) {
+                            log.warn( "Artifact that should be deleted, was not found: {}", artifactRef );
+                        }
                     }
                     StorageAsset metadataFile = getMetadata( repo, targetPath.getPath() );
                     ArchivaRepositoryMetadata metadata = getMetadata( repository.getRepository().getType(), metadataFile );

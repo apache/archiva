@@ -40,7 +40,6 @@ import org.apache.archiva.indexer.merger.base.MergedRemoteIndexesTaskRequest;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
-import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.storage.RelocationException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
@@ -66,7 +65,6 @@ import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRequestInfo;
-import org.apache.archiva.repository.storage.FilesystemAsset;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.metadata.audit.AuditListener;
@@ -104,7 +102,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -670,6 +667,10 @@ public class ArchivaDavResourceFactory
                     catch ( LayoutException e )
                     {
                         log.warn( "Artifact path '{}' is invalid.", resourcePath );
+                    }
+                    catch ( org.apache.archiva.repository.ContentAccessException e )
+                    {
+                        e.printStackTrace( );
                     }
                 }
 

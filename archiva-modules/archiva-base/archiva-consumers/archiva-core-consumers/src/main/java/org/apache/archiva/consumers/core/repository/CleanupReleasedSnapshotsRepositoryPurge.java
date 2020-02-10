@@ -181,6 +181,10 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         {
             log.error( "Could not remove metadata during cleanup of released snapshots of {}", path, e );
         }
+        catch ( org.apache.archiva.repository.ContentAccessException e )
+        {
+            e.printStackTrace( );
+        }
     }
 
 

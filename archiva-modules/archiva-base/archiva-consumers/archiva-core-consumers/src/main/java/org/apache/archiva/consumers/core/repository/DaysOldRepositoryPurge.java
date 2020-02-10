@@ -115,7 +115,7 @@ public class DaysOldRepositoryPurge
                 {
                     if ( newArtifactFile.getModificationTime().toEpochMilli() < olderThanThisDate.getTimeInMillis( ) )
                     {
-                        artifactsToDelete.addAll( repository.getRelatedArtifacts( newArtifactReference ) );
+                        artifactsToDelete.addAll( repository.getRelatedArtifacts( repository.toVersion(newArtifactReference) ) );
                     }
                 }
                 // Is this a timestamp snapshot "1.0-20070822.123456-42" ?
@@ -125,7 +125,7 @@ public class DaysOldRepositoryPurge
 
                     if ( timestampCal.getTimeInMillis( ) < olderThanThisDate.getTimeInMillis( ) )
                     {
-                        artifactsToDelete.addAll( repository.getRelatedArtifacts( newArtifactReference ) );
+                        artifactsToDelete.addAll( repository.getRelatedArtifacts( repository.toVersion(newArtifactReference) ) );
                     }
                 }
             }
@@ -138,6 +138,10 @@ public class DaysOldRepositoryPurge
         catch ( LayoutException e )
         {
             log.debug( "Not processing file that is not an artifact: {}", e.getMessage( ) );
+        }
+        catch ( org.apache.archiva.repository.ContentAccessException e )
+        {
+            e.printStackTrace( );
         }
     }
 

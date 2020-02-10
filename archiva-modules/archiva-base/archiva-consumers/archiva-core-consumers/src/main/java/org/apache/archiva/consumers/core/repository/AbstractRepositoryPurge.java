@@ -234,6 +234,10 @@ public abstract class AbstractRepositoryPurge
                 {
                     log.warn( "skip error deleting artifact {}: {}", reference, e.getMessage( ) );
                 }
+                catch ( org.apache.archiva.repository.ContentAccessException e )
+                {
+                    e.printStackTrace( );
+                }
 
                 boolean snapshotVersion = VersionUtil.isSnapshot( reference.getVersion( ) );
 
