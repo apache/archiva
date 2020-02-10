@@ -62,6 +62,11 @@ public class ProjectReference
         return this.artifactId;
     } //-- String getArtifactId()
 
+    public ProjectReference artifactId(String artifactId) {
+        this.artifactId = artifactId;
+        return this;
+    }
+
     /**
      * Get the Group ID of the project reference.
      * 
@@ -71,6 +76,11 @@ public class ProjectReference
     {
         return this.groupId;
     } //-- String getGroupId()
+
+    public ProjectReference groupId(String groupId) {
+        this.groupId = groupId;
+        return this;
+    }
 
     /**
      * Set the Artifact ID of the project reference.

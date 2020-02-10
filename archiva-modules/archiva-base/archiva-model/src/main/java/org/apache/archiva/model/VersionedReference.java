@@ -69,6 +69,11 @@ public class VersionedReference
         return this.artifactId;
     } //-- String getArtifactId()
 
+    public VersionedReference artifactId(String artifactId) {
+        this.artifactId  = artifactId;
+        return this;
+    }
+
     /**
      * Get the Group ID of the repository content.
      * 
@@ -79,6 +84,11 @@ public class VersionedReference
         return this.groupId;
     } //-- String getGroupId()
 
+    public VersionedReference groupId(String groupId) {
+        this.groupId = groupId;
+        return this;
+    }
+
     /**
      * Get the version of the repository content.
      * 
@@ -88,6 +98,11 @@ public class VersionedReference
     {
         return this.version;
     } //-- String getVersion()
+
+    public VersionedReference version(String version) {
+        this.version = version;
+        return this;
+    }
 
     /**
      * Set the Artifact ID of the repository content.

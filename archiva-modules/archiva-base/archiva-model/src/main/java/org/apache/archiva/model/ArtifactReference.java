@@ -83,6 +83,11 @@ public class ArtifactReference
         return this.artifactId;
     } //-- String getArtifactId()
 
+    public ArtifactReference artifactId(String artifactId) {
+        this.artifactId = artifactId;
+        return this;
+    }
+
     /**
      * Get the classifier for this artifact.
      * 
@@ -92,6 +97,11 @@ public class ArtifactReference
     {
         return this.classifier;
     } //-- String getClassifier()
+
+    public ArtifactReference classifier(String classifier) {
+        this.classifier = classifier;
+        return this;
+    }
 
     /**
      * Get the Group ID of the repository content.
@@ -103,6 +113,11 @@ public class ArtifactReference
         return this.groupId;
     } //-- String getGroupId()
 
+    public ArtifactReference groupId(String groupId) {
+        this.groupId = groupId;
+        return this;
+    }
+
     /**
      * Get the type of artifact.
      * 
@@ -113,6 +128,11 @@ public class ArtifactReference
         return this.type;
     } //-- String getType()
 
+    public ArtifactReference type(String type) {
+        this.type = type;
+        return this;
+    }
+
     /**
      * Get the version of the repository content.
      * 
@@ -122,6 +142,11 @@ public class ArtifactReference
     {
         return this.version;
     } //-- String getVersion()
+
+    public ArtifactReference version(String version) {
+        this.version = version;
+        return this;
+    }
 
     /**
      * Set the Artifact ID of the repository content.
