@@ -119,7 +119,7 @@ public class EventType<T extends Event> implements Serializable  {
 
 
     private Object writeReplace() throws ObjectStreamException {
-        Deque<String> path = new LinkedList<String>();
+        Deque<String> path = new LinkedList<>();
         EventType<?> t = this;
         while (t != ROOT) {
             path.addFirst(t.name);

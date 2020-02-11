@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EventManager implements EventSource
 {
 
-    private static final Logger log = LoggerFactory.getLogger(EventManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EventManager.class);
 
     private final ConcurrentHashMap<EventType<? extends Event>, Set<EventHandler>> handlerMap = new ConcurrentHashMap<>();
 
@@ -71,7 +71,7 @@ public class EventManager implements EventSource
                             handler.handle(event);
                         } catch (Exception e) {
                             // We catch all errors from handlers
-                            log.error("An error occured during event handling: {}", e.getMessage(), e);
+                            LOG.error("An error occured during event handling: {}", e.getMessage(), e);
                         }
                     }
             }
