@@ -19,7 +19,6 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
@@ -28,6 +27,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 
 /**
  * AbstractChecksumTestCase
@@ -36,11 +38,12 @@ import java.nio.file.Paths;
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public abstract class AbstractChecksumTestCase
-    extends TestCase
 {
+    @Rule public TestName name = new TestName();
+
     public Path getTestOutputDir()
     {
-        Path dir = Paths.get( FileUtils.getBasedir(), "target/test-output/" + getName() );
+        Path dir = Paths.get( FileUtils.getBasedir(), "target/test-output/" + name.getMethodName() );
         if ( !Files.exists(dir))
         {
             try
@@ -49,7 +52,7 @@ public abstract class AbstractChecksumTestCase
             }
             catch ( IOException e )
             {
-                fail( "Unable to create test output directory: " + dir.toAbsolutePath() );
+                Assert.fail( "Unable to create test output directory: " + dir.toAbsolutePath() );
             }
         }
         return dir;
@@ -61,7 +64,7 @@ public abstract class AbstractChecksumTestCase
         Path file = dir.resolve(filename );
         if ( !Files.exists(file))
         {
-            fail( "Test Resource does not exist: " + file.toAbsolutePath() );
+            Assert.fail( "Test Resource does not exist: " + file.toAbsolutePath() );
         }
         return file;
     }

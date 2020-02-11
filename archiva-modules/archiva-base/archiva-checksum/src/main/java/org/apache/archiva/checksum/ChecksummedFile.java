@@ -133,7 +133,7 @@ public class ChecksummedFile
     {
         for ( String ext : checksumAlgorithm.getExt( ) )
         {
-            Path file = referenceFile.resolveSibling( referenceFile.getFileName( ) + "." + checksumAlgorithm.getExt( ) );
+            Path file = referenceFile.resolveSibling( referenceFile.getFileName( ) + "." + ext );
             if ( Files.exists( file ) )
             {
                 return file;
@@ -340,7 +340,7 @@ public class ChecksummedFile
 
     private void writeChecksumFile( Path checksumFile, Charset encoding, String checksumHex )
     {
-        FileUtils.writeStringToFile( checksumFile, FILE_ENCODING, checksumHex + "  " + referenceFile.getFileName( ).toString( ) );
+        FileUtils.writeStringToFile( checksumFile, encoding, checksumHex + "  " + referenceFile.getFileName( ).toString( ) );
     }
 
     private boolean isValidChecksumPattern( String filename, String path )

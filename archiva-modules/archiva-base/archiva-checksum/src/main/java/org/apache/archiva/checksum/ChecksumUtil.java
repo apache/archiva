@@ -19,7 +19,6 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;

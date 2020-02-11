@@ -19,12 +19,7 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -108,13 +103,13 @@ public class Checksum
         if (this.result == null || this.result.length==0) {
             finish();
         }
-        return md.isEqual( this.result, cmp );
+        return MessageDigest.isEqual( this.result, cmp );
     }
 
     public boolean compare(String hexString) {
         if (this.result == null || this.result.length==0) {
             finish();
         }
-        return md.isEqual(this.result, Hex.decode( hexString ));
+        return MessageDigest.isEqual(this.result, Hex.decode( hexString ));
     }
 }
