@@ -79,12 +79,6 @@ public interface Artifact extends ContentItem
     Version getVersion();
 
     /**
-     * Returns the project this artifact is part of.
-     * @return the project object
-     */
-    Project getProject();
-
-    /**
      * Returns the type of the artifact. The type is some hint about the usage of the artifact.
      * Implementations may always return a empty string, if it is not used.
      *
