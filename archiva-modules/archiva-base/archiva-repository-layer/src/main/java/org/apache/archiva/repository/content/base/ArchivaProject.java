@@ -19,60 +19,133 @@ package org.apache.archiva.repository.content.base;
  * under the License.
  */
 
-import org.apache.archiva.repository.RepositoryContent;
-import org.apache.archiva.repository.UnsupportedConversionException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Project;
-
-import java.util.Map;
+import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Immutable class, that represents a project.
  */
 public class ArchivaProject extends ArchivaContentItem implements Project
 {
-    String namespace;
-    String id;
-    RepositoryContent repositoryContent;
-    Map<String, String> attributes;
+    private String namespace;
+    private String id;
+    private ManagedRepositoryContent repositoryContent;
+    private StorageAsset asset;
+
+    // Setting all setters to private. Builder is the way to go.
+    private ArchivaProject() {
+
+    }
+
+
+    /**
+     * Creates the builder that allows to create a new instance.
+     * @param id the project id, must not be <code>null</code>
+     * @return a builder instance
+     */
+    public static Builder withId( String id) {
+        return new Builder( ).withId( id );
+    }
 
 
     @Override
     public String getNamespace( )
     {
-        return null;
+        return this.namespace;
     }
 
     @Override
     public String getId( )
     {
-        return null;
+        return this.id;
     }
 
     @Override
-    public RepositoryContent getRepository( )
+    public ManagedRepositoryContent getRepository( )
     {
-        return null;
+        return this.repositoryContent;
     }
 
     @Override
-    public Map<String, String> getAttributes( )
+    public StorageAsset getAsset( )
     {
-        return null;
+        return asset;
     }
 
-    @Override
-    public <T extends Project> T adapt( Class<T> clazz ) throws UnsupportedConversionException
+
+
+    /*
+     * Builder interface chaining is used to restrict mandatory attributes
+     * This interface is for the optional arguments.
+     */
+    public interface OptBuilder {
+
+        OptBuilder withAsset( StorageAsset asset );
+
+        OptBuilder withNamespace( String namespace);
+
+        OptBuilder withAttribute( String key, String value );
+
+    }
+    /*
+     * Builder classes for instantiation
+     */
+    public static final class Builder implements OptBuilder
     {
-        if (clazz != ArchivaProject.class) {
-            throw new UnsupportedConversionException( "Cannot convert to class: " + clazz );
-        } else {
-            return (T) this;
+        final private ArchivaProject project = new ArchivaProject();
+
+        private Builder( )
+        {
+
+        }
+
+        private Builder withId(String id) {
+            if ( StringUtils.isEmpty( id ) ) {
+                throw new IllegalArgumentException( "Null or empty value not allowed for id" );
+            }
+            project.id = id;
+            return this;
+        }
+
+
+        public OptBuilder withRepository( ManagedRepositoryContent repository ) {
+            project.repositoryContent = repository;
+            return this;
+        }
+
+        @Override
+        public OptBuilder withAsset( StorageAsset asset )
+        {
+            project.asset = asset;
+            return this;
+        }
+
+        public OptBuilder withNamespace( String namespace) {
+            if (namespace==null) {
+                throw new IllegalArgumentException( "Null value not allowed for namespace" );
+            }
+            project.namespace = namespace;
+            return this;
+        }
+
+        public OptBuilder withAttribute( String key, String value) {
+            project.putAttribute( key, value );
+            return this;
+        }
+
+        ArchivaProject build() {
+            if (project.namespace==null) {
+                project.namespace = "";
+            }
+            if (project.asset == null) {
+                project.asset = project.getRepository( ).getRepository( ).getAsset( "" );
+            }
+            return project;
         }
     }
 
-    @Override
-    public <T extends Project> boolean supports( Class<T> clazz )
-    {
-        return false;
-    }
+
+
 }

@@ -19,7 +19,6 @@ package org.apache.archiva.repository.content.base;
  * under the License.
  */
 
-import org.apache.archiva.repository.UnsupportedConversionException;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.Project;
 import org.apache.commons.lang3.StringUtils;
@@ -40,10 +39,14 @@ public abstract class ArchivaContentItem implements ContentItem
     private Map<String, String> attributes;
 
     @Override
-    public abstract  <T extends Project> T adapt( Class<T> clazz ) throws UnsupportedConversionException;
+    public <T extends Project> T adapt( Class<T> clazz ) {
+        return (T)this;
+    }
 
     @Override
-    public abstract <T extends Project> boolean supports( Class<T> clazz );
+    public <T extends Project> boolean supports( Class<T> clazz ) {
+        return clazz != null && clazz.isAssignableFrom( this.getClass() );
+    }
 
 
     /**
