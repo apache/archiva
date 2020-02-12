@@ -95,7 +95,7 @@ public class ArchivaVersion extends ArchivaContentItem implements Version
 
         public ArchivaVersion build() {
             if (this.version.asset == null) {
-                this.version.project.getRepository( ).getRepository( ).getAsset( "" );
+                this.version.project.getRepository( ).getRepository().getAsset( "" );
             }
             return this.version;
         }

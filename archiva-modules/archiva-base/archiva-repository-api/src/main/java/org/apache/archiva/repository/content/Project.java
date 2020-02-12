@@ -19,11 +19,8 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.archiva.repository.RepositoryContent;
-import org.apache.archiva.repository.UnsupportedConversionException;
-import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
-
-import java.util.Map;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 /**
  *
@@ -60,6 +57,15 @@ public interface Project extends ContentItem
      * The repository this project is part of.
      * @return the repository content
      */
-    RepositoryContent getRepository();
+    ManagedRepositoryContent getRepository();
+
+    /**
+     * Returns the asset that corresponds to this project.
+     * It depends of the implementation, if the asset provides additional information about the
+     * project or not.
+     *
+     * @return the repository asset that represents this project
+     */
+    StorageAsset getAsset();
 
 }
