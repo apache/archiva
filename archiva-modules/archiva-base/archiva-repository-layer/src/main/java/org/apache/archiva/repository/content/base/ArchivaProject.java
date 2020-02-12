@@ -1,0 +1,78 @@
+package org.apache.archiva.repository.content.base;
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import org.apache.archiva.repository.RepositoryContent;
+import org.apache.archiva.repository.UnsupportedConversionException;
+import org.apache.archiva.repository.content.Project;
+
+import java.util.Map;
+
+/**
+ * Immutable class, that represents a project.
+ */
+public class ArchivaProject extends ArchivaContentItem implements Project
+{
+    String namespace;
+    String id;
+    RepositoryContent repositoryContent;
+    Map<String, String> attributes;
+
+
+    @Override
+    public String getNamespace( )
+    {
+        return null;
+    }
+
+    @Override
+    public String getId( )
+    {
+        return null;
+    }
+
+    @Override
+    public RepositoryContent getRepository( )
+    {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> getAttributes( )
+    {
+        return null;
+    }
+
+    @Override
+    public <T extends Project> T adapt( Class<T> clazz ) throws UnsupportedConversionException
+    {
+        if (clazz != ArchivaProject.class) {
+            throw new UnsupportedConversionException( "Cannot convert to class: " + clazz );
+        } else {
+            return (T) this;
+        }
+    }
+
+    @Override
+    public <T extends Project> boolean supports( Class<T> clazz )
+    {
+        return false;
+    }
+}

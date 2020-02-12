@@ -20,6 +20,7 @@ package org.apache.archiva.repository.content;
  */
 
 import org.apache.archiva.repository.RepositoryContent;
+import org.apache.archiva.repository.UnsupportedConversionException;
 import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
 
 import java.util.Map;
@@ -40,7 +41,7 @@ import java.util.Map;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface Project extends Comparable<Project>
+public interface Project extends ContentItem
 {
 
     /**
@@ -61,25 +62,4 @@ public interface Project extends Comparable<Project>
      */
     RepositoryContent getRepository();
 
-    /**
-     * Additional attributes
-     * @return the additional attributes
-     */
-    Map<String, String> getAttributes();
-
-    /**
-     * Returns the repository type specific implementation
-     * @param clazz the specific implementation class
-     * @param <T> the class or interface
-     * @return the specific project implementation
-     */
-    <T extends Project> T adapt(Class<T> clazz) throws UnsupportedRepositoryTypeException;
-
-    /**
-     * Returns <code>true</code>, if this project supports the given adaptor class.
-     * @param clazz the class to convert this project to
-     * @param <T> the type
-     * @return <code>true/code>, if the implementation is supported, otherwise false
-     */
-    <T extends Project> boolean supports(Class<T> clazz);
 }

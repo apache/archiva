@@ -39,7 +39,7 @@ import java.util.Map;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface Artifact extends Comparable<Artifact>
+public interface Artifact extends ContentItem
 {
     /**
      * The namespace is the location of the artifact.
@@ -146,30 +146,5 @@ public interface Artifact extends Comparable<Artifact>
      */
     StorageAsset getAsset();
 
-    /**
-     * Returns additional attributes of the artifact. Implementations may add additional attributes, e.g. author name
-     * or creation date. Specific implementation attributes can be accessed either by the {@link #getAttributes()} method
-     * or by a specific implementation class (see {@link #adapt(Class)}. Use via the adapter is type safe.
-     *
-     * @return a map of attribute key, value pairs
-     */
-    Map<String,String> getAttributes();
-
-
-    /**
-     * Returns the repository type specific implementation
-     * @param clazz the specific implementation class
-     * @param <T> the class or interface
-     * @return the specific project implementation
-     */
-    <T extends Artifact> T adapt(Class<T> clazz) throws UnsupportedRepositoryTypeException;
-
-    /**
-     * Returns <code>true</code>, if this project supports the given adaptor class.
-     * @param clazz the class to convert this project to
-     * @param <T> the type
-     * @return <code>true/code>, if the implementation is supported, otherwise false
-     */
-    <T extends Artifact> boolean supports(Class<T> clazz);
 
 }
