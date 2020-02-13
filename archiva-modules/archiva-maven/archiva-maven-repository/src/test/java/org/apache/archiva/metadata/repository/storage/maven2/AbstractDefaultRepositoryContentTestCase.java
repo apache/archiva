@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -415,6 +416,21 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         }
     }
 
+    public void testToPathOnNullItemSelector()
+
+    {
+        try
+        {
+            ItemSelector selector = null;
+            toPath( selector );
+            fail( "Should have failed due to null artifact reference." );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            /* expected path */
+        }
+    }
+
     private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
                                           String version, String classifier, String type )
     {
@@ -488,4 +504,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         throws LayoutException;
 
     protected abstract String toPath( ArtifactReference reference );
+
+
+    protected abstract String toPath( ItemSelector selector );
 }

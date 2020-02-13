@@ -21,6 +21,7 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.repository.content.ItemSelector;
 
 
 /**
@@ -48,4 +49,12 @@ public interface RepositoryContent
      * @return the relative path to the artifact.
      */
     String toPath( ArtifactReference reference );
+
+
+    /**
+     * Return the path, that represents the item specified by the selector.
+     * @param selector the selector with the artifact coordinates
+     * @return the path to the content item
+     */
+    String toPath( ItemSelector selector );
 }

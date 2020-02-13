@@ -28,6 +28,7 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.springframework.stereotype.Service;
 
@@ -212,6 +213,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
     @Override
     public String toPath( ArtifactReference reference )
+    {
+        return null;
+    }
+
+    @Override
+    public String toPath( ItemSelector selector )
     {
         return null;
     }

@@ -34,6 +34,7 @@ import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 
@@ -571,6 +572,7 @@ public class ManagedDefaultRepositoryContent
             return super.toArtifactReference( repoPath );
         }
     }
+
 
     // The variant with runtime exception for stream usage
     private ArtifactReference toArtifactRef(String path) {

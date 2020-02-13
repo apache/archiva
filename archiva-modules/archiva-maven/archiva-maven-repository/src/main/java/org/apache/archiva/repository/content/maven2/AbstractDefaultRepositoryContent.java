@@ -29,7 +29,9 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RepositoryContent;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.content.Version;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +86,45 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId( ) );
         return path.toString( );
+    }
+
+    @Override
+    public String toPath ( ItemSelector selector ) {
+        if (selector==null) {
+            throw new IllegalArgumentException( "ItemSelector must not be null." );
+        }
+        String projectId;
+        // Initialize the project id if not set
+        if (selector.hasProjectId()) {
+            projectId = selector.getProjectId( );
+        } else if (selector.hasArtifactId()) {
+            // projectId same as artifact id, if set
+            projectId = selector.getArtifactId( );
+        } else {
+            // we arrive here, if projectId && artifactId not set
+            return pathTranslator.toPath( selector.getNamespace(), "");
+        }
+        if ( !selector.hasArtifactId( )) {
+            return pathTranslator.toPath( selector.getNamespace( ), projectId );
+        }
+        // this part only, if projectId && artifactId is set
+        String artifactVersion = "";
+        String version = "";
+        if (selector.hasVersion() && selector.hasArtifactVersion() ) {
+            artifactVersion = selector.getArtifactVersion();
+            version = VersionUtil.getBaseVersion( selector.getVersion( ) );
+        } else if (!selector.hasVersion() && selector.hasArtifactVersion()) {
+            // we try to retrieve the base version, if artifact version is only set
+            version = VersionUtil.getBaseVersion( selector.getArtifactVersion( ) );
+            artifactVersion = selector.getArtifactVersion( );
+        } else if (selector.hasVersion() && !selector.hasArtifactVersion()) {
+            artifactVersion = selector.getVersion();
+            version = VersionUtil.getBaseVersion( selector.getVersion( ) );
+        }
+
+        return pathTranslator.toPath( selector.getNamespace(), projectId, version,
+                constructId( selector.getArtifactId(), artifactVersion, selector.getClassifier(), selector.getType() ) );
+
     }
 
     public String toMetadataPath( ProjectReference reference )

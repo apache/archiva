@@ -19,7 +19,9 @@ package org.apache.archiva.repository.content.base;
  * under the License.
  */
 
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +33,7 @@ public class ArchivaProject extends ArchivaContentItem implements Project
 {
     private String namespace;
     private String id;
-    private ManagedRepositoryContent repositoryContent;
+    private RepositoryContent repositoryContent;
     private StorageAsset asset;
 
     // Setting all setters to private. Builder is the way to go.
@@ -63,7 +65,7 @@ public class ArchivaProject extends ArchivaContentItem implements Project
     }
 
     @Override
-    public ManagedRepositoryContent getRepository( )
+    public RepositoryContent getRepository( )
     {
         return this.repositoryContent;
     }
@@ -110,7 +112,7 @@ public class ArchivaProject extends ArchivaContentItem implements Project
         }
 
 
-        public OptBuilder withRepository( ManagedRepositoryContent repository ) {
+        public OptBuilder withRepository( RepositoryContent repository ) {
             project.repositoryContent = repository;
             return this;
         }
@@ -140,7 +142,10 @@ public class ArchivaProject extends ArchivaContentItem implements Project
                 project.namespace = "";
             }
             if (project.asset == null) {
-                project.asset = project.getRepository( ).getRepository( ).getAsset( "" );
+                if (project.getRepository() instanceof ManagedRepositoryContent) {
+                    project.asset = (( ManagedRepositoryContent)project.getRepository( )).getRepository( ).getAsset( "" );
+                }
+
             }
             return project;
         }

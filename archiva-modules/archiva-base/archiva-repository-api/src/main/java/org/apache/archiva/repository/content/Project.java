@@ -19,7 +19,7 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.storage.StorageAsset;
 
 /**
@@ -57,7 +57,7 @@ public interface Project extends ContentItem
      * The repository this project is part of.
      * @return the repository content
      */
-    ManagedRepositoryContent getRepository();
+    RepositoryContent getRepository();
 
     /**
      * Returns the asset that corresponds to this project.

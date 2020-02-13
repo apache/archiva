@@ -19,10 +19,7 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
 import org.apache.archiva.repository.storage.StorageAsset;
-
-import java.util.Map;
 
 /**
  *

@@ -28,6 +28,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -446,6 +447,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
     @Override
     public String toPath( ArtifactReference reference )
+    {
+        return null;
+    }
+
+    @Override
+    public String toPath( ItemSelector selector )
     {
         return null;
     }

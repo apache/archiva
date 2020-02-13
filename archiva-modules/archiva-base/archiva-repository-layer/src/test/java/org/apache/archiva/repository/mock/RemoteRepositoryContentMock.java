@@ -24,6 +24,7 @@ import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.springframework.stereotype.Service;
 
 /**
@@ -66,6 +67,12 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
 
     @Override
     public String toPath( ArtifactReference reference )
+    {
+        return null;
+    }
+
+    @Override
+    public String toPath( ItemSelector selector )
     {
         return null;
     }

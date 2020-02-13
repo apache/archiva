@@ -29,6 +29,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.commons.io.FileUtils;
@@ -257,6 +258,11 @@ public class ManagedDefaultRepositoryContentTest
     protected String toPath( ArtifactReference reference )
     {
         return repoContent.toPath( reference );
+    }
+
+    @Override
+    protected String toPath( ItemSelector selector ) {
+        return repoContent.toPath( selector );
     }
 
     private Path setupRepoCopy( String source, String target) throws IOException

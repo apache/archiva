@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -140,12 +141,17 @@ public class Maven2RepositoryPathTranslator
     private void appendNamespaceAndProject( StringBuilder path, String namespace, String projectId )
     {
         appendNamespace( path, namespace );
-        path.append( projectId ).append( PATH_SEPARATOR );
+        if (StringUtils.isNotEmpty( projectId ))
+        {
+            path.append( projectId ).append( PATH_SEPARATOR );
+        }
     }
 
     private void appendNamespace( StringBuilder path, String namespace )
     {
-        path.append( formatAsDirectory( namespace ) ).append( PATH_SEPARATOR );
+        if ( StringUtils.isNotEmpty( namespace ) ) {
+            path.append( formatAsDirectory( namespace ) ).append( PATH_SEPARATOR );
+        }
     }
 
     @Override

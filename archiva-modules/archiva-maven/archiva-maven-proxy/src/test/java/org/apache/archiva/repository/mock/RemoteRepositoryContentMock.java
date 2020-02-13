@@ -25,6 +25,7 @@ import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -82,6 +83,20 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
         return reference.getGroupId().replaceAll("\\.", "/")+"/"+reference.getArtifactId()+"/"+baseVersion+"/"
                 +reference.getArtifactId()+"-"+reference.getVersion()+(
                 StringUtils.isNotEmpty(reference.getClassifier()) ? "-"+reference.getClassifier() : "")+"."+reference.getType();
+    }
+
+    @Override
+    public String toPath( ItemSelector selector )
+    {
+        String baseVersion;
+        if (!selector.hasVersion() && VersionUtil.isSnapshot(selector.getArtifactVersion())) {
+            baseVersion=VersionUtil.getBaseVersion(selector.getArtifactVersion());
+        } else {
+            baseVersion=selector.getVersion();
+        }
+        return selector.getNamespace().replaceAll("\\.", "/")+"/"+selector.getArtifactId()+"/"+baseVersion+"/"
+            +selector.getArtifactId()+"-"+selector.getVersion()+(
+            StringUtils.isNotEmpty(selector.getClassifier()) ? "-"+selector.getClassifier() : "")+"."+selector.getType();
     }
 
     @Override
