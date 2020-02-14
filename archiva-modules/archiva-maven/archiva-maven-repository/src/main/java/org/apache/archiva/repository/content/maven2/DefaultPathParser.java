@@ -20,6 +20,7 @@ package org.apache.archiva.repository.content.maven2;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.FacetedMetadata;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
@@ -27,7 +28,9 @@ import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMapp
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +89,37 @@ public class DefaultPathParser
         }
 
         return artifact;
+    }
+
+    @Override
+    public ItemSelector toItemSelector( String path ) throws LayoutException
+    {
+        if ( StringUtils.isBlank( path ) )
+        {
+            throw new LayoutException( "Unable to convert blank path." );
+        }
+
+        try
+        {
+            ArtifactMetadata metadata = pathTranslator.getArtifactForPath( null, path );
+            ArchivaItemSelector.Builder builder = ArchivaItemSelector.builder( ).withNamespace( metadata.getNamespace( ) )
+                .withProjectId( metadata.getProject( ) )
+                .withVersion( metadata.getProjectVersion( ) )
+                .withArtifactId( metadata.getProject( ) )
+                .withArtifactVersion( metadata.getVersion( ) );
+            MavenArtifactFacet facet = (MavenArtifactFacet) metadata.getFacet( MavenArtifactFacet.FACET_ID );
+            if ( facet != null )
+            {
+                builder.withClassifier( facet.getClassifier() );
+                builder.withType( facet.getType() );
+            }
+            return builder.build( );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            throw new LayoutException( e.getMessage(), e );
+        }
+
     }
 
 }

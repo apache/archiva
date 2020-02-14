@@ -81,7 +81,13 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
         return defaultPathParser.toArtifactReference( path );
     }
 
-    public String toPath (ProjectReference reference) {
+    @Override
+    public ItemSelector toItemSelector( String path ) throws LayoutException
+    {
+        return defaultPathParser.toItemSelector( path );
+    }
+
+    public String toPath ( ProjectReference reference) {
         final StringBuilder path = new StringBuilder();
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId( ) );

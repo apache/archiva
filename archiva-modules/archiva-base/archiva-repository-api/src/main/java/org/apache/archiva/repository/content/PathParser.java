@@ -40,4 +40,14 @@ public interface PathParser
     ArtifactReference toArtifactReference( String path )
         throws LayoutException;
 
+
+    /**
+     * Return a item selector for the given path.
+     * @param path the path relative to the repository
+     * @return a item selector instance
+     * @throws LayoutException if the path does not reference a valid item
+     */
+    ItemSelector toItemSelector(String path) throws LayoutException;
+
+
 }

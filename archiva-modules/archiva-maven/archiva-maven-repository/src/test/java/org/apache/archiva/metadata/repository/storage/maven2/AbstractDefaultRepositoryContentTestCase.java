@@ -23,6 +23,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -98,6 +99,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "ch/ethz/ganymed/ganymed-ssh2/build210/ganymed-ssh2-build210.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type);
     }
 
     /**
@@ -119,6 +121,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "javax/comm/3.0-u1/comm-3.0-u1.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
@@ -168,6 +171,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
          */
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
     @Test
@@ -182,6 +186,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "com/foo/foo-tool/1.0/foo-tool-1.0.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
     @Test
@@ -196,6 +201,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
@@ -213,6 +219,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.pom";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
+
     }
 
     /**
@@ -230,6 +238,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "com/company/department/com.company.department/0.2/com.company.department-0.2.pom";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
@@ -248,6 +257,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
             "com/company/department/com.company.department.project/0.3/com.company.department.project-0.3.pom";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
+
     }
 
     /**
@@ -268,6 +279,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "com/foo/lib/foo-lib/2.1-alpha-1/foo-lib-2.1-alpha-1-sources.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
+
     }
 
     /**
@@ -289,6 +302,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
             "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
@@ -307,6 +321,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "maven/maven-test-plugin/1.8.2/maven-test-plugin-1.8.2.pom";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
@@ -325,6 +340,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "maven/maven-test-plugin/1.8.2/maven-test-plugin-1.8.2.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
+
     }
 
     /**
@@ -342,6 +359,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         String path = "org/codehaus/mojo/cobertura-maven-plugin/2.1/cobertura-maven-plugin-2.1.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
     @Test
@@ -449,6 +467,24 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         assertEquals( expectedId + " - Type", type, actualReference.getType() );
     }
 
+    private void assertItemSelector( ItemSelector actualReference, String groupId, String artifactId,
+                                          String version, String classifier, String type )
+    {
+        String expectedId =
+            "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
+
+        assertNotNull( expectedId + " - Should not be null.", actualReference );
+
+        assertEquals( expectedId + " - Group ID", groupId, actualReference.getNamespace() );
+        assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
+        if ( StringUtils.isNotBlank( classifier ) )
+        {
+            assertEquals( expectedId + " - Classifier", classifier, actualReference.getClassifier() );
+        }
+        assertEquals( expectedId + " - Version ID", version, actualReference.getArtifactVersion() );
+        assertEquals( expectedId + " - Type", type, actualReference.getType() );
+    }
+
     private void assertBadPath( String path, String reason )
     {
         try
@@ -487,6 +523,27 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( testReference ) );
     }
 
+    private void assertLayoutCi( String path, String groupId, String artifactId, String version, String classifier,
+                               String type )
+        throws LayoutException
+    {
+        ItemSelector expectedArtifact = createItemSelector( groupId, artifactId, version, classifier, type );
+
+        // --- Artifact Tests.
+
+        // Artifact to Path
+        assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( expectedArtifact ) );
+
+        // --- Artifact Reference Tests
+
+        // Path to Artifact Reference.
+        ItemSelector testReference = toItemSelector( path );
+        assertItemSelector( testReference, groupId, artifactId, version, classifier, type );
+
+        // And back again, using test Reference from previous step.
+        assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( testReference ) );
+    }
+
     protected ArtifactReference createArtifact( String groupId, String artifactId, String version, String classifier,
                                               String type )
     {
@@ -500,6 +557,17 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         return artifact;
     }
 
+    protected ItemSelector createItemSelector(String groupId, String artifactId, String version, String classifier,
+                                              String type) {
+        return ArchivaItemSelector.builder( ).withNamespace( groupId )
+            .withArtifactId( artifactId )
+            .withVersion( version )
+            .withClassifier( classifier )
+            .withType( type )
+            .build( );
+
+    }
+
     protected abstract ArtifactReference toArtifactReference( String path )
         throws LayoutException;
 
@@ -507,4 +575,6 @@ public abstract class AbstractDefaultRepositoryContentTestCase
 
 
     protected abstract String toPath( ItemSelector selector );
+
+    protected abstract ItemSelector toItemSelector(String path) throws LayoutException;
 }

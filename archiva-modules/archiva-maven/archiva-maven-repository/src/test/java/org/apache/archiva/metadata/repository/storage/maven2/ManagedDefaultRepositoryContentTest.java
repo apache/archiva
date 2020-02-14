@@ -255,6 +255,12 @@ public class ManagedDefaultRepositoryContentTest
     }
 
     @Override
+    protected ItemSelector toItemSelector( String path ) throws LayoutException
+    {
+        return repoContent.toItemSelector( path );
+    }
+
+    @Override
     protected String toPath( ArtifactReference reference )
     {
         return repoContent.toPath( reference );

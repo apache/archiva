@@ -458,6 +458,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public ItemSelector toItemSelector( String path ) throws LayoutException
+    {
+        return null;
+    }
+
+    @Override
     public String toPath( ArchivaArtifact reference )
     {
         return null;

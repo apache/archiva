@@ -78,6 +78,12 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
     }
 
     @Override
+    public ItemSelector toItemSelector( String path ) throws LayoutException
+    {
+        return null;
+    }
+
+    @Override
     public RepositoryURL toURL( ArtifactReference reference )
     {
         return null;
