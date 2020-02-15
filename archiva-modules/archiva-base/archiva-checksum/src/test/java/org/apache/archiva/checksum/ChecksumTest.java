@@ -23,12 +23,12 @@ import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Assert;
 
 /**
  * ChecksumTest
@@ -46,7 +46,7 @@ public class ChecksumTest
     public void testConstructSha1()
     {
         Checksum checksum = new Checksum( ChecksumAlgorithm.SHA1 );
-        assertEquals( "Checksum.algorithm", checksum.getAlgorithm().getAlgorithm(), ChecksumAlgorithm.SHA1
+        Assert.assertEquals( "Checksum.algorithm", checksum.getAlgorithm().getAlgorithm(), ChecksumAlgorithm.SHA1
             .getAlgorithm() );
     }
 
@@ -54,7 +54,7 @@ public class ChecksumTest
     public void testConstructMd5()
     {
         Checksum checksum = new Checksum( ChecksumAlgorithm.MD5 );
-        assertEquals( "Checksum.algorithm", checksum.getAlgorithm().getAlgorithm(), ChecksumAlgorithm.MD5
+        Assert.assertEquals( "Checksum.algorithm", checksum.getAlgorithm().getAlgorithm(), ChecksumAlgorithm.MD5
             .getAlgorithm() );
     }
 
@@ -65,7 +65,7 @@ public class ChecksumTest
         byte buf[] = ( "You know, I'm sick of following my dreams, man. "
             + "I'm just going to ask where they're going and hook up with 'em later. - Mitch Hedberg" ).getBytes();
         checksum.update( buf, 0, buf.length );
-        assertEquals( "Checksum", "e396119ae0542e85a74759602fd2f81e5d36d762", checksum.getChecksum() );
+        Assert.assertEquals( "Checksum", "e396119ae0542e85a74759602fd2f81e5d36d762", checksum.getChecksum() );
     }
 
     @Test
@@ -84,32 +84,32 @@ public class ChecksumTest
 
         ChecksumUtil.update( checksums, checkFile );
 
-        assertEquals( "Checksum SHA1", "e396119ae0542e85a74759602fd2f81e5d36d762", checksumSha1.getChecksum() );
-        assertEquals( "Checksum MD5", "21c2c5ca87ec018adacb2e2fb3432219", checksumMd5.getChecksum() );
+        Assert.assertEquals( "Checksum SHA1", "e396119ae0542e85a74759602fd2f81e5d36d762", checksumSha1.getChecksum() );
+        Assert.assertEquals( "Checksum MD5", "21c2c5ca87ec018adacb2e2fb3432219", checksumMd5.getChecksum() );
     }
 
     @Test
     public void testUpdateWholeUpdatePartial()
     {
         Checksum checksum = new Checksum( ChecksumAlgorithm.SHA1 );
-        assertEquals( "Checksum unset", UNSET_SHA1, checksum.getChecksum() );
+        Assert.assertEquals( "Checksum unset", UNSET_SHA1, checksum.getChecksum() );
 
         String expected = "066c2cbbc8cdaecb8ff97dcb84502462d6f575f3";
         byte reesepieces[] = "eatagramovabits".getBytes();
         checksum.update( reesepieces, 0, reesepieces.length );
         String actual = checksum.getChecksum();
 
-        assertEquals( "Expected", expected, actual );
+        Assert.assertEquals( "Expected", expected, actual );
 
         // Reset the checksum.
         checksum.reset();
-        assertEquals( "Checksum unset", UNSET_SHA1, checksum.getChecksum() );
+        Assert.assertEquals( "Checksum unset", UNSET_SHA1, checksum.getChecksum() );
 
         // Now parse it again in 3 pieces.
         checksum.update( reesepieces, 0, 5 );
         checksum.update( reesepieces, 5, 5 );
         checksum.update( reesepieces, 10, reesepieces.length - 10 );
 
-        assertEquals( "Expected", expected, actual );
+        Assert.assertEquals( "Expected", expected, actual );
     }
 }

@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * PathUtilTest 
@@ -33,15 +34,16 @@ import java.nio.file.Paths;
 public class PathUtilTest
     extends TestCase
 {
+
     public void testToRelativeWithoutSlash()
     {
-        assertEquals( "path/to/resource.xml", PathUtil.getRelative( "/home/user/foo/repository",
+        assertEquals( FilenameUtils.separatorsToSystem( "path/to/resource.xml" ), PathUtil.getRelative( "/home/user/foo/repository",
                                                                     "/home/user/foo/repository/path/to/resource.xml" ) );
     }
     
     public void testToRelativeWithSlash()
     {
-        assertEquals( "path/to/resource.xml", PathUtil.getRelative( "/home/user/foo/repository/",
+        assertEquals( FilenameUtils.separatorsToSystem( "path/to/resource.xml" ), PathUtil.getRelative( "/home/user/foo/repository/",
                                                                     "/home/user/foo/repository/path/to/resource.xml" ) );
     }
 
@@ -87,7 +89,7 @@ public class PathUtilTest
 
         String path = "path/to/resource.xml";
         String expectedPath = "file:" + workingDirname + "/" + path;
-
+        
         assertEquals( expectedPath, PathUtil.toUrl( expectedPath ) );
     }
 }

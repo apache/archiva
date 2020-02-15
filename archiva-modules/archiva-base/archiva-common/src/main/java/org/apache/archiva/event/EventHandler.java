@@ -19,7 +19,6 @@ package org.apache.archiva.event;
  * under the License.
  */
 
-import org.apache.archiva.event.Event;
 
 import java.util.EventListener;
 

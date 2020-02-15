@@ -19,12 +19,11 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import java.nio.file.Paths;
+import org.junit.Assert;
 
 /**
  * ChecksumAlgorithmTest
@@ -33,20 +32,19 @@ import java.nio.file.Paths;
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ChecksumAlgorithmTest
-    extends TestCase
 {
     @Test
     public void testGetHashByExtensionSha1()
     {
-        assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( Paths.get( "something.jar.sha1" ) ) );
-        assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( Paths.get( "OTHER.JAR.SHA1" ) ) );
+        Assert.assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( Paths.get( "something.jar.sha1" ) ) );
+        Assert.assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( Paths.get( "OTHER.JAR.SHA1" ) ) );
     }
     
     @Test
     public void testGetHashByExtensionMd5()
     {
-        assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( Paths.get( "something.jar.md5" ) ) );
-        assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( Paths.get( "OTHER.JAR.MD5" ) ) );
+        Assert.assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( Paths.get( "something.jar.md5" ) ) );
+        Assert.assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( Paths.get( "OTHER.JAR.MD5" ) ) );
     }
 
     @Test
@@ -55,7 +53,7 @@ public class ChecksumAlgorithmTest
         try
         {
             ChecksumAlgorithm.getByExtension( Paths.get( "something.jar" ) );
-            fail( "Expected " + IllegalArgumentException.class.getName() );
+            Assert.fail( "Expected " + IllegalArgumentException.class.getName() );
         }
         catch ( IllegalArgumentException e )
         {

@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -32,6 +31,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import org.junit.After;
+import org.junit.Assert;
 
 /**
  * ChecksummedFileTest
@@ -54,7 +55,7 @@ public class ChecksummedFileTest
     private static final Charset FILE_ENCODING = Charset.forName( "UTF-8" );
 
 
-    @Before
+    @After
     public void cleanTestDir()
     {
         try
@@ -64,9 +65,9 @@ public class ChecksummedFileTest
         catch ( IOException ex )
         {
             LoggerFactory.getLogger( ChecksummedFileTest.class ).warn( ex.getMessage(), ex );
-        }
+        }        
     }
-
+    
     private Path createTestableJar( String filename )
         throws IOException
     {
@@ -110,7 +111,7 @@ public class ChecksummedFileTest
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String expectedChecksum = "f42047fe2e177ac04d0df7aa44d408be";
         String actualChecksum = checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 );
-        assertEquals( expectedChecksum, actualChecksum );
+        Assert.assertEquals( expectedChecksum, actualChecksum );
     }
 
     @Test
@@ -121,7 +122,7 @@ public class ChecksummedFileTest
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String expectedChecksum = "2bb14b388973351b0a4dfe11d171965f59cc61a1";
         String actualChecksum = checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 );
-        assertEquals( expectedChecksum, actualChecksum );
+        Assert.assertEquals( expectedChecksum, actualChecksum );
     }
 
     @Test
@@ -132,10 +133,10 @@ public class ChecksummedFileTest
         ChecksummedFile checksummedFile = new ChecksummedFile( testableJar );
         checksummedFile.writeFile( ChecksumAlgorithm.SHA1 );
         Path hashFile = checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 );
-        assertTrue( "ChecksumAlgorithm file should exist.", Files.exists(hashFile) );
+        Assert.assertTrue( "ChecksumAlgorithm file should exist.", Files.exists(hashFile) );
         String hashContents = org.apache.commons.io.FileUtils.readFileToString( hashFile.toFile(), "UTF-8" );
         hashContents = StringUtils.trim( hashContents );
-        assertEquals( "2bb14b388973351b0a4dfe11d171965f59cc61a1  redback-authz-open.jar", hashContents );
+        Assert.assertEquals( "2bb14b388973351b0a4dfe11d171965f59cc61a1  redback-authz-open.jar", hashContents );
     }
 
     @Test
@@ -149,15 +150,15 @@ public class ChecksummedFileTest
         org.apache.commons.io.FileUtils.writeStringToFile( sha1File.toFile(), "sha1sum: redback-authz-open.jar: No such file or directory", "UTF-8" );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertFalse( "ChecksummedFile.isValid(SHA1) == false",
+        Assert.assertFalse( "ChecksummedFile.isValid(SHA1) == false",
                      checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
 
         UpdateStatusList fixed = checksummedFile.fixChecksums( Arrays.asList( ChecksumAlgorithm.SHA1 ) );
-        assertEquals(1, fixed.getStatusList().size());
-        assertFalse(fixed.getTotalStatus()==UpdateStatus.ERROR);
-        assertTrue( "ChecksummedFile.fixChecksums() == true", fixed.getStatusList().get(0).getValue()==UpdateStatus.UPDATED );
+        Assert.assertEquals(1, fixed.getStatusList().size());
+        Assert.assertFalse(fixed.getTotalStatus()==UpdateStatus.ERROR);
+        Assert.assertTrue( "ChecksummedFile.fixChecksums() == true", fixed.getStatusList().get(0).getValue()==UpdateStatus.UPDATED );
 
-        assertTrue( "ChecksummedFile.isValid(SHA1) == true",
+        Assert.assertTrue( "ChecksummedFile.isValid(SHA1) == true",
                     checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
     }
 
@@ -165,7 +166,7 @@ public class ChecksummedFileTest
     public void testGetChecksumFile()
     {
         ChecksummedFile checksummedFile = new ChecksummedFile( Paths.get( "test.jar" ) );
-        assertEquals( "test.jar.sha1", checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 ).getFileName().toString() );
+        Assert.assertEquals( "test.jar.sha1", checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 ).getFileName().toString() );
     }
 
     @Test
@@ -175,7 +176,7 @@ public class ChecksummedFileTest
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
+        Assert.assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
     }
 
     @Test
@@ -189,7 +190,7 @@ public class ChecksummedFileTest
         FileUtils.writeStringToFile( sha1File, FILE_ENCODING, "sha1sum: redback-authz-open.jar: No such file or directory" );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertFalse( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
+        Assert.assertFalse( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
 
     }
 
@@ -200,7 +201,7 @@ public class ChecksummedFileTest
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar", false, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertFalse( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
+        Assert.assertFalse( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
             Arrays.asList(ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 ) ) );
 
     }
@@ -212,7 +213,7 @@ public class ChecksummedFileTest
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, true );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertTrue( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
+        Assert.assertTrue( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
             Arrays.asList(ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 ) ) );
     }
 
@@ -223,7 +224,7 @@ public class ChecksummedFileTest
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
-        assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksums(
+        Assert.assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksums(
             Arrays.asList(ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 ) ) );
 
     }
@@ -240,7 +241,7 @@ public class ChecksummedFileTest
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.SHA1,
                                                   "servletapi/servletapi/2.4/servletapi-2.4.pom", FILE_ENCODING);
-        assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
+        Assert.assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
 
     }
 
@@ -254,7 +255,7 @@ public class ChecksummedFileTest
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.SHA1,
                                                   "servletapi/servletapi/2.4/servletapi-2.4.pom", FILE_ENCODING );
-        assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
+        Assert.assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
     }
 
     @Test
@@ -267,7 +268,7 @@ public class ChecksummedFileTest
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.SHA1,
                                                   "servletapi/servletapi/2.4/servletapi-2.4.pom" , FILE_ENCODING);
-        assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
+        Assert.assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
     }
 
     @Test
@@ -282,12 +283,12 @@ public class ChecksummedFileTest
         try
         {
             String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.SHA1, "maven-metadata-remote.xml", FILE_ENCODING );
-            assertEquals( "Checksum doesn't match", REMOTE_METADATA_SHA1, s );
+            Assert.assertEquals( "Checksum doesn't match", REMOTE_METADATA_SHA1, s );
         }
         catch ( ChecksumValidationException e )
         {
             e.printStackTrace();
-            fail( "IOException should not occur." );
+            Assert.fail( "IOException should not occur." );
         }
     }
 
@@ -303,12 +304,12 @@ public class ChecksummedFileTest
         try
         {
             String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.MD5, "maven-metadata-remote.xml", FILE_ENCODING );
-            assertEquals( "Checksum doesn't match", REMOTE_METADATA_MD5, s );
+            Assert.assertEquals( "Checksum doesn't match", REMOTE_METADATA_MD5, s );
         }
         catch ( ChecksumValidationException e )
         {
             e.printStackTrace();
-            fail( "IOException should not occur." );
+            Assert.fail( "IOException should not occur." );
         }
     }
 }
