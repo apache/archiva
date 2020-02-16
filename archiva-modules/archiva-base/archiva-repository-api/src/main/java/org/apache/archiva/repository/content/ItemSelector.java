@@ -29,51 +29,62 @@ import java.util.Map;
 public interface ItemSelector
 {
 
-    String getProjectId();
+    String getProjectId( );
 
-    String getNamespace();
+    String getNamespace( );
 
     String getVersion( );
 
-    String getArtifactVersion();
+    String getArtifactVersion( );
 
     String getArtifactId( );
 
-    String getType();
+    String getType( );
 
-    String getClassifier();
+    String getClassifier( );
 
     String getAttribute( String key );
 
+    String getExtension( String extension );
+
     Map<String, String> getAttributes( );
 
-    default boolean hasNamespace() {
+    default boolean hasNamespace( )
+    {
         return !StringUtils.isEmpty( getNamespace( ) );
     }
 
-    default boolean hasProjectId() {
+    default boolean hasProjectId( )
+    {
         return !StringUtils.isEmpty( getProjectId( ) );
     }
 
-    default boolean hasVersion() {
-        return !StringUtils.isEmpty(getVersion());
+    default boolean hasVersion( )
+    {
+        return !StringUtils.isEmpty( getVersion( ) );
     }
 
-    default boolean hasArtifactId() {
+    default boolean hasArtifactId( )
+    {
         return !StringUtils.isEmpty( getArtifactId( ) );
     }
 
-    default boolean hasArtifactVersion() {
+    default boolean hasArtifactVersion( )
+    {
         return !StringUtils.isEmpty( getArtifactVersion( ) );
     }
 
-    default boolean hasType() {
+    default boolean hasType( )
+    {
         return !StringUtils.isEmpty( getType( ) );
     }
 
-    default boolean hasClassifier() {
+    default boolean hasClassifier( )
+    {
         return !StringUtils.isEmpty( getClassifier( ) );
     }
 
-    boolean hasAttributes();
+    boolean hasAttributes( );
+
+    boolean hasExtension( );
 }

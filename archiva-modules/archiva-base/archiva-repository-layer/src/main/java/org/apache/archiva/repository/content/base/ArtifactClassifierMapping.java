@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * Maven 1.x request type to classifier mapping for translating to a Maven 2.x storage
- *
+ * <p>
  * TODO reuse mappings for other repositories
  *
  * @since 1.1

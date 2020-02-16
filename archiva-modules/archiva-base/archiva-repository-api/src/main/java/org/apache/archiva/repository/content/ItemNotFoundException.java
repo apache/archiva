@@ -1,5 +1,3 @@
-package org.apache.archiva.repository.content;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,8 +7,7 @@ package org.apache.archiva.repository.content;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,36 +16,38 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
-import java.util.List;
+package org.apache.archiva.repository.content;
 
 /**
- * Each artifact is attached to exactly one version.
- * <p>
- * Implementations must provide proper hash and equals methods.
+ * This exception is thrown, if the artifact, version or group item with the selected coordinates
+ * cannot be found.
  *
  * @author Martin Stockhammer <martin_s@apache.org>
+ * @since 3.0
  */
-public interface Version extends ContentItem
+public class ItemNotFoundException extends Exception
 {
-    /**
-     * Returns the version string.
-     *
-     * @return the version string
-     */
-    String getVersion( );
+    public ItemNotFoundException( )
+    {
+    }
 
-    /**
-     * Returns the version segments. E.g. for 1.3.4 it will return ["1","3"."4"]
-     *
-     * @return
-     */
-    List<String> getVersionSegments( );
+    public ItemNotFoundException( String message )
+    {
+        super( message );
+    }
 
-    /**
-     * Returns the project this version is attached to.
-     *
-     * @return the project instance. Will never return <code>null</code>
-     */
-    Project getProject( );
+    public ItemNotFoundException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
+    public ItemNotFoundException( Throwable cause )
+    {
+        super( cause );
+    }
+
+    public ItemNotFoundException( String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace )
+    {
+        super( message, cause, enableSuppression, writableStackTrace );
+    }
 }

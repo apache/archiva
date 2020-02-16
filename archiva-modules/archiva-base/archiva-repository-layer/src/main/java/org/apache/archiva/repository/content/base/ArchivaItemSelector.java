@@ -20,6 +20,7 @@ package org.apache.archiva.repository.content.base;
  */
 
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,15 +39,18 @@ public class ArchivaItemSelector implements ItemSelector
     private String namespace = "";
     private String type = null;
     private String classifier = null;
-    private Map<String,String> attributes;
+    private String extension = null;
+    private Map<String, String> attributes;
 
 
-    private ArchivaItemSelector() {
+    private ArchivaItemSelector( )
+    {
 
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static Builder builder( )
+    {
+        return new Builder( );
     }
 
     public static class Builder
@@ -108,13 +112,22 @@ public class ArchivaItemSelector implements ItemSelector
             return this;
         }
 
-        public ArchivaItemSelector build() {
+        public Builder withExtension( String extension )
+        {
+            selector.extension = extension;
+            return this;
+        }
+
+        public ArchivaItemSelector build( )
+        {
             return selector;
         }
     }
 
-    private void setAttribute(String key, String value) {
-        if (this.attributes == null) {
+    private void setAttribute( String key, String value )
+    {
+        if ( this.attributes == null )
+        {
             this.attributes = new HashMap<>( );
         }
         this.attributes.put( key, value );
@@ -177,11 +190,20 @@ public class ArchivaItemSelector implements ItemSelector
     }
 
     @Override
+    public String getExtension( String extension )
+    {
+        return null;
+    }
+
+    @Override
     public Map<String, String> getAttributes( )
     {
-        if (this.attributes==null) {
+        if ( this.attributes == null )
+        {
             return Collections.emptyMap( );
-        } else {
+        }
+        else
+        {
             return Collections.unmodifiableMap( this.attributes );
         }
     }
@@ -189,6 +211,12 @@ public class ArchivaItemSelector implements ItemSelector
     @Override
     public boolean hasAttributes( )
     {
-        return attributes!=null && attributes.size()>0;
+        return attributes != null && attributes.size( ) > 0;
+    }
+
+    @Override
+    public boolean hasExtension( )
+    {
+        return StringUtils.isNotEmpty( extension );
     }
 }

@@ -19,41 +19,51 @@ package org.apache.archiva.repository.content.base;
  * under the License.
  */
 
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.RepositoryContent;
+import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.base.builder.ProjectOptBuilder;
+import org.apache.archiva.repository.content.base.builder.ProjectWithIdBuilder;
+import org.apache.archiva.repository.content.base.builder.WithNamespaceObjectBuilder;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Immutable class, that represents a project.
+ * <p>
+ * The namespace and id are required attributes for each instance.
+ * <p>
+ * Two project instances are equal if the id, and the namespace are equal and if the base attributes
+ * repository and asset match.
+ *
+ * @author Martin Stockhammer <martin_s@apache.org>
+ * @since 3.0
  */
 public class ArchivaProject extends ArchivaContentItem implements Project
 {
-    private String namespace;
+    private Namespace namespace;
     private String id;
-    private RepositoryContent repositoryContent;
-    private StorageAsset asset;
 
     // Setting all setters to private. Builder is the way to go.
-    private ArchivaProject() {
+    private ArchivaProject( )
+    {
 
     }
 
 
     /**
-     * Creates the builder that allows to create a new instance.
-     * @param id the project id, must not be <code>null</code>
+     * Creates the builder for creating new archiva project instances.
+     * You have to set all required attributes before you can call the build() method.
+     *
+     * @param storageAsset the asset
      * @return a builder instance
      */
-    public static Builder withId( String id) {
-        return new Builder( ).withId( id );
+    public static WithNamespaceObjectBuilder withAsset( StorageAsset storageAsset )
+    {
+        return new Builder( ).withAsset( storageAsset );
     }
 
-
     @Override
-    public String getNamespace( )
+    public Namespace getNamespace( )
     {
         return this.namespace;
     }
@@ -64,93 +74,89 @@ public class ArchivaProject extends ArchivaContentItem implements Project
         return this.id;
     }
 
+
     @Override
-    public RepositoryContent getRepository( )
+    public boolean equals( Object o )
     {
-        return this.repositoryContent;
+        if ( this == o ) return true;
+        if ( o == null || getClass( ) != o.getClass( ) ) return false;
+        if ( !super.equals( o ) ) return false;
+
+        ArchivaProject that = (ArchivaProject) o;
+
+        if ( !namespace.equals( that.namespace ) ) return false;
+        return id.equals( that.id );
     }
 
     @Override
-    public StorageAsset getAsset( )
+    public int hashCode( )
     {
-        return asset;
+        int result = super.hashCode( );
+        result = 31 * result + namespace.hashCode( );
+        result = 31 * result + id.hashCode( );
+        return result;
     }
-
 
 
     /*
-     * Builder interface chaining is used to restrict mandatory attributes
-     * This interface is for the optional arguments.
+     * Builder class
      */
-    public interface OptBuilder {
-
-        OptBuilder withAsset( StorageAsset asset );
-
-        OptBuilder withNamespace( String namespace);
-
-        OptBuilder withAttribute( String key, String value );
-
-    }
-    /*
-     * Builder classes for instantiation
-     */
-    public static final class Builder implements OptBuilder
+    public static final class Builder
+        extends ContentItemBuilder<ArchivaProject, ProjectOptBuilder, WithNamespaceObjectBuilder>
+        implements ProjectOptBuilder, ProjectWithIdBuilder, WithNamespaceObjectBuilder
     {
-        final private ArchivaProject project = new ArchivaProject();
-
         private Builder( )
         {
-
-        }
-
-        private Builder withId(String id) {
-            if ( StringUtils.isEmpty( id ) ) {
-                throw new IllegalArgumentException( "Null or empty value not allowed for id" );
-            }
-            project.id = id;
-            return this;
+            super( new ArchivaProject( ) );
         }
 
 
-        public OptBuilder withRepository( RepositoryContent repository ) {
-            project.repositoryContent = repository;
+        @Override
+        protected ProjectOptBuilder getOptBuilder( )
+        {
             return this;
         }
 
         @Override
-        public OptBuilder withAsset( StorageAsset asset )
+        protected WithNamespaceObjectBuilder getNextBuilder( )
         {
-            project.asset = asset;
             return this;
         }
 
-        public OptBuilder withNamespace( String namespace) {
-            if (namespace==null) {
+        @Override
+        public ProjectOptBuilder withId( String id )
+        {
+            if ( StringUtils.isEmpty( id ) )
+            {
+                throw new IllegalArgumentException( "Null or empty value not allowed for id" );
+            }
+            item.id = id;
+            return this;
+        }
+
+        @Override
+        public ProjectWithIdBuilder withNamespace( Namespace namespace )
+        {
+            if ( namespace == null )
+            {
                 throw new IllegalArgumentException( "Null value not allowed for namespace" );
             }
-            project.namespace = namespace;
+            item.namespace = namespace;
+            super.setRepository( namespace.getRepository( ) );
             return this;
         }
 
-        public OptBuilder withAttribute( String key, String value) {
-            project.putAttribute( key, value );
-            return this;
-        }
-
-        ArchivaProject build() {
-            if (project.namespace==null) {
-                project.namespace = "";
+        @Override
+        public ArchivaProject build( )
+        {
+            super.build( );
+            if ( item.namespace == null )
+            {
+                throw new IllegalArgumentException( "Namespace may not be null" );
             }
-            if (project.asset == null) {
-                if (project.getRepository() instanceof ManagedRepositoryContent) {
-                    project.asset = (( ManagedRepositoryContent)project.getRepository( )).getRepository( ).getAsset( "" );
-                }
-
-            }
-            return project;
+            return item;
         }
     }
-
 
 
 }

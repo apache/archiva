@@ -1,5 +1,3 @@
-package org.apache.archiva.repository.content;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,8 +7,7 @@ package org.apache.archiva.repository.content;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,37 +16,19 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
+package org.apache.archiva.repository.content.base.builder;
+
+import org.apache.archiva.repository.content.ContentItem;
+
 /**
- * The project is the container for several versions each with different artifacts.
+ * Optional attributes. Subclasses should inherit from this interface for their own optional
+ * interface
  *
- * <pre>
- * project +--> version 1 + ->  artifact 1
- *         |              |
- *         |              + ->  artifact 2
- *         |
- *         +--> version 2 ----> artifact 3
- * </pre>
- * <p>
- * Implementations must provide proper hash and equals methods.
- *
- * @author Martin Stockhammer <martin_s@apache.org>
+ * @param <O> the target builder interface for the optional attributes
  */
-public interface Project extends ContentItem
+public interface OptBuilder<I extends ContentItem, O extends OptBuilder>
 {
+    O withAttribute( String key, String value );
 
-    /**
-     * The namespace of the project
-     *
-     * @return the namespace
-     */
-    Namespace getNamespace( );
-
-    /**
-     * The id of the project
-     *
-     * @return the project id
-     */
-    String getId( );
-
-
+    I build( );
 }

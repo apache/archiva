@@ -19,43 +19,31 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.archiva.repository.storage.StorageAsset;
-
 /**
- *
  * Represents a artifact of a repository. This object contains unique coordinates of the
  * artifact. A artifact has exactly one file representation in the repository.
  * The artifact instance does not tell, if the file exists or is readable. It just
  * keeps the coordinates and some meta information of the artifact.
- *
+ * <p>
  * Artifact implementations should be immutable. The implementation must not always represent the current state of the
  * corresponding storage asset (file). It is just a view of the attributes for a given point in time.
- *
+ * <p>
  * Implementations must provide proper hash and equals methods.
- *
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 public interface Artifact extends ContentItem
 {
-    /**
-     * The namespace is the location of the artifact.
-     * E.g. for maven artifacts it is the groupId.
-     * The namespace may be empty. Which means that is the base or root namespace.
-     *
-     * @return the namespace of the artifact. Never returns <code>null</code>.
-     */
-    String getNamespace();
 
     /**
      * The artifact identifier. The ID is unique in a given namespace of a given repository.
      * But there may exist artifacts with the same ID but different types, classifiers or extensions.
-     *
+     * <p>
      * Never returns <code>null</code> or a empty string.
      *
      * @return the identifier of the artifact. Never returns <code>null</code> or empty string
      */
-    String getId();
+    String getId( );
 
     /**
      * The version string of the artifact. The version string is exactly the version that is attached
@@ -67,13 +55,14 @@ public interface Artifact extends ContentItem
      * @return the artifact version string
      * @see #getVersion()
      */
-    String getArtifactVersion();
+    String getArtifactVersion( );
 
     /**
      * Returns the attached version this artifact is part of.
+     *
      * @return the version object
      */
-    Version getVersion();
+    Version getVersion( );
 
     /**
      * Returns the type of the artifact. The type is some hint about the usage of the artifact.
@@ -81,7 +70,7 @@ public interface Artifact extends ContentItem
      *
      * @return the type of the artifact. Returns never <code>null</code>, but may be empty string
      */
-    String getType();
+    String getType( );
 
     /**
      * A classifier that distinguishes artifacts.
@@ -89,13 +78,15 @@ public interface Artifact extends ContentItem
      *
      * @return the classifier of the artifact. Returns never <code>null</code>, but may be empty string
      */
-    String getClassifier();
+    String getClassifier( );
 
     /**
      * Short cut for the file name. Should always return the same value as the artifact name.
+     *
      * @return the name of the file
      */
-    default String getFileName() {
+    default String getFileName( )
+    {
         return getAsset( ).getName( );
     }
 
@@ -105,12 +96,16 @@ public interface Artifact extends ContentItem
      *
      * @return the file name extension
      */
-    default String getExtension() {
-        final String name = getAsset().getName();
+    default String getExtension( )
+    {
+        final String name = getAsset( ).getName( );
         final int idx = name.lastIndexOf( '.' );
-        if (idx>=0) {
+        if ( idx >= 0 )
+        {
             return name.substring( idx );
-        } else {
+        }
+        else
+        {
             return "";
         }
     }
@@ -121,21 +116,14 @@ public interface Artifact extends ContentItem
      *
      * @return the file name remainder
      */
-    String getRemainder();
+    String getRemainder( );
 
     /**
      * Should return the mime type of the artifact.
      *
      * @return the mime type of the artifact.
      */
-    String getContentType();
-
-    /**
-     * Returns the storage representation of the artifact. The asset must not exist.
-     *
-     * @return the asset this artifact corresponds to.
-     */
-    StorageAsset getAsset();
+    String getContentType( );
 
 
 }

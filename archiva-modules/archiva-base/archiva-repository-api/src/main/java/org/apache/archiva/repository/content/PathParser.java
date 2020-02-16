@@ -24,8 +24,6 @@ import org.apache.archiva.repository.LayoutException;
 
 /**
  * PathParser interface.
- *
- *
  */
 public interface PathParser
 {
@@ -43,11 +41,12 @@ public interface PathParser
 
     /**
      * Return a item selector for the given path.
+     *
      * @param path the path relative to the repository
      * @return a item selector instance
      * @throws LayoutException if the path does not reference a valid item
      */
-    ItemSelector toItemSelector(String path) throws LayoutException;
+    ItemSelector toItemSelector( String path ) throws LayoutException;
 
 
 }

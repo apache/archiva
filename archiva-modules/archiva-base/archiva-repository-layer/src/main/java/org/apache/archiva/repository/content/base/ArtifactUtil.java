@@ -34,7 +34,8 @@ import java.nio.file.Paths;
  * Utility class that gives information about the physical location of artifacts.
  */
 @Service( "ArtifactUtil#default" )
-public class ArtifactUtil {
+public class ArtifactUtil
+{
 
     @Inject
     RepositoryContentFactory repositoryContentFactory;
@@ -43,30 +44,32 @@ public class ArtifactUtil {
      * Returns the physical location of a given artifact in the repository. There is no check for the
      * existence of the returned file.
      *
-     * @param repository The repository, where the artifact is stored.
+     * @param repository        The repository, where the artifact is stored.
      * @param artifactReference The artifact reference.
      * @return The absolute path to the artifact.
      * @throws RepositoryException
      */
-    public Path getArtifactPath(ManagedRepository repository, ArtifactReference artifactReference) throws RepositoryException {
-        final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent(repository);
+    public Path getArtifactPath( ManagedRepository repository, ArtifactReference artifactReference ) throws RepositoryException
+    {
+        final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent( repository );
         final String artifactPath = content.toPath( artifactReference );
-        return Paths.get(repository.getLocation()).resolve(artifactPath);
+        return Paths.get( repository.getLocation( ) ).resolve( artifactPath );
     }
 
     /**
      * Returns the physical location of a given artifact in the repository. There is no check for the
      * existence of the returned file.
      *
-     * @param repository The repository, where the artifact is stored.
+     * @param repository        The repository, where the artifact is stored.
      * @param artifactReference The artifact reference.
      * @return The asset representation of the artifact.
      * @throws RepositoryException
      */
-    public StorageAsset getArtifactAsset(ManagedRepository repository, ArtifactReference artifactReference) throws RepositoryException {
-        final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent(repository);
+    public StorageAsset getArtifactAsset( ManagedRepository repository, ArtifactReference artifactReference ) throws RepositoryException
+    {
+        final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent( repository );
         final String artifactPath = content.toPath( artifactReference );
-        return repository.getAsset(artifactPath);
+        return repository.getAsset( artifactPath );
     }
 
 }
