@@ -34,8 +34,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -109,6 +108,43 @@ public class FileUtilsTest
         assertFalse(Files.exists(d1));
 
     }
+
+
+    @Test
+    public void testDeleteWithStatus() throws IOException
+    {
+        Path td = Files.createTempDirectory( "FileUtilsTest" );
+        Path f1 = td.resolve("file1.txt");
+        Path f2 = td.resolve("file2.txt");
+        Path d1 = td.resolve("dir1");
+        Files.createDirectory( d1 );
+        Path d11 = d1.resolve("dir11");
+        Files.createDirectory( d11 );
+        Path f111 = d11.resolve("file111.txt");
+        Path f112 = d11.resolve("file112.txt");
+        Files.write(f1,"file1".getBytes());
+        Files.write(f2, "file2".getBytes());
+        Files.write(f111, "file111".getBytes());
+        Files.write(f112, "file112".getBytes());
+        assertTrue(Files.exists(d1));
+        assertTrue(Files.exists(f1));
+        assertTrue(Files.exists(f2));
+        assertTrue(Files.exists(f111));
+        assertTrue(Files.exists(f112));
+
+        IOStatus status = FileUtils.deleteDirectoryWithStatus( td );
+        assertFalse(Files.exists(f1));
+        assertFalse(Files.exists(f2));
+        assertFalse(Files.exists(f111));
+        assertFalse(Files.exists(f112));
+        assertFalse(Files.exists(d1));
+
+        assertTrue( status.isOk( ) );
+        assertFalse( status.hasErrors( ) );
+        assertEquals( 7, status.getSuccessFiles( ).size( ) );
+        assertEquals( 0, status.getErrorFiles( ).size() );
+    }
+
 
     @Test
     public void testDeleteNonExist() throws IOException

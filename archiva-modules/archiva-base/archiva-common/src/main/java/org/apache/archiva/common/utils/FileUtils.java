@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -46,14 +47,17 @@ public class FileUtils {
      * @param dir
      */
     public static void deleteQuietly(Path dir) {
-        try {
-            Files.walk(dir)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(file -> {
+        try(Stream<Path> stream = Files.walk(dir)) {
+            stream
+                .sorted( Comparator.reverseOrder() )
+                .forEach(file -> {
                         try {
                             Files.delete(file);
                         } catch (IOException e) {
                             // Ignore this
+                            if (log.isDebugEnabled()) {
+                                log.debug( "Exception during file delete: {}", e.getMessage( ), e );
+                            }
                         }
 
                     });
@@ -64,6 +68,38 @@ public class FileUtils {
 
     }
 
+    public static IOStatus deleteDirectoryWithStatus(Path dir) throws IOException {
+        if (!Files.exists(dir)) {
+            IOStatus status = new IOStatus( );
+            status.addError( dir, new FileNotFoundException( "Directory not found " + dir ) );
+            return status;
+        }
+        if (!Files.isDirectory(dir)) {
+            IOStatus status = new IOStatus( );
+            status.addError(dir, new IOException("Given path is not a directory " + dir));
+        }
+        try( Stream<Path> stream = Files.walk(dir)) {
+                return stream
+                    .sorted( Comparator.reverseOrder() )
+                .map(file ->
+                {
+                    try {
+                        Files.delete(file);
+                        return new FileStatus( file, StatusResult.DELETED );
+                    } catch (UncheckedIOException e) {
+                        log.warn("File could not be deleted {}", file);
+                        return new FileStatus( file, e.getCause( ) );
+                    }
+                    catch ( IOException e )
+                    {
+                        return new FileStatus( file, e );
+                    }
+                }).collect( IOStatus::new, IOStatus::accumulate, IOStatus::combine );
+        } catch (UncheckedIOException e) {
+            throw new IOException("File deletion failed ", e);
+        }
+    }
+
     public static void deleteDirectory(Path dir) throws IOException {
         if (!Files.exists(dir)) {
             return;
@@ -72,16 +108,16 @@ public class FileUtils {
             throw new IOException("Given path is not a directory " + dir);
         }
         boolean result = true;
-        try {
-            result = Files.walk(dir)
-                    .sorted(Comparator.reverseOrder())
-                    .map(file ->
+        try(Stream<Path> stream = Files.walk(dir)) {
+            result = stream
+                .sorted( Comparator.reverseOrder() )
+                .map(file ->
                     {
                         try {
                             Files.delete(file);
                             return Optional.of(Boolean.TRUE);
                         } catch (UncheckedIOException | IOException e) {
-                            log.warn("File could not be deleted {}", file);
+                            log.warn("File could not be deleted {}: {}", file, e.getMessage());
                             return Optional.empty();
                         }
 

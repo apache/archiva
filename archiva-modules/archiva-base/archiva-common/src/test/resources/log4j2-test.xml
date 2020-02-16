@@ -33,7 +33,7 @@
   </appenders>
   <loggers>
     <logger name="org.apache.archiva" level="info"/>
-    <logger name="org.apache.archiva.repository.scanner" level="info"/>
+    <logger name="org.apache.archiva.common.utils" level="info"
     <root level="error" includeLocation="true">
       <appender-ref ref="console"/>
     </root>
