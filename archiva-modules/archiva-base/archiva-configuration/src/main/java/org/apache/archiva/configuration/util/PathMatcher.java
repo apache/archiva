@@ -20,6 +20,7 @@ package org.apache.archiva.configuration.util;
  */
 
 import java.io.File;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -226,8 +227,8 @@ public class PathMatcher
      *         or <code>false</code> otherwise.
      */
     public static boolean matchPath(String pattern, String str) {
-        String[] patDirs = tokenizePathAsArray(pattern);
-        return matchPath(patDirs, tokenizePathAsArray(str), true);
+        String[] patDirs = tokenizePathAsArray( pattern, false );
+        return matchPath(patDirs, tokenizePathAsArray( str, true ), true);
     }
 
     /**
@@ -248,20 +249,30 @@ public class PathMatcher
      */
     public static boolean matchPath(String pattern, String str,
                                     boolean isCaseSensitive) {
-        String[] patDirs = tokenizePathAsArray(pattern);
-        return matchPath(patDirs, tokenizePathAsArray(str), isCaseSensitive);
+        String[] patDirs = tokenizePathAsArray( pattern, false );
+        return matchPath(patDirs, tokenizePathAsArray( str, false ), isCaseSensitive);
     }
 
-
-    static String[] tokenizePathAsArray(String path) {
+    /**
+     * 
+     * @param path
+     * @param osspecific
+     * @return
+     */
+    static String[] tokenizePathAsArray(String path, boolean osSpecific) {
         Path root = null;
-        Path fsPath = Paths.get( path );
-
-        if ( fsPath.isAbsolute()) {
-            root = fsPath.getRoot( );
-            path = root.relativize( fsPath ).toString();
+        try 
+        {
+            Path fsPath = Paths.get( path );
+            if ( fsPath.isAbsolute() ) {
+                root = fsPath.getRoot();
+                path = root.relativize( fsPath ).toString();
+            }
+        } catch (InvalidPathException ipe ) 
+        {
+            // invalid path, windauze hate **/* 
         }
-        char sep = File.separatorChar;
+        char sep = osSpecific ? File.separatorChar : '/';
         int start = 0;
         int len = path.length();
         int count = 0;

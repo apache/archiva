@@ -19,6 +19,7 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
+import java.io.File;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -163,7 +164,8 @@ public abstract class AbstractRepositoryPurgeTest
         atf.setRetentionPeriod( Period.ofDays( TEST_DAYS_OLDER) );
         String path = AbstractRepositoryPurgeTest.fixPath(
             basePath.resolve( repoId ).toAbsolutePath().toString() );
-        config.setLocation( new URI( path ) );
+        File file = new File( path );
+        config.setLocation( file.toURI() );
         atf.setDeleteReleasedSnapshots( true );
         atf.setRetentionCount( TEST_RETENTION_COUNT );
 
