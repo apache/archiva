@@ -75,4 +75,10 @@ public interface ContentItem
      */
     ManagedRepositoryContent getRepository( );
 
+    /**
+     * Returns <code>true</code>, if the item exists, otherwise <code>false</code>
+     * @return <code>true</code>, if the item exists, otherwise <code>false</code>
+     */
+    boolean exists();
+
 }

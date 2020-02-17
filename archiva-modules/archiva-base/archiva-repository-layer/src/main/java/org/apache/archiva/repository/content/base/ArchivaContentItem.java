@@ -181,6 +181,7 @@ public abstract class ArchivaContentItem implements ContentItem
 
         protected abstract N getNextBuilder( );
 
+        @Override
         public WithAssetBuilder<N> withRepository( ManagedRepositoryContent repository )
         {
             if ( repository == null )
@@ -191,6 +192,7 @@ public abstract class ArchivaContentItem implements ContentItem
             return this;
         }
 
+        @Override
         public N withAsset( StorageAsset asset )
         {
             if ( asset == null )
@@ -201,6 +203,7 @@ public abstract class ArchivaContentItem implements ContentItem
             return getNextBuilder( );
         }
 
+        @Override
         public O withAttribute( String key, String value )
         {
             if ( StringUtils.isEmpty( key ) )
@@ -216,10 +219,17 @@ public abstract class ArchivaContentItem implements ContentItem
             ( (ArchivaContentItem) item ).repository = repository;
         }
 
+        @Override
         public I build( )
         {
             return item;
         }
 
+    }
+
+    @Override
+    public boolean exists( )
+    {
+        return asset.exists( );
     }
 }
