@@ -23,10 +23,19 @@ import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.ItemNotFoundException;
+import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Namespace;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.storage.StorageAsset;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * ManagedRepositoryContent interface for interacting with a managed repository in an abstract way,
@@ -46,6 +55,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @return a version reference
      */
     VersionedReference toVersion( String groupId, String artifactId, String version );
+
 
     /**
      * Returns the version reference that represents the generic version, which means that
@@ -74,6 +84,205 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier);
 
+    /**
+     * Removes the specified content item and all content stored under the given item.
+     *
+     * @param item the item.
+     * @throws ItemNotFoundException if the item cannot be found
+     * @throws ContentAccessException if the deletion was not possible or only partly successful, because the access
+     *  to the artifacts failed
+     */
+    void deleteItem( ContentItem item) throws ItemNotFoundException, ContentAccessException;
+
+    /**
+     * Returns the namespace for the given selected coordinates. The selector must specify a namespace. All other
+     * coordinates are ignored.
+     * The following coordinates must be set at the given selector:
+     * <ul>
+     *     <li>namespace</li>
+     * </ul>
+     * If not, a {@link IllegalArgumentException} will be thrown.
+     *
+     * @param namespaceSelector the selectory with the namespace coordinates
+     * @return the namespace
+     * @throws ItemNotFoundException if the item does not exist
+     * @throws ContentAccessException if the item cannot be accessed
+     * @throws IllegalArgumentException if the selector has no namespace specified
+     */
+    Namespace getNamespace( ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException;
+
+    /**
+     * Returns the project for the given coordinates.
+     * The following coordinates must be set at the given selector:
+     * <ul>
+     *     <li>namespace</li>
+     *     <li>projectId</li>
+     * </ul>
+     * If not, a {@link IllegalArgumentException} will be thrown.
+     * Additional coordinates will be ignored.
+     *
+     * @param projectSelector
+     * @return the project instance
+     * @throws ItemNotFoundException if the project does not exist
+     * @throws ContentAccessException if the item cannot be accessed
+     * @throws IllegalArgumentException if the selector does not specify the required coordinates
+     */
+    Project getProject( ItemSelector projectSelector ) throws ContentAccessException, IllegalArgumentException;
+
+    /**
+     * Returns the version for the given coordinates.
+     * The following coordinates must be set at the given selector:
+     * <ul>
+     *     <li>namespace</li>
+     *     <li>projectId</li>
+     *     <li>version</li>
+     * </ul>
+     * If not, a {@link IllegalArgumentException} will be thrown.
+     *
+     * Additional coordinates will be ignored.
+     *
+     * @param versionCoordinates
+     * @return the version object
+     * @throws ItemNotFoundException
+     * @throws ContentAccessException
+     * @throws IllegalArgumentException
+     */
+    Version getVersion(ItemSelector versionCoordinates) throws ContentAccessException, IllegalArgumentException;
+
+    /**
+     * Returns the artifact for the given coordinates.
+     *
+     * Normally the following coordinates should be set at the given selector:
+     * <ul>
+     *     <li>namespace</li>
+     *     <li>artifactVersion and or version</li>
+     *     <li>artifactId or projectId</li>
+     * </ul>
+     * If the coordinates do not provide enough information for selecting a artifact, a {@link IllegalArgumentException} will be thrown
+     * It depends on the repository type, what exactly is deleted for a given set of coordinates. Some repository type
+     * may have different required and optional coordinates. For further information please check the documentation for the
+     * type specific implementations.
+     *
+     * The following coordinates are optional and may further specify the artifact to delete.
+     * <ul>
+     *     <li>classifier</li>
+     *     <li>type</li>
+     *     <li>extension</li>
+     * </ul>
+     *
+     * @param selector the selector with the artifact coordinates
+     * @return a artifact
+     * @throws ItemNotFoundException if the selector coordinates do not specify a artifact
+     * @throws ContentAccessException if the access to the underlying storage failed
+     */
+    Artifact getArtifact(ItemSelector selector) throws ContentAccessException;
+
+
+    /**
+     * Returns the artifacts that match the given selector. It is up to the repository implementation
+     * what artifacts are returned for a given set of coordinates.
+     *
+     * @param selector the selector for the artifacts
+     * @return a list of artifacts.
+     * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
+     * @throws ContentAccessException if the access to the underlying storage failed
+     */
+    List<Artifact> getAllArtifacts( ItemSelector selector) throws ContentAccessException;
+
+    /**
+     * Returns the artifacts that match the given selector. It is up to the repository implementation
+     * what artifacts are returned for a given set of coordinates.
+     *
+     * The returned stream is autoclosable and should always closed after using it.
+     *
+     * There is no guarantee about the order of the returned artifacts
+     *
+     * @param selector the selector for the artifacts
+     * @return a stream with artifact elements.
+     * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
+     * @throws ContentAccessException if the access to the underlying storage failed
+     */
+    Stream<Artifact> getAllArtifactStream( ItemSelector selector) throws ContentAccessException;
+
+
+    /**
+     * Return the projects that are part of the given namespace.
+     *
+     * @param namespace the namespace
+     * @return the list of projects or a empty list, if there are no projects for the given namespace.
+     */
+    List<Project> getProjects(Namespace namespace) throws ContentAccessException;
+
+    /**
+     * Return the existing versions of the given project.
+     *
+     * @param project the project
+     * @return a list of versions or a empty list, if not versions are available for the specified project
+     */
+    List<Version> getVersions(Project project) throws ContentAccessException;
+
+    /**
+     * Return all the artifacts of a given content item (namespace, project, version)
+     *
+     * @param item the item
+     * @return a list of artifacts or a empty list, if no artifacts are available for the specified item
+     */
+    List<Artifact> getArtifacts( ContentItem item) throws ContentAccessException;
+
+    /**
+     * Return all the artifacts of a given namespace and all sub namespaces that are defined under the
+     * given namespace.
+     *
+     * @param namespace the namespace, which is the parent namespace
+     * @return a list of artifacts or a empty list, if no artifacts are available for the specified namespace
+     */
+    List<Artifact> getArtifactsStartingWith( Namespace namespace ) throws ContentAccessException;
+
+
+    /**
+     * Return a stream of artifacts that are part of the given content item. The returned stream is
+     * auto closable. There is no guarantee about the order of returned artifacts.
+     *
+     * As the stream may access IO resources, you should always use call this method inside try-with-resources or
+     * make sure, that the stream is closed after using it.
+     *
+     * @param item the item from where the artifacts should be returned
+     * @return a stream of artifacts. The stream is auto closable. You should always make sure, that the stream
+     * is closed after use.
+     */
+    Stream<Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException;
+
+
+    /**
+     * Return a stream of all artifacts that are available for the given namespace and its sub namespaces. The artifacts
+     * are retrieved recursively. There is no guarantee about the order of returned artifacts.
+     *
+     * As the stream may access IO resources, you should always use call this method inside try-with-resources or
+     * make sure, that the stream is closed after using it.
+     *
+     * @param namespace the namespace from where the artifacts should be returned
+     * @return a stream of artifacts. The stream is auto closable. You should always make sure, that the stream
+     * is closed after use.
+     */
+    Stream<Artifact> getArtifactStreamStartingWith( Namespace namespace ) throws ContentAccessException;
+
+
+    /**
+     * Returns true, if the selector coordinates point to a existing item in the repository.
+     *
+     * @param selector the item selector
+     * @return <code>true</code>, if there exists such a item, otherwise <code>false</code>
+     */
+    boolean hasContent( ItemSelector selector );
+
+    /**
+     * Copies the artifact to the given destination coordinates
+     *
+     * @param sourceFile the path to the source file
+     * @param destination the coordinates of the destination
+     * @throws IllegalArgumentException if the destination is not valid
+     */
+    void copyArtifact( Path sourceFile, ItemSelector destination ) throws IllegalArgumentException;
 
     /**
      * Delete from the managed repository all files / directories associated with the
@@ -85,6 +294,8 @@ public interface ManagedRepositoryContent extends RepositoryContent
     void deleteVersion( VersionedReference reference )
         throws ContentNotFoundException, ContentAccessException;
 
+
+
     /**
      * delete a specified artifact from the repository
      *
@@ -94,6 +305,8 @@ public interface ManagedRepositoryContent extends RepositoryContent
     void deleteArtifact( ArtifactReference artifactReference )
         throws ContentNotFoundException, ContentAccessException;
 
+
+
     /**
      * @param groupId
      * @throws ContentNotFoundException
@@ -101,6 +314,9 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     void deleteGroupId( String groupId )
         throws ContentNotFoundException, ContentAccessException;
+
+
+
 
     /**
      *
@@ -117,6 +333,8 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param reference
      */
     void deleteProject(ProjectReference reference) throws ContentNotFoundException, ContentAccessException;
+
+
 
 
     /**
@@ -168,6 +386,13 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     List<ArtifactReference> getRelatedArtifacts( VersionedReference reference )
         throws ContentNotFoundException, LayoutException, ContentAccessException;
+
+
+
+
+
+
+
     /**
      * Returns all the assets that belong to a given artifact type. The list returned contain
      * all the files that correspond to the given artifact reference.

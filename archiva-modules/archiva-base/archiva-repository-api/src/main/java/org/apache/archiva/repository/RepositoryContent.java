@@ -72,4 +72,6 @@ public interface RepositoryContent
      * @return a item selector that would select the given path
      */
     ItemSelector toItemSelector(String path) throws LayoutException;
+
+
 }

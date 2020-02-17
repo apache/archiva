@@ -20,6 +20,8 @@ package org.apache.archiva.repository.content.maven2;
  */
 
 import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
@@ -34,8 +36,17 @@ import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Namespace;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaNamespace;
+import org.apache.archiva.repository.content.base.ArchivaProject;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -68,6 +79,11 @@ public class ManagedDefaultRepositoryContent
     private ManagedRepository repository;
 
     FileLockManager lockManager;
+
+    private ReferenceMap<String, Namespace> namespaceMap = new ReferenceMap<>( );
+    private ReferenceMap<StorageAsset, Project> projectMap = new ReferenceMap<>( );
+    private ReferenceMap<StorageAsset, Version> versionMap = new ReferenceMap<>( );
+    private ReferenceMap<StorageAsset, Artifact> artifactMap = new ReferenceMap<>( );
 
     public ManagedDefaultRepositoryContent(ManagedRepository repository, FileTypes fileTypes, FileLockManager lockManager) {
         super(Collections.singletonList( new DefaultArtifactMappingProvider() ));
@@ -117,6 +133,196 @@ public class ManagedDefaultRepositoryContent
         return new ArtifactReference( ).groupId( groupId ).artifactId( artifactId ).version( version ).type( type ).classifier( classifier );
     }
 
+    @Override
+    public void deleteItem( ContentItem item ) throws ItemNotFoundException, ContentAccessException
+    {
+        final Path baseDirectory = getRepoDir( );
+        final Path itemPath = item.getAsset( ).getFilePath( );
+        if ( !Files.exists( itemPath ) )
+        {
+            throw new ItemNotFoundException( "The item " + item.toString() + "does not exist in the repository " + getId( ) );
+        }
+        if ( !itemPath.toAbsolutePath().startsWith( baseDirectory.toAbsolutePath() ) )
+        {
+            log.error( "The namespace {} to delete from repository {} is not a subdirectory of the repository base.", item, getId( ) );
+            log.error( "Namespace directory: {}", itemPath );
+            log.error( "Repository directory: {}", baseDirectory );
+            throw new ContentAccessException( "Inconsistent directories found. Could not delete namespace." );
+        }
+        try
+        {
+            if (Files.isDirectory( itemPath ))
+            {
+                FileUtils.deleteDirectory( itemPath );
+            } else {
+                Files.deleteIfExists( itemPath );
+            }
+        }
+        catch ( IOException e )
+        {
+            log.error( "Could not delete namespace directory {}: {}", itemPath, e.getMessage( ), e );
+            throw new ContentAccessException( "Error occured while deleting namespace " + item + ": " + e.getMessage( ), e );
+        }
+    }
+
+    private StorageAsset getAsset(String namespace) {
+        String namespacePath = formatAsDirectory( namespace.trim() );
+        if (StringUtils.isEmpty( namespacePath )) {
+            namespacePath = "";
+        }
+        return getAsset(namespacePath);
+    }
+
+    private StorageAsset getAsset(String namespace, String project) {
+        return getAsset( namespace ).resolve( project );
+    }
+
+    private StorageAsset getAsset(String namespace, String project, String version) {
+        return getAsset( namespace, project ).resolve( version );
+    }
+
+    private StorageAsset getAsset(String namespace, String project, String version, String fileName) {
+        return getAsset( namespace, project, version ).resolve( fileName );
+    }
+
+    @Override
+    public Namespace getNamespace( final ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return namespaceMap.computeIfAbsent( namespaceSelector.getNamespace(),
+            namespace -> {
+                StorageAsset nsPath = getAsset( namespace );
+                return ArchivaNamespace.withRepository( this ).withAsset( nsPath ).
+                    withNamespace( namespace ).build( );
+            });
+    }
+
+
+    @Override
+    public Project getProject( final ItemSelector projectSelector ) throws ContentAccessException, IllegalArgumentException
+    {
+        if (StringUtils.isEmpty( projectSelector.getProjectId() )) {
+            throw new IllegalArgumentException( "Project id must be set" );
+        }
+        final StorageAsset path = getAsset( projectSelector.getNamespace( ), projectSelector.getProjectId( ) );
+        return projectMap.computeIfAbsent( path, projectPath -> {
+            final Namespace ns = getNamespace( projectSelector );
+            return ArchivaProject.withAsset( projectPath ).withNamespace( ns ).withId( projectSelector.getProjectId( ) ).build( );
+        }
+        );
+    }
+
+
+    /*
+        TBD
+     */
+    @Override
+    public Version getVersion( ItemSelector versionCoordinates ) throws ContentAccessException, IllegalArgumentException
+    {
+        if (StringUtils.isEmpty( versionCoordinates.getVersion() )) {
+            throw new IllegalArgumentException( "Version must be set" );
+        }
+        return null;
+    }
+
+
+    /*
+        TBD
+     */
+    @Override
+    public Artifact getArtifact( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public List<Artifact> getAllArtifacts( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public Stream<Artifact> getAllArtifactStream( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public List<Project> getProjects( Namespace namespace )
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public List<Version> getVersions( Project project )
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public List<Artifact> getArtifacts( ContentItem item )
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public List<Artifact> getArtifactsStartingWith( Namespace namespace )
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public Stream<Artifact> getArtifactStream( ContentItem item )
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public Stream<Artifact> getArtifactStreamStartingWith( Namespace namespace )
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public boolean hasContent( ItemSelector selector )
+    {
+        return false;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public void copyArtifact( Path sourceFile, ItemSelector destination ) throws IllegalArgumentException
+    {
+
+    }
 
     @Override
     public void deleteVersion( VersionedReference ref ) throws ContentNotFoundException, ContentAccessException

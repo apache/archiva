@@ -28,12 +28,20 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Namespace;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -68,9 +76,35 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public void deleteItem( ContentItem item ) throws ItemNotFoundException, ContentAccessException
+    {
+
+    }
+
+    @Override
+    public Namespace getNamespace( ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+    @Override
+    public Project getProject( ItemSelector projectSelector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+
+    @Override
     public void deleteVersion( VersionedReference reference ) throws ContentNotFoundException, ContentAccessException
     {
 
+    }
+
+
+    @Override
+    public Version getVersion( ItemSelector versionCoordinates ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
     }
 
     @Override
@@ -79,11 +113,80 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
     }
 
+
+    @Override
+    public Artifact getArtifact( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public List<Artifact> getAllArtifacts( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public Stream<Artifact> getAllArtifactStream( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public List<Project> getProjects( Namespace namespace ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public List<Version> getVersions( Project project ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public List<Artifact> getArtifacts( ContentItem item ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public List<Artifact> getArtifactsStartingWith( Namespace namespace ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public Stream<Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public Stream<Artifact> getArtifactStreamStartingWith( Namespace namespace ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public boolean hasContent( ItemSelector selector )
+    {
+        return false;
+    }
+
+    @Override
+    public void copyArtifact( Path sourceFile, ItemSelector destination ) throws IllegalArgumentException
+    {
+
+    }
+
+
     @Override
     public void deleteGroupId( String groupId ) throws ContentNotFoundException, ContentAccessException
     {
 
     }
+
 
     @Override
     public void deleteProject( String namespace, String projectId ) throws ContentNotFoundException, ContentAccessException

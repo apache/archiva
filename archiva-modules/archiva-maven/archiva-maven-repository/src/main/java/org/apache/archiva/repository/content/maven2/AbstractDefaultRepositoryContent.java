@@ -205,7 +205,7 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
                        reference.getClassifier(), reference.getType() );
     }
 
-    private String formatAsDirectory( String directory )
+    protected String formatAsDirectory( String directory )
     {
         return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
     }
