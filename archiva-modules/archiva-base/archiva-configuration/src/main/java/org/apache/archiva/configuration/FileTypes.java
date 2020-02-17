@@ -21,12 +21,8 @@ package org.apache.archiva.configuration;
 
 import org.apache.archiva.common.FileTypeUtils;
 import org.apache.archiva.configuration.functors.FiletypeSelectionPredicate;
-import org.apache.archiva.configuration.io.registry.ConfigurationRegistryReader;
-import org.apache.archiva.configuration.util.PathMatcher;
 import org.apache.archiva.components.registry.Registry;
-import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.registry.RegistryListener;
-import org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
@@ -35,7 +31,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.lang.reflect.Field;
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -136,7 +133,7 @@ public class FileTypes
 
         for ( String pattern : artifactPatterns )
         {
-            if ( PathMatcher.matchPath( pattern, relativePath, false ) )
+            if ( FileSystems.getDefault().getPathMatcher( "glob:" + pattern).matches( Paths.get( relativePath ) ) )
             {
                 // Found match
                 return true;
@@ -154,7 +151,7 @@ public class FileTypes
 
         for ( String pattern : DEFAULT_EXCLUSIONS )
         {
-            if ( PathMatcher.matchPath( pattern, relativePath, false ) )
+            if ( FileSystems.getDefault().getPathMatcher( "glob:" + pattern).matches( Paths.get( relativePath ) ) )
             {
                 // Found match
                 return true;
