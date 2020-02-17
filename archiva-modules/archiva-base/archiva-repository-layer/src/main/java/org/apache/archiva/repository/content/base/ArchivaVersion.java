@@ -158,6 +158,7 @@ public class ArchivaVersion extends ArchivaContentItem implements Version
             return this;
         }
 
+        @Override
         public ArchivaVersion build( )
         {
             super.build( );
