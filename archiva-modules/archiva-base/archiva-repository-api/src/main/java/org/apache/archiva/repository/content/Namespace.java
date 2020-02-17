@@ -24,12 +24,42 @@ import java.util.List;
  * The namespace represents some kind of hierarchical coordinate where artifacts are stored.
  * The syntax of the namespace (e.g. the separator like '.' or '/') is dependent on the repository type.
  *
+ * <pre>
+ * namespace1 +--> project 1 +--> version 11 +--> artifact 111
+ *            |              |               |
+ *            |              |               +--> artifact 112
+ *            |              |
+ *            |              +--> version 12 +--> artifact 121
+ *            |                              |
+ *            |                              +--> artifact 122
+ *            |                              +--> ...
+ *            |
+ *            +--> project 2 +--> version 21 +--> artifact 211
+ *                           |               +--> ...
+ *                           +--> version 22 +--> artifact 221
+ *                                           +--> ...
+ * </pre>
+ *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 public interface Namespace extends ContentItem
 {
+    /**
+     * Return the namespace string that identifies the current namespace.
+     * Namespaces are hierarchical and have a separator that separates the path elements. Default
+     * separator is '.'. But this may depend on the repository type.
+     *
+     * A namespace may be empty which is equal to the root.
+     *
+     * @return the unique name of the namespace
+     */
     String getNamespace( );
 
+    /**
+     * Returns the elements that represent the path to the namespace.
+     *
+     * @return the list of path elements
+     */
     List<String> getNamespacePath( );
 
 }
