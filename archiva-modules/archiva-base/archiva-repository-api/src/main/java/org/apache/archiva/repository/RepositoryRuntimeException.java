@@ -1,5 +1,3 @@
-package org.apache.archiva.repository;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,8 +7,7 @@ package org.apache.archiva.repository;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,35 +16,34 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import java.util.List;
+package org.apache.archiva.repository;
 
 /**
- * This exception is thrown, during errors while accessing the repository data
- * E.g. the cause may be IO errors while accessing the filesystem, permission problems
- * on the filesystem or other backend related problems.
+ * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class ContentAccessException extends RepositoryRuntimeException
+public class RepositoryRuntimeException extends RuntimeException
 {
-    private static final long serialVersionUID = 3811491193671356230L;
-
-    List<Exception> errorList;
-
-    public ContentAccessException( )
+    public RepositoryRuntimeException( )
     {
     }
 
-    public ContentAccessException( String message, Throwable cause )
-    {
-        super( message, cause );
-    }
-
-    public ContentAccessException( String message )
+    public RepositoryRuntimeException( String message )
     {
         super( message );
     }
 
-    public ContentAccessException( Throwable cause )
+    public RepositoryRuntimeException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+
+    public RepositoryRuntimeException( Throwable cause )
     {
         super( cause );
+    }
+
+    public RepositoryRuntimeException( String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace )
+    {
+        super( message, cause, enableSuppression, writableStackTrace );
     }
 }
