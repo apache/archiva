@@ -45,6 +45,8 @@ import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaNamespace;
 import org.apache.archiva.repository.content.base.ArchivaProject;
+import org.apache.archiva.repository.content.base.ArchivaVersion;
+import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.commons.lang3.StringUtils;
@@ -80,6 +82,11 @@ public class ManagedDefaultRepositoryContent
 
     FileLockManager lockManager;
 
+    /**
+     * We are caching content items in a weak reference map. To avoid always recreating the
+     * the hierarchical structure.
+     * TODO: Better use a object cache? E.g. our spring cache implementation?
+     */
     private ReferenceMap<String, Namespace> namespaceMap = new ReferenceMap<>( );
     private ReferenceMap<StorageAsset, Project> projectMap = new ReferenceMap<>( );
     private ReferenceMap<StorageAsset, Version> versionMap = new ReferenceMap<>( );
@@ -185,6 +192,7 @@ public class ManagedDefaultRepositoryContent
         return getAsset( namespace, project, version ).resolve( fileName );
     }
 
+
     @Override
     public Namespace getNamespace( final ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException
     {
@@ -198,40 +206,84 @@ public class ManagedDefaultRepositoryContent
 
 
     @Override
-    public Project getProject( final ItemSelector projectSelector ) throws ContentAccessException, IllegalArgumentException
+    public Project getProject( final ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
-        if (StringUtils.isEmpty( projectSelector.getProjectId() )) {
+        if (!selector.hasProjectId()) {
             throw new IllegalArgumentException( "Project id must be set" );
         }
-        final StorageAsset path = getAsset( projectSelector.getNamespace( ), projectSelector.getProjectId( ) );
+        final StorageAsset path = getAsset( selector.getNamespace( ), selector.getProjectId( ) );
         return projectMap.computeIfAbsent( path, projectPath -> {
-            final Namespace ns = getNamespace( projectSelector );
-            return ArchivaProject.withAsset( projectPath ).withNamespace( ns ).withId( projectSelector.getProjectId( ) ).build( );
+            final Namespace ns = getNamespace( selector );
+            return ArchivaProject.withAsset( projectPath ).withNamespace( ns ).withId( selector.getProjectId( ) ).build( );
         }
         );
     }
 
 
-    /*
-        TBD
-     */
     @Override
-    public Version getVersion( ItemSelector versionCoordinates ) throws ContentAccessException, IllegalArgumentException
+    public Version getVersion( final ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
-        if (StringUtils.isEmpty( versionCoordinates.getVersion() )) {
+        if (!selector.hasProjectId()) {
+            throw new IllegalArgumentException( "Project id must be set" );
+        }
+        if (!selector.hasVersion() ) {
             throw new IllegalArgumentException( "Version must be set" );
         }
-        return null;
+        final StorageAsset path = getAsset(selector.getNamespace(), selector.getProjectId(), selector.getVersion());
+        return versionMap.computeIfAbsent( path, versionPath -> {
+            final Project project = getProject( selector );
+            return ArchivaVersion.withAsset( path )
+                .withProject( project )
+                .withVersion( selector.getVersion( ) ).build();
+        } );
     }
 
 
     /*
-        TBD
+    TBD
      */
+    private String getArtifactFileName(ItemSelector selector) {
+        return "";
+    }
+
+    /*
+    TBD
+     */
+    private String getArtifactVersion(ItemSelector selector) {
+        return "";
+    }
+
+    private Artifact createArtifact(final StorageAsset asset, final ItemSelector selector) {
+        Version version = getVersion(selector);
+        ArtifactOptBuilder builder = org.apache.archiva.repository.content.base.ArchivaArtifact.withAsset( asset )
+            .withVersion( version )
+            .withId( selector.getArtifactId( ) )
+            .withArtifactVersion( getArtifactVersion( selector ) );
+        if (selector.hasClassifier()) {
+            builder.withClassifier( selector.getClassifier( ) );
+        }
+        if (selector.hasType()) {
+            builder.withType( selector.getType( ) );
+        }
+        return builder.build( );
+    }
+
     @Override
-    public Artifact getArtifact( ItemSelector selector ) throws ContentAccessException
+    public Artifact getArtifact( final ItemSelector selector ) throws ContentAccessException
     {
-        return null;
+        if (!selector.hasProjectId( )) {
+            throw new IllegalArgumentException( "Project id must be set" );
+        }
+        if (!selector.hasVersion( )) {
+            throw new IllegalArgumentException( "Version must be set" );
+        }
+        if (!selector.hasArtifactId( )) {
+            throw new IllegalArgumentException( "Artifact Id must be set" );
+        }
+        final String fileName = getArtifactFileName( selector );
+        final StorageAsset path = getAsset(selector.getNamespace(), selector.getProjectId(),
+            selector.getVersion(), fileName);
+        return artifactMap.computeIfAbsent( path, artifactPath -> createArtifact( path, selector ) );
     }
 
     /*
