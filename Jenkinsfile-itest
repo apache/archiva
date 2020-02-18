@@ -60,6 +60,11 @@ pipeline {
         }
 
         stage('Test htmlunit') {
+            when {
+                not {
+                    triggeredBy 'UpstreamCause'
+                }
+            }
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
@@ -104,6 +109,11 @@ pipeline {
         // Uses a docker container that is started by script. Maybe we could use the docker functionality
         // of the jenkins pipeline in the future.
         stage('Test chrome') {
+            when {
+                not {
+                    triggeredBy 'UpstreamCause'
+                }
+            }
             steps {
                 timeout(120) {
                     withCredentials([[$class          : 'UsernamePasswordMultiBinding', credentialsId: DOCKERHUB_CREDS,
