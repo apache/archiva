@@ -135,6 +135,9 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             if (uriStr.startsWith("/")) {
                 // only absolute paths are prepended with file scheme
                 uri = new URI("file://" + uriStr);
+            } else if (uriStr.contains(":\\")) {
+                //windows absolute path drive 
+                uri = new URI("file:///" + uriStr.replaceAll("\\\\", "/"));
             } else {
                 uri = new URI(uriStr);
             }
