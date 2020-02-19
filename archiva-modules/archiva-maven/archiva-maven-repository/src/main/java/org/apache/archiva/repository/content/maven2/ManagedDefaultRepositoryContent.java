@@ -21,14 +21,17 @@ package org.apache.archiva.repository.content.maven2;
 
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.archiva.model.ArchivaArtifact;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
+import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentAccessException;
 import org.apache.archiva.repository.ContentNotFoundException;
@@ -47,10 +50,13 @@ import org.apache.archiva.repository.content.base.ArchivaNamespace;
 import org.apache.archiva.repository.content.base.ArchivaProject;
 import org.apache.archiva.repository.content.base.ArchivaVersion;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -72,6 +78,7 @@ public class ManagedDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
 
+    public  static final String METADATA_FILENAME = "maven-metadata.xml";
     private FileTypes filetypes;
 
     public void setFileTypes(FileTypes fileTypes) {
@@ -81,6 +88,14 @@ public class ManagedDefaultRepositoryContent
     private ManagedRepository repository;
 
     FileLockManager lockManager;
+
+    @Inject
+    @Named("repositoryPathTranslator#maven2")
+    private RepositoryPathTranslator pathTranslator;
+
+    @Inject
+    @Named( "metadataReader#maven" )
+    MavenMetadataReader metadataReader;
 
     /**
      * We are caching content items in a weak reference map. To avoid always recreating the
@@ -242,23 +257,119 @@ public class ManagedDefaultRepositoryContent
     /*
     TBD
      */
-    private String getArtifactFileName(ItemSelector selector) {
-        return "";
+    private String getArtifactFileName(ItemSelector selector, String artifactVersion,
+                                       String classifier, String extension) {
+        StringBuilder fileName = new StringBuilder( selector.getArtifactId() ).append( "-" );
+        fileName.append( artifactVersion );
+        if ( !StringUtils.isEmpty( classifier ) )
+        {
+            fileName.append( "-" ).append( classifier );
+        }
+        fileName.append( "." ).append( extension );
+        return fileName.toString( );
+    }
+
+    private String getClassifier(ItemSelector selector) {
+        if (selector.hasClassifier()) {
+            return selector.getClassifier();
+        } else if (selector.hasType()) {
+            return getClassifierFromType( selector.getType( ) );
+        } else {
+            return "";
+        }
+    }
+
+    private String getClassifierFromType(final String type) {
+        if ("pom".equalsIgnoreCase(type) ||  "jar".equalsIgnoreCase( type )
+            || "maven-plugin".equalsIgnoreCase( type )
+            || "ejb".equalsIgnoreCase( type )
+            || "ear".equalsIgnoreCase( type )
+            || "war".equalsIgnoreCase( type )
+            || "rar".equalsIgnoreCase( type )
+        ) return "";
+        if ("test-jar".equalsIgnoreCase( type )) {
+            return "tests";
+        } else if ("ejb-client".equalsIgnoreCase( type )) {
+            return "client";
+        } else if ("java-source".equalsIgnoreCase( type )) {
+            return "sources";
+        } else if ("javadoc".equalsIgnoreCase( type )) {
+            return "javadoc";
+        } else {
+            return "";
+        }
+    }
+
+    private String getArtifactExtension(ItemSelector selector) {
+        if (selector.hasExtension()) {
+            return selector.getExtension( );
+        } else if (selector.hasType()) {
+            String type = selector.getType( ).toLowerCase( );
+            if ("test-jar".equals( type )) {
+                return "jar";
+            } else if ("ejb-client".equals( type )) {
+                return "jar";
+            } else if ("java-source".equals( type )) {
+                return "jar";
+            } else if ("javadoc".equals( type )) {
+                return "jar";
+            } else {
+                return "jar";
+            }
+        } else {
+            return "jar";
+        }
     }
 
     /*
     TBD
      */
-    private String getArtifactVersion(ItemSelector selector) {
-        return "";
+    private String getArtifactVersion(StorageAsset artifactDir, ItemSelector selector) {
+        if (selector.hasArtifactVersion()) {
+            return selector.getArtifactVersion();
+        } else if (selector.hasVersion()) {
+            if ( VersionUtil.isGenericSnapshot( selector.getVersion() ) ) {
+                return getArtifactSnapshotVersion( artifactDir, selector.getVersion( ) );
+            } else {
+                return selector.getVersion( );
+            }
+        } else {
+            throw new IllegalArgumentException( "No version set on the selector " );
+        }
     }
 
-    private Artifact createArtifact(final StorageAsset asset, final ItemSelector selector) {
+
+    public String getArtifactSnapshotVersion(StorageAsset artifactDir, String snapshotVersion) {
+        final StorageAsset metadataFile = artifactDir.resolve( METADATA_FILENAME );
+        StringBuilder version = new StringBuilder( );
+        try
+        {
+            ArchivaRepositoryMetadata metadata = metadataReader.read( metadataFile );
+
+            // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
+            SnapshotVersion metadataVersion = metadata.getSnapshotVersion( );
+            if ( metadataVersion != null )
+            {
+                version.append( snapshotVersion, 0, snapshotVersion.length( ) - 8 ); // remove SNAPSHOT from end
+                version.append( metadataVersion.getTimestamp( )).append("-").append( metadataVersion.getBuildNumber( ) );
+            }
+            return version.toString( );
+        }
+        catch ( RepositoryMetadataException e )
+        {
+            // unable to parse metadata - LOGGER it, and continue with the version as the original SNAPSHOT version
+            log.warn( "Invalid metadata: {} - {}", metadataFile, e.getMessage( ) );
+            return snapshotVersion;
+        }
+    }
+
+    private Artifact createArtifact(final StorageAsset artifactPath, final ItemSelector selector,
+        final String classifier, final String extension) {
         Version version = getVersion(selector);
-        ArtifactOptBuilder builder = org.apache.archiva.repository.content.base.ArchivaArtifact.withAsset( asset )
+        ArtifactOptBuilder builder = org.apache.archiva.repository.content.base.ArchivaArtifact.withAsset( artifactPath )
             .withVersion( version )
             .withId( selector.getArtifactId( ) )
-            .withArtifactVersion( getArtifactVersion( selector ) );
+            .withArtifactVersion( getArtifactVersion( artifactPath, selector ) );
         if (selector.hasClassifier()) {
             builder.withClassifier( selector.getClassifier( ) );
         }
@@ -280,10 +391,15 @@ public class ManagedDefaultRepositoryContent
         if (!selector.hasArtifactId( )) {
             throw new IllegalArgumentException( "Artifact Id must be set" );
         }
-        final String fileName = getArtifactFileName( selector );
-        final StorageAsset path = getAsset(selector.getNamespace(), selector.getProjectId(),
-            selector.getVersion(), fileName);
-        return artifactMap.computeIfAbsent( path, artifactPath -> createArtifact( path, selector ) );
+        final StorageAsset artifactDir = getAsset(selector.getNamespace(), selector.getProjectId(),
+            selector.getVersion());
+        final String artifactVersion = getArtifactVersion( artifactDir, selector );
+        final String classifier = getClassifier( selector );
+        final String extension = getArtifactExtension( selector );
+        final String fileName = getArtifactFileName( selector, artifactVersion, classifier, extension );
+        final StorageAsset path = getAsset( selector.getNamespace( ), selector.getProjectId( ),
+            selector.getVersion( ), fileName );
+        return artifactMap.computeIfAbsent( path, artifactPath -> createArtifact( path, selector, classifier, extension ) );
     }
 
     /*
