@@ -190,9 +190,9 @@ public class ArchivaItemSelector implements ItemSelector
     }
 
     @Override
-    public String getExtension( String extension )
+    public String getExtension(  )
     {
-        return null;
+        return extension;
     }
 
     @Override

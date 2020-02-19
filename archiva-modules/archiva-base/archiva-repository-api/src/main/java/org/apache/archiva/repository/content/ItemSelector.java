@@ -45,7 +45,7 @@ public interface ItemSelector
 
     String getAttribute( String key );
 
-    String getExtension( String extension );
+    String getExtension( );
 
     Map<String, String> getAttributes( );
 
