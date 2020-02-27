@@ -36,6 +36,7 @@ import java.util.List;
  *
  * The implementation may read the data directly from the filesystem or underlying storage implementation.
  *
+ * @since 3.0
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 public interface StorageAsset
@@ -56,22 +57,28 @@ public interface StorageAsset
 
     /**
      * Returns the name of the asset. It may be just the filename.
-     * @return
+     * @return the asset name
      */
     String getName();
 
     /**
      * Returns the time of the last modification.
      *
-     * @return
+     * @return the time instant of the last modification
      */
     Instant getModificationTime();
 
     /**
      * Returns true, if this asset is a container type and contains further child assets.
-     * @return
+     * @return <code>true</code>, if this is a container type, otherwise <code>false</code>
      */
     boolean isContainer();
+
+    /**
+     * Returns true, if this asset is a leaf node and cannot contain further childs
+     * @return <code>true</code>, if this is a leaf type, otherwise <code>false</code>
+     */
+    boolean isLeaf();
 
     /**
      * List the child assets.

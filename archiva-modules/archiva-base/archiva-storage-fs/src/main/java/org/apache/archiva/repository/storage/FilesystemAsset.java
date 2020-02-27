@@ -257,6 +257,16 @@ public class FilesystemAsset implements StorageAsset, Comparable {
         }
     }
 
+    @Override
+    public boolean isLeaf( )
+    {
+        if (Files.exists( assetPath )) {
+            return Files.isRegularFile( assetPath );
+        } else {
+            return !directoryHint;
+        }
+    }
+
     /**
      * Returns the list of directory entries, if this asset represents a directory.
      * Otherwise a empty list will be returned.
