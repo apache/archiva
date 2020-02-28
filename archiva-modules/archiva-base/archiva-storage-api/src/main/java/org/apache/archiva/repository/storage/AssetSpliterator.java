@@ -28,6 +28,9 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  *
@@ -147,12 +150,20 @@ public class AssetSpliterator implements Spliterator<StorageAsset>, Closeable
         }
     }
 
+    // In reverse order
     List<StorageAsset> getChildContainers( StorageAsset parent) {
-        return parent.list( ).stream( ).filter( StorageAsset::isContainer ).collect( Collectors.toList( ) );
+        final List<StorageAsset> children = parent.list( );
+        final int len = children.size( );
+        return IntStream.range( 0, children.size( ) ).mapToObj( i ->
+            children.get(len - i - 1)).filter( StorageAsset::isContainer ).collect( Collectors.toList( ) );
     }
 
+    // In reverse order
     List<StorageAsset> getChildFiles(StorageAsset parent) {
-        return parent.list( ).stream( ).filter( StorageAsset::isLeaf ).collect( Collectors.toList( ) );
+        final List<StorageAsset> children = parent.list( );
+        final int len = children.size( );
+        return IntStream.range( 0, children.size( ) ).mapToObj( i ->
+            children.get(len - i - 1)).filter( StorageAsset::isLeaf ).collect( Collectors.toList( ) );
     }
 
 
