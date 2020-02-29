@@ -22,11 +22,13 @@ package org.apache.archiva.repository.storage;
 import org.apache.archiva.common.filelock.FileLockException;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.filelock.Lock;
+import org.apache.archiva.repository.storage.util.StorageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.*;
 import java.util.HashSet;
 
@@ -104,7 +106,7 @@ public class FsStorageUtil
             try {
                 final RepositoryStorage sourceStorage = source.getStorage();
                 final RepositoryStorage targetStorage = target.getStorage();
-                sourceStorage.consumeDataFromChannel( source, is -> org.apache.archiva.repository.storage.util.StorageUtil.wrapWriteFunction( is, targetStorage, target, locked ), locked);
+                sourceStorage.consumeDataFromChannel( source, is -> wrapWriteFunction( is, targetStorage, target, locked ), locked);
             }  catch (IOException e) {
                 throw e;
             }  catch (Throwable e) {
@@ -116,6 +118,14 @@ public class FsStorageUtil
                     throw new IOException( e );
                 }
             }
+        }
+    }
+
+    private static final void wrapWriteFunction( ReadableByteChannel is, RepositoryStorage targetStorage, StorageAsset target, boolean locked) {
+        try {
+            targetStorage.writeDataToChannel( target, os -> StorageUtil.copy(is, os), locked );
+        } catch (Exception e) {
+            throw new RuntimeException( e );
         }
     }
 

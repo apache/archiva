@@ -214,7 +214,7 @@ public class StorageUtil
 
     }
 
-    public static final void wrapWriteFunction( ReadableByteChannel is, RepositoryStorage targetStorage, StorageAsset target, boolean locked) {
+    private static final void wrapWriteFunction( ReadableByteChannel is, RepositoryStorage targetStorage, StorageAsset target, boolean locked) {
         try {
             targetStorage.writeDataToChannel( target, os -> copy(is, os), locked );
         } catch (Exception e) {
