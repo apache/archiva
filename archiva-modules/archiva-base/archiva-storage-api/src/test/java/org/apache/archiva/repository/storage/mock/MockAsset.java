@@ -37,11 +37,16 @@ import java.util.Map;
 
 public class MockAsset implements StorageAsset
 {
-    private StorageAsset parent;
+    private MockAsset parent;
     private String path;
     private String name;
-    private LinkedHashMap<String, StorageAsset> children = new LinkedHashMap<>( );
+    private LinkedHashMap<String, MockAsset> children = new LinkedHashMap<>( );
     private boolean container = false;
+    private RepositoryStorage storage;
+
+
+
+    private boolean throwException;
 
     public MockAsset( String name ) {
         this.name = name;
@@ -52,18 +57,38 @@ public class MockAsset implements StorageAsset
         this.parent = parent;
         this.path = (parent.hasParent()?parent.getPath( ):"") + "/" + name;
         this.name = name;
+        this.storage = parent.getStorage( );
         parent.registerChild( this );
     }
 
-    public void registerChild(StorageAsset child) {
+    public void registerChild(MockAsset child) {
         children.putIfAbsent( child.getName(), child );
         this.container = true;
+    }
+
+    public void unregisterChild(MockAsset child) {
+        children.remove( child.getName( ) );
+    }
+
+
+    public void setStorage(RepositoryStorage storage) {
+        this.storage = storage;
+    }
+
+    public boolean isThrowException( )
+    {
+        return throwException;
+    }
+
+    public void setThrowException( boolean throwException )
+    {
+        this.throwException = throwException;
     }
 
     @Override
     public RepositoryStorage getStorage( )
     {
-        return null;
+        return storage;
     }
 
     @Override
@@ -97,7 +122,7 @@ public class MockAsset implements StorageAsset
     }
 
     @Override
-    public List<StorageAsset> list( )
+    public List<MockAsset> list( )
     {
         return new ArrayList( children.values( ) );
     }
@@ -169,7 +194,7 @@ public class MockAsset implements StorageAsset
     }
 
     @Override
-    public StorageAsset getParent( )
+    public MockAsset getParent( )
     {
         return this.parent;
     }

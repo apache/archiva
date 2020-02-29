@@ -21,8 +21,10 @@ package org.apache.archiva.repository.storage.util;
 
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.mock.MockAsset;
+import org.apache.archiva.repository.storage.mock.MockStorage;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,11 +42,11 @@ class StorageUtilTest
 
 
 
-    private StorageAsset createTree() {
+    private MockAsset createTree() {
         return createTree( LEVEL1, LEVEL2, LEVEL3 );
     }
 
-    private StorageAsset createTree(int... levelElements) {
+    private MockAsset createTree(int... levelElements) {
         MockAsset root = new MockAsset( "" );
         recurseSubTree( root, 0, levelElements );
         return root;
@@ -130,5 +132,44 @@ class StorageUtilTest
         }
         int expected = LEVEL2 * LEVEL3 + LEVEL2 + 1;
         assertEquals( expected, result.size( ) );
+    }
+
+
+    @Test
+    void testDelete() throws IOException
+    {
+        MockAsset root = createTree( );
+        MockStorage storage = new MockStorage( root );
+
+        StorageUtil.deleteRecursively( root );
+        int expected = LEVEL1 * LEVEL2 * LEVEL3 + LEVEL1 * LEVEL2 + LEVEL1 + 1;
+        assertEquals( expected, storage.getStatus( ).size( MockStorage.REMOVE ) );
+
+    }
+
+    @Test
+    void testDeleteWithException() throws IOException
+    {
+        MockAsset root = createTree( );
+        MockStorage storage = new MockStorage( root );
+        root.list( ).get( 1 ).list( ).get( 2 ).setThrowException( true );
+
+        StorageUtil.deleteRecursively( root );
+        int expected = LEVEL1 * LEVEL2 * LEVEL3 + LEVEL1 * LEVEL2 + LEVEL1 + 1;
+        assertEquals( expected, storage.getStatus( ).size( MockStorage.REMOVE ) );
+
+    }
+
+    @Test
+    void testDeleteWithExceptionFailFast() throws IOException
+    {
+        MockAsset root = createTree( );
+        MockStorage storage = new MockStorage( root );
+        root.list( ).get( 1 ).list( ).get( 2 ).setThrowException( true );
+
+        StorageUtil.deleteRecursively( root, true );
+        int expected = 113;
+        assertEquals( expected, storage.getStatus( ).size( MockStorage.REMOVE ) );
+
     }
 }

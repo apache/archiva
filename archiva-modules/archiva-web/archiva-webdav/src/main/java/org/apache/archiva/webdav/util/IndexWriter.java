@@ -168,7 +168,7 @@ public class IndexWriter
             SortedMap<String, StorageAsset> uniqueChildFiles = new TreeMap<>();
             for ( StorageAsset resource : repositoryAssets )
             {
-                List<StorageAsset> files = resource.list();
+                List<? extends StorageAsset> files = resource.list();
                 for ( StorageAsset file : files )
                 {
                     // the first entry wins

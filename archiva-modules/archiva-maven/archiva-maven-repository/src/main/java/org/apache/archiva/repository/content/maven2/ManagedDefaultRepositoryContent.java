@@ -638,7 +638,7 @@ public class ManagedDefaultRepositoryContent
 
         // First gather up the versions found as artifacts in the managed repository.
 
-        try (Stream<StorageAsset> stream = artifactDir.list().stream() ) {
+        try (Stream<? extends StorageAsset> stream = artifactDir.list().stream() ) {
             return stream.filter(asset -> !asset.isContainer()).map(path -> {
                 try {
                     ArtifactReference artifact = toArtifactReference(path.getPath());
@@ -744,7 +744,7 @@ public class ManagedDefaultRepositoryContent
 
         // First gather up the versions found as artifacts in the managed repository.
 
-        try (Stream<StorageAsset> stream = repoDir.list().stream() ) {
+        try (Stream<? extends StorageAsset> stream = repoDir.list().stream() ) {
             return stream.filter(
                 asset -> !asset.isContainer())
                 .map(path -> {

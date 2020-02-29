@@ -22,7 +22,6 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
-import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
@@ -45,14 +44,13 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
+import org.apache.archiva.repository.storage.FsStorageUtil;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.archiva.rest.api.model.*;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.services.utils.ArtifactContentEntryComparator;
 import org.apache.archiva.security.ArchivaSecurityException;
-import org.apache.archiva.xml.XMLException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -849,7 +847,7 @@ public class DefaultBrowseService
                 if ( StringUtils.isNotBlank( path ) )
                 {
                     // zip entry of the path -> path must a real file entry of the archive
-                    StorageUtil.PathInformation pathInfo = StorageUtil.getAssetDataAsPath(file);
+                    FsStorageUtil.PathInformation pathInfo = FsStorageUtil.getAssetDataAsPath(file);
                     JarFile jarFile = new JarFile( pathInfo.getPath().toFile());
                     ZipEntry zipEntry = jarFile.getEntry( path );
                     try (InputStream inputStream = jarFile.getInputStream( zipEntry ))
@@ -1180,7 +1178,7 @@ public class DefaultBrowseService
             filterDepth++;
         }
 
-        StorageUtil.PathInformation pathInfo = StorageUtil.getAssetDataAsPath(file);
+        FsStorageUtil.PathInformation pathInfo = FsStorageUtil.getAssetDataAsPath(file);
         JarFile jarFile = new JarFile(pathInfo.getPath().toFile());
         try
         {

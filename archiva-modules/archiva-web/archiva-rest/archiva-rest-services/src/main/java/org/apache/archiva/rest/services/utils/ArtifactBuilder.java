@@ -24,10 +24,8 @@ import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.storage.StorageUtil;
-import org.apache.commons.io.FilenameUtils;
+import org.apache.archiva.repository.storage.util.StorageUtil;
 
-import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;

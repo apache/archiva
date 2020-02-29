@@ -28,7 +28,6 @@ import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,7 +132,7 @@ public class DefaultIndexMerger
                 StorageAsset directory = temporaryGroupIndex.getDirectory();
                 if ( directory != null && directory.exists() )
                 {
-                    StorageUtil.deleteRecursively( directory );
+                    org.apache.archiva.repository.storage.util.StorageUtil.deleteRecursively( directory );
                 }
             }
         }

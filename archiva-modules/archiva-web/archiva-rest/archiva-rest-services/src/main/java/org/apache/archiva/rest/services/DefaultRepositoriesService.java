@@ -51,9 +51,9 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.storage.FsStorageUtil;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
@@ -528,7 +528,7 @@ public class DefaultRepositoriesService
         throws IOException
     {
 
-        StorageUtil.copyAsset( sourceFile, targetPath, true );
+        FsStorageUtil.copyAsset( sourceFile, targetPath, true );
         if ( fixChecksums )
         {
             fixChecksums( targetPath );

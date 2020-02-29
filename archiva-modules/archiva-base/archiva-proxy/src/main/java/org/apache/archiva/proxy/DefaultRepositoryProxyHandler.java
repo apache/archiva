@@ -50,8 +50,8 @@ import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.FsStorageUtil;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.collections4.CollectionUtils;
@@ -725,14 +725,14 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
         try
         {
-            StorageUtil.moveAsset( temp, target, true , StandardCopyOption.REPLACE_EXISTING);
+            org.apache.archiva.repository.storage.util.StorageUtil.moveAsset( temp, target, true , StandardCopyOption.REPLACE_EXISTING);
         }
         catch ( IOException e )
         {
             log.error( "Move failed from {} to {}, trying copy.", temp, target );
             try
             {
-                StorageUtil.copyAsset( temp, target, true );
+                FsStorageUtil.copyAsset( temp, target, true );
                 if (temp.exists()) {
                     temp.getStorage( ).removeAsset( temp );
                 }

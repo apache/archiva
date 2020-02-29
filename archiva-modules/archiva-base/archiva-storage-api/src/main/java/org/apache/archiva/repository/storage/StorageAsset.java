@@ -85,7 +85,7 @@ public interface StorageAsset
      *
      * @return The list of children. If there are no children and if the asset is not a container, a empty list will be returned.
      */
-    List<StorageAsset> list();
+    List<? extends StorageAsset> list();
 
     /**
      * The size in bytes of the asset. If the asset does not have a size, -1 should be returned.

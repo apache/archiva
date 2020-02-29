@@ -28,8 +28,9 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.metadata.audit.RepositoryListener;
+import org.apache.archiva.repository.storage.FsStorageUtil;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.storage.StorageUtil;
+import org.apache.archiva.repository.storage.util.StorageUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -419,17 +420,9 @@ public abstract class AbstractRepositoryPurge
 
         final String artifactName = artifactFile.getName( );
 
-        try
-        {
-
-            StorageUtil.recurse(parentDir, a -> {
-                if (!a.isContainer() && a.getName().startsWith(artifactName)) deleteSilently(a);
-            }, true, 3 );
-        }
-        catch ( IOException e )
-        {
-            log.error( "Purge of support files failed {}: {}", artifactFile, e.getMessage( ), e );
-        }
+        StorageUtil.walk(parentDir, a -> {
+            if (!a.isContainer() && a.getName().startsWith(artifactName)) deleteSilently(a);
+        });
 
     }
 

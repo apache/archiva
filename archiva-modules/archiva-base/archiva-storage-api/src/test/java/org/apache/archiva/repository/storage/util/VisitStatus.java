@@ -20,6 +20,8 @@ package org.apache.archiva.repository.storage.util;
 
 import org.apache.archiva.repository.storage.StorageAsset;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -29,11 +31,13 @@ import java.util.function.Predicate;
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-class VisitStatus
+public class VisitStatus
 {
+
+    LinkedHashMap<String, LinkedList<StorageAsset>> applied = new LinkedHashMap<>( );
     LinkedList<StorageAsset> visited = new LinkedList<>( );
 
-    VisitStatus( )
+    public VisitStatus( )
     {
 
     }
@@ -42,6 +46,13 @@ class VisitStatus
     {
         // System.out.println( "Adding " + asset.getPath( ) );
         visited.addLast( asset );
+    }
+
+    public void add(String type, StorageAsset asset) {
+        if (!applied.containsKey( type )) {
+            applied.put( type, new LinkedList<>( ) );
+        }
+        applied.get( type ).add( asset );
     }
 
     public StorageAsset getLast( )
@@ -61,6 +72,10 @@ class VisitStatus
     public int size( )
     {
         return visited.size( );
+    }
+
+    public int size(String type) {
+        return applied.get( type ).size( );
     }
 
 

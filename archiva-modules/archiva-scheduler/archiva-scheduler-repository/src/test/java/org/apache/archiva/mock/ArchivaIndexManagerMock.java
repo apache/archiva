@@ -44,7 +44,6 @@ import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
-import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
@@ -443,11 +442,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
             } catch (IOException e) {
                 log.warn("Index close failed");
             }
-            try {
-                StorageUtil.deleteRecursively(context.getPath());
-            } catch (IOException e) {
-                throw new IndexUpdateFailedException("Could not delete index files");
-            }
+            org.apache.archiva.repository.storage.util.StorageUtil.deleteRecursively(context.getPath());
         });
         try {
             Repository repo = context.getRepository();

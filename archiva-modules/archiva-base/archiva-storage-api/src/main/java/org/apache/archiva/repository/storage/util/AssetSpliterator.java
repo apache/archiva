@@ -167,16 +167,16 @@ public class AssetSpliterator implements Spliterator<StorageAsset>, Closeable
     }
 
     // Assets are returned in reverse order
-    List<StorageAsset> getChildContainers( StorageAsset parent) {
-        final List<StorageAsset> children = parent.list( );
+    List<? extends StorageAsset> getChildContainers( StorageAsset parent) {
+        final List<? extends StorageAsset> children = parent.list( );
         final int len = children.size( );
         return IntStream.range( 0, children.size( ) ).mapToObj( i ->
             children.get(len - i - 1)).filter( StorageAsset::isContainer ).collect( Collectors.toList( ) );
     }
 
     // Assets are returned in reverse order
-    List<StorageAsset> getChildFiles(StorageAsset parent) {
-        final List<StorageAsset> children = parent.list( );
+    List<? extends StorageAsset> getChildFiles(StorageAsset parent) {
+        final List<? extends StorageAsset> children = parent.list( );
         final int len = children.size( );
         return IntStream.range( 0, children.size( ) ).mapToObj( i ->
             children.get(len - i - 1)).filter( StorageAsset::isLeaf ).collect( Collectors.toList( ) );
