@@ -1,3 +1,5 @@
+package org.apache.archiva.repository.storage.util;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +18,7 @@
  * under the License.
  */
 
-package org.apache.archiva.repository.storage;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.io.Closeable;
 import java.util.Collections;
@@ -29,8 +31,6 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  *
@@ -39,7 +39,13 @@ import java.util.stream.StreamSupport;
  * parents. If the spliterator is used in a parallel stream, there is no guarantee for
  * the order of returned assets.
  *
- * The estimated size is not accurate, because the tree paths are scanned on demand.
+ * The estimated size is not accurate, because the tree paths are scanned on demand (lazy loaded)
+ *
+ * The spliterator returns the status of the assets at the time of retrieval. If modifications occur
+ * during traversal the returned assets may not represent the latest state.
+ * There is no check for modifications during traversal and no <code>{@link java.util.ConcurrentModificationException}</code> are thrown.
+ *
+ *
  *
  * @since 3.0
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -53,35 +59,45 @@ public class AssetSpliterator implements Spliterator<StorageAsset>, Closeable
     private LinkedHashSet<StorageAsset> visitedContainers = new LinkedHashSet<>( );
     private long visited = 0;
     private final int splitThreshold;
-    private static final int CHARACTERISTICS =  Spliterator.DISTINCT|Spliterator.NONNULL;
+    private static final int CHARACTERISTICS =  Spliterator.DISTINCT|Spliterator.NONNULL|Spliterator.CONCURRENT;
 
 
-    AssetSpliterator( int splitThreshold, StorageAsset... assets) {
+    public AssetSpliterator( int splitThreshold, StorageAsset... assets) {
         this.splitThreshold = splitThreshold;
+        init( assets );
+    }
+
+    private void init( StorageAsset[] assets )
+    {
+        if (assets.length==0 || assets[0] == null) {
+            throw new IllegalArgumentException( "There must be at least one non-null asset" );
+        }
         Collections.addAll( this.workList, assets );
+        retrieveNextPath( this.workList.get( 0 ) );
     }
 
-    AssetSpliterator( StorageAsset... assets) {
+    public AssetSpliterator( StorageAsset... assets) {
         this.splitThreshold = DEFAULT_SPLIT_THRESHOLD;
-        Collections.addAll( this.workList, assets );
+        init( assets );
     }
 
-    AssetSpliterator() {
+    protected AssetSpliterator() {
         this.splitThreshold = DEFAULT_SPLIT_THRESHOLD;
     }
 
-    AssetSpliterator( int splitThreshold) {
+    protected AssetSpliterator( int splitThreshold) {
         this.splitThreshold = splitThreshold;
     }
 
 
-    AssetSpliterator( int splitThreshold, Set<StorageAsset> visitedContainers) {
+    protected AssetSpliterator( int splitThreshold, Set<StorageAsset> visitedContainers) {
         this.visitedContainers.addAll( visitedContainers );
         this.splitThreshold = splitThreshold;
     }
 
-    AssetSpliterator( List<StorageAsset> baseList, Set<StorageAsset> visitedContainers) {
+    protected AssetSpliterator( List<StorageAsset> baseList, Set<StorageAsset> visitedContainers) {
         this.workList.addAll(baseList);
+        retrieveNextPath( this.workList.get( 0 ) );
         this.visitedContainers.addAll( visitedContainers );
         this.splitThreshold = DEFAULT_SPLIT_THRESHOLD;
     }
@@ -150,7 +166,7 @@ public class AssetSpliterator implements Spliterator<StorageAsset>, Closeable
         }
     }
 
-    // In reverse order
+    // Assets are returned in reverse order
     List<StorageAsset> getChildContainers( StorageAsset parent) {
         final List<StorageAsset> children = parent.list( );
         final int len = children.size( );
@@ -158,7 +174,7 @@ public class AssetSpliterator implements Spliterator<StorageAsset>, Closeable
             children.get(len - i - 1)).filter( StorageAsset::isContainer ).collect( Collectors.toList( ) );
     }
 
-    // In reverse order
+    // Assets are returned in reverse order
     List<StorageAsset> getChildFiles(StorageAsset parent) {
         final List<StorageAsset> children = parent.list( );
         final int len = children.size( );
@@ -187,8 +203,8 @@ public class AssetSpliterator implements Spliterator<StorageAsset>, Closeable
                 //noinspection InfiniteLoopStatement
                 while (true)
                 {
-                    newWorkList.add( workList.getFirst( ) );
-                    newSpliterator.add( workList.getFirst( ) );
+                    newWorkList.add( workList.removeFirst( ) );
+                    newSpliterator.add( workList.removeFirst( ) );
                 }
             } catch (NoSuchElementException e) {
                 //

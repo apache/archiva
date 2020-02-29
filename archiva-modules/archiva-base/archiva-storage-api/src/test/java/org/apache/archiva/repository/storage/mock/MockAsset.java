@@ -45,12 +45,12 @@ public class MockAsset implements StorageAsset
 
     public MockAsset( String name ) {
         this.name = name;
-        this.path = "";
+        this.path = "/";
     }
 
     public MockAsset( MockAsset parent, String name ) {
         this.parent = parent;
-        this.path = parent.getPath( ) + "/" + name;
+        this.path = (parent.hasParent()?parent.getPath( ):"") + "/" + name;
         this.name = name;
         parent.registerChild( this );
     }
@@ -188,5 +188,22 @@ public class MockAsset implements StorageAsset
     public String toString( )
     {
         return getPath();
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o ) return true;
+        if ( o == null || getClass( ) != o.getClass( ) ) return false;
+
+        MockAsset mockAsset = (MockAsset) o;
+
+        return path.equals( mockAsset.path );
+    }
+
+    @Override
+    public int hashCode( )
+    {
+        return path.hashCode( );
     }
 }
