@@ -25,7 +25,7 @@ import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;

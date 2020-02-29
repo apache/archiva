@@ -23,7 +23,7 @@ import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.base.AbstractRepositoryGroup;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -44,7 +44,7 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
-import org.apache.archiva.repository.storage.FsStorageUtil;
+import org.apache.archiva.repository.storage.fs.FsStorageUtil;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.rest.api.model.*;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;

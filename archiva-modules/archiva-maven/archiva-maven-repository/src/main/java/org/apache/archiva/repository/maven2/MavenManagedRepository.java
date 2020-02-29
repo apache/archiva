@@ -24,7 +24,7 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.base.AbstractManagedRepository;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.content.maven2.MavenRepositoryRequestInfo;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;

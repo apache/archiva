@@ -19,9 +19,8 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-import org.apache.archiva.checksum.Checksum;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;

@@ -22,7 +22,7 @@ package org.apache.archiva.policies;
 import junit.framework.TestCase;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Test;

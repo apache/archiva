@@ -20,7 +20,7 @@ package org.apache.archiva.policies;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Locale;
 import java.util.MissingResourceException;

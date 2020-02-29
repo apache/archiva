@@ -20,8 +20,8 @@ package org.apache.archiva.rest.services;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
-import org.apache.archiva.repository.storage.FilesystemAsset;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemAsset;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;

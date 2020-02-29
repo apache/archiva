@@ -22,7 +22,7 @@ import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.base.builder.OptBuilder;
 import org.apache.archiva.repository.mock.ManagedRepositoryContentMock;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

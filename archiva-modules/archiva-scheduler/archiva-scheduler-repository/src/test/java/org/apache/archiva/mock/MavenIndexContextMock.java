@@ -22,13 +22,12 @@ package org.apache.archiva.mock;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.storage.FilesystemAsset;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemAsset;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.index.context.IndexingContext;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.sql.Date;

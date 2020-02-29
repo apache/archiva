@@ -19,8 +19,8 @@ package org.apache.archiva.rest.services.utils;
  */
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
-import org.apache.archiva.repository.storage.FilesystemAsset;
-import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.fs.FilesystemAsset;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.easymock.TestSubject;
 import org.junit.Test;

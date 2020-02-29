@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.storage;
+package org.apache.archiva.repository.storage.fs;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,8 +9,7 @@ package org.apache.archiva.repository.storage;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -24,6 +23,8 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.filelock.FileLockTimeoutException;
 import org.apache.archiva.common.filelock.Lock;
 import org.apache.archiva.common.utils.PathUtil;
+import org.apache.archiva.repository.storage.RepositoryStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,7 @@ public class FilesystemStorage implements RepositoryStorage {
     }
 
     @Override
-    public void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
+    public void consumeData( StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
     {
         final Path path = asset.getFilePath();
         try {
