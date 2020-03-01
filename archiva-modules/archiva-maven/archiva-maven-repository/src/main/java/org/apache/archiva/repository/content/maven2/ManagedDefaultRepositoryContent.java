@@ -51,22 +51,29 @@ import org.apache.archiva.repository.content.base.ArchivaProject;
 import org.apache.archiva.repository.content.base.ArchivaVersion;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.util.StorageUtil;
 import org.apache.commons.collections4.map.ReferenceMap;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,7 +94,7 @@ public class ManagedDefaultRepositoryContent
 
     private ManagedRepository repository;
 
-    FileLockManager lockManager;
+    private FileLockManager lockManager;
 
     @Inject
     @Named("repositoryPathTranslator#maven2")
@@ -96,6 +103,15 @@ public class ManagedDefaultRepositoryContent
     @Inject
     @Named( "metadataReader#maven" )
     MavenMetadataReader metadataReader;
+
+    public static final String SNAPSHOT = "SNAPSHOT";
+
+    public static final Pattern UNIQUE_SNAPSHOT_PATTERN = Pattern.compile( "^(SNAPSHOT|[0-9]{8}\\.[0-9]{6}-[0-9]+)(.*)" );
+    public static final Pattern CLASSIFIER_PATTERN = Pattern.compile( "^-([^.]+)(\\..*)" );
+
+    public static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "^([0-9]{8})\\.([0-9]{6})$" );
+
+    public static final Pattern GENERIC_SNAPSHOT_PATTERN = Pattern.compile( "^(.*)-" + SNAPSHOT );
 
     /**
      * We are caching content items in a weak reference map. To avoid always recreating the
@@ -255,7 +271,6 @@ public class ManagedDefaultRepositoryContent
 
 
     /*
-    TBD
      */
     private String getArtifactFileName(ItemSelector selector, String artifactVersion,
                                        String classifier, String extension) {
@@ -300,6 +315,26 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
+    private String getTypeFromClassifierAndExtension(String classifierArg, String extensionArg) {
+        String extension = extensionArg.toLowerCase( ).trim( );
+        String classifier = classifierArg.toLowerCase( ).trim( );
+        if (StringUtils.isEmpty( extension )) {
+            return "";
+        } else if (StringUtils.isEmpty( classifier ) ) {
+            return extension;
+        } else if (classifier.equals("tests") && extension.equals("jar")) {
+            return "test-jar";
+        } else if (classifier.equals("client") && extension.equals( "jar" )) {
+            return "ejb-client";
+        } else if (classifier.equals("source") && extension.equals("jar")) {
+            return "java-source";
+        } else if (classifier.equals("javadoc") && extension.equals( "jar" )) {
+            return "javadoc";
+        } else {
+            return extension;
+        }
+    }
+
     private String getArtifactExtension(ItemSelector selector) {
         if (selector.hasExtension()) {
             return selector.getExtension( );
@@ -339,7 +374,7 @@ public class ManagedDefaultRepositoryContent
     }
 
 
-    public String getArtifactSnapshotVersion(StorageAsset artifactDir, String snapshotVersion) {
+    private String getArtifactSnapshotVersion(StorageAsset artifactDir, String snapshotVersion) {
         final StorageAsset metadataFile = artifactDir.resolve( METADATA_FILENAME );
         StringBuilder version = new StringBuilder( );
         try
@@ -369,14 +404,214 @@ public class ManagedDefaultRepositoryContent
         ArtifactOptBuilder builder = org.apache.archiva.repository.content.base.ArchivaArtifact.withAsset( artifactPath )
             .withVersion( version )
             .withId( selector.getArtifactId( ) )
-            .withArtifactVersion( getArtifactVersion( artifactPath, selector ) );
-        if (selector.hasClassifier()) {
-            builder.withClassifier( selector.getClassifier( ) );
-        }
+            .withArtifactVersion( getArtifactVersion( artifactPath, selector ) )
+            .withClassifier( classifier );
         if (selector.hasType()) {
             builder.withType( selector.getType( ) );
         }
         return builder.build( );
+    }
+
+    private String getNamespaceFromNamespacePath(final StorageAsset namespacePath) {
+        LinkedList<String> names = new LinkedList<>( );
+        StorageAsset current = namespacePath;
+        while (current.hasParent()) {
+            names.addFirst( current.getName() );
+        }
+        return String.join( ".", names );
+    }
+
+    private Namespace getNamespaceFromArtifactPath( final StorageAsset artifactPath) {
+        final StorageAsset namespacePath = artifactPath.getParent( ).getParent( ).getParent( );
+        final String namespace = getNamespaceFromNamespacePath( namespacePath );
+        return namespaceMap.computeIfAbsent( namespace,
+            myNamespace -> ArchivaNamespace.withRepository( this )
+                .withAsset( namespacePath )
+                .withNamespace( namespace )
+                .build( ) );
+    }
+
+    private Project getProjectFromArtifactPath( final StorageAsset artifactPath) {
+        final StorageAsset projectPath = artifactPath.getParent( ).getParent( );
+        return projectMap.computeIfAbsent( projectPath,
+            myProjectPath -> ArchivaProject.withAsset( projectPath )
+                .withNamespace( getNamespaceFromArtifactPath( artifactPath ) )
+                .withId( projectPath.getName( ) ).build( )
+        );
+    }
+
+    private Version getVersionFromArtifactPath( final StorageAsset artifactPath) {
+        final StorageAsset versionPath = artifactPath.getParent( );
+        return versionMap.computeIfAbsent( versionPath,
+            myVersionPath -> ArchivaVersion.withAsset( versionPath )
+                .withProject( getProjectFromArtifactPath( artifactPath ) )
+                .withVersion( versionPath.getName( ) ).build( ) );
+    }
+
+    private Artifact getArtifactFromPath(final StorageAsset artifactPath) {
+        final Version version = getVersionFromArtifactPath( artifactPath );
+        final ArtifactInfo info  = getArtifactInfoFromPath( version.getVersion(), artifactPath );
+        return artifactMap.computeIfAbsent( artifactPath, myArtifactPath ->
+            org.apache.archiva.repository.content.base.ArchivaArtifact.withAsset( artifactPath )
+                .withVersion( version )
+                .withId( info.id )
+                .withClassifier( info.classifier )
+                .withRemainder( info.remainder )
+                .withType( info.type )
+                .withArtifactVersion( info.version )
+                .withContentType( info.contentType )
+                .build( )
+        );
+    }
+
+    private ContentItem getItemFromPath(final StorageAsset itemPath) {
+        if (itemPath.isLeaf()) {
+            return getArtifactFromPath( itemPath );
+        } else {
+            if (versionMap.containsKey( itemPath )) {
+                return versionMap.get( itemPath );
+            }
+            if (projectMap.containsKey( itemPath )) {
+                return projectMap.get( itemPath );
+            }
+            String ns = getNamespaceFromNamespacePath( itemPath );
+            if (namespaceMap.containsKey( ns )) {
+                return namespaceMap.get( ns );
+            }
+            // No cached item, so we have to gather more information:
+            // Check for version directory (contains at least a pom or metadata file)
+            if (itemPath.list( ).stream( ).map(a -> a.getName().toLowerCase()).anyMatch( n ->
+                n.endsWith( ".pom" )
+                || n.startsWith( "maven-metadata" )
+            )) {
+                return versionMap.computeIfAbsent( itemPath,
+                    myVersionPath -> ArchivaVersion.withAsset( itemPath )
+                        .withProject( (Project)getItemFromPath( itemPath.getParent() ) )
+                        .withVersion( itemPath.getName() ).build());
+            } else {
+                // We have to dig further and find the next directory with a pom
+                Optional<StorageAsset> foundFile = StorageUtil.newAssetStream( itemPath )
+                    .filter( a -> a.getName().toLowerCase().endsWith( ".pom" )
+                        || a.getName().toLowerCase().startsWith( "maven-metadata" ) )
+                    .findFirst( );
+                if (foundFile.isPresent())
+                {
+                    int level = 0;
+                    StorageAsset current = foundFile.get( );
+                    while (current.hasParent() && !current.equals(itemPath)) {
+                        level++;
+                        current = current.getParent( );
+                    }
+                    // Project path if it is one level up from the found file
+                    if (level==2) {
+                        return projectMap.computeIfAbsent( itemPath,
+                            myItemPath -> getProjectFromArtifactPath( foundFile.get( ) ) );
+                    } else {
+                        // All other paths are treated as namespace
+                        return namespaceMap.computeIfAbsent( ns,
+                            myNamespace -> ArchivaNamespace.withRepository( this )
+                                .withAsset( itemPath )
+                                .withNamespace( ns )
+                                .build( ) );
+                    }
+                } else {
+                    // Don't know what to do with it, so we treat it as namespace path
+                    return namespaceMap.computeIfAbsent( ns,
+                        myNamespace -> ArchivaNamespace.withRepository( this )
+                            .withAsset( itemPath )
+                            .withNamespace( ns )
+                            .build( ) );
+                }
+
+            }
+        }
+    }
+
+    // Simple object to hold artifact information
+    private class ArtifactInfo  {
+        private String id;
+        private String version;
+        private String extension;
+        private String remainder;
+        private String type;
+        private String classifier;
+        private String contentType;
+    }
+
+    private ArtifactInfo getArtifactInfoFromPath(String genericVersion, StorageAsset path) {
+        final ArtifactInfo info = new ArtifactInfo( );
+        info.id = path.getParent( ).getParent( ).getName( );
+        final String fileName = path.getName( );
+        if ( genericVersion.endsWith( "-" + SNAPSHOT ) )
+        {
+            String baseVersion = StringUtils.substringBeforeLast( genericVersion, "-" + SNAPSHOT );
+            String prefix = info.id+"-"+baseVersion+"-";
+            if (fileName.startsWith( prefix ))
+            {
+                String versionPostfix = StringUtils.removeStart( fileName, prefix );
+                Matcher matcher = UNIQUE_SNAPSHOT_PATTERN.matcher( versionPostfix );
+                if (matcher.matches()) {
+                    info.version = baseVersion + "-" + matcher.group( 1 );
+                    String newPrefix = prefix + info.version;
+                    if (fileName.startsWith( newPrefix ))
+                    {
+                        String classPostfix = StringUtils.removeStart( fileName, newPrefix );
+                        Matcher cMatch = CLASSIFIER_PATTERN.matcher( classPostfix );
+                        if (cMatch.matches()) {
+                            info.classifier = cMatch.group( 1 );
+                            info.remainder = cMatch.group( 2 );
+                        } else {
+                            info.classifier = "";
+                            info.remainder = classPostfix;
+                        }
+                    } else {
+                        log.error( "Artifact does not match the maven name pattern {}", path );
+                        info.classifier = "";
+                        info.remainder = StringUtils.substringAfter( fileName, prefix );
+                    }
+                } else {
+                    log.error( "Artifact does not match the snapshot version pattern {}", path );
+                    info.version = "";
+                    info.classifier = "";
+                    info.remainder = StringUtils.substringAfter( fileName, prefix );
+                }
+            } else {
+                log.error( "Artifact does not match the maven name pattern: {}", path );
+                info.version = "";
+                info.classifier = "";
+                info.remainder = StringUtils.substringAfterLast( fileName, "." );
+            }
+        } else {
+            String prefix = info.id+"-"+genericVersion;
+            if (fileName.startsWith( prefix ))
+            {
+                info.version=genericVersion;
+                String classPostfix = StringUtils.removeStart( fileName, prefix );
+                Matcher cMatch = CLASSIFIER_PATTERN.matcher( classPostfix );
+                if (cMatch.matches()) {
+                    info.classifier = cMatch.group( 1 );
+                    info.remainder = cMatch.group( 2 );
+                } else {
+                    info.classifier = "";
+                    info.remainder = classPostfix;
+                }
+            } else {
+                log.error( "Artifact does not match the version pattern {}", path );
+                info.version = "";
+                info.classifier = "";
+                info.remainder = StringUtils.substringAfterLast( fileName, "." );
+            }
+        }
+        info.extension = StringUtils.substringAfterLast( fileName, "." );
+        info.type = getTypeFromClassifierAndExtension( info.classifier, info.extension );
+        try {
+            info.contentType = Files.probeContentType( path.getFilePath( ) );
+        } catch (IOException e) {
+            info.contentType = "";
+            //
+        }
+        return info;
+
     }
 
     @Override
@@ -402,11 +637,55 @@ public class ManagedDefaultRepositoryContent
         return artifactMap.computeIfAbsent( path, artifactPath -> createArtifact( path, selector, classifier, extension ) );
     }
 
+    private StorageAsset getBasePathFromSelector(ItemSelector selector) {
+        StringBuilder path = new StringBuilder( );
+        if (selector.hasNamespace()) {
+            path.append(String.join( "/", getNamespace( selector ).getNamespacePath( ) ));
+        }
+        if (selector.hasProjectId()) {
+            path.append( "/" ).append( selector.getProjectId( ) );
+        }
+        if (selector.hasVersion()) {
+            path.append( "/" ).append( selector.getVersion( ) );
+        }
+        return getStorage( ).getAsset( path.toString( ) );
+    }
+
+    /*
+     * File filter to select certain artifacts using the selector data.
+     */
+    private Predicate<StorageAsset> getFileFilterFromSelector(final ItemSelector selector) {
+        Predicate<StorageAsset> p = a -> a.isLeaf( );
+        if (selector.hasArtifactId()) {
+            final String pattern = selector.getArtifactId( );
+            p = p.and( a -> StringUtils.startsWithIgnoreCase( a.getName( ),  pattern ) );
+        }
+        if (selector.hasArtifactVersion()) {
+            final String pattern = selector.getArtifactVersion( );
+            p = p.and( a -> StringUtils.containsIgnoreCase( a.getName( ),  pattern ) );
+        }
+        if (selector.hasExtension()) {
+            final String pattern = "."+selector.getExtension( );
+            p = p.and( a -> StringUtils.endsWithIgnoreCase( a.getName( ), pattern ) );
+        } else if (selector.hasType()) {
+            final String pattern = "."+getArtifactExtension( selector );
+            p = p.and( a -> StringUtils.endsWithIgnoreCase( a.getName( ), pattern ) );
+        }
+        if (selector.hasClassifier()) {
+            final String pattern = "-" + selector.getClassifier( ) + ".";
+            p = p.and( a -> StringUtils.containsIgnoreCase( a.getName( ), pattern ) );
+        } else if (selector.hasType()) {
+            final String pattern = "-" + getClassifierFromType( selector.getType( ) ) + ".";
+            p = p.and( a -> StringUtils.containsIgnoreCase( a.getName( ).toLowerCase( ), pattern ) );
+        }
+        return p;
+    }
+
     /*
         TBD
      */
     @Override
-    public List<Artifact> getAllArtifacts( ItemSelector selector ) throws ContentAccessException
+    public List<? extends Artifact> getAllArtifacts( ItemSelector selector ) throws ContentAccessException
     {
         return null;
     }
@@ -415,7 +694,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public Stream<Artifact> getAllArtifactStream( ItemSelector selector ) throws ContentAccessException
+    public Stream<? extends Artifact> getAllArtifactStream( ItemSelector selector ) throws ContentAccessException
     {
         return null;
     }
@@ -424,7 +703,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public List<Project> getProjects( Namespace namespace )
+    public List<? extends Project> getProjects( Namespace namespace )
     {
         return null;
     }
@@ -433,7 +712,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public List<Version> getVersions( Project project )
+    public List<? extends Version> getVersions( Project project )
     {
         return null;
     }
@@ -442,7 +721,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public List<Artifact> getArtifacts( ContentItem item )
+    public List<? extends Artifact> getArtifacts( ContentItem item )
     {
         return null;
     }
@@ -451,7 +730,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public List<Artifact> getArtifactsStartingWith( Namespace namespace )
+    public List<? extends Artifact> getArtifactsStartingWith( Namespace namespace )
     {
         return null;
     }
@@ -460,7 +739,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public Stream<Artifact> getArtifactStream( ContentItem item )
+    public Stream<? extends Artifact> getArtifactStream( ContentItem item )
     {
         return null;
     }
@@ -469,7 +748,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public Stream<Artifact> getArtifactStreamStartingWith( Namespace namespace )
+    public Stream<? extends Artifact> getArtifactStreamStartingWith( Namespace namespace )
     {
         return null;
     }
@@ -920,6 +1199,10 @@ public class ManagedDefaultRepositoryContent
 
     private Path getRepoDir() {
         return repository.getAsset( "" ).getFilePath( );
+    }
+
+    private RepositoryStorage getStorage() {
+        return repository.getAsset( "" ).getStorage( );
     }
 
     /**

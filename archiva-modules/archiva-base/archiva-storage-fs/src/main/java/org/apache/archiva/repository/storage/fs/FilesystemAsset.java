@@ -521,4 +521,24 @@ public class FilesystemAsset implements StorageAsset, Comparable {
         }
         return 0;
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o ) return true;
+        if ( o == null || getClass( ) != o.getClass( ) ) return false;
+
+        FilesystemAsset that = (FilesystemAsset) o;
+
+        if ( !assetPath.equals( that.assetPath ) ) return false;
+        return storage.equals( that.storage );
+    }
+
+    @Override
+    public int hashCode( )
+    {
+        int result = assetPath.hashCode( );
+        result = 31 * result + storage.hashCode( );
+        return result;
+    }
 }

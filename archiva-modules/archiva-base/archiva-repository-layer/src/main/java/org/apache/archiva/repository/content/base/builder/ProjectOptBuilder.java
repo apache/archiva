@@ -30,8 +30,6 @@ public interface ProjectOptBuilder
     extends OptBuilder<ArchivaProject, ProjectOptBuilder>
 {
 
-    ProjectOptBuilder withId( String id );
-
     ArchivaProject build( );
 
 }

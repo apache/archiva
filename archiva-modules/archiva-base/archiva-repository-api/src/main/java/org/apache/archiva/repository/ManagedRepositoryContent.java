@@ -150,7 +150,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
     Version getVersion(ItemSelector versionCoordinates) throws ContentAccessException, IllegalArgumentException;
 
     /**
-     * Returns the artifact for the given coordinates.
+     * Returns the artifact object for the given coordinates.
      *
      * Normally the following coordinates should be set at the given selector:
      * <ul>
@@ -170,8 +170,14 @@ public interface ManagedRepositoryContent extends RepositoryContent
      *     <li>extension</li>
      * </ul>
      *
+     * The method always returns a artifact object, if the coordinates are valid. It does not guarantee that the artifact
+     * exists. To check if there is really a physical representation of the artifact, use the <code>{@link Artifact#exists()}</code>
+     * method of the artifact.
+     * For upload and data retrieval use the methods of the {@link StorageAsset} reference returned in the artifact.
+     *
+     *
      * @param selector the selector with the artifact coordinates
-     * @return a artifact
+     * @return a artifact object
      * @throws ItemNotFoundException if the selector coordinates do not specify a artifact
      * @throws ContentAccessException if the access to the underlying storage failed
      */
@@ -187,7 +193,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
      * @throws ContentAccessException if the access to the underlying storage failed
      */
-    List<Artifact> getAllArtifacts( ItemSelector selector) throws ContentAccessException;
+    List<? extends Artifact> getAllArtifacts( ItemSelector selector) throws ContentAccessException;
 
     /**
      * Returns the artifacts that match the given selector. It is up to the repository implementation
@@ -202,7 +208,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
      * @throws ContentAccessException if the access to the underlying storage failed
      */
-    Stream<Artifact> getAllArtifactStream( ItemSelector selector) throws ContentAccessException;
+    Stream<? extends Artifact> getAllArtifactStream( ItemSelector selector) throws ContentAccessException;
 
 
     /**
@@ -211,7 +217,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param namespace the namespace
      * @return the list of projects or a empty list, if there are no projects for the given namespace.
      */
-    List<Project> getProjects(Namespace namespace) throws ContentAccessException;
+    List<? extends Project> getProjects( Namespace namespace) throws ContentAccessException;
 
     /**
      * Return the existing versions of the given project.
@@ -219,7 +225,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param project the project
      * @return a list of versions or a empty list, if not versions are available for the specified project
      */
-    List<Version> getVersions(Project project) throws ContentAccessException;
+    List<? extends Version> getVersions( Project project) throws ContentAccessException;
 
     /**
      * Return all the artifacts of a given content item (namespace, project, version)
@@ -227,7 +233,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param item the item
      * @return a list of artifacts or a empty list, if no artifacts are available for the specified item
      */
-    List<Artifact> getArtifacts( ContentItem item) throws ContentAccessException;
+    List<? extends Artifact> getArtifacts( ContentItem item) throws ContentAccessException;
 
     /**
      * Return all the artifacts of a given namespace and all sub namespaces that are defined under the
@@ -236,7 +242,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param namespace the namespace, which is the parent namespace
      * @return a list of artifacts or a empty list, if no artifacts are available for the specified namespace
      */
-    List<Artifact> getArtifactsStartingWith( Namespace namespace ) throws ContentAccessException;
+    List<? extends Artifact> getArtifactsStartingWith( Namespace namespace ) throws ContentAccessException;
 
 
     /**
@@ -250,7 +256,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @return a stream of artifacts. The stream is auto closable. You should always make sure, that the stream
      * is closed after use.
      */
-    Stream<Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException;
+    Stream<? extends Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException;
 
 
     /**
@@ -264,7 +270,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @return a stream of artifacts. The stream is auto closable. You should always make sure, that the stream
      * is closed after use.
      */
-    Stream<Artifact> getArtifactStreamStartingWith( Namespace namespace ) throws ContentAccessException;
+    Stream<? extends Artifact> getArtifactStreamStartingWith( Namespace namespace ) throws ContentAccessException;
 
 
     /**

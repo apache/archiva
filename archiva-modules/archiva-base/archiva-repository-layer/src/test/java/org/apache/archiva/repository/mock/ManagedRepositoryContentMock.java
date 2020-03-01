@@ -121,49 +121,49 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public List<Artifact> getAllArtifacts( ItemSelector selector ) throws ContentAccessException
+    public List<? extends Artifact> getAllArtifacts( ItemSelector selector ) throws ContentAccessException
     {
         return null;
     }
 
     @Override
-    public Stream<Artifact> getAllArtifactStream( ItemSelector selector ) throws ContentAccessException
+    public Stream<? extends Artifact> getAllArtifactStream( ItemSelector selector ) throws ContentAccessException
     {
         return null;
     }
 
     @Override
-    public List<Project> getProjects( Namespace namespace ) throws ContentAccessException
+    public List<? extends Project> getProjects( Namespace namespace ) throws ContentAccessException
     {
         return null;
     }
 
     @Override
-    public List<Version> getVersions( Project project ) throws ContentAccessException
+    public List<? extends Version> getVersions( Project project ) throws ContentAccessException
     {
         return null;
     }
 
     @Override
-    public List<Artifact> getArtifacts( ContentItem item ) throws ContentAccessException
+    public List<? extends Artifact> getArtifacts( ContentItem item ) throws ContentAccessException
     {
         return null;
     }
 
     @Override
-    public List<Artifact> getArtifactsStartingWith( Namespace namespace ) throws ContentAccessException
+    public List<? extends Artifact> getArtifactsStartingWith( Namespace namespace ) throws ContentAccessException
     {
         return null;
     }
 
     @Override
-    public Stream<Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException
+    public Stream<? extends Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException
     {
         return null;
     }
 
     @Override
-    public Stream<Artifact> getArtifactStreamStartingWith( Namespace namespace ) throws ContentAccessException
+    public Stream<? extends Artifact> getArtifactStreamStartingWith( Namespace namespace ) throws ContentAccessException
     {
         return null;
     }
