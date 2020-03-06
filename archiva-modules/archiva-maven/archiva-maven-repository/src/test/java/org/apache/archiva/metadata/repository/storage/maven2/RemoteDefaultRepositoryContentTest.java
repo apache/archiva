@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
@@ -65,6 +66,12 @@ public class RemoteDefaultRepositoryContentTest
     protected ItemSelector toItemSelector( String path ) throws LayoutException
     {
         return repoContent.toItemSelector( path );
+    }
+
+    @Override
+    protected ManagedRepositoryContent getManaged( )
+    {
+        return null;
     }
 
     @Override

@@ -29,8 +29,10 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
+import org.apache.archiva.repository.content.maven2.MavenContentHelper;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -70,6 +72,9 @@ public class ManagedDefaultRepositoryContentTest
     List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
     @Inject
+    MavenContentHelper contentHelper;
+
+    @Inject
     FileLockManager fileLockManager;
 
     private Path getRepositoryPath(String repoName) {
@@ -98,6 +103,8 @@ public class ManagedDefaultRepositoryContentTest
         fileTypes.afterConfigurationChange( null, "fileType", null );
 
         repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
+        repoContent.setMavenContentHelper( contentHelper );
+        
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
     }
 
@@ -269,6 +276,12 @@ public class ManagedDefaultRepositoryContentTest
     @Override
     protected String toPath( ItemSelector selector ) {
         return repoContent.toPath( selector );
+    }
+
+    @Override
+    protected ManagedRepositoryContent getManaged( )
+    {
+        return repoContent;
     }
 
     private Path setupRepoCopy( String source, String target) throws IOException

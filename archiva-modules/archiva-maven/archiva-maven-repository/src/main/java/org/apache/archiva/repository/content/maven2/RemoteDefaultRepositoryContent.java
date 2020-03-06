@@ -99,4 +99,5 @@ public class RemoteDefaultRepositoryContent
         String url = repository.getLocation( ) + toPath( reference );
         return new RepositoryURL( url );
     }
+
 }

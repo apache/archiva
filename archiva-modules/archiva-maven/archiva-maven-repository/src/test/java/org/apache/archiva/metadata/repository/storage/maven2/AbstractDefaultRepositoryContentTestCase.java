@@ -22,7 +22,12 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Namespace;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -542,6 +547,38 @@ public abstract class AbstractDefaultRepositoryContentTestCase
 
         // And back again, using test Reference from previous step.
         assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( testReference ) );
+
+        if (getManaged()!=null)
+        {
+            Namespace ns = null;
+            Project pr = null;
+            Version ver = null;
+            if ( StringUtils.isNotEmpty( groupId ) )
+            {
+                ns = getManaged( ).getNamespace( expectedArtifact );
+                assertNotNull( ns );
+                assertEquals( groupId, ns.getNamespace( ) );
+            }
+            if ( StringUtils.isNotEmpty( artifactId ) )
+            {
+                pr = getManaged( ).getProject( expectedArtifact );
+                assertNotNull( pr );
+                assertEquals( artifactId, pr.getId( ) );
+                assertEquals( ns, pr.getNamespace( ) );
+            }
+            if ( StringUtils.isNotEmpty( version ) )
+            {
+                ver = getManaged( ).getVersion( expectedArtifact );
+                assertNotNull( ver );
+                assertEquals( version, ver.getVersion( ) );
+                assertEquals( pr, ver.getProject( ) );
+            }
+            Artifact artifact = getManaged( ).getArtifact( expectedArtifact );
+            assertNotNull( artifact );
+            assertEquals( artifactId, artifact.getId( ) );
+            assertEquals( ver, artifact.getVersion( ) );
+        }
+
     }
 
     protected ArtifactReference createArtifact( String groupId, String artifactId, String version, String classifier,
@@ -560,6 +597,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     protected ItemSelector createItemSelector(String groupId, String artifactId, String version, String classifier,
                                               String type) {
         return ArchivaItemSelector.builder( ).withNamespace( groupId )
+            .withProjectId( artifactId )
             .withArtifactId( artifactId )
             .withVersion( version )
             .withClassifier( classifier )
@@ -577,4 +615,6 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     protected abstract String toPath( ItemSelector selector );
 
     protected abstract ItemSelector toItemSelector(String path) throws LayoutException;
+
+    protected abstract ManagedRepositoryContent getManaged();
 }
