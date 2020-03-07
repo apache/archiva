@@ -152,7 +152,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public List<? extends Artifact> getArtifactsStartingWith( Namespace namespace ) throws ContentAccessException
+    public List<? extends Artifact> getArtifacts( Namespace namespace, boolean recurse ) throws ContentAccessException
     {
         return null;
     }
@@ -164,7 +164,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public Stream<? extends Artifact> getArtifactStreamStartingWith( Namespace namespace ) throws ContentAccessException
+    public Stream<? extends Artifact> getArtifactStream( Namespace namespace, boolean recurse ) throws ContentAccessException
     {
         return null;
     }
@@ -176,7 +176,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public void copyArtifact( Path sourceFile, ItemSelector destination ) throws IllegalArgumentException
+    public void copyArtifact( Path sourceFile, ContentItem destination ) throws IllegalArgumentException
     {
 
     }

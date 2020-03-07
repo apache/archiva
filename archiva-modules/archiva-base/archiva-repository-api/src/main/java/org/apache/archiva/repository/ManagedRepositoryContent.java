@@ -204,9 +204,10 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * given namespace.
      *
      * @param namespace the namespace, which is the parent namespace
+     * @param recurse <code>true</code>, if all sub namespaces should be searched too, otherwise <code>false</code>
      * @return a list of artifacts or a empty list, if no artifacts are available for the specified namespace
      */
-    List<? extends Artifact> getArtifactsStartingWith( Namespace namespace ) throws ContentAccessException;
+    List<? extends Artifact> getArtifacts( Namespace namespace, boolean recurse ) throws ContentAccessException;
 
 
     /**
@@ -231,10 +232,11 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * make sure, that the stream is closed after using it.
      *
      * @param namespace the namespace from where the artifacts should be returned
+     * @param recurse <code>true</code>, if all sub namespaces should be searched too, otherwise <code>false</code>
      * @return a stream of artifacts. The stream is auto closable. You should always make sure, that the stream
      * is closed after use.
      */
-    Stream<? extends Artifact> getArtifactStreamStartingWith( Namespace namespace ) throws ContentAccessException;
+    Stream<? extends Artifact> getArtifactStream( Namespace namespace, boolean recurse ) throws ContentAccessException;
 
 
     /**
@@ -252,10 +254,27 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param destination the coordinates of the destination
      * @throws IllegalArgumentException if the destination is not valid
      */
-    void copyArtifact( Path sourceFile, ItemSelector destination ) throws IllegalArgumentException;
+    void copyArtifact( Path sourceFile, ContentItem destination ) throws IllegalArgumentException;
 
 
+    /**
+     * Returns the item that matches the given path. The item at the path must not exist.
+     *
+     * @param path the path string that points to the item
+     * @return the content item if the path is a valid item path
+     * @throws LayoutException if the path is not valid for the repository layout
+     */
+    ContentItem toItem(String path) throws LayoutException;
 
+
+    /**
+     * Returns the item that matches the given asset path. The asset must not exist.
+     *
+     * @param assetPath the path to the artifact or directory
+     * @return the item, if it is a valid path for the repository layout
+     * @throws LayoutException if the path is not valid for the repository
+     */
+    ContentItem toItem(StorageAsset assetPath) throws LayoutException;
 
 
     /// *****************   End of new generation interface **********************

@@ -600,7 +600,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public List<? extends Artifact> getArtifactsStartingWith( Namespace namespace )
+    public List<? extends Artifact> getArtifacts( Namespace namespace, boolean recurse )
     {
         return null;
     }
@@ -618,7 +618,7 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public Stream<? extends Artifact> getArtifactStreamStartingWith( Namespace namespace )
+    public Stream<? extends Artifact> getArtifactStream( Namespace namespace, boolean recurse )
     {
         return null;
     }
@@ -636,9 +636,27 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public void copyArtifact( Path sourceFile, ItemSelector destination ) throws IllegalArgumentException
+    public void copyArtifact( Path sourceFile, ContentItem destination ) throws IllegalArgumentException
     {
 
+    }
+
+    /**
+     * TBD
+     * @param path the path string that points to the item
+     * @return
+     * @throws LayoutException
+     */
+    @Override
+    public ContentItem toItem( String path ) throws LayoutException
+    {
+        return getItemFromPath( getAssetByPath( path ) );
+    }
+
+    @Override
+    public ContentItem toItem( StorageAsset assetPath ) throws LayoutException
+    {
+        return getItemFromPath( assetPath );
     }
 
     @Override
