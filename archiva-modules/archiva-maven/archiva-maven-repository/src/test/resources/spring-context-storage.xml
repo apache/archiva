@@ -31,7 +31,7 @@
   <context:component-scan base-package="org.apache.archiva.policies.urlcache,org.apache.archiva.proxy,org.apache.archiva.proxy.maven,org.apache.archiva.indexer,org.apache.maven.index,org.apache.archiva.repository,org.apache.archiva.configuration,org.apache.archiva.metadata.repository,org.apache.archiva.repository.index.mock"/>
 
 
-  <bean name="archivaConfiguration#test" class="org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration"/>
+  <bean name="archivaConfiguration#test" class="org.apache.archiva.repository.maven.metadata.storage.mock.MockConfiguration"/>
   <alias name="archivaConfiguration#test" alias="archivaConfiguration#default"/>
   <alias name="archivaConfiguration#test" alias="archivaConfiguration"/>
 

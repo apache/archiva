@@ -61,7 +61,7 @@ public interface RepositoryContent
     /**
      * Return a item selector that matches the given path. This is kind of reverse method for the {@link #toPath(ItemSelector)}
      * method and fills the selector with the known information. It may not make sense for every path, and the following
-     * must <b>not be true</b>:
+     * must <b>not always be true</b>:
      * <pre>
      *  selector.equals(r.toItemSelector(r.toPath(selector)))
      * </pre>

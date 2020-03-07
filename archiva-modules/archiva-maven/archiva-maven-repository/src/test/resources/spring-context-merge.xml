@@ -33,7 +33,7 @@
   <alias name="archivaConfiguration#mocked" alias="archivaConfiguration#default" />
 
   <bean name="repositorySessionFactory#mock"
-        class="org.apache.archiva.stagerepository.merge.Maven2RepositoryMergerTest" factory-method="getRepositorySessionFactory" />
+        class="org.apache.archiva.repository.maven.merge.Maven2RepositoryMergerTest" factory-method="getRepositorySessionFactory" />
  <alias alias="repositorySessionFactory#jcr" name="repositorySessionFactory#mock" />
 
 </beans>

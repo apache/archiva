@@ -26,8 +26,8 @@ import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
-import org.apache.archiva.repository.maven2.MavenManagedRepository;
-import org.apache.archiva.repository.maven2.MavenRemoteRepository;
+import org.apache.archiva.repository.maven.MavenManagedRepository;
+import org.apache.archiva.repository.maven.MavenRemoteRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.QueryCreator;
@@ -45,17 +45,12 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 

@@ -23,7 +23,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
+import org.apache.archiva.repository.maven.metadata.storage.Maven2RepositoryPathTranslator;
 import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -44,7 +44,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;

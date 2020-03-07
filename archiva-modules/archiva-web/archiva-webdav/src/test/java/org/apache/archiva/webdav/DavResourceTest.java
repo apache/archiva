@@ -26,7 +26,7 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.storage.fs.FilesystemAsset;
 import org.apache.archiva.metadata.audit.AuditListener;
-import org.apache.archiva.repository.maven2.MavenManagedRepository;
+import org.apache.archiva.repository.maven.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.commons.lang3.StringUtils;
