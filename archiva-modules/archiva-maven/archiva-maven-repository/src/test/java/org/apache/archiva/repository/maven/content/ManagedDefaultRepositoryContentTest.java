@@ -29,6 +29,7 @@ import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.maven.MavenManagedRepository;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
@@ -278,6 +279,12 @@ public class ManagedDefaultRepositoryContentTest
 
     @Override
     protected ManagedRepositoryContent getManaged( )
+    {
+        return repoContent;
+    }
+
+    @Override
+    protected RepositoryContent getContent( )
     {
         return repoContent;
     }

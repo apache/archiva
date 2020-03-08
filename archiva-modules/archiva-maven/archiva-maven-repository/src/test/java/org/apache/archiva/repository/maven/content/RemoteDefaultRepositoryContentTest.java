@@ -23,6 +23,7 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.junit.Before;
@@ -71,6 +72,12 @@ public class RemoteDefaultRepositoryContentTest
     protected ManagedRepositoryContent getManaged( )
     {
         return null;
+    }
+
+    @Override
+    protected RepositoryContent getContent( )
+    {
+        return repoContent;
     }
 
     @Override

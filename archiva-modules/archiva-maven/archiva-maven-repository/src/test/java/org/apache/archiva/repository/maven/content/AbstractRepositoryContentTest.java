@@ -19,6 +19,7 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.maven.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -69,18 +70,21 @@ public abstract class AbstractRepositoryContentTest
     public void testBadPathTooShort()
     {
         assertBadPath( "invalid/invalid-1.0.jar", "path is too short" );
+        assertBadPathCi( "invalid/invalid-1.0.jar", "path is too short" );
     }
 
     @Test
     public void testBadPathVersionMismatchA()
     {
         assertBadPath( "invalid/invalid/1.0/invalid-2.0.jar", "version mismatch between path and artifact" );
+        assertBadPathCi( "invalid/invalid/1.0/invalid-2.0.jar", "version mismatch between path and artifact" );
     }
 
     @Test
     public void testBadPathVersionMismatchB()
     {
         assertBadPath( "invalid/invalid/1.0/invalid-1.0b.jar", "version mismatch between path and artifact" );
+        assertBadPathCi( "invalid/invalid/1.0/invalid-1.0b.jar", "version mismatch between path and artifact" );
     }
 
     @Test
@@ -88,6 +92,8 @@ public abstract class AbstractRepositoryContentTest
     {
         assertBadPath( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar",
                        "wrong artifact id" );
+        assertBadPathCi( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar",
+            "wrong artifact id" );
     }
 
     /**
@@ -372,6 +378,21 @@ public abstract class AbstractRepositoryContentTest
         assertLayoutCi( path, groupId, artifactId, version, classifier, type );
     }
 
+
+    @Test
+    public void testToItemSelectorOnEmptyPath()
+    {
+        try
+        {
+            getContent( ).toItemSelector( "" );
+            fail( "toItemSelector() should have failed due to empty path." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+
     @Test
     public void testToArtifactOnEmptyPath()
     {
@@ -401,26 +422,12 @@ public abstract class AbstractRepositoryContentTest
     }
 
     @Test
-    public void testToArtifactReferenceOnEmptyPath()
+    public void testToItemSelectorOnNullPath()
     {
         try
         {
-            toArtifactReference( "" );
-            fail( "Should have failed due to empty path." );
-        }
-        catch ( LayoutException e )
-        {
-            /* expected path */
-        }
-    }
-
-    @Test
-    public void testToArtifactReferenceOnNullPath()
-    {
-        try
-        {
-            toArtifactReference( null );
-            fail( "Should have failed due to null path." );
+            getContent().toItemSelector( null );
+            fail( "toItemSelector() should have failed due to null path." );
         }
         catch ( LayoutException e )
         {
@@ -636,4 +643,6 @@ public abstract class AbstractRepositoryContentTest
     protected abstract ItemSelector toItemSelector(String path) throws LayoutException;
 
     protected abstract ManagedRepositoryContent getManaged();
+
+    protected abstract RepositoryContent getContent( );
 }

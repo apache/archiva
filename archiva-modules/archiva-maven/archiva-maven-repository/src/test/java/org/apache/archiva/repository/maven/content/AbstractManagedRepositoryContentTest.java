@@ -19,10 +19,15 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
+import org.junit.Test;
 
 import static org.junit.Assert.fail;
 
 /**
+ * Specific tests for ManagedRepositoryContent
+ *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 public abstract class AbstractManagedRepositoryContentTest extends AbstractRepositoryContentTest
@@ -36,11 +41,22 @@ public abstract class AbstractManagedRepositoryContentTest extends AbstractRepos
         {
             getManaged().toItem( path );
             fail(
-                "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
+                "toItem(path) should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
         catch ( LayoutException e )
         {
             /* expected path */
+        }
+    }
+
+    @Test
+    public void testGetArtifactOnEmptyPath() {
+        ItemSelector selector = ArchivaItemSelector.builder( ).build( );
+        try {
+            getManaged( ).getArtifact( selector );
+            fail( "getArtifact(ItemSelector) with empty selector should throw IllegalArgumentException" );
+        } catch (IllegalArgumentException e) {
+            // Good
         }
     }
 }
