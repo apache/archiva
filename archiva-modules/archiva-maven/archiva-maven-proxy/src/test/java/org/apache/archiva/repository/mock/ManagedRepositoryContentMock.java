@@ -102,6 +102,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public ContentItem getItem( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+    @Override
     public Namespace getNamespace( ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException
     {
         return null;

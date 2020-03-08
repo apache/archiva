@@ -58,6 +58,11 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
     private PathParser defaultPathParser = new DefaultPathParser();
 
 
+    PathParser getPathParser() {
+        return defaultPathParser;
+    }
+
+
 
     /**
      *

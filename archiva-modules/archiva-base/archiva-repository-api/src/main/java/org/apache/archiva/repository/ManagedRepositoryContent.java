@@ -58,6 +58,18 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     void deleteItem( ContentItem item) throws ItemNotFoundException, ContentAccessException;
 
+
+    /**
+     * Returns a item for the given selector. The type of the returned item depends on the
+     * selector.
+     *
+     * @param selector the item selector
+     * @return the content item that matches the given selector
+     * @throws ContentAccessException if an error occured while accessing the backend
+     * @throws IllegalArgumentException if the selector does not select a valid content item
+     */
+    ContentItem getItem(ItemSelector selector) throws ContentAccessException, IllegalArgumentException;
+
     /**
      * Returns the namespace for the given selected coordinates. The selector must specify a namespace. All other
      * coordinates are ignored.

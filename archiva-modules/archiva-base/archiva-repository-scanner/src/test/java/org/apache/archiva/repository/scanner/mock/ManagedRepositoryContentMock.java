@@ -98,6 +98,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public ContentItem getItem( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+    @Override
     public Namespace getNamespace( ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException
     {
         return null;
@@ -179,6 +185,18 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public void copyArtifact( Path sourceFile, ContentItem destination ) throws IllegalArgumentException
     {
 
+    }
+
+    @Override
+    public ContentItem toItem( String path ) throws LayoutException
+    {
+        return null;
+    }
+
+    @Override
+    public ContentItem toItem( StorageAsset assetPath ) throws LayoutException
+    {
+        return null;
     }
 
     @Override

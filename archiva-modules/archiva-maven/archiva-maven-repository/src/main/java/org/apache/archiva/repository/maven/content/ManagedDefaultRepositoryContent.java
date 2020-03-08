@@ -200,6 +200,20 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
+    public ContentItem getItem( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        if (selector.hasVersion() && selector.hasArtifactId()) {
+            return getArtifact( selector );
+        } else if (selector.hasProjectId() && selector.hasVersion()) {
+            return getVersion( selector );
+        } else if (selector.hasProjectId()) {
+            return getProject( selector );
+        } else {
+            return getNamespace( selector );
+        }
+    }
+
+    @Override
     public Namespace getNamespace( final ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException
     {
         return namespaceMap.computeIfAbsent( namespaceSelector.getNamespace(),
@@ -620,13 +634,14 @@ public class ManagedDefaultRepositoryContent
     @Override
     public ContentItem toItem( String path ) throws LayoutException
     {
-        return getItemFromPath( getAssetByPath( path ) );
+        ItemSelector selector = getPathParser( ).toItemSelector( path );
+        return getItem( selector );
     }
 
     @Override
     public ContentItem toItem( StorageAsset assetPath ) throws LayoutException
     {
-        return getItemFromPath( assetPath );
+        return toItem( assetPath.getPath( ) );
     }
 
     /// ************* End of new generation interface ******************
