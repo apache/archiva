@@ -31,6 +31,9 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.MavenManagedRepository;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.commons.io.FileUtils;
@@ -49,6 +52,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -213,12 +217,22 @@ public class ManagedDefaultRepositoryContentTest
         Set<String> testedVersionSet = repoContent.getVersions( reference );
 
         // Sort the list (for asserts)
+        VersionComparator comparator = new VersionComparator( );
         List<String> testedVersions = new ArrayList<>();
         testedVersions.addAll( testedVersionSet );
-        Collections.sort( testedVersions, new VersionComparator() );
+        Collections.sort( testedVersions, comparator );
 
         // Test the expected array of versions, to the actual tested versions
         assertEquals( "available versions", expectedVersions, testedVersions );
+
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.archiva.metadata.tests" )
+            .withProjectId( artifactId )
+            .build( );
+        Project project = repoContent.getProject( selector );
+        assertNotNull( project );
+        List<String> versions = repoContent.getVersions( project ).stream().map(v -> v.getVersion()).sorted( comparator ).collect( Collectors.toList());
+        assertArrayEquals( expectedVersions.toArray(), versions.toArray( ) );
     }
 
     private void assertVersions( String artifactId, String version, String[] expectedVersions )

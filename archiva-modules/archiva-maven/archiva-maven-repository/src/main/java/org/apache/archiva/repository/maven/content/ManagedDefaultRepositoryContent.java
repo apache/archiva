@@ -260,6 +260,8 @@ public class ManagedDefaultRepositoryContent
 
 
 
+
+
     public Artifact createArtifact(final StorageAsset artifactPath, final ItemSelector selector,
         final String classifier, final String extension) {
         Version version = getVersion(selector);
@@ -566,9 +568,14 @@ public class ManagedDefaultRepositoryContent
         TBD
      */
     @Override
-    public List<? extends Version> getVersions( Project project )
+    public List<? extends Version> getVersions( final Project project )
     {
-        return null;
+        StorageAsset asset = getAsset( project.getNamespace( ).getNamespace( ), project.getId( ) );
+        return asset.list( ).stream( ).filter( a -> a.isContainer( ) )
+            .map( a -> ArchivaVersion.withAsset( a )
+                .withProject( project )
+                .withVersion( a.getName() ).build() )
+            .collect( Collectors.toList( ) );
     }
 
     /*
