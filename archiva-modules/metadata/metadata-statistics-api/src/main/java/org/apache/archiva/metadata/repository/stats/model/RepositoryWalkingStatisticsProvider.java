@@ -20,7 +20,7 @@ package org.apache.archiva.metadata.repository.stats.model;
  */
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
+import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;

@@ -22,7 +22,7 @@ package org.apache.archiva.repository.mock;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
+import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;

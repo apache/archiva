@@ -23,7 +23,7 @@ import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.Try;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.filter.Filter;
-import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;

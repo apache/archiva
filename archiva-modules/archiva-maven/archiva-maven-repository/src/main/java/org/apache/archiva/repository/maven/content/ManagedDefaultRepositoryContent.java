@@ -22,7 +22,7 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
-import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.maven.metadata.storage.DefaultArtifactMappingProvider;

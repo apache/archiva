@@ -21,7 +21,7 @@ package org.apache.archiva.metadata.repository.stats;
 
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
+import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;

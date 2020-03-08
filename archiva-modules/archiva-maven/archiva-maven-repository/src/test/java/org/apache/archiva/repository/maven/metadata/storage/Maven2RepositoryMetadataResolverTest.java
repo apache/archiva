@@ -30,7 +30,7 @@ import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
+import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
 import org.apache.archiva.filter.AllFilter;
 import org.apache.archiva.filter.ExcludesFilter;
 import org.apache.archiva.filter.Filter;

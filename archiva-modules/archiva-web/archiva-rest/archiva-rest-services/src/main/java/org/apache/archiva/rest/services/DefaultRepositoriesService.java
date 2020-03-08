@@ -28,7 +28,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
+import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;

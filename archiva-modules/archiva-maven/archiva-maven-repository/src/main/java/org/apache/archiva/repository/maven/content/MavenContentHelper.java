@@ -19,7 +19,7 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.repository.content.ItemSelector;
