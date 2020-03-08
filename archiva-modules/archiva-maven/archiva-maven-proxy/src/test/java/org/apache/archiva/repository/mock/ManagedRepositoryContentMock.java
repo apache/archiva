@@ -150,7 +150,19 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public List<? extends Project> getProjects( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+    @Override
     public List<? extends Version> getVersions( Project project ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public List<? extends Version> getVersions( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
         return null;
     }

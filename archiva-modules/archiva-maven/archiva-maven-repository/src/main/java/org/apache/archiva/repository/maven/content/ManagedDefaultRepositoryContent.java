@@ -79,7 +79,9 @@ public class ManagedDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
 
-    public  static final String METADATA_FILENAME = "maven-metadata.xml";
+    // attribute flag that marks version objects that point to a snapshot artifact version
+    public static final String SNAPSHOT_ARTIFACT_VERSION = "maven.snav";
+
     private FileTypes filetypes;
 
     public void setFileTypes(FileTypes fileTypes) {
@@ -391,10 +393,12 @@ public class ManagedDefaultRepositoryContent
         private String type;
         private String classifier;
         private String contentType;
+        private StorageAsset asset;
     }
 
     private ArtifactInfo getArtifactInfoFromPath(String genericVersion, StorageAsset path) {
         final ArtifactInfo info = new ArtifactInfo( );
+        info.asset = path;
         info.id = path.getParent( ).getParent( ).getName( );
         final String fileName = path.getName( );
         if ( genericVersion.endsWith( "-" + SNAPSHOT ) )
@@ -564,8 +568,16 @@ public class ManagedDefaultRepositoryContent
         return null;
     }
 
-    /*
-        TBD
+    @Override
+    public List<? extends Project> getProjects( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+    /**
+     * Returns a version object for each directory that is a direct child of the project directory.
+     * @param project the project for which the versions should be returned
+     * @return the list of versions or a empty list, if not version was found
      */
     @Override
     public List<? extends Version> getVersions( final Project project )
@@ -578,9 +590,40 @@ public class ManagedDefaultRepositoryContent
             .collect( Collectors.toList( ) );
     }
 
-    /*
-        TBD
+    /**
+     * If the selector specifies a version, all artifact versions are returned, which means for snapshot
+     * versions the artifact versions are returned too.
+     *
+     * @param selector the item selector. At least namespace and projectId must be set.
+     * @return the list of version objects or a empty list, if the selector does not match a version
+     * @throws ContentAccessException if the access to the underlying backend failed
+     * @throws IllegalArgumentException if the selector has no projectId specified
      */
+    @Override
+    public List<? extends Version> getVersions( final ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        if (StringUtils.isEmpty( selector.getProjectId() )) {
+            log.error( "Bad item selector for version list: {}", selector );
+            throw new IllegalArgumentException( "Project ID not set, while retrieving versions." );
+        }
+        final Project project = getProject( selector );
+        if (selector.hasVersion()) {
+            final StorageAsset asset = getAsset( selector.getNamespace( ), selector.getProjectId( ), selector.getVersion( ) );
+            return asset.list( ).stream( ).map( a -> getArtifactInfoFromPath( selector.getVersion( ), a ) )
+                .filter( ai -> StringUtils.isNotEmpty( ai.version ) )
+                .map( v -> ArchivaVersion.withAsset( v.asset.getParent() )
+                    .withProject( project ).withVersion( v.version )
+                    .withAttribute(SNAPSHOT_ARTIFACT_VERSION,"true").build() )
+                .distinct()
+                .collect( Collectors.toList( ) );
+        } else {
+            return getVersions( project );
+        }
+    }
+
+    /*
+            TBD
+         */
     @Override
     public List<? extends Artifact> getArtifacts( ContentItem item )
     {

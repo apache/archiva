@@ -252,9 +252,10 @@ public class ManagedDefaultRepositoryContentTest
         Set<String> testedVersionSet = repoContent.getVersions( reference );
 
         // Sort the list (for asserts later)
+        final VersionComparator comparator = new VersionComparator( );
         List<String> testedVersions = new ArrayList<>();
         testedVersions.addAll( testedVersionSet );
-        Collections.sort( testedVersions, new VersionComparator() );
+        Collections.sort( testedVersions, comparator );
 
         // Test the expected array of versions, to the actual tested versions
         assertEquals( "Assert Versions: length/size", expectedVersions.length, testedVersions.size() );
@@ -264,6 +265,18 @@ public class ManagedDefaultRepositoryContentTest
             String actualVersion = testedVersions.get( i );
             assertEquals( "Versions[" + i + "]", expectedVersions[i], actualVersion );
         }
+
+
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.archiva.metadata.tests" )
+            .withProjectId( artifactId )
+            .withVersion( version )
+            .build( );
+        List<String> versions = repoContent.getVersions( selector ).stream()
+            .map(v -> v.getVersion()).sorted( comparator ).collect( Collectors.toList());
+        assertArrayEquals( expectedVersions, versions.toArray( ) );
+
+
     }
 
 

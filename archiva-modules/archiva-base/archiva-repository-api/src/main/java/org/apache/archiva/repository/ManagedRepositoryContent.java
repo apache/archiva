@@ -125,6 +125,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     Version getVersion(ItemSelector versionCoordinates) throws ContentAccessException, IllegalArgumentException;
 
+
     /**
      * Returns the artifact object for the given coordinates.
      *
@@ -196,12 +197,36 @@ public interface ManagedRepositoryContent extends RepositoryContent
     List<? extends Project> getProjects( Namespace namespace) throws ContentAccessException;
 
     /**
+     * Returns the list of projects that match the given selector. The selector must at least specify a
+     * a namespace.
+     *
+     * @param selector the selector
+     * @return the list of projects that match the selector. A empty list of not project matches.
+     * @throws ContentAccessException if the access to the storage backend failed
+     * @throws IllegalArgumentException if the selector does not contain sufficient data for selecting projects
+     */
+    List<? extends Project> getProjects( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException;
+
+    /**
      * Return the existing versions of the given project.
      *
      * @param project the project
      * @return a list of versions or a empty list, if not versions are available for the specified project
+     * @throws ContentAccessException if the access to the underlying storage failed
      */
     List<? extends Version> getVersions( Project project) throws ContentAccessException;
+
+
+    /**
+     * Return the versions that match the given selector. The selector must at least specify a namespace and a projectId.
+     *
+     * @param selector the item selector. At least namespace and projectId must be set.
+     * @return the list of version or a empty list, if no version matches the selector
+     * @throws ContentAccessException if the access to the backend failed
+     * @throws IllegalArgumentException if the selector does not contain enough information for selecting versions
+     */
+    List<? extends Version> getVersions( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException;
+
 
     /**
      * Return all the artifacts of a given content item (namespace, project, version)
