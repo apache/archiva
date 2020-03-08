@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
  * ManagedDefaultRepositoryContentTest
  */
 public class ManagedDefaultRepositoryContentTest
-    extends AbstractDefaultRepositoryContentTestCase
+    extends AbstractManagedRepositoryContentTest
 {
     private ManagedDefaultRepositoryContent repoContent;
 

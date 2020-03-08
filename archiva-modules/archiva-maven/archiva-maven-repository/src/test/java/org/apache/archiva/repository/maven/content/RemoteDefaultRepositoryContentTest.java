@@ -24,8 +24,6 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
-import org.apache.archiva.repository.maven.content.AbstractDefaultRepositoryContentTestCase;
-import org.apache.archiva.repository.maven.content.RemoteDefaultRepositoryContent;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.junit.Before;
 
@@ -36,7 +34,7 @@ import java.util.List;
  * RemoteDefaultRepositoryContentTest
  */
 public class RemoteDefaultRepositoryContentTest
-    extends AbstractDefaultRepositoryContentTestCase
+    extends AbstractRepositoryContentTest
 {
 
     @Inject

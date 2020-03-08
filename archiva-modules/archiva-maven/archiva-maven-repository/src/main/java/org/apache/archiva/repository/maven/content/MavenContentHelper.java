@@ -32,7 +32,9 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 /**
  * Helper class that contains certain maven specific methods
@@ -42,6 +44,8 @@ public class MavenContentHelper
 {
 
     private static final Logger log = LoggerFactory.getLogger( MavenContentHelper.class );
+    public static final Pattern UNIQUE_SNAPSHOT_NUMBER_PATTERN = Pattern.compile( "^([0-9]{8}\\.[0-9]{6}-[0-9]+)(.*)" );
+
 
     @Inject
     @Named( "metadataReader#maven" )
@@ -51,6 +55,11 @@ public class MavenContentHelper
 
     public MavenContentHelper() {
 
+    }
+
+    public void setMetadataReader( MavenMetadataReader metadataReader )
+    {
+        this.metadataReader = metadataReader;
     }
 
     /**
@@ -64,6 +73,7 @@ public class MavenContentHelper
         StorageAsset current = namespacePath;
         while (current.hasParent()) {
             names.addFirst( current.getName() );
+            current = current.getParent( );
         }
         return String.join( ".", names );
     }
@@ -103,33 +113,40 @@ public class MavenContentHelper
 
             // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
             SnapshotVersion metadataVersion = metadata.getSnapshotVersion( );
-            if ( metadataVersion != null )
+            if ( metadataVersion != null && StringUtils.isNotEmpty( metadataVersion.getTimestamp( ) ) )
             {
                 version.append( snapshotVersion, 0, snapshotVersion.length( ) - 8 ); // remove SNAPSHOT from end
-                version.append( metadataVersion.getTimestamp( )).append("-").append( metadataVersion.getBuildNumber( ) );
+                version.append( metadataVersion.getTimestamp( ) ).append( "-" ).append( metadataVersion.getBuildNumber( ) );
+                return version.toString( );
             }
-            return version.toString( );
         }
         catch ( RepositoryMetadataException e )
         {
             // unable to parse metadata - LOGGER it, and continue with the version as the original SNAPSHOT version
             log.warn( "Invalid metadata: {} - {}", metadataFile, e.getMessage( ) );
-            return snapshotVersion;
         }
+        final String baseVersion = StringUtils.removeEnd( snapshotVersion, "-SNAPSHOT" );
+        final String prefix = metadataFile.getParent( ).getParent( ).getName( ) + "-"+baseVersion+"-";
+        return artifactDir.list( ).stream( ).filter( a -> a.getName( ).startsWith( prefix ) )
+            .map( a -> StringUtils.removeStart( a.getName( ), prefix ) )
+            .map( n -> UNIQUE_SNAPSHOT_NUMBER_PATTERN.matcher( n ) )
+            .filter( m -> m.matches( ) )
+            .map( m -> baseVersion+"-"+m.group( 1 ) )
+            .sorted( Comparator.reverseOrder() ).findFirst().orElse( snapshotVersion );
     }
 
 
     /**
      * Returns a artifact filename that corresponds to the given data.
-     * @param selector the selector data
+     * @param artifactId the selector data
      * @param artifactVersion the artifactVersion
      * @param classifier the artifact classifier
      * @param extension the file extension
      */
-    static String getArtifactFileName( ItemSelector selector, String artifactVersion,
+    static String getArtifactFileName( String artifactId, String artifactVersion,
                                        String classifier, String extension )
     {
-        StringBuilder fileName = new StringBuilder( selector.getArtifactId( ) ).append( "-" );
+        StringBuilder fileName = new StringBuilder( artifactId ).append( "-" );
         fileName.append( artifactVersion );
         if ( !StringUtils.isEmpty( classifier ) )
         {
@@ -171,33 +188,30 @@ public class MavenContentHelper
      */
     static String getClassifierFromType( final String type )
     {
-        if ( "pom".equalsIgnoreCase( type ) || "jar".equalsIgnoreCase( type )
-            || "maven-plugin".equalsIgnoreCase( type )
-            || "ejb".equalsIgnoreCase( type )
-            || "ear".equalsIgnoreCase( type )
-            || "war".equalsIgnoreCase( type )
-            || "rar".equalsIgnoreCase( type )
-        ) return "";
-        if ( "test-jar".equalsIgnoreCase( type ) )
+        String testType = type.trim( ).toLowerCase( );
+        switch (testType.length( ))
         {
-            return "tests";
+            case 7:
+                if ("javadoc".equals(testType)) {
+                    return "javadoc";
+                }
+            case 8:
+                if ("test-jar".equals(testType))
+                {
+                    return "tests";
+                }
+            case 10:
+                if ("ejb-client".equals(testType)) {
+                    return "client";
+                }
+            case 11:
+                if ("java-source".equals(testType)) {
+                    return "sources";
+                }
+            default:
+                return "";
         }
-        else if ( "ejb-client".equalsIgnoreCase( type ) )
-        {
-            return "client";
-        }
-        else if ( "java-source".equalsIgnoreCase( type ) )
-        {
-            return "sources";
-        }
-        else if ( "javadoc".equalsIgnoreCase( type ) )
-        {
-            return "javadoc";
-        }
-        else
-        {
-            return "";
-        }
+
     }
 
     /**
@@ -227,7 +241,7 @@ public class MavenContentHelper
         {
             return "ejb-client";
         }
-        else if ( classifier.equals( "source" ) && extension.equals( "jar" ) )
+        else if ( classifier.equals( "sources" ) && extension.equals( "jar" ) )
         {
             return "java-source";
         }
@@ -256,26 +270,15 @@ public class MavenContentHelper
         }
         else if ( selector.hasType( ) )
         {
-            String type = selector.getType( ).toLowerCase( );
-            if ( "test-jar".equals( type ) )
-            {
-                return "jar";
-            }
-            else if ( "ejb-client".equals( type ) )
-            {
-                return "jar";
-            }
-            else if ( "java-source".equals( type ) )
-            {
-                return "jar";
-            }
-            else if ( "javadoc".equals( type ) )
-            {
-                return "jar";
-            }
-            else
-            {
-                return "jar";
+            final String type = selector.getType( ).trim().toLowerCase( );
+            switch (type.length()) {
+                case 3:
+                    if ("pom".equals(type) || "war".equals(type) || "ear".equals(type) || "rar".equals(type)) {
+                        return type;
+                    }
+                default:
+                    return "jar";
+
             }
         }
         else

@@ -186,6 +186,18 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public ContentItem toItem( String path ) throws LayoutException
+    {
+        return null;
+    }
+
+    @Override
+    public ContentItem toItem( StorageAsset assetPath ) throws LayoutException
+    {
+        return null;
+    }
+
+    @Override
     public void deleteVersion( VersionedReference reference ) throws ContentNotFoundException, ContentAccessException
     {
 

@@ -321,7 +321,7 @@ public class FilesystemStorage implements RepositoryStorage {
     public StorageAsset getAsset( String path )
     {
         try {
-            return new FilesystemAsset(this, path, getAssetPath(path));
+            return new FilesystemAsset(this, path, getAssetPath(path), basePath);
         } catch (IOException e) {
             throw new IllegalArgumentException("Path navigates outside of base directory "+path);
         }

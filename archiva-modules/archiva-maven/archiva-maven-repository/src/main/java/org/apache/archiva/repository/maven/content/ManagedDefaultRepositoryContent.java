@@ -141,38 +141,32 @@ public class ManagedDefaultRepositoryContent
 
     }
 
-    /**
-     * Returns a version reference from the coordinates
-     * @param groupId the group id
-     * @param artifactId the artifact id
-     * @param version the version
-     * @return the versioned reference object
-     */
-    @Override
-    public VersionedReference toVersion( String groupId, String artifactId, String version ) {
-        return new VersionedReference().groupId( groupId ).artifactId( artifactId ).version( version );
+    private StorageAsset getAssetByPath(String assetPath) {
+        return getStorage( ).getAsset( assetPath );
     }
 
-    @Override
-    public VersionedReference toGenericVersion( ArtifactReference artifactReference )
-    {
-        return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), VersionUtil.getBaseVersion( artifactReference.getVersion( ) ));
+    private StorageAsset getAsset(String namespace) {
+        String namespacePath = formatAsDirectory( namespace.trim() );
+        if (StringUtils.isEmpty( namespacePath )) {
+            namespacePath = "";
+        }
+        return getAssetByPath(namespacePath);
     }
 
-    /**
-     * Return the version the artifact is part of
-     * @param artifactReference
-     * @return
-     */
-    public VersionedReference toVersion( ArtifactReference artifactReference) {
-        return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), artifactReference.getVersion( ) );
+    private StorageAsset getAsset(String namespace, String project) {
+        return getAsset( namespace ).resolve( project );
     }
 
-    @Override
-    public ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier) {
-        return new ArtifactReference( ).groupId( groupId ).artifactId( artifactId ).version( version ).type( type ).classifier( classifier );
+    private StorageAsset getAsset(String namespace, String project, String version) {
+        return getAsset( namespace, project ).resolve( version );
     }
 
+    private StorageAsset getAsset(String namespace, String project, String version, String fileName) {
+        return getAsset( namespace, project, version ).resolve( fileName );
+    }
+
+
+    /// ************* End of new generation interface ******************
     @Override
     public void deleteItem( ContentItem item ) throws ItemNotFoundException, ContentAccessException
     {
@@ -204,31 +198,6 @@ public class ManagedDefaultRepositoryContent
             throw new ContentAccessException( "Error occured while deleting namespace " + item + ": " + e.getMessage( ), e );
         }
     }
-
-    private StorageAsset getAssetByPath(String assetPath) {
-        return getStorage( ).getAsset( assetPath );
-    }
-
-    private StorageAsset getAsset(String namespace) {
-        String namespacePath = formatAsDirectory( namespace.trim() );
-        if (StringUtils.isEmpty( namespacePath )) {
-            namespacePath = "";
-        }
-        return getAssetByPath(namespacePath);
-    }
-
-    private StorageAsset getAsset(String namespace, String project) {
-        return getAsset( namespace ).resolve( project );
-    }
-
-    private StorageAsset getAsset(String namespace, String project, String version) {
-        return getAsset( namespace, project ).resolve( version );
-    }
-
-    private StorageAsset getAsset(String namespace, String project, String version, String fileName) {
-        return getAsset( namespace, project, version ).resolve( fileName );
-    }
-
 
     @Override
     public Namespace getNamespace( final ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException
@@ -501,7 +470,8 @@ public class ManagedDefaultRepositoryContent
         final String artifactVersion = mavenContentHelper.getArtifactVersion( artifactDir, selector );
         final String classifier = MavenContentHelper.getClassifier( selector );
         final String extension = MavenContentHelper.getArtifactExtension( selector );
-        final String fileName = MavenContentHelper.getArtifactFileName( selector, artifactVersion, classifier, extension );
+        final String artifactId = StringUtils.isEmpty( selector.getArtifactId( ) ) ? selector.getProjectId( ) : selector.getArtifactId( );
+        final String fileName = MavenContentHelper.getArtifactFileName( artifactId, artifactVersion, classifier, extension );
         final StorageAsset path = getAsset( selector.getNamespace( ), selector.getProjectId( ),
             selector.getVersion( ), fileName );
         return artifactMap.computeIfAbsent( path, artifactPath -> createArtifact( path, selector, classifier, extension ) );
@@ -658,6 +628,41 @@ public class ManagedDefaultRepositoryContent
     {
         return getItemFromPath( assetPath );
     }
+
+    /// ************* End of new generation interface ******************
+
+    /**
+     * Returns a version reference from the coordinates
+     * @param groupId the group id
+     * @param artifactId the artifact id
+     * @param version the version
+     * @return the versioned reference object
+     */
+    @Override
+    public VersionedReference toVersion( String groupId, String artifactId, String version ) {
+        return new VersionedReference().groupId( groupId ).artifactId( artifactId ).version( version );
+    }
+
+    @Override
+    public VersionedReference toGenericVersion( ArtifactReference artifactReference )
+    {
+        return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), VersionUtil.getBaseVersion( artifactReference.getVersion( ) ));
+    }
+
+    /**
+     * Return the version the artifact is part of
+     * @param artifactReference
+     * @return
+     */
+    public VersionedReference toVersion( ArtifactReference artifactReference) {
+        return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), artifactReference.getVersion( ) );
+    }
+
+    @Override
+    public ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier) {
+        return new ArtifactReference( ).groupId( groupId ).artifactId( artifactId ).version( version ).type( type ).classifier( classifier );
+    }
+
 
     @Override
     public void deleteVersion( VersionedReference ref ) throws ContentNotFoundException, ContentAccessException

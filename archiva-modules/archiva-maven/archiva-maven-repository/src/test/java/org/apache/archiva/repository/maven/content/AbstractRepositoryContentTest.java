@@ -36,13 +36,14 @@ import static org.junit.Assert.*;
 /**
  * AbstractDefaultRepositoryContentTestCase
  */
-public abstract class AbstractDefaultRepositoryContentTestCase
+public abstract class AbstractRepositoryContentTest
     extends AbstractRepositoryLayerTestCase
 {
     @Test
     public void testBadPathMissingType()
     {
         assertBadPath( "invalid/invalid/1/invalid-1", "missing type" );
+        assertBadPathCi( "invalid/invalid/1/invalid-1", "missing type" );
     }
 
     @Test
@@ -50,6 +51,9 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     {
         assertBadPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar",
                        "non snapshot artifact inside of a snapshot dir" );
+        assertBadPathCi( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar",
+            "non snapshot artifact inside of a snapshot dir" );
+
     }
 
     @Test
@@ -57,6 +61,8 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     {
         assertBadPath( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar",
                        "Timestamped Snapshot artifact not inside of an Snapshot dir" );
+        assertBadPathCi( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar",
+            "Timestamped Snapshot artifact not inside of an Snapshot dir" );
     }
 
     @Test
@@ -494,6 +500,20 @@ public abstract class AbstractDefaultRepositoryContentTestCase
         try
         {
             toArtifactReference( path );
+            fail(
+                "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+
+    protected void assertBadPathCi( String path, String reason )
+    {
+        try
+        {
+            toItemSelector( path );
             fail(
                 "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
