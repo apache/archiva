@@ -49,7 +49,8 @@ public interface ManagedRepositoryContent extends RepositoryContent
     /// *****************   New generation interface **********************
 
     /**
-     * Removes the specified content item and all content stored under the given item.
+     * Removes the specified content item and if the item is a container or directory,
+     * all content stored under the given item.
      *
      * @param item the item.
      * @throws ItemNotFoundException if the item cannot be found
@@ -170,7 +171,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
      * @throws ContentAccessException if the access to the underlying storage failed
      */
-    List<? extends Artifact> getAllArtifacts( ItemSelector selector) throws ContentAccessException;
+    List<? extends Artifact> getArtifacts( ItemSelector selector) throws ContentAccessException;
 
     /**
      * Returns the artifacts that match the given selector. It is up to the repository implementation
@@ -185,7 +186,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
      * @throws ContentAccessException if the access to the underlying storage failed
      */
-    Stream<? extends Artifact> getAllArtifactStream( ItemSelector selector) throws ContentAccessException;
+    Stream<? extends Artifact> getArtifactStream( ItemSelector selector) throws ContentAccessException;
 
 
     /**
@@ -237,17 +238,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
     List<? extends Artifact> getArtifacts( ContentItem item) throws ContentAccessException;
 
     /**
-     * Return all the artifacts of a given namespace and all sub namespaces that are defined under the
-     * given namespace.
-     *
-     * @param namespace the namespace, which is the parent namespace
-     * @param recurse <code>true</code>, if all sub namespaces should be searched too, otherwise <code>false</code>
-     * @return a list of artifacts or a empty list, if no artifacts are available for the specified namespace
-     */
-    List<? extends Artifact> getArtifacts( Namespace namespace, boolean recurse ) throws ContentAccessException;
-
-
-    /**
      * Return a stream of artifacts that are part of the given content item. The returned stream is
      * auto closable. There is no guarantee about the order of returned artifacts.
      *
@@ -259,21 +249,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * is closed after use.
      */
     Stream<? extends Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException;
-
-
-    /**
-     * Return a stream of all artifacts that are available for the given namespace and its sub namespaces. The artifacts
-     * are retrieved recursively. There is no guarantee about the order of returned artifacts.
-     *
-     * As the stream may access IO resources, you should always use call this method inside try-with-resources or
-     * make sure, that the stream is closed after using it.
-     *
-     * @param namespace the namespace from where the artifacts should be returned
-     * @param recurse <code>true</code>, if all sub namespaces should be searched too, otherwise <code>false</code>
-     * @return a stream of artifacts. The stream is auto closable. You should always make sure, that the stream
-     * is closed after use.
-     */
-    Stream<? extends Artifact> getArtifactStream( Namespace namespace, boolean recurse ) throws ContentAccessException;
 
 
     /**

@@ -132,13 +132,13 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public List<? extends Artifact> getAllArtifacts( ItemSelector selector ) throws ContentAccessException
+    public List<? extends Artifact> getArtifacts( ItemSelector selector ) throws ContentAccessException
     {
         return null;
     }
 
     @Override
-    public Stream<? extends Artifact> getAllArtifactStream( ItemSelector selector ) throws ContentAccessException
+    public Stream<? extends Artifact> getArtifactStream( ItemSelector selector ) throws ContentAccessException
     {
         return null;
     }

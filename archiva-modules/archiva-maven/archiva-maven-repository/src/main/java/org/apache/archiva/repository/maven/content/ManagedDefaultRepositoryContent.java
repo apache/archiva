@@ -516,62 +516,60 @@ public class ManagedDefaultRepositoryContent
      */
     private Predicate<StorageAsset> getFileFilterFromSelector(final ItemSelector selector) {
         Predicate<StorageAsset> p = a -> a.isLeaf( );
+        StringBuilder fileNamePattern = new StringBuilder("^" );
         if (selector.hasArtifactId()) {
-            final String pattern = selector.getArtifactId( );
-            p = p.and( a -> StringUtils.startsWithIgnoreCase( a.getName( ),  pattern ) );
+            fileNamePattern.append( Pattern.quote(selector.getArtifactId( )) ).append("-");
+        } else {
+            fileNamePattern.append("[A-Za-z0-9_\\-.]+-");
         }
         if (selector.hasArtifactVersion()) {
-            final String pattern = selector.getArtifactVersion( );
-            p = p.and( a -> StringUtils.containsIgnoreCase( a.getName( ),  pattern ) );
+            fileNamePattern.append( Pattern.quote(selector.getArtifactVersion( )) );
+        } else  {
+            fileNamePattern.append( "[A-Za-z0-9_\\-.]+" );
         }
-        if (selector.hasExtension()) {
-            final String pattern = "."+selector.getExtension( );
-            p = p.and( a -> StringUtils.endsWithIgnoreCase( a.getName( ), pattern ) );
-        } else if (selector.hasType()) {
-            final String pattern = "."+ MavenContentHelper.getArtifactExtension( selector );
-            p = p.and( a -> StringUtils.endsWithIgnoreCase( a.getName( ), pattern ) );
+        String classifier = selector.hasClassifier( ) ? selector.getClassifier( ) :
+            ( selector.hasType( ) ? MavenContentHelper.getClassifierFromType( selector.getType( ) ) : null );
+        if (classifier != null)
+        {
+            if ( "*".equals( classifier ) )
+            {
+                fileNamePattern.append( "-[A-Za-z0-9]+\\." );
+            }
+            else
+            {
+                fileNamePattern.append("-").append( Pattern.quote( classifier ) ).append( "\\." );
+            }
+        } else {
+            fileNamePattern.append( "\\." );
         }
-        if (selector.hasClassifier()) {
-            final String pattern = "-" + selector.getClassifier( ) + ".";
-            p = p.and( a -> StringUtils.containsIgnoreCase( a.getName( ), pattern ) );
-        } else if (selector.hasType()) {
-            final String pattern = "-" + MavenContentHelper.getClassifierFromType( selector.getType( ) ) + ".";
-            p = p.and( a -> StringUtils.containsIgnoreCase( a.getName( ).toLowerCase( ), pattern ) );
+        String extension = selector.hasExtension( ) ? selector.getExtension( ) :
+            ( selector.hasType( ) ? MavenContentHelper.getArtifactExtension( selector ) : null );
+        if (extension != null) {
+            fileNamePattern.append( Pattern.quote( extension ) );
+        } else {
+            fileNamePattern.append( ".*" );
         }
-        return p;
+        final Pattern pattern = Pattern.compile( fileNamePattern.toString() );
+        return p.and( a -> pattern.matcher( a.getName( ) ).matches());
     }
 
-    /*
-        TBD
-     */
-    @Override
-    public List<? extends Artifact> getAllArtifacts( ItemSelector selector ) throws ContentAccessException
-    {
-        return null;
-    }
 
-    /*
-        TBD
-     */
-    @Override
-    public Stream<? extends Artifact> getAllArtifactStream( ItemSelector selector ) throws ContentAccessException
-    {
-        return null;
-    }
-
-    /*
-        TBD
+    /**
+     * Returns all the subdirectories of the given namespace directory as project.
      */
     @Override
     public List<? extends Project> getProjects( Namespace namespace )
     {
-        return null;
+        return namespace.getAsset( ).list( ).stream( )
+            .filter( a -> a.isContainer( ) )
+            .map( a -> getProjectFromArtifactPath( a ) )
+            .collect( Collectors.toList());
     }
 
     @Override
     public List<? extends Project> getProjects( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
-        return null;
+        return getProjects( getNamespace( selector ) );
     }
 
     /**
@@ -621,6 +619,25 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
+
+    /*
+    TBD
+ */
+    @Override
+    public List<? extends Artifact> getArtifacts( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    /*
+        TBD
+     */
+    @Override
+    public Stream<? extends Artifact> getArtifactStream( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
     /*
             TBD
          */
@@ -630,14 +647,6 @@ public class ManagedDefaultRepositoryContent
         return null;
     }
 
-    /*
-        TBD
-     */
-    @Override
-    public List<? extends Artifact> getArtifacts( Namespace namespace, boolean recurse )
-    {
-        return null;
-    }
 
     /*
         TBD
@@ -648,22 +657,13 @@ public class ManagedDefaultRepositoryContent
         return null;
     }
 
-    /*
-        TBD
-     */
-    @Override
-    public Stream<? extends Artifact> getArtifactStream( Namespace namespace, boolean recurse )
-    {
-        return null;
-    }
-
-    /*
-        TBD
+    /**
+     * Checks, if the asset/file queried by the given selector exists.
      */
     @Override
     public boolean hasContent( ItemSelector selector )
     {
-        return false;
+        return getItem( selector ).getAsset( ).exists( );
     }
 
     /*
