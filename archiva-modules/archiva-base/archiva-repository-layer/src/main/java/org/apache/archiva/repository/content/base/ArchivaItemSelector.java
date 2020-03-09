@@ -41,6 +41,8 @@ public class ArchivaItemSelector implements ItemSelector
     private String classifier = null;
     private String extension = null;
     private Map<String, String> attributes;
+    private boolean searchRelatedArtifacts = false;
+    private boolean searchSubNamespaces = false;
 
 
     private ArchivaItemSelector( )
@@ -115,6 +117,16 @@ public class ArchivaItemSelector implements ItemSelector
         public Builder withExtension( String extension )
         {
             selector.extension = extension;
+            return this;
+        }
+
+        public Builder enableSearchRelatedArtifacts() {
+            selector.searchRelatedArtifacts = true;
+            return this;
+        }
+
+        public Builder enableSearchSubNamespaces() {
+            selector.searchSubNamespaces = true;
             return this;
         }
 
@@ -206,6 +218,18 @@ public class ArchivaItemSelector implements ItemSelector
         {
             return Collections.unmodifiableMap( this.attributes );
         }
+    }
+
+    @Override
+    public boolean searchSubNamespaces( )
+    {
+        return searchSubNamespaces;
+    }
+
+    @Override
+    public boolean findRelatedArtifacts( )
+    {
+        return searchRelatedArtifacts;
     }
 
     @Override
