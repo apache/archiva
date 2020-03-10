@@ -174,19 +174,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public List<? extends Artifact> getArtifacts( Namespace namespace, boolean recurse ) throws ContentAccessException
-    {
-        return null;
-    }
-
-    @Override
     public Stream<? extends Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException
-    {
-        return null;
-    }
-
-    @Override
-    public Stream<? extends Artifact> getArtifactStream( Namespace namespace, boolean recurse ) throws ContentAccessException
     {
         return null;
     }
