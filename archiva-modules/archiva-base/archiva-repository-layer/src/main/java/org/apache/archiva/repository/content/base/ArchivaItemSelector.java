@@ -32,17 +32,17 @@ import java.util.Map;
 public class ArchivaItemSelector implements ItemSelector
 {
 
-    private String projectId = null;
-    private String version = null;
-    private String artifactVersion = null;
-    private String artifactId = null;
+    private String projectId = "";
+    private String version = "";
+    private String artifactVersion = "";
+    private String artifactId = "";
     private String namespace = "";
-    private String type = null;
-    private String classifier = null;
-    private String extension = null;
+    private String type = "";
+    private String classifier = "";
+    private String extension = "";
     private Map<String, String> attributes;
-    private boolean searchRelatedArtifacts = false;
-    private boolean searchSubNamespaces = false;
+    private boolean includeRelatedArtifacts = false;
+    private boolean recurse = false;
 
 
     private ArchivaItemSelector( )
@@ -61,49 +61,70 @@ public class ArchivaItemSelector implements ItemSelector
 
         public Builder withNamespace( String namespace )
         {
-            selector.namespace = namespace;
+            if (namespace!=null)
+            {
+                selector.namespace = namespace;
+            }
             return this;
         }
 
 
         public Builder withProjectId( String projectId )
         {
-            selector.projectId = projectId;
+            if (projectId!=null)
+            {
+                selector.projectId = projectId;
+            }
             return this;
         }
 
 
         public Builder withVersion( String version )
         {
-            selector.version = version;
+            if (version!=null)
+            {
+                selector.version = version;
+            }
             return this;
         }
 
 
         public Builder withArtifactVersion( String artifactVersion )
         {
-            selector.artifactVersion = artifactVersion;
+            if (artifactVersion!=null)
+            {
+                selector.artifactVersion = artifactVersion;
+            }
             return this;
         }
 
 
         public Builder withArtifactId( String artifactId )
         {
-            selector.artifactId = artifactId;
+            if (artifactId!=null)
+            {
+                selector.artifactId = artifactId;
+            }
             return this;
         }
 
 
         public Builder withType( String type )
         {
-            selector.type = type;
+            if (type!=null)
+            {
+                selector.type = type;
+            }
             return this;
         }
 
 
         public Builder withClassifier( String classifier )
         {
-            selector.classifier = classifier;
+            if (classifier != null )
+            {
+                selector.classifier = classifier;
+            }
             return this;
         }
 
@@ -116,17 +137,20 @@ public class ArchivaItemSelector implements ItemSelector
 
         public Builder withExtension( String extension )
         {
-            selector.extension = extension;
+            if (extension!=null)
+            {
+                selector.extension = extension;
+            }
             return this;
         }
 
-        public Builder enableSearchRelatedArtifacts() {
-            selector.searchRelatedArtifacts = true;
+        public Builder includeRelatedArtifacts() {
+            selector.includeRelatedArtifacts = true;
             return this;
         }
 
-        public Builder enableSearchSubNamespaces() {
-            selector.searchSubNamespaces = true;
+        public Builder recurse() {
+            selector.recurse = true;
             return this;
         }
 
@@ -221,15 +245,15 @@ public class ArchivaItemSelector implements ItemSelector
     }
 
     @Override
-    public boolean searchSubNamespaces( )
+    public boolean recurse( )
     {
-        return searchSubNamespaces;
+        return recurse;
     }
 
     @Override
-    public boolean findRelatedArtifacts( )
+    public boolean includeRelatedArtifacts( )
     {
-        return searchRelatedArtifacts;
+        return includeRelatedArtifacts;
     }
 
     @Override
@@ -242,5 +266,43 @@ public class ArchivaItemSelector implements ItemSelector
     public boolean hasExtension( )
     {
         return StringUtils.isNotEmpty( extension );
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o ) return true;
+        if ( o == null || getClass( ) != o.getClass( ) ) return false;
+
+        ArchivaItemSelector that = (ArchivaItemSelector) o;
+
+        if ( includeRelatedArtifacts != that.includeRelatedArtifacts ) return false;
+        if ( recurse != that.recurse ) return false;
+        if ( !projectId.equals( that.projectId ) ) return false;
+        if ( !version.equals( that.version ) ) return false;
+        if ( !artifactVersion.equals( that.artifactVersion ) ) return false;
+        if ( !artifactId.equals( that.artifactId ) ) return false;
+        if ( !namespace.equals( that.namespace ) ) return false;
+        if ( !type.equals( that.type ) ) return false;
+        if ( !classifier.equals( that.classifier ) ) return false;
+        if ( !extension.equals( that.extension ) ) return false;
+        return attributes != null ? attributes.equals( that.attributes ) : that.attributes == null;
+    }
+
+    @Override
+    public int hashCode( )
+    {
+        int result = projectId.hashCode( );
+        result = 31 * result + version.hashCode( );
+        result = 31 * result + artifactVersion.hashCode( );
+        result = 31 * result + artifactId.hashCode( );
+        result = 31 * result + namespace.hashCode( );
+        result = 31 * result + type.hashCode( );
+        result = 31 * result + classifier.hashCode( );
+        result = 31 * result + extension.hashCode( );
+        result = 31 * result + ( attributes != null ? attributes.hashCode( ) : 0 );
+        result = 31 * result + ( includeRelatedArtifacts ? 1 : 0 );
+        result = 31 * result + ( recurse ? 1 : 0 );
+        return result;
     }
 }

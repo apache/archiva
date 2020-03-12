@@ -30,7 +30,7 @@ public interface ItemSelector
 {
 
     /**
-     * Selects the namespace to search for. You can use the {@link #searchSubNamespaces()} flag
+     * Selects the namespace to search for. You can use the {@link #recurse()} flag
      * to decide, if only the given namespace or the namespace and all sub namespaces (if they exist) should be
      * queried. If empty, the root namespace is searched.
      * @return the namespace to search
@@ -96,10 +96,10 @@ public interface ItemSelector
     Map<String, String> getAttributes( );
 
     /**
-     * Returns <code>true</code>, if not only the given namespace but all sub namespaces
-     * of the given namespace should be queried too.
+     * Returns <code>true</code>, if the query should recurse into all sub directories for
+     * retrieving artifacts.
      */
-    boolean searchSubNamespaces();
+    boolean recurse();
 
     /**
      * <code>true</code>, if all files/assets should be returned that match the given selector,
@@ -107,7 +107,7 @@ public interface ItemSelector
      * Related assets are e.g. hash files or signature files.
      * @return <code>true</code>, if all assets should be found otherwise <code>false</code>
      */
-    boolean findRelatedArtifacts();
+    boolean includeRelatedArtifacts();
 
     default boolean hasNamespace( )
     {

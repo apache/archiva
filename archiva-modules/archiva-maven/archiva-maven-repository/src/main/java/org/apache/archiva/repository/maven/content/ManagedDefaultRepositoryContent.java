@@ -24,8 +24,6 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.repository.maven.metadata.storage.DefaultArtifactMappingProvider;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
@@ -43,10 +41,13 @@ import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.content.base.ArchivaNamespace;
 import org.apache.archiva.repository.content.base.ArchivaProject;
 import org.apache.archiva.repository.content.base.ArchivaVersion;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
+import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
+import org.apache.archiva.repository.maven.metadata.storage.DefaultArtifactMappingProvider;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
@@ -55,6 +56,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.Name;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -70,6 +72,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * ManagedDefaultRepositoryContent
@@ -511,48 +514,6 @@ public class ManagedDefaultRepositoryContent
         return getStorage( ).getAsset( path.toString( ) );
     }
 
-    /*
-     * File filter to select certain artifacts using the selector data.
-     */
-    private Predicate<StorageAsset> getFileFilterFromSelector(final ItemSelector selector) {
-        Predicate<StorageAsset> p = a -> a.isLeaf( );
-        StringBuilder fileNamePattern = new StringBuilder("^" );
-        if (selector.hasArtifactId()) {
-            fileNamePattern.append( Pattern.quote(selector.getArtifactId( )) ).append("-");
-        } else {
-            fileNamePattern.append("[A-Za-z0-9_\\-.]+-");
-        }
-        if (selector.hasArtifactVersion()) {
-            fileNamePattern.append( Pattern.quote(selector.getArtifactVersion( )) );
-        } else  {
-            fileNamePattern.append( "[A-Za-z0-9_\\-.]+" );
-        }
-        String classifier = selector.hasClassifier( ) ? selector.getClassifier( ) :
-            ( selector.hasType( ) ? MavenContentHelper.getClassifierFromType( selector.getType( ) ) : null );
-        if (classifier != null)
-        {
-            if ( "*".equals( classifier ) )
-            {
-                fileNamePattern.append( "-[A-Za-z0-9]+\\." );
-            }
-            else
-            {
-                fileNamePattern.append("-").append( Pattern.quote( classifier ) ).append( "\\." );
-            }
-        } else {
-            fileNamePattern.append( "\\." );
-        }
-        String extension = selector.hasExtension( ) ? selector.getExtension( ) :
-            ( selector.hasType( ) ? MavenContentHelper.getArtifactExtension( selector ) : null );
-        if (extension != null) {
-            fileNamePattern.append( Pattern.quote( extension ) );
-        } else {
-            fileNamePattern.append( ".*" );
-        }
-        final Pattern pattern = Pattern.compile( fileNamePattern.toString() );
-        return p.and( a -> pattern.matcher( a.getName( ) ).matches());
-    }
-
 
     /**
      * Returns all the subdirectories of the given namespace directory as project.
@@ -620,41 +581,210 @@ public class ManagedDefaultRepositoryContent
     }
 
 
-    /*
-    TBD
- */
+    /**
+     * See {@link #newArtifactStream(ItemSelector)}. This method collects the stream into a list.
+     *
+     * @param selector the selector for the artifacts
+     * @return the list of artifacts
+     * @throws ContentAccessException if the access to the underlying filesystem failed
+     */
     @Override
     public List<? extends Artifact> getArtifacts( ItemSelector selector ) throws ContentAccessException
     {
-        return null;
+        try(Stream<? extends Artifact> stream = newArtifactStream( selector )) {
+            return stream.collect( Collectors.toList());
+        }
     }
 
+
     /*
-        TBD
+     * File filter to select certain artifacts using the selector data.
+     */
+    private Predicate<StorageAsset> getFileFilterFromSelector(final ItemSelector selector) {
+        Predicate<StorageAsset> p = a -> a.isLeaf( );
+        StringBuilder fileNamePattern = new StringBuilder("^" );
+        if (selector.hasArtifactId()) {
+            fileNamePattern.append( Pattern.quote(selector.getArtifactId( )) ).append("-");
+        } else {
+            fileNamePattern.append("[A-Za-z0-9_\\-.]+-");
+        }
+        if (selector.hasArtifactVersion()) {
+            fileNamePattern.append( Pattern.quote(selector.getArtifactVersion( )) );
+        } else  {
+            fileNamePattern.append( "[A-Za-z0-9_\\-.]+" );
+        }
+        String classifier = selector.hasClassifier( ) ? selector.getClassifier( ) :
+            ( selector.hasType( ) ? MavenContentHelper.getClassifierFromType( selector.getType( ) ) : null );
+        if (classifier != null)
+        {
+            if ( "*".equals( classifier ) )
+            {
+                fileNamePattern.append( "-[A-Za-z0-9]+\\." );
+            }
+            else
+            {
+                fileNamePattern.append("-").append( Pattern.quote( classifier ) ).append( "\\." );
+            }
+        } else {
+            fileNamePattern.append( "\\." );
+        }
+        String extension = selector.hasExtension( ) ? selector.getExtension( ) :
+            ( selector.hasType( ) ? MavenContentHelper.getArtifactExtension( selector ) : null );
+        if (extension != null) {
+            if (selector.includeRelatedArtifacts())
+            {
+                fileNamePattern.append( Pattern.quote( extension ) ).append("(\\.[A-Za-z0-9]+)?");
+            } else {
+                fileNamePattern.append( Pattern.quote( extension ) );
+            }
+        } else {
+            fileNamePattern.append( "[A-Za-z0-9]+" );
+        }
+        final Pattern pattern = Pattern.compile( fileNamePattern.toString() );
+        return p.and( a -> pattern.matcher( a.getName( ) ).matches());
+    }
+
+
+    /**
+     * Returns the artifacts. The number of artifacts returned depend on the selector.
+     * If the selector sets the flag {@link ItemSelector#includeRelatedArtifacts()} to <code>true</code>,
+     * additional to the matching artifacts, related artifacts like hash values or signatures are included in the artifact
+     * stream.
+     * If the selector sets the flag {@link ItemSelector#recurse()} to <code>true</code>, artifacts of the given
+     * namespace and from all sub namespaces that start with the given namespace are returned.
+     * <ul>
+     *     <li>If only a namespace is given, all artifacts with the given namespace or starting with the given
+     *     namespace (see {@link ItemSelector#recurse()} are returned.</li>
+     *     <li>If a namespace and a project id, or artifact id is given, the artifacts of all versions of the given
+     *     namespace and project are returned.</li>
+     *     <li>If a namespace and a project id or artifact id and a version is given, the artifacts of the given
+     *     version are returned</li>
+     * </ul>
+     *
+     * There is no determinate order of the elements in the stream.
+     *
+     * Returned streams are auto closable and should be used in a try-with-resources statement.
+     *
+     * @param selector the item selector
+     * @throws ContentAccessException if the access to the underlying filesystem failed
      */
     @Override
-    public Stream<? extends Artifact> getArtifactStream( ItemSelector selector ) throws ContentAccessException
+    public Stream<? extends Artifact> newArtifactStream( ItemSelector selector ) throws ContentAccessException
     {
-        return null;
+        String projectId = selector.hasProjectId( ) ? selector.getProjectId( ) : ( selector.hasArtifactId( ) ? selector.getArtifactId( )
+            : null );
+        final Predicate<StorageAsset> filter = getFileFilterFromSelector( selector );
+        if (projectId!=null && selector.hasVersion()) {
+            return getAsset( selector.getNamespace( ), projectId, selector.getVersion( ) )
+                .list( ).stream( ).filter( filter )
+                .map( this::getArtifactFromPath );
+        } else if (projectId!=null) {
+            final StorageAsset projDir = getAsset( selector.getNamespace( ), projectId );
+            return projDir.list( ).stream( ).filter( StorageAsset::isContainer )
+                .map( StorageAsset::list )
+                .flatMap( List::stream )
+                .filter( filter )
+                .map( this::getArtifactFromPath );
+        } else
+        {
+            StorageAsset namespaceDir = getAsset( selector.getNamespace( ) );
+            if (selector.recurse())
+            {
+                return StorageUtil.newAssetStream( namespaceDir, true )
+                    .filter( filter )
+                        .map( this::getArtifactFromPath );
+
+            } else {
+                return namespaceDir.list( ).stream( )
+                    .filter( StorageAsset::isContainer )
+                    .map( StorageAsset::list )
+                    .flatMap( List::stream )
+                    .filter( StorageAsset::isContainer )
+                    .map( StorageAsset::list )
+                    .flatMap( List::stream )
+                    .filter( filter )
+                    .map(this::getArtifactFromPath);
+            }
+        }
     }
 
-    /*
-            TBD
-         */
+    /**
+     * Same as {@link #newArtifactStream(ContentItem)} but returns the collected stream as list.
+     *
+     * @param item the item the parent item
+     * @return the list of artifacts or a empty list of no artifacts where found
+     */
     @Override
     public List<? extends Artifact> getArtifacts( ContentItem item )
     {
-        return null;
+        try(Stream<? extends Artifact> stream = newArtifactStream( item )) {
+            return stream.collect( Collectors.toList());
+        }
     }
 
+    /**
+     * Returns all artifacts
+     * @param item
+     * @return
+     * @throws ContentAccessException
+     */
+    public Stream<? extends Artifact> newArtifactStream( Namespace item ) throws ContentAccessException
+    {
+        return newArtifactStream( ArchivaItemSelector.builder( ).withNamespace( item.getNamespace( ) ).build( ) );
+    }
 
-    /*
-        TBD
+    public Stream<? extends Artifact> newArtifactStream( Project item ) throws ContentAccessException
+    {
+        return newArtifactStream( ArchivaItemSelector.builder( ).withNamespace( item.getNamespace( ).getNamespace() )
+            .withProjectId( item.getId() ).build( ) );
+    }
+
+    public Stream<? extends Artifact> newArtifactStream( Version item ) throws ContentAccessException
+    {
+        return newArtifactStream( ArchivaItemSelector.builder( ).withNamespace( item.getProject().getNamespace( ).getNamespace() )
+            .withProjectId( item.getProject().getId() )
+            .withVersion( item.getVersion() ).build( ) );
+    }
+
+    /**
+     * Returns all related artifacts that match the given artifact. That means all artifacts that have
+     * the same filename plus an additional extension, e.g. ${fileName}.sha2
+     * @param item the artifact
+     * @return the stream of artifacts
+     * @throws ContentAccessException
+     */
+    public Stream<? extends Artifact> newArtifactStream( Artifact item ) throws ContentAccessException
+    {
+        final Version v = item.getVersion( );
+        final String fileName = item.getFileName( );
+        final Predicate<StorageAsset> filter = ( StorageAsset a ) ->
+            a.getName( ).startsWith( fileName + "." );
+        return v.getAsset( ).list( ).stream( ).filter( filter )
+            .map( a -> getArtifactFromPath( a ) );
+    }
+    /**
+     * Returns the stream of artifacts that are children of the given item.
+     *
+     * @param item the item from where the artifacts should be returned
+     * @return
+     * @throws ContentAccessException
      */
     @Override
-    public Stream<? extends Artifact> getArtifactStream( ContentItem item )
+    public Stream<? extends Artifact> newArtifactStream( ContentItem item ) throws ContentAccessException
     {
-        return null;
+        if (item instanceof Namespace) {
+            return newArtifactStream( ( (Namespace) item ) );
+        } else if (item instanceof Project) {
+            return newArtifactStream( (Project) item );
+        } else if (item instanceof Version) {
+            return newArtifactStream( (Version) item );
+        } else if (item instanceof Artifact) {
+            return newArtifactStream( (Artifact) item );
+        } else
+        {
+            log.warn( "newArtifactStream for unsupported item requested: {}", item.getClass( ).getName( ) );
+            return Stream.empty( );
+        }
     }
 
     /**
@@ -1092,7 +1222,7 @@ public class ManagedDefaultRepositoryContent
     public Set<String> getVersions( VersionedReference reference )
         throws ContentNotFoundException, ContentAccessException, LayoutException
     {
-        try(Stream<ArtifactReference> stream = getArtifactStream( reference ))
+        try(Stream<ArtifactReference> stream = newArtifactStream( reference ))
         {
             return stream.filter( Objects::nonNull )
                 .map( ar -> ar.getVersion( ) )
@@ -1230,7 +1360,7 @@ public class ManagedDefaultRepositoryContent
     private ArtifactReference getFirstArtifact( VersionedReference reference )
         throws ContentNotFoundException, LayoutException, IOException
     {
-        try(Stream<ArtifactReference> stream = getArtifactStream( reference ))
+        try(Stream<ArtifactReference> stream = newArtifactStream( reference ))
         {
             return stream.findFirst( ).orElse( null );
         } catch (RuntimeException e) {
@@ -1238,7 +1368,7 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
-    private Stream<ArtifactReference> getArtifactStream(VersionedReference reference) throws ContentNotFoundException, LayoutException, IOException {
+    private Stream<ArtifactReference> newArtifactStream( VersionedReference reference) throws ContentNotFoundException, LayoutException, IOException {
         final Path repoBase = getRepoDir( );
         String path = toMetadataPath( reference );
         Path versionDir = repoBase.resolve( path ).getParent();
@@ -1262,7 +1392,7 @@ public class ManagedDefaultRepositoryContent
 
     public List<ArtifactReference> getArtifacts(VersionedReference reference) throws ContentNotFoundException, LayoutException, ContentAccessException
     {
-        try (Stream<ArtifactReference> stream = getArtifactStream( reference ))
+        try (Stream<ArtifactReference> stream = newArtifactStream( reference ))
         {
             return stream.collect( Collectors.toList( ) );
         } catch ( IOException e )
@@ -1277,7 +1407,7 @@ public class ManagedDefaultRepositoryContent
     private boolean hasArtifact( VersionedReference reference )
 
     {
-        try(Stream<ArtifactReference> stream = getArtifactStream( reference ))
+        try(Stream<ArtifactReference> stream = newArtifactStream( reference ))
         {
             return stream.anyMatch( e -> true );
         } catch (ContentNotFoundException e) {

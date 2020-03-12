@@ -133,7 +133,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public Stream<? extends Artifact> getArtifactStream( ItemSelector selector ) throws ContentAccessException
+    public Stream<? extends Artifact> newArtifactStream( ItemSelector selector ) throws ContentAccessException
     {
         return null;
     }
@@ -169,7 +169,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public Stream<? extends Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException
+    public Stream<? extends Artifact> newArtifactStream( ContentItem item ) throws ContentAccessException
     {
         return null;
     }

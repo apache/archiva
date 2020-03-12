@@ -186,7 +186,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
      * @throws ContentAccessException if the access to the underlying storage failed
      */
-    Stream<? extends Artifact> getArtifactStream( ItemSelector selector) throws ContentAccessException;
+    Stream<? extends Artifact> newArtifactStream( ItemSelector selector) throws ContentAccessException;
 
 
     /**
@@ -247,8 +247,9 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param item the item from where the artifacts should be returned
      * @return a stream of artifacts. The stream is auto closable. You should always make sure, that the stream
      * is closed after use.
+     * @throws ContentAccessException if the access to the underlying storage failed
      */
-    Stream<? extends Artifact> getArtifactStream( ContentItem item ) throws ContentAccessException;
+    Stream<? extends Artifact> newArtifactStream( ContentItem item ) throws ContentAccessException;
 
 
     /**
