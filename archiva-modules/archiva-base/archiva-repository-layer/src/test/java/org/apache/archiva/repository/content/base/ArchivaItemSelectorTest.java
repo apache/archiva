@@ -39,6 +39,14 @@ class ArchivaItemSelectorTest
         assertFalse( selector.hasType( ) );
         assertFalse( selector.hasClassifier( ) );
         assertFalse( selector.hasAttributes( ) );
+
+        assertEquals( "", selector.getNamespace( ) );
+        assertEquals( "", selector.getVersion( ) );
+        assertEquals( "", selector.getArtifactId( ) );
+        assertEquals( "", selector.getArtifactVersion( ) );
+        assertEquals( "", selector.getType( ) );
+        assertEquals( "", selector.getClassifier( ) );
+        assertNotNull( selector.getAttributes( ) );
     }
 
     @Test
@@ -53,6 +61,14 @@ class ArchivaItemSelectorTest
         assertFalse( selector.hasType( ) );
         assertFalse( selector.hasClassifier( ) );
         assertFalse( selector.hasAttributes( ) );
+
+        assertEquals( "", selector.getProjectId( ) );
+        assertEquals( "", selector.getVersion( ) );
+        assertEquals( "", selector.getArtifactId( ) );
+        assertEquals( "", selector.getArtifactVersion( ) );
+        assertEquals( "", selector.getType( ) );
+        assertEquals( "", selector.getClassifier( ) );
+        assertNotNull( selector.getAttributes( ) );
     }
 
     @Test
@@ -67,6 +83,14 @@ class ArchivaItemSelectorTest
         assertFalse( selector.hasType( ) );
         assertFalse( selector.hasClassifier( ) );
         assertFalse( selector.hasAttributes( ) );
+
+
+        assertEquals( "", selector.getNamespace( ) );
+        assertEquals( "", selector.getArtifactId( ) );
+        assertEquals( "", selector.getArtifactVersion( ) );
+        assertEquals( "", selector.getType( ) );
+        assertEquals( "", selector.getClassifier( ) );
+        assertNotNull( selector.getAttributes( ) );
     }
 
     @Test
@@ -81,6 +105,14 @@ class ArchivaItemSelectorTest
         assertFalse( selector.hasType( ) );
         assertFalse( selector.hasClassifier( ) );
         assertFalse( selector.hasAttributes( ) );
+
+        assertEquals( "", selector.getNamespace( ) );
+        assertEquals( "", selector.getVersion( ) );
+        assertEquals( "", selector.getArtifactId( ) );
+        assertEquals( "", selector.getType( ) );
+        assertEquals( "", selector.getClassifier( ) );
+        assertNotNull( selector.getAttributes( ) );
+
     }
 
     @Test
@@ -96,6 +128,12 @@ class ArchivaItemSelectorTest
         assertFalse( selector.hasClassifier( ) );
         assertFalse( selector.hasAttributes( ) );
 
+        assertEquals( "", selector.getNamespace( ) );
+        assertEquals( "", selector.getVersion( ) );
+        assertEquals( "", selector.getArtifactVersion( ) );
+        assertEquals( "", selector.getType( ) );
+        assertEquals( "", selector.getClassifier( ) );
+        assertNotNull( selector.getAttributes( ) );
     }
 
     @Test
@@ -110,6 +148,13 @@ class ArchivaItemSelectorTest
         assertTrue( selector.hasType( ) );
         assertFalse( selector.hasClassifier( ) );
         assertFalse( selector.hasAttributes( ) );
+
+        assertEquals( "", selector.getNamespace( ) );
+        assertEquals( "", selector.getVersion( ) );
+        assertEquals( "", selector.getArtifactId( ) );
+        assertEquals( "", selector.getArtifactVersion( ) );
+        assertEquals( "", selector.getClassifier( ) );
+        assertNotNull( selector.getAttributes( ) );
     }
 
     @Test
@@ -124,6 +169,14 @@ class ArchivaItemSelectorTest
         assertFalse( selector.hasType( ) );
         assertTrue( selector.hasClassifier( ) );
         assertFalse( selector.hasAttributes( ) );
+
+        assertEquals( "", selector.getNamespace( ) );
+        assertEquals( "", selector.getVersion( ) );
+        assertEquals( "", selector.getArtifactId( ) );
+        assertEquals( "", selector.getArtifactVersion( ) );
+        assertEquals( "", selector.getType( ) );
+        assertNotNull( selector.getAttributes( ) );
+
     }
 
     @Test
@@ -140,6 +193,13 @@ class ArchivaItemSelectorTest
         assertFalse( selector.hasType( ) );
         assertFalse( selector.hasClassifier( ) );
         assertTrue( selector.hasAttributes( ) );
+
+        assertEquals( "", selector.getVersion( ) );
+        assertEquals( "", selector.getArtifactId( ) );
+        assertEquals( "", selector.getArtifactVersion( ) );
+        assertEquals( "", selector.getType( ) );
+        assertEquals( "", selector.getClassifier( ) );
+
     }
 
 }

@@ -35,9 +35,11 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ArtifactType;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
@@ -56,7 +58,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.naming.Name;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -72,7 +73,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * ManagedDefaultRepositoryContent
@@ -320,6 +320,7 @@ public class ManagedDefaultRepositoryContent
                 .withType( info.type )
                 .withArtifactVersion( info.version )
                 .withContentType( info.contentType )
+                .withArtifactType( info.artifactType )
                 .build( )
         );
     }
@@ -397,6 +398,7 @@ public class ManagedDefaultRepositoryContent
         private String classifier;
         private String contentType;
         private StorageAsset asset;
+        private ArtifactType artifactType = BaseArtifactTypes.MAIN;
     }
 
     private ArtifactInfo getArtifactInfoFromPath(String genericVersion, StorageAsset path) {
@@ -427,18 +429,21 @@ public class ManagedDefaultRepositoryContent
                             info.remainder = classPostfix;
                         }
                     } else {
-                        log.error( "Artifact does not match the maven name pattern {}", path );
+                        log.debug( "Artifact does not match the maven name pattern {}", path );
+                        info.artifactType = BaseArtifactTypes.UNKNOWN;
                         info.classifier = "";
                         info.remainder = StringUtils.substringAfter( fileName, prefix );
                     }
                 } else {
-                    log.error( "Artifact does not match the snapshot version pattern {}", path );
+                    log.debug( "Artifact does not match the snapshot version pattern {}", path );
+                    info.artifactType = BaseArtifactTypes.UNKNOWN;
                     info.version = "";
                     info.classifier = "";
                     info.remainder = StringUtils.substringAfter( fileName, prefix );
                 }
             } else {
-                log.error( "Artifact does not match the maven name pattern: {}", path );
+                log.debug( "Artifact does not match the maven name pattern: {}", path );
+                info.artifactType = BaseArtifactTypes.UNKNOWN;
                 info.version = "";
                 info.classifier = "";
                 info.remainder = StringUtils.substringAfterLast( fileName, "." );
@@ -458,7 +463,8 @@ public class ManagedDefaultRepositoryContent
                     info.remainder = classPostfix;
                 }
             } else {
-                log.error( "Artifact does not match the version pattern {}", path );
+                log.debug( "Artifact does not match the version pattern {}", path );
+                info.artifactType = BaseArtifactTypes.UNKNOWN;
                 info.version = "";
                 info.classifier = "";
                 info.remainder = StringUtils.substringAfterLast( fileName, "." );
@@ -471,6 +477,11 @@ public class ManagedDefaultRepositoryContent
         } catch (IOException e) {
             info.contentType = "";
             //
+        }
+        if (MavenContentHelper.METADATA_FILENAME.equalsIgnoreCase( fileName )) {
+            info.artifactType = BaseArtifactTypes.METADATA;
+        } else if (MavenContentHelper.METADATA_REPOSITORY_FILENAME.equalsIgnoreCase( fileName )) {
+            info.artifactType = MavenTypes.REPOSITORY_METADATA;
         }
         return info;
 

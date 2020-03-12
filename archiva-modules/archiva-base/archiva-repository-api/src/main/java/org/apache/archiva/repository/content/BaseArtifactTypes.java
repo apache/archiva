@@ -1,3 +1,5 @@
+package org.apache.archiva.repository.content;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,29 +18,18 @@
  * under the License.
  */
 
-package org.apache.archiva.repository.content.base.builder;
-
-import org.apache.archiva.repository.content.ArtifactType;
-import org.apache.archiva.repository.content.base.ArchivaArtifact;
-
 /**
+ * Basic artifact types.
+ * <ul>
+ *  <li>{@link #MAIN}: Standard type</li>
+ *  <li>{@link #METADATA}: if this artifact represents a metadata file</li>
+ *  <li>{@link #RELATED}: artifact that is related to a main artifact</li>
+ *  <li>{@link #UNKNOWN}: Unknown type</li>
+ * </ul>
+ *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface ArtifactOptBuilder
-    extends OptBuilder<ArchivaArtifact, ArtifactOptBuilder>
+public enum BaseArtifactTypes implements ArtifactType
 {
-
-    ArtifactOptBuilder withArtifactVersion( String version );
-
-    ArtifactOptBuilder withType( String type );
-
-    ArtifactOptBuilder withClassifier( String classifier );
-
-    ArtifactOptBuilder withRemainder( String remainder );
-
-    ArtifactOptBuilder withContentType( String contentType );
-
-    ArtifactOptBuilder withArtifactType( ArtifactType type );
-
-    ArchivaArtifact build( );
+    MAIN,RELATED,METADATA,UNKNOWN
 }

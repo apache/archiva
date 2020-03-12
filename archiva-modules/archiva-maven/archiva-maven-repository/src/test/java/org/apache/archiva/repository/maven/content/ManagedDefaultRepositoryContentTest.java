@@ -30,6 +30,8 @@ import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
@@ -42,6 +44,7 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jcr.Item;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -51,8 +54,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -450,5 +455,23 @@ public class ManagedDefaultRepositoryContentTest
 
         assertFalse( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0" ) ) );
 
+    }
+
+    @Test
+    public void testGetArtifactStreamWithVersionSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "javax.sql" )
+            .withProjectId( "jdbc" )
+            .withVersion( "2.0" ).build();
+        Stream<? extends Artifact> stream = repoContent.newArtifactStream( selector );
+        assertNotNull( stream );
+        List<? extends Artifact> results = stream.collect( Collectors.toList( ) );
+        assertEquals( 2, results.size( ) );
+        Artifact mainArtifact = results.stream( ).filter( a -> a.getFileName( ).equals( "jdbc-2.0.jar" ) ).findFirst( ).get( );
+        assertNotNull( mainArtifact );
+        assertEquals( BaseArtifactTypes.MAIN, mainArtifact.getArtifactType( ) );
+        Artifact metaArtifact = results.stream( ).filter( a -> a.getFileName( ).equals( "maven-metadata-repository.xml" ) ).findFirst( ).get( );
+        assertNotNull( metaArtifact );
+        assertEquals( MavenTypes.REPOSITORY_METADATA, metaArtifact.getArtifactType( ) );
     }
 }

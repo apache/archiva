@@ -125,5 +125,10 @@ public interface Artifact extends ContentItem
      */
     String getContentType( );
 
+    /**
+     * Returns the type of the artifact
+     * @return
+     */
+    ArtifactType getArtifactType();
 
 }

@@ -20,6 +20,8 @@ package org.apache.archiva.repository.content.base;
  */
 
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ArtifactType;
+import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
 import org.apache.archiva.repository.content.base.builder.ArtifactVersionBuilder;
@@ -34,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
  * You have to use the builder method {@link #withAsset(StorageAsset)} to create a instance.
  * The build() method can be called after the required attributes are set.
  * <p>
- * Artifact are equal if the following coordinates match:
+ * Artifacts are equal if the following coordinates match:
  * <ul>
  *     <li>repository</li>
  *     <li>asset</li>
@@ -43,6 +45,7 @@ import org.apache.commons.lang3.StringUtils;
  *     <li>artifactVersion</li>
  *     <li>type</li>
  *     <li>classifier</li>
+ *     <li>artifactType</li>
  * </ul>
  *
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -56,6 +59,7 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
     private String classifier;
     private String remainder;
     private String contentType;
+    private ArtifactType artifactType;
 
     private ArchivaArtifact( )
     {
@@ -105,6 +109,12 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
         return contentType;
     }
 
+    @Override
+    public ArtifactType getArtifactType( )
+    {
+        return artifactType;
+    }
+
 
     /**
      * Returns the builder for creating a new artifact instance. You have to fill the
@@ -132,6 +142,7 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
         if ( !artifactVersion.equals( that.artifactVersion ) ) return false;
         if ( !version.equals( that.version ) ) return false;
         if ( !type.equals( that.type ) ) return false;
+        if ( !artifactType.equals(that.artifactType)) return false;
         return classifier.equals( that.classifier );
     }
 
@@ -144,6 +155,7 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
         result = 31 * result + version.hashCode( );
         result = 31 * result + type.hashCode( );
         result = 31 * result + classifier.hashCode( );
+        result = 31 * result + artifactType.hashCode( );
         return result;
     }
 
@@ -233,6 +245,13 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
         }
 
         @Override
+        public ArtifactOptBuilder withArtifactType( ArtifactType type )
+        {
+            item.artifactType = type;
+            return this;
+        }
+
+        @Override
         public ArchivaArtifact build( )
         {
             super.build( );
@@ -255,6 +274,9 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
             if ( item.remainder == null )
             {
                 item.remainder = "";
+            }
+            if (item.artifactType==null) {
+                item.artifactType = BaseArtifactTypes.MAIN;
             }
 
             return item;

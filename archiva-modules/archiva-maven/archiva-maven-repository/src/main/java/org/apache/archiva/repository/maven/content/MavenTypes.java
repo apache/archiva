@@ -1,3 +1,5 @@
+package org.apache.archiva.repository.maven.content;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,29 +18,12 @@
  * under the License.
  */
 
-package org.apache.archiva.repository.content.base.builder;
-
 import org.apache.archiva.repository.content.ArtifactType;
-import org.apache.archiva.repository.content.base.ArchivaArtifact;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface ArtifactOptBuilder
-    extends OptBuilder<ArchivaArtifact, ArtifactOptBuilder>
+public enum MavenTypes implements ArtifactType
 {
-
-    ArtifactOptBuilder withArtifactVersion( String version );
-
-    ArtifactOptBuilder withType( String type );
-
-    ArtifactOptBuilder withClassifier( String classifier );
-
-    ArtifactOptBuilder withRemainder( String remainder );
-
-    ArtifactOptBuilder withContentType( String contentType );
-
-    ArtifactOptBuilder withArtifactType( ArtifactType type );
-
-    ArchivaArtifact build( );
+    REPOSITORY_METADATA
 }

@@ -52,6 +52,7 @@ public class MavenContentHelper
     MavenMetadataReader metadataReader;
 
     public static final String METADATA_FILENAME = "maven-metadata.xml";
+    public static final String METADATA_REPOSITORY_FILENAME = "maven-metadata-repository.xml";
 
     public MavenContentHelper() {
 
