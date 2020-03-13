@@ -648,28 +648,28 @@ public class ManagedDefaultRepositoryContentTest
 
 
     @Test
-    public void testArtifactListWithProjectSelector1() {
+    public void testArtifactListWithProjectSelector() {
         ItemSelector selector = ArchivaItemSelector.builder( )
             .withNamespace( "org.apache.maven.shared" )
             .withProjectId( "maven-downloader" )
             .build( );
         List<? extends Artifact> results = repoContent.getArtifacts( selector );
-        checkArtifactListWithProjectSelector1( results );
+        checkArtifactListWithProjectSelector( results );
 
     }
 
     @Test
-    public void testArtifactStreamWithProjectSelector1() {
+    public void testArtifactStreamWithProjectSelector() {
         ItemSelector selector = ArchivaItemSelector.builder( )
             .withNamespace( "org.apache.maven.shared" )
             .withProjectId( "maven-downloader" )
             .build( );
         Stream<? extends Artifact> results = repoContent.newArtifactStream( selector );
-        checkArtifactListWithProjectSelector1( results.collect( Collectors.toList()) );
+        checkArtifactListWithProjectSelector( results.collect( Collectors.toList()) );
 
     }
 
-    private void checkArtifactListWithProjectSelector1( List<? extends Artifact> results )
+    private void checkArtifactListWithProjectSelector( List<? extends Artifact> results )
     {
         assertNotNull( results );
         assertEquals( 27, results.size( ) );
@@ -694,6 +694,39 @@ public class ManagedDefaultRepositoryContentTest
         assertEquals( "sources", artifact.getClassifier( ) );
         assertEquals( "sha1", artifact.getType( ) );
         assertEquals( ".jar.sha1", artifact.getRemainder( ) );
+    }
+
+    @Test
+    public void testArtifactListWithNamespaceSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.multilevel" )
+            .build( );
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+        assertNotNull( results );
+        assertEquals( 3, results.size( ) );
+        assertTrue( results.get( 0 ).getFileName( ).startsWith( "testproj1" ) );
+    }
+
+    @Test
+    public void testArtifactListWithNamespaceSelectorRecursive() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.multilevel" )
+            .recurse()
+            .build( );
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+        assertNotNull( results );
+        assertEquals( 6, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "testproj2-1.0.pom" ) )
+            .findFirst( ).get( );
+        assertNotNull( artifact );
+        assertEquals( 6, artifact.getAsset( ).getParent( ).getPath( ).split( "/" ).length );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "testproj1-1.0.pom" ) )
+            .findFirst( ).get( );
+        assertNotNull( artifact );
+        assertEquals( 5, artifact.getAsset( ).getParent( ).getPath( ).split( "/" ).length );
+
     }
 
 }

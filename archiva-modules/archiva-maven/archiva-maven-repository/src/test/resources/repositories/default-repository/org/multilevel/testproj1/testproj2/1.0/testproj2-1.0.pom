@@ -2,9 +2,9 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.multilevel</groupId>
-    <artifactId>test</artifactId>
-    <name>Multilevel Test Sub 1</name>
+    <groupId>org.multilevel.testproj1</groupId>
+    <artifactId>testproj2</artifactId>
+    <name>Multilevel Test Sub 2</name>
     <version>1.0</version>
     <packaging>pom</packaging>
 
