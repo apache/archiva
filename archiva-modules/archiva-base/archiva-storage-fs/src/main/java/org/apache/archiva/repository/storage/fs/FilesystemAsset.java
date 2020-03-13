@@ -277,7 +277,7 @@ public class FilesystemAsset implements StorageAsset, Comparable {
     @Override
     public List<StorageAsset> list() {
         try {
-            return Files.list(assetPath).map(p -> new FilesystemAsset(storage, relativePath + "/" + p.getFileName().toString(), assetPath.resolve(p)))
+            return Files.list(assetPath).map(p -> new FilesystemAsset(storage, relativePath + "/" + p.getFileName().toString(), assetPath.resolve(p), this.basePath))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             return Collections.EMPTY_LIST;
