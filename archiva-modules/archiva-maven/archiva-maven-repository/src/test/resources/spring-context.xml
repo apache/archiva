@@ -28,7 +28,7 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.repository,org.apache.archiva.configuration,org.apache.archiva.metadata.repository,org.apache.archiva.repository.index.mock"/>
+  <context:component-scan base-package="org.apache.archiva.repository,org.apache.archiva.configuration,org.apache.archiva.metadata.repository,org.apache.archiva.repository.maven.mock"/>
 
 
   <bean name="archivaConfiguration#test" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">

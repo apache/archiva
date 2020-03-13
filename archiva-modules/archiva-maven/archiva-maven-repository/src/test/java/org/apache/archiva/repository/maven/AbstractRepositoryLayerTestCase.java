@@ -43,7 +43,7 @@ import java.nio.file.Paths;
  *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
+@ContextConfiguration( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-repository-conf.xml" } )
 public abstract class AbstractRepositoryLayerTestCase
 {
     @Rule

@@ -34,7 +34,6 @@ import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Project;
-import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.MavenManagedRepository;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
@@ -44,7 +43,6 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.jcr.Item;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -54,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -463,9 +460,27 @@ public class ManagedDefaultRepositoryContentTest
             .withNamespace( "javax.sql" )
             .withProjectId( "jdbc" )
             .withVersion( "2.0" ).build();
-        Stream<? extends Artifact> stream = repoContent.newArtifactStream( selector );
-        assertNotNull( stream );
-        List<? extends Artifact> results = stream.collect( Collectors.toList( ) );
+        try(Stream<? extends Artifact> stream = repoContent.newArtifactStream( selector ))
+        {
+            assertNotNull( stream );
+            List<? extends Artifact> results = stream.collect( Collectors.toList( ) );
+            checkArtifactListWithVersionSelector1( results );
+        }
+    }
+
+    @Test
+    public void testGetArtifactListWithVersionSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "javax.sql" )
+            .withProjectId( "jdbc" )
+            .withVersion( "2.0" ).build();
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+        checkArtifactListWithVersionSelector1( results );
+    }
+
+    private void checkArtifactListWithVersionSelector1( List<? extends Artifact> results )
+    {
+        assertNotNull( results );
         assertEquals( 2, results.size( ) );
         Artifact mainArtifact = results.stream( ).filter( a -> a.getFileName( ).equals( "jdbc-2.0.jar" ) ).findFirst( ).get( );
         assertNotNull( mainArtifact );
@@ -474,4 +489,211 @@ public class ManagedDefaultRepositoryContentTest
         assertNotNull( metaArtifact );
         assertEquals( MavenTypes.REPOSITORY_METADATA, metaArtifact.getArtifactType( ) );
     }
+
+    @Test
+    public void testGetArtifactStreamWithVersionSelector2() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.axis2" )
+            .withProjectId( "axis2" )
+            .withVersion( "1.3-SNAPSHOT" ).build();
+        try(Stream<? extends Artifact> stream = repoContent.newArtifactStream( selector ))
+        {
+            assertNotNull( stream );
+            List<? extends Artifact> results = stream.collect( Collectors.toList( ) );
+            checkArtifactListWithVersionSelector2( results );
+        }
+    }
+
+    @Test
+    public void testGetArtifactListWithVersionSelector2() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.axis2" )
+            .withProjectId( "axis2" )
+            .withVersion( "1.3-SNAPSHOT" ).build();
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+        checkArtifactListWithVersionSelector2( results );
+    }
+
+    private void checkArtifactListWithVersionSelector2( List<? extends Artifact> results )
+    {
+        assertNotNull( results );
+        assertEquals( 39, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equals( "axis2-1.3-20070725.210059-1.pom" ) )
+            .findFirst( ).get( );
+
+        assertNotNull( artifact );
+        assertEquals( "pom", artifact.getExtension( ) );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
+        assertEquals( "1.3-20070725.210059-1", artifact.getArtifactVersion( ) );
+        assertEquals( ".pom", artifact.getRemainder( ) );
+        assertEquals( "axis2", artifact.getId( ) );
+        assertEquals( "axis2", artifact.getVersion( ).getProject( ).getId( ) );
+        assertEquals( "org.apache.axis2", artifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) );
+        assertEquals( "", artifact.getClassifier( ) );
+        assertEquals( "pom", artifact.getType( ) );
+
+        artifact = null;
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equals( "axis2-1.3-20070725.210059-1.pom.md5" ) )
+            .findFirst( ).get( );
+
+        assertNotNull( artifact );
+        assertEquals( "md5", artifact.getExtension( ) );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
+        assertEquals( "1.3-20070725.210059-1", artifact.getArtifactVersion( ) );
+        assertEquals( ".pom.md5", artifact.getRemainder( ) );
+        assertEquals( "axis2", artifact.getId( ) );
+        assertEquals( "axis2", artifact.getVersion( ).getProject( ).getId( ) );
+        assertEquals( "org.apache.axis2", artifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) );
+        assertEquals( "", artifact.getClassifier( ) );
+        assertEquals( "md5", artifact.getType( ) );
+
+
+        artifact = null;
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equals( "maven-metadata.xml" ) )
+            .findFirst( ).get( );
+        assertNotNull( artifact );
+        assertEquals( BaseArtifactTypes.METADATA, artifact.getArtifactType( ) );
+        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
+        assertEquals( "xml", artifact.getExtension( ) );
+    }
+
+    @Test
+    public void testGetArtifactListWithArtifactSelector1() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.axis2" )
+            .withProjectId( "axis2" )
+            .withVersion( "1.3-SNAPSHOT" )
+            .withArtifactVersion( "1.3-20070731.113304-21" )
+            .withExtension( "pom" )
+            .build( );
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+        checkArtifactListWithArtifactSelector1( results );
+    }
+
+    @Test
+    public void testGetArtifactStreamWithArtifactSelector1() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.axis2" )
+            .withProjectId( "axis2" )
+            .withVersion( "1.3-SNAPSHOT" )
+            .withArtifactVersion( "1.3-20070731.113304-21" )
+            .withExtension( "pom" )
+            .build( );
+        try(Stream<? extends Artifact> results = repoContent.newArtifactStream( selector ))
+        {
+            checkArtifactListWithArtifactSelector1( results.collect( Collectors.toList()) );
+        }
+    }
+
+    private void checkArtifactListWithArtifactSelector1( List<? extends Artifact> results )
+    {
+        assertNotNull( results );
+        assertEquals( 1, results.size( ) );
+        Artifact artifact = results.get( 0 );
+        assertEquals( "pom", artifact.getExtension( ) );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+    }
+
+    @Test
+    public void testGetArtifactListWithArtifactSelector2() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.axis2" )
+            .withProjectId( "axis2" )
+            .withVersion( "1.3-SNAPSHOT" )
+            .withArtifactVersion( "1.3-20070731.113304-21" )
+            .withExtension( "pom" )
+            .includeRelatedArtifacts()
+            .build( );
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        checkArtifactListWithArtifactSelector2( results );
+
+    }
+
+    @Test
+    public void testGetArtifactStreamWithArtifactSelector2() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.axis2" )
+            .withProjectId( "axis2" )
+            .withVersion( "1.3-SNAPSHOT" )
+            .withArtifactVersion( "1.3-20070731.113304-21" )
+            .withExtension( "pom" )
+            .includeRelatedArtifacts()
+            .build( );
+        try(Stream<? extends Artifact> results = repoContent.newArtifactStream( selector ))
+        {
+            checkArtifactListWithArtifactSelector2( results.collect( Collectors.toList()) );
+        }
+    }
+
+    private void checkArtifactListWithArtifactSelector2( List<? extends Artifact> results )
+    {
+        assertNotNull( results );
+        assertEquals( 3, results.size( ) );
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "axis2-1.3-20070731.113304-21.pom" ) )
+            .findFirst( ).get( );
+        assertNotNull( artifact );
+        assertEquals( "pom", artifact.getExtension( ) );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "axis2-1.3-20070731.113304-21.pom.sha1" ) )
+            .findFirst( ).get( );
+        assertNotNull( artifact );
+        assertEquals( "sha1", artifact.getExtension( ) );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+    }
+
+
+    @Test
+    public void testArtifactListWithProjectSelector1() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven.shared" )
+            .withProjectId( "maven-downloader" )
+            .build( );
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+        checkArtifactListWithProjectSelector1( results );
+
+    }
+
+    @Test
+    public void testArtifactStreamWithProjectSelector1() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven.shared" )
+            .withProjectId( "maven-downloader" )
+            .build( );
+        Stream<? extends Artifact> results = repoContent.newArtifactStream( selector );
+        checkArtifactListWithProjectSelector1( results.collect( Collectors.toList()) );
+
+    }
+
+    private void checkArtifactListWithProjectSelector1( List<? extends Artifact> results )
+    {
+        assertNotNull( results );
+        assertEquals( 27, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "maven-metadata.xml" ) )
+            .findFirst( ).get( );
+        assertNotNull( artifact );
+        assertEquals( "xml", artifact.getExtension( ) );
+        assertEquals( BaseArtifactTypes.METADATA, artifact.getArtifactType( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "maven-downloader-1.0-sources.jar" ) )
+            .findFirst( ).get( );
+        assertNotNull( artifact );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+        assertEquals( "sources", artifact.getClassifier( ) );
+        assertEquals( "java-source", artifact.getType( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "maven-downloader-1.0-sources.jar.sha1" ) )
+            .findFirst( ).get( );
+        assertNotNull( artifact );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( "sources", artifact.getClassifier( ) );
+        assertEquals( "sha1", artifact.getType( ) );
+        assertEquals( ".jar.sha1", artifact.getRemainder( ) );
+    }
+
 }

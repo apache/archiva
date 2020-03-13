@@ -63,6 +63,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -416,7 +417,7 @@ public class ManagedDefaultRepositoryContent
                 Matcher matcher = UNIQUE_SNAPSHOT_PATTERN.matcher( versionPostfix );
                 if (matcher.matches()) {
                     info.version = baseVersion + "-" + matcher.group( 1 );
-                    String newPrefix = prefix + info.version;
+                    String newPrefix = info.id + "-" + info.version;
                     if (fileName.startsWith( newPrefix ))
                     {
                         String classPostfix = StringUtils.removeStart( fileName, newPrefix );
@@ -482,6 +483,12 @@ public class ManagedDefaultRepositoryContent
             info.artifactType = BaseArtifactTypes.METADATA;
         } else if (MavenContentHelper.METADATA_REPOSITORY_FILENAME.equalsIgnoreCase( fileName )) {
             info.artifactType = MavenTypes.REPOSITORY_METADATA;
+        } else if (StringUtils.isNotEmpty( info.remainder ) && StringUtils.countMatches( info.remainder, "." )>=2) {
+            String mainFile = StringUtils.substringBeforeLast( fileName, "." );
+            if (path.getParent().resolve( mainFile ).exists())
+            {
+                info.artifactType = BaseArtifactTypes.RELATED;
+            }
         }
         return info;
 
@@ -691,8 +698,8 @@ public class ManagedDefaultRepositoryContent
                 .map( this::getArtifactFromPath );
         } else if (projectId!=null) {
             final StorageAsset projDir = getAsset( selector.getNamespace( ), projectId );
-            return projDir.list( ).stream( ).filter( StorageAsset::isContainer )
-                .map( StorageAsset::list )
+            return projDir.list( ).stream( )
+                .map(a -> a.isContainer( ) ? a.list( ) : Arrays.asList( a ) )
                 .flatMap( List::stream )
                 .filter( filter )
                 .map( this::getArtifactFromPath );
