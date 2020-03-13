@@ -99,8 +99,8 @@ public interface Artifact extends ContentItem
     default String getExtension( )
     {
         final String name = getAsset( ).getName( );
-        final int idx = name.lastIndexOf( '.' );
-        if ( idx >= 0 )
+        final int idx = name.lastIndexOf( '.' )+1;
+        if ( idx > 0 )
         {
             return name.substring( idx );
         }
