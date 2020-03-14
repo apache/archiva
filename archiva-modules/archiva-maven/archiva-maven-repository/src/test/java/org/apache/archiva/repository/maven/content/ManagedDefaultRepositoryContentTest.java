@@ -714,6 +714,21 @@ public class ManagedDefaultRepositoryContentTest
             .recurse()
             .build( );
         List<? extends Artifact> results = repoContent.getArtifacts( selector );
+        checkArtifactListWithNamespaceSelectorRecursive( results );
+    }
+
+    @Test
+    public void testArtifactStreamWithNamespaceSelectorRecursive() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.multilevel" )
+            .recurse()
+            .build( );
+        Stream<? extends Artifact> results = repoContent.newArtifactStream( selector );
+        checkArtifactListWithNamespaceSelectorRecursive( results.collect( Collectors.toList()) );
+    }
+
+    private void checkArtifactListWithNamespaceSelectorRecursive( List<? extends Artifact> results )
+    {
         assertNotNull( results );
         assertEquals( 6, results.size( ) );
 
@@ -726,6 +741,114 @@ public class ManagedDefaultRepositoryContentTest
             .findFirst( ).get( );
         assertNotNull( artifact );
         assertEquals( 5, artifact.getAsset( ).getParent( ).getPath( ).split( "/" ).length );
+    }
+
+
+    @Test
+    public void testArtifactListWithArtifactSelector1() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "test" )
+            .withVersion( "1.0-SNAPSHOT" )
+            .withArtifactId( "test" )
+            .withArtifactVersion( "1.0-20050611.112233-1" )
+            .build( );
+
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        assertNotNull( results );
+        assertEquals( 1, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "test-1.0-20050611.112233-1.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "", artifact.getClassifier( ) );
+    }
+
+    @Test
+    public void testArtifactListWithArtifactSelector2() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "test" )
+            .withVersion( "1.0-SNAPSHOT" )
+            .withClassifier( "*" )
+            .withArtifactId( "test" )
+            .withArtifactVersion( "1.0-20050611.112233-1" )
+            .build( );
+
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        assertNotNull( results );
+        assertEquals( 2, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "test-1.0-20050611.112233-1-javadoc.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "javadoc", artifact.getClassifier( ) );
+        assertEquals( "javadoc", artifact.getType( ) );
+    }
+
+    @Test
+    public void testArtifactListWithArtifactSelector3() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "test" )
+            .withVersion( "1.0-SNAPSHOT" )
+            .withClassifier( "*" )
+            .withArtifactVersion( "1.0-20050611.112233-1" )
+            .build( );
+
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        assertNotNull( results );
+        assertEquals( 3, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "test-1.0-20050611.112233-1-javadoc.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "javadoc", artifact.getClassifier( ) );
+        assertEquals( "javadoc", artifact.getType( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "wrong-artifactId-1.0-20050611.112233-1.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "", artifact.getClassifier( ) );
+        assertEquals( "wrong-artifactId", artifact.getId( ) );
+    }
+
+    @Test
+    public void testArtifactListWithArtifactSelectorAndRelated() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "samplejar" )
+            .withVersion( "1.0" )
+            .withArtifactVersion( "1.0" )
+            .withArtifactId( "samplejar" )
+            .withExtension( "jar" )
+            .includeRelatedArtifacts()
+            .build( );
+
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        assertNotNull( results );
+        assertEquals( 3, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "samplejar-1.0.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "samplejar-1.0.jar.md5" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( "md5", artifact.getExtension( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "samplejar-1.0.jar.sha1" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( "sha1", artifact.getExtension( ) );
 
     }
 

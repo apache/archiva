@@ -444,6 +444,12 @@ public class ManagedDefaultRepositoryContent
                 }
             } else {
                 log.debug( "Artifact does not match the maven name pattern: {}", path );
+                if ( fileName.contains( "-"+baseVersion ) )
+                {
+                    info.id = StringUtils.substringBefore( fileName, "-"+baseVersion );
+                } else {
+                    info.id = fileName;
+                }
                 info.artifactType = BaseArtifactTypes.UNKNOWN;
                 info.version = "";
                 info.classifier = "";
@@ -464,6 +470,11 @@ public class ManagedDefaultRepositoryContent
                     info.remainder = classPostfix;
                 }
             } else {
+                if (fileName.contains( "-"+genericVersion )) {
+                    info.id = StringUtils.substringBefore( fileName, "-"+genericVersion );
+                } else {
+                    info.id = fileName;
+                }
                 log.debug( "Artifact does not match the version pattern {}", path );
                 info.artifactType = BaseArtifactTypes.UNKNOWN;
                 info.version = "";
@@ -627,6 +638,15 @@ public class ManagedDefaultRepositoryContent
             fileNamePattern.append("[A-Za-z0-9_\\-.]+-");
         }
         if (selector.hasArtifactVersion()) {
+            if ( selector.getArtifactVersion( ).contains("*")) {
+                String[] tokens = StringUtils.splitPreserveAllTokens( selector.getArtifactVersion( ), "*" );
+                for (String currentToken : tokens) {
+                    if (!currentToken.equals("")) {
+                        fileNamePattern.append( Pattern.quote( currentToken ) );
+                    }
+                    fileNamePattern.append( "[A-Za-z0-9_\\-.]*" );
+                }
+            }
             fileNamePattern.append( Pattern.quote(selector.getArtifactVersion( )) );
         } else  {
             fileNamePattern.append( "[A-Za-z0-9_\\-.]+" );
@@ -637,7 +657,7 @@ public class ManagedDefaultRepositoryContent
         {
             if ( "*".equals( classifier ) )
             {
-                fileNamePattern.append( "-[A-Za-z0-9]+\\." );
+                fileNamePattern.append( "(-[A-Za-z0-9]+)?\\." );
             }
             else
             {
@@ -677,7 +697,12 @@ public class ManagedDefaultRepositoryContent
      *     namespace and project are returned.</li>
      *     <li>If a namespace and a project id or artifact id and a version is given, the artifacts of the given
      *     version are returned</li>
+     *     <li>If no artifact version or artifact id is given, it will return all "artifacts" found in the directory.
+     *     To select only artifacts that match the layout you should add the artifact id and artifact version
+     *     (can contain a '*' pattern).</li>
      * </ul>
+     *
+     * The '*' pattern can be used in classifiers and artifact versions and match zero or more characters.
      *
      * There is no determinate order of the elements in the stream.
      *
