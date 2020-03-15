@@ -112,6 +112,7 @@ public class ManagedDefaultRepositoryContent
 
     public static final Pattern UNIQUE_SNAPSHOT_PATTERN = Pattern.compile( "^(SNAPSHOT|[0-9]{8}\\.[0-9]{6}-[0-9]+)(.*)" );
     public static final Pattern CLASSIFIER_PATTERN = Pattern.compile( "^-([^.]+)(\\..*)" );
+    public static final Pattern COMMON_EXTENSIONS = Pattern.compile( "^(jar|war|ear|dar|tar|zip|pom|xml)$" );
 
     public static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "^([0-9]{8})\\.([0-9]{6})$" );
 
@@ -292,6 +293,23 @@ public class ManagedDefaultRepositoryContent
                 .build( ) );
     }
 
+    public Namespace getNamespaceFromPath( final StorageAsset namespacePath) {
+        final String namespace = MavenContentHelper.getNamespaceFromNamespacePath( namespacePath );
+        return namespaceMap.computeIfAbsent( namespace,
+            myNamespace -> ArchivaNamespace.withRepository( this )
+                .withAsset( namespacePath )
+                .withNamespace( namespace )
+                .build( ) );
+    }
+
+    private Project getProjectFromPath( final StorageAsset projectPath) {
+        return projectMap.computeIfAbsent( projectPath,
+            myProjectPath -> ArchivaProject.withAsset( projectPath )
+                .withNamespace( getNamespaceFromPath( projectPath.getParent() ) )
+                .withId( projectPath.getName( ) ).build( )
+        );
+    }
+
     private Project getProjectFromArtifactPath( final StorageAsset artifactPath) {
         final StorageAsset projectPath = artifactPath.getParent( ).getParent( );
         return projectMap.computeIfAbsent( projectPath,
@@ -344,7 +362,6 @@ public class ManagedDefaultRepositoryContent
             // Check for version directory (contains at least a pom or metadata file)
             if (itemPath.list( ).stream( ).map(a -> a.getName().toLowerCase()).anyMatch( n ->
                 n.endsWith( ".pom" )
-                || n.startsWith( "maven-metadata" )
             )) {
                 return versionMap.computeIfAbsent( itemPath,
                     myVersionPath -> ArchivaVersion.withAsset( itemPath )
@@ -437,8 +454,15 @@ public class ManagedDefaultRepositoryContent
                     }
                 } else {
                     log.debug( "Artifact does not match the snapshot version pattern {}", path );
+
                     info.artifactType = BaseArtifactTypes.UNKNOWN;
-                    info.version = "";
+                    // This is just a guess. No guarantee to the get a usable version.
+                    info.version = StringUtils.removeStart( fileName, info.id + '-' );
+                    String postfix = StringUtils.substringAfterLast( info.version, "." ).toLowerCase();
+                    while (COMMON_EXTENSIONS.matcher(postfix).matches()) {
+                        info.version = StringUtils.substringBeforeLast( info.version, "." );
+                        postfix = StringUtils.substringAfterLast( info.version, "." ).toLowerCase();
+                    }
                     info.classifier = "";
                     info.remainder = StringUtils.substringAfter( fileName, prefix );
                 }
@@ -515,7 +539,7 @@ public class ManagedDefaultRepositoryContent
             throw new IllegalArgumentException( "Version must be set" );
         }
         if (!selector.hasArtifactId( )) {
-            throw new IllegalArgumentException( "Artifact Id must be set" );
+            throw new IllegalArgumentException( "Artifact id must be set" );
         }
         final StorageAsset artifactDir = getAsset(selector.getNamespace(), selector.getProjectId(),
             selector.getVersion());
@@ -529,21 +553,6 @@ public class ManagedDefaultRepositoryContent
         return artifactMap.computeIfAbsent( path, artifactPath -> createArtifact( path, selector, classifier, extension ) );
     }
 
-    private StorageAsset getBasePathFromSelector(ItemSelector selector) {
-        StringBuilder path = new StringBuilder( );
-        if (selector.hasNamespace()) {
-            path.append(String.join( "/", getNamespace( selector ).getNamespacePath( ) ));
-        }
-        if (selector.hasProjectId()) {
-            path.append( "/" ).append( selector.getProjectId( ) );
-        }
-        if (selector.hasVersion()) {
-            path.append( "/" ).append( selector.getVersion( ) );
-        }
-        return getStorage( ).getAsset( path.toString( ) );
-    }
-
-
     /**
      * Returns all the subdirectories of the given namespace directory as project.
      */
@@ -552,7 +561,7 @@ public class ManagedDefaultRepositoryContent
     {
         return namespace.getAsset( ).list( ).stream( )
             .filter( a -> a.isContainer( ) )
-            .map( a -> getProjectFromArtifactPath( a ) )
+            .map( a -> getProjectFromPath( a ) )
             .collect( Collectors.toList());
     }
 
@@ -590,9 +599,9 @@ public class ManagedDefaultRepositoryContent
     @Override
     public List<? extends Version> getVersions( final ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
-        if (StringUtils.isEmpty( selector.getProjectId() )) {
+        if (!selector.hasProjectId()) {
             log.error( "Bad item selector for version list: {}", selector );
-            throw new IllegalArgumentException( "Project ID not set, while retrieving versions." );
+            throw new IllegalArgumentException( "Project id not set, while retrieving versions." );
         }
         final Project project = getProject( selector );
         if (selector.hasVersion()) {
@@ -639,15 +648,17 @@ public class ManagedDefaultRepositoryContent
         }
         if (selector.hasArtifactVersion()) {
             if ( selector.getArtifactVersion( ).contains("*")) {
-                String[] tokens = StringUtils.splitPreserveAllTokens( selector.getArtifactVersion( ), "*" );
+                String[] tokens = StringUtils.splitByWholeSeparator( selector.getArtifactVersion( ), "*" );
                 for (String currentToken : tokens) {
                     if (!currentToken.equals("")) {
                         fileNamePattern.append( Pattern.quote( currentToken ) );
                     }
                     fileNamePattern.append( "[A-Za-z0-9_\\-.]*" );
                 }
+            } else
+            {
+                fileNamePattern.append( Pattern.quote( selector.getArtifactVersion( ) ) );
             }
-            fileNamePattern.append( Pattern.quote(selector.getArtifactVersion( )) );
         } else  {
             fileNamePattern.append( "[A-Za-z0-9_\\-.]+" );
         }
@@ -738,15 +749,14 @@ public class ManagedDefaultRepositoryContent
                         .map( this::getArtifactFromPath );
 
             } else {
+                // We descend into 2 subdirectories (project and version)
                 return namespaceDir.list( ).stream( )
-                    .filter( StorageAsset::isContainer )
-                    .map( StorageAsset::list )
+                    .map( a -> a.isContainer( ) ? a.list( ) : Arrays.asList( a ) )
                     .flatMap( List::stream )
-                    .filter( StorageAsset::isContainer )
-                    .map( StorageAsset::list )
+                    .map( a -> a.isContainer( ) ? a.list( ) : Arrays.asList( a ) )
                     .flatMap( List::stream )
                     .filter( filter )
-                    .map(this::getArtifactFromPath);
+                    .map( this::getArtifactFromPath );
             }
         }
     }
@@ -857,8 +867,14 @@ public class ManagedDefaultRepositoryContent
     @Override
     public ContentItem toItem( String path ) throws LayoutException
     {
-        ItemSelector selector = getPathParser( ).toItemSelector( path );
-        return getItem( selector );
+        StorageAsset asset = getRepository( ).getAsset( path );
+        if (asset.isLeaf())
+        {
+            ItemSelector selector = getPathParser( ).toItemSelector( path );
+            return getItem( selector );
+        } else {
+            return getItemFromPath( asset );
+        }
     }
 
     @Override

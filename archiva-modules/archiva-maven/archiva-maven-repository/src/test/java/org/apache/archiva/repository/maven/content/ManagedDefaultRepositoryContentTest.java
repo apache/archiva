@@ -32,17 +32,22 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
+import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.MavenManagedRepository;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.Name;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -51,6 +56,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -279,6 +285,156 @@ public class ManagedDefaultRepositoryContentTest
         assertArrayEquals( expectedVersions, versions.toArray( ) );
 
 
+    }
+
+    @Test
+    public void getTestGetProjectWithIllegalArgs() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache" )
+            .withVersion( "1.0" )
+            .build();
+        try
+        {
+            repoContent.getProject( selector );
+            assertFalse( "Should throw IllegalArgumentException if no project id is given", true );
+        } catch (IllegalArgumentException e) {
+            // Everything fine
+            assertTrue( e.getMessage( ).contains( "Project id must be set" ) );
+        }
+    }
+
+    @Test
+    public void getTestGetVersionWithIllegalArgs() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withVersion( "1.0" )
+            .build();
+        try
+        {
+            repoContent.getVersion( selector );
+            assertFalse( "Should throw IllegalArgumentException if no project id is given", true );
+        } catch (IllegalArgumentException e) {
+            // Everything fine
+            assertTrue( e.getMessage( ).contains( "Project id must be set" ) );
+        }
+
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "shared" )
+            .build();
+        try
+        {
+            repoContent.getVersion( selector );
+            assertFalse( "Should throw IllegalArgumentException if no version is given", true );
+        } catch (IllegalArgumentException e) {
+            // Everything fine
+            assertTrue( e.getMessage( ).contains( "Version must be set" ) );
+        }
+    }
+
+    @Test
+    public void getTestGetArtifactWithIllegalArgs() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withVersion( "1.0" )
+            .withArtifactId( "shared" )
+            .withArtifactVersion("1.0")
+            .build();
+        try
+        {
+            repoContent.getArtifact( selector );
+            assertFalse( "Should throw IllegalArgumentException if no project id is given", true );
+        } catch (IllegalArgumentException e) {
+            // Everything fine
+            assertTrue( e.getMessage( ).contains( "Project id must be set" ) );
+        }
+
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "shared" )
+            .withArtifactId( "shared" )
+            .withArtifactVersion("1.0")
+            .build();
+        try
+        {
+            repoContent.getArtifact( selector );
+            assertFalse( "Should throw IllegalArgumentException if no version is given", true );
+        } catch (IllegalArgumentException e) {
+            // Everything fine
+            assertTrue( e.getMessage( ).contains( "Version must be set" ) );
+        }
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "shared" )
+            .withVersion("1.0")
+            .withArtifactVersion("1.0")
+            .build();
+        try
+        {
+            repoContent.getArtifact( selector );
+            assertFalse( "Should throw IllegalArgumentException if no artifact id is given", true );
+        } catch (IllegalArgumentException e) {
+            // Everything fine
+            assertTrue( e.getMessage( ).contains( "Artifact id must be set" ) );
+        }
+
+
+    }
+
+    @Test
+    public void testGetProjects() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" ).build();
+        Namespace ns = repoContent.getNamespace( selector );
+        assertNotNull( ns );
+        List<? extends Project> projects = repoContent.getProjects( ns );
+        assertEquals( 12, projects.size( ) );
+        String[] expected = new String[]{
+            "A", "B", "C", "archiva", "discovery", "maven-parent", "samplejar", "shared", "some-ejb", "test",
+            "testing", "update"
+        };
+        Object[] actual = projects.stream( ).map( p -> p.getId( ) ).sorted( ).toArray( );
+        assertArrayEquals( expected, actual);
+    }
+
+    @Test
+    public void testGetProjectsWithSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" ).build();
+        List<? extends Project> projects = repoContent.getProjects( selector );
+        assertEquals( 12, projects.size( ) );
+        String[] expected = new String[]{
+            "A", "B", "C", "archiva", "discovery", "maven-parent", "samplejar", "shared", "some-ejb", "test",
+            "testing", "update"
+        };
+        Object[] actual = projects.stream( ).map( p -> p.getId( ) ).sorted( ).toArray( );
+        assertArrayEquals( expected, actual);
+    }
+
+    @Test
+    public void testGetVersionsWithIllegalSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" ).build();
+        try
+        {
+            List<? extends Version> versions = repoContent.getVersions( selector );
+            assertFalse( "IllegalArgumentException expected, when project id not set", true );
+        } catch (IllegalArgumentException e) {
+            assertEquals( "Project id not set, while retrieving versions.", e.getMessage( ) );
+        }
+    }
+
+    @Test
+    public void testGetVersionsWithSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "samplejar" ).build();
+        List<? extends Version> versions = repoContent.getVersions( selector );
+        assertNotNull( versions );
+        assertEquals( 2, versions.size( ) );
     }
 
 
@@ -814,6 +970,293 @@ public class ManagedDefaultRepositoryContentTest
         assertNotNull( artifact );
         assertEquals( "", artifact.getClassifier( ) );
         assertEquals( "wrong-artifactId", artifact.getId( ) );
+    }
+
+    @Test
+    public void testArtifactListWithArtifactSelector4() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "test" )
+            .withVersion( "1.0-SNAPSHOT" )
+            .withClassifier( "" )
+            .build( );
+
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        assertNotNull( results );
+        assertEquals( 5, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "test-1.0-20050611.112233-1-javadoc.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "javadoc", artifact.getClassifier( ) );
+        assertEquals( "javadoc", artifact.getType( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "wrong-artifactId-1.0-20050611.112233-1.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "", artifact.getClassifier( ) );
+        assertEquals( "wrong-artifactId", artifact.getId( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "wrong-artifactId-1.0-20050611.1122x-1.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "", artifact.getClassifier( ) );
+        assertEquals( "wrong-artifactId", artifact.getId( ) );
+        assertEquals( "", artifact.getArtifactVersion( ) );
+
+        artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "test-1.0-20050611.1122x-1.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "", artifact.getClassifier( ) );
+        assertEquals( "test", artifact.getId( ) );
+        assertEquals( "1.0-20050611.1122x-1", artifact.getArtifactVersion( ) );
+
+    }
+
+    @Test
+    public void testArtifactListWithArtifactSelectorWithClassifier() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "test" )
+            .withVersion( "1.0-SNAPSHOT" )
+            .withArtifactId( "test" )
+            .withClassifier( "javadoc" )
+            .withArtifactVersion( "1.0-20050611.112233-1" )
+            .build( );
+
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        assertNotNull( results );
+        assertEquals( 1, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "test-1.0-20050611.112233-1-javadoc.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+        assertEquals( "javadoc", artifact.getClassifier( ) );
+        assertEquals( "javadoc", artifact.getType( ) );
+    }
+
+    @Test
+    public void testArtifactListWithArtifactSelectorWrongArtifact() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "test" )
+            .withVersion( "1.0-SNAPSHOT" )
+            .withArtifactId( "wrong-artifactId" )
+            .withArtifactVersion( "1.0-20050611.112233-1" )
+            .build( );
+
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        assertNotNull( results );
+        assertEquals( 1, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "wrong-artifactId-1.0-20050611.112233-1.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+    }
+
+    @Test
+    public void testArtifactListWithArtifactSelectorVersionPattern() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "test" )
+            .withVersion( "1.0-SNAPSHOT" )
+            .withArtifactVersion( "1.0-*" )
+            .build( );
+
+        List<? extends Artifact> results = repoContent.getArtifacts( selector );
+
+        assertNotNull( results );
+        assertEquals( 5, results.size( ) );
+
+        Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "wrong-artifactId-1.0-20050611.112233-1.jar" ) )
+            .findFirst().get();
+        assertNotNull( artifact );
+    }
+
+    @Test
+    public void testGetArtifactFromContentItem() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" ).build();
+        Namespace ns = repoContent.getNamespace( selector );
+        List<? extends Artifact> artifacts = repoContent.getArtifacts( ns );
+        assertNotNull( artifacts );
+        assertEquals( 39, artifacts.size( ) );
+        List<? extends Artifact> artifacts2 = repoContent.getArtifacts( (ContentItem)ns );
+        assertArrayEquals( artifacts.toArray(), artifacts2.toArray() );
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven.shared" )
+            .withProjectId( "maven-downloader" )
+            .build();
+        Project project = repoContent.getProject( selector );
+        artifacts = repoContent.getArtifacts( project );
+        assertNotNull( artifacts );
+        assertEquals( 27, artifacts.size( ) );
+        artifacts2 = repoContent.getArtifacts( (ContentItem)project );
+        assertArrayEquals( artifacts.toArray(), artifacts2.toArray() );
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven.shared" )
+            .withProjectId( "maven-downloader" )
+            .withVersion( "1.1" )
+            .build( );
+        Version version = repoContent.getVersion( selector );
+        artifacts = repoContent.getArtifacts( version );
+        assertNotNull( artifacts );
+        assertEquals( 12, artifacts.size( ) );
+        artifacts2 = repoContent.getArtifacts( (ContentItem)version );
+        assertArrayEquals( artifacts.toArray(), artifacts2.toArray() );
+
+    }
+
+    @Test
+    public void testGetRelatedArtifactsFromArtifact() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven.shared" )
+            .withProjectId( "maven-downloader" )
+            .withVersion( "1.1" )
+            .withExtension( "jar" )
+            .withArtifactId( "maven-downloader" ).build( );
+
+        Artifact artifact = repoContent.getArtifact( selector );
+        assertNotNull( artifact );
+        List<? extends Artifact> artifacts = repoContent.getArtifacts( artifact );
+        assertNotNull( artifacts );
+        assertEquals( 2, artifacts.size( ) );
+
+    }
+
+    @Test
+    public void testToItemFromPath() throws LayoutException
+    {
+        String path = "/org/apache/maven/shared";
+        ContentItem item = repoContent.toItem( path );
+        assertNotNull( item );
+        assertTrue( item instanceof Namespace );
+
+        path = "/org/apache/maven/shared/maven-downloader";
+        item = repoContent.toItem( path );
+        assertNotNull( item );
+        assertTrue( item instanceof Project );
+
+        path = "/org/apache/maven/shared/maven-downloader/1.1";
+        item = repoContent.toItem( path );
+        assertNotNull( item );
+        assertTrue( item instanceof Version );
+
+        path = "/org/apache/maven/shared/maven-downloader/1.1/maven-downloader-1.1.jar";
+        item = repoContent.toItem( path );
+        assertNotNull( item );
+        assertTrue( item instanceof Artifact );
+
+    }
+
+    @Test
+    public void testToItemFromAssetPath() throws LayoutException
+    {
+        StorageAsset path = repoContent.getRepository().getAsset("/org/apache/maven/shared");
+        ContentItem item = repoContent.toItem( path );
+        assertNotNull( item );
+        assertTrue( item instanceof Namespace );
+
+        path = repoContent.getRepository( ).getAsset( "/org/apache/maven/shared/maven-downloader" );
+        item = repoContent.toItem( path );
+        assertNotNull( item );
+        assertTrue( item instanceof Project );
+
+        path = repoContent.getRepository( ).getAsset( "/org/apache/maven/shared/maven-downloader/1.1" );
+        item = repoContent.toItem( path );
+        assertNotNull( item );
+        assertTrue( item instanceof Version );
+
+        path = repoContent.getRepository( ).getAsset( "/org/apache/maven/shared/maven-downloader/1.1/maven-downloader-1.1.jar" );
+        item = repoContent.toItem( path );
+        assertNotNull( item );
+        assertTrue( item instanceof Artifact );
+
+    }
+
+    @Test
+    public void testHasContent() throws LayoutException
+    {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven.shared" )
+            .withProjectId( "maven-downloader" )
+            .withVersion( "1.1" )
+            .withArtifactId( "maven-downloader" )
+            .withExtension( "jar" )
+            .build();
+
+        assertTrue( repoContent.hasContent( selector ) );
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven.shared" )
+            .withProjectId( "maven-downloader" )
+            .withVersion( "1.1" )
+            .withArtifactId( "maven-downloader" )
+            .withExtension( "zip" )
+            .build();
+
+        assertFalse( repoContent.hasContent( selector ) );
+
+    }
+
+    @Test
+    public void testGetItemWithNamespaceSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .build( );
+        ContentItem item = repoContent.getItem( selector );
+        assertNotNull( item );
+        assertTrue( item instanceof Namespace );
+    }
+
+    @Test
+    public void testGetItemWithProjectSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "shared" )
+            .build( );
+        ContentItem item = repoContent.getItem( selector );
+        assertNotNull( item );
+        assertTrue( item instanceof Project );
+    }
+
+    @Test
+    public void testGetItemWithVersionSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "samplejar" )
+            .withVersion("2.0")
+            .build( );
+        ContentItem item = repoContent.getItem( selector );
+        assertNotNull( item );
+        assertTrue( item instanceof Version );
+    }
+
+    @Test
+    public void testGetItemWithArtifactSelector() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "samplejar" )
+            .withVersion("2.0")
+            .withArtifactId( "samplejar" )
+            .build( );
+        ContentItem item = repoContent.getItem( selector );
+        assertNotNull( item );
+        assertTrue( item instanceof Artifact );
+    }
+
+    @Test
+    public void testGetNamespaceFromPath() {
+        StorageAsset path = repoContent.getRepository( ).getAsset( "/org/apache/axis2" );
+        Namespace ns = repoContent.getNamespaceFromPath( path );
+        assertNotNull( ns );
+        assertEquals( "org.apache.axis2", ns.getNamespace( ) );
+
     }
 
     @Test
