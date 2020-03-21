@@ -107,6 +107,12 @@ public class ArchivaVersion extends ArchivaContentItem implements Version
         return result;
     }
 
+    @Override
+    public String toString( )
+    {
+        return version+", project="+project.toString();
+    }
+
     private static final class Builder extends ContentItemBuilder<ArchivaVersion, VersionOptBuilder, WithProjectBuilder>
         implements WithProjectBuilder, WithVersionBuilder, VersionOptBuilder
     {

@@ -97,6 +97,11 @@ public class ArchivaProject extends ArchivaContentItem implements Project
         return result;
     }
 
+    @Override
+    public String toString( )
+    {
+        return id + ", namespace="+namespace.toString();
+    }
 
     /*
      * Builder class

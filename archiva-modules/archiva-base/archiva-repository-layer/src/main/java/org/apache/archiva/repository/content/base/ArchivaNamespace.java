@@ -87,6 +87,12 @@ public class ArchivaNamespace extends ArchivaContentItem implements Namespace
         return result;
     }
 
+    @Override
+    public String toString( )
+    {
+        return namespace;
+    }
+
     private static class Builder extends ContentItemBuilder<ArchivaNamespace, NamespaceOptBuilder, WithNamespaceBuilder>
         implements WithNamespaceBuilder, NamespaceOptBuilder
     {

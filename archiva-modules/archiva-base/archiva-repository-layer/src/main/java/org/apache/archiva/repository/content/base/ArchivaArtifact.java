@@ -159,6 +159,22 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
         return result;
     }
 
+    @Override
+    public String toString( )
+    {
+        final StringBuilder sb = new StringBuilder( "ArchivaArtifact{" );
+        sb.append( "id='" ).append( id ).append( '\'' );
+        sb.append( ", artifactVersion='" ).append( artifactVersion ).append( '\'' );
+        sb.append( ", version=" ).append( version );
+        sb.append( ", type='" ).append( type ).append( '\'' );
+        sb.append( ", classifier='" ).append( classifier ).append( '\'' );
+        sb.append( ", remainder='" ).append( remainder ).append( '\'' );
+        sb.append( ", contentType='" ).append( contentType ).append( '\'' );
+        sb.append( ", artifactType=" ).append( artifactType );
+        sb.append( '}' );
+        return sb.toString( );
+    }
+
     private static class Builder
         extends ContentItemBuilder<ArchivaArtifact, ArtifactOptBuilder, WithVersionObjectBuilder>
         implements ArtifactVersionBuilder, WithVersionObjectBuilder, ArtifactWithIdBuilder, ArtifactOptBuilder
