@@ -174,6 +174,21 @@ public class ManagedDefaultRepositoryContent
 
 
     /// ************* End of new generation interface ******************
+
+    /**
+     * Removes the item from the filesystem. For namespaces, projects and versions it deletes
+     * recursively.
+     * For namespaces you have to be careful, because maven repositories may have sub namespaces
+     * parallel to projects. Which means deleting a namespaces also deletes the sub namespaces and
+     * not only the projects of the given namespace. Better run the delete for each project of
+     * a namespace.
+     *
+     * Artifacts are deleted as provided. No related artifacts will be deleted.
+     *
+     * @param item the item that should be removed
+     * @throws ItemNotFoundException if the item does not exist
+     * @throws ContentAccessException if some error occurred while accessing the filesystem
+     */
     @Override
     public void deleteItem( ContentItem item ) throws ItemNotFoundException, ContentAccessException
     {
@@ -201,8 +216,8 @@ public class ManagedDefaultRepositoryContent
         }
         catch ( IOException e )
         {
-            log.error( "Could not delete namespace directory {}: {}", itemPath, e.getMessage( ), e );
-            throw new ContentAccessException( "Error occured while deleting namespace " + item + ": " + e.getMessage( ), e );
+            log.error( "Could not delete item from path {}: {}", itemPath, e.getMessage( ), e );
+            throw new ContentAccessException( "Error occured while deleting item " + item + ": " + e.getMessage( ), e );
         }
     }
 
