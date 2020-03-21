@@ -19,6 +19,7 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
@@ -28,11 +29,13 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
@@ -1292,6 +1295,277 @@ public class ManagedDefaultRepositoryContentTest
         assertNotNull( artifact );
         assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
         assertEquals( "sha1", artifact.getExtension( ) );
+
+    }
+
+    private Path copyRepository(String repoName) throws IOException, URISyntaxException
+    {
+        Path tempDir = Files.createTempDirectory( "archiva-repocontent" );
+        Path repoSource = Paths.get( Thread.currentThread( ).getContextClassLoader( ).getResource( "repositories/" + repoName ).toURI( ) );
+        assertTrue( Files.exists( repoSource ) );
+        FileUtils.copyDirectory( repoSource.toFile( ), tempDir.toFile() );
+        return tempDir;
+    }
+
+    private ManagedRepository createManagedRepoWithContent(String sourceRepoName) throws IOException, URISyntaxException
+    {
+        Path repoDir = copyRepository( sourceRepoName );
+        MavenManagedRepository repo = createRepository( sourceRepoName, sourceRepoName, repoDir );
+        ManagedDefaultRepositoryContent deleteRepoContent = new ManagedDefaultRepositoryContent( repo, artifactMappingProviders, fileTypes, fileLockManager );
+        deleteRepoContent.setMavenContentHelper( contentHelper );
+        return repo;
+    }
+
+    @Test
+    public void deleteNamespaceItem() throws IOException, URISyntaxException, ItemNotFoundException
+    {
+        ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
+        ManagedRepositoryContent myRepoContent = repo.getContent( );
+        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven" )) );
+        ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" ).build();
+        ContentItem item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Namespace );
+        myRepoContent.deleteItem( item );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/maven" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache" )) );
+
+        // Sub namespaces are deleted too
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar" )) );
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" ).build();
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Namespace );
+        myRepoContent.deleteItem( item );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar" )) );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar" )) );
+    }
+
+    @Test
+    public void deleteProjectItem() throws IOException, URISyntaxException, ItemNotFoundException
+    {
+        ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
+        ManagedRepositoryContent myRepoContent = repo.getContent( );
+        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A" )) );
+        ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "A" ).build();
+        ContentItem item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Project );
+        myRepoContent.deleteItem( item );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven" )) );
+        assertTrue( Files.exists( repoRoot.resolve( "org/apache/maven/samplejar/1.0" ) ) );
+        assertTrue( Files.exists( repoRoot.resolve( "org/apache/maven/samplejar/2.0" ) ) );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/maven/A" )) );
+
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar" )) );
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" )
+            .withProjectId( "samplejar" ).build();
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Project );
+        myRepoContent.deleteItem( item );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar" )) );
+    }
+
+    @Test
+    public void deleteVersionItem() throws IOException, URISyntaxException, ItemNotFoundException
+    {
+        ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
+        ManagedRepositoryContent myRepoContent = repo.getContent( );
+        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0" )) );
+        ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "A" )
+            .withVersion( "1.0" ).build();
+        ContentItem item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Version );
+        myRepoContent.deleteItem( item );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A" )) );
+        assertTrue( Files.exists( repoRoot.resolve( "org/apache/maven/samplejar/1.0" ) ) );
+        assertTrue( Files.exists( repoRoot.resolve( "org/apache/maven/samplejar/2.0" ) ) );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0" )) );
+
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar" )) );
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" )
+            .withProjectId( "samplejar" )
+            .withVersion( "2.0" ).build();
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Version );
+        myRepoContent.deleteItem( item );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/2.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar/1.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar/2.0" )) );
+    }
+
+    @Test
+    public void deleteArtifactItem() throws IOException, URISyntaxException, ItemNotFoundException
+    {
+        ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
+        ManagedRepositoryContent myRepoContent = repo.getContent( );
+        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0/A-1.0.pom" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0/A-1.0.war" )) );
+        ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "A" )
+            .withVersion( "1.0" )
+            .withArtifactId( "A" )
+            .withArtifactVersion( "1.0" )
+            .withExtension( "pom" )
+            .build();
+        ContentItem item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Artifact );
+        myRepoContent.deleteItem( item );
+        assertTrue( Files.exists( repoRoot.resolve( "org/apache/maven/samplejar/1.0" ) ) );
+        assertTrue( Files.exists( repoRoot.resolve( "org/apache/maven/samplejar/2.0" ) ) );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0/A-1.0.pom" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0/A-1.0.war" )) );
+
+
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar.md5" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar.sha1" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.pom" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0-source.jar" )) );
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" )
+            .withProjectId( "samplejar" )
+            .withVersion( "1.0" )
+            .withArtifactId( "samplejar" )
+            .withArtifactVersion( "1.0" )
+            .withExtension( "jar" )
+            .build();
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Artifact );
+        myRepoContent.deleteItem( item );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar.md5" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar.sha1" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.pom" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0-source.jar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/2.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar/1.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar/2.0" )) );
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" )
+            .withProjectId( "samplejar" )
+            .withVersion( "1.0" )
+            .withArtifactId( "samplejar" )
+            .withArtifactVersion( "1.0" )
+            .withClassifier( "source" )
+            .withExtension( "jar" )
+            .build();
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Artifact );
+        myRepoContent.deleteItem( item );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar.md5" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar.sha1" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.pom" )) );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0-source.jar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0-source.jar.sha1" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/2.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar/1.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar/2.0" )) );
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" )
+            .withProjectId( "samplejar" )
+            .withVersion( "1.0" )
+            .withArtifactId( "samplejar" )
+            .withArtifactVersion( "1.0" )
+            .withExtension( "jar.md5" )
+            .build();
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Artifact );
+        myRepoContent.deleteItem( item );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar" )) );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar.md5" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.jar.sha1" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0.pom" )) );
+        assertFalse( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0-source.jar" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/1.0/samplejar-1.0-source.jar.sha1" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/samplejar/2.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar/1.0" )) );
+        assertTrue( Files.exists(repoRoot.resolve( "org/apache/test/sub/samplejar/2.0" )) );
+
+
+    }
+
+    @Test
+    public void deleteItemNotFound() throws IOException, URISyntaxException, ItemNotFoundException
+    {
+        ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
+        ManagedRepositoryContent myRepoContent = repo.getContent( );
+        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+
+        ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test2" )
+            .build( );
+
+        ContentItem item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Namespace );
+        try
+        {
+            myRepoContent.deleteItem( item );
+            assertTrue( "ItemNotFoundException expected for non existing namespace", false );
+        } catch ( ItemNotFoundException e) {
+        }
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" )
+            .withProjectId( "samplejar2" )
+            .build( );
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Project );
+        try
+        {
+            myRepoContent.deleteItem( item );
+            assertTrue( "ItemNotFoundException expected for non existing project", false );
+        } catch ( ItemNotFoundException e) {
+        }
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" )
+            .withProjectId( "samplejar" )
+            .withVersion("1.1")
+            .build( );
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Version );
+        try
+        {
+            myRepoContent.deleteItem( item );
+            assertTrue( "ItemNotFoundException expected for non existing version", false );
+        } catch ( ItemNotFoundException e) {
+        }
+
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.test" )
+            .withProjectId( "samplejar" )
+            .withVersion("1.0")
+            .withArtifactId( "samplejar" )
+            .withArtifactVersion( "1.0" )
+            .withExtension( "jax" )
+            .build( );
+        item = myRepoContent.getItem( selector );
+        assertTrue( item instanceof Artifact );
+        try
+        {
+            myRepoContent.deleteItem( item );
+            assertTrue( "ItemNotFoundException expected for non existing artifact", false );
+        } catch ( ItemNotFoundException e) {
+        }
 
     }
 
