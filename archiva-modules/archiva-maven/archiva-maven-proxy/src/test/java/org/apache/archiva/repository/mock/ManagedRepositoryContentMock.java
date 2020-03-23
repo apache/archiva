@@ -186,7 +186,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public void copyArtifact( Path sourceFile, ContentItem destination ) throws IllegalArgumentException
+    public void addArtifact( Path sourceFile, Artifact destination ) throws IllegalArgumentException
     {
 
     }

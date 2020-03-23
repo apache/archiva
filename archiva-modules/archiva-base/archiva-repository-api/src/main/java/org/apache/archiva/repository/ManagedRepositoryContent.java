@@ -267,7 +267,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param destination the coordinates of the destination
      * @throws IllegalArgumentException if the destination is not valid
      */
-    void copyArtifact( Path sourceFile, ContentItem destination ) throws IllegalArgumentException;
+    void addArtifact( Path sourceFile, Artifact destination ) throws IllegalArgumentException, ContentAccessException;
 
 
     /**

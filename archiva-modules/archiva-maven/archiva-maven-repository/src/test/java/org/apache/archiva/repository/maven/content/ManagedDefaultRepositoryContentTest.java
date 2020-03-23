@@ -19,7 +19,6 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
@@ -50,16 +49,18 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.naming.Name;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -1567,6 +1568,68 @@ public class ManagedDefaultRepositoryContentTest
         } catch ( ItemNotFoundException e) {
         }
 
+    }
+
+
+    @Test
+    public void testCopyArtifact() throws IOException, URISyntaxException
+    {
+        ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
+        ManagedRepositoryContent myRepoContent = repo.getContent( );
+        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+
+        Path tmpFile = Files.createTempFile( "archiva-mvn-repotest", "jar" );
+        try( OutputStream outputStream = Files.newOutputStream( tmpFile ))
+        {
+            for ( int i = 0; i < 255; i++ )
+            {
+                outputStream.write( "test.test.test\n".getBytes( Charset.forName( "UTF-8" ) ) );
+            }
+        }
+
+        Path file = repoRoot.resolve( "org/apache/maven/samplejar/2.0/samplejar-2.0.jar" );
+        FileTime lmt = Files.getLastModifiedTime( file );
+        ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "samplejar" )
+            .withVersion( "2.0" )
+            .withArtifactId( "samplejar" )
+            .withArtifactVersion( "2.0" )
+            .withExtension( "jar" )
+            .build( );
+        Artifact artifact = myRepoContent.getArtifact( selector );
+        myRepoContent.addArtifact( tmpFile, artifact );
+        FileTime lmtAfter = Files.getLastModifiedTime( file );
+        assertNotEquals( lmtAfter, lmt );
+        Reader ln = Files.newBufferedReader( file, Charset.forName( "UTF-8" ) );
+        char[] content = new char[50];
+        ln.read( content );
+        assertTrue( new String( content ).startsWith( "test.test.test" ) );
+
+        tmpFile = Files.createTempFile( "archiva-mvn-repotest", "jar" );
+        try( OutputStream outputStream = Files.newOutputStream( tmpFile ))
+        {
+            for ( int i = 0; i < 255; i++ )
+            {
+                outputStream.write( "test.test.test\n".getBytes( Charset.forName( "UTF-8" ) ) );
+            }
+        }
+        file = repoRoot.resolve( "org/apache/maven/samplejar/2.0/samplejar-2.0.test" );
+        assertFalse( Files.exists( file ) );
+        assertTrue( Files.exists( tmpFile ) );
+        selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "samplejar" )
+            .withVersion( "2.0" )
+            .withArtifactId( "samplejar" )
+            .withArtifactVersion( "2.0" )
+            .withExtension( "test" )
+            .build( );
+        artifact = myRepoContent.getArtifact( selector );
+        myRepoContent.addArtifact( tmpFile, artifact );
+        ln = Files.newBufferedReader( file, Charset.forName( "UTF-8" ) );
+        ln.read( content );
+        assertTrue( new String( content ).startsWith( "test.test.test" ) );
     }
 
 }

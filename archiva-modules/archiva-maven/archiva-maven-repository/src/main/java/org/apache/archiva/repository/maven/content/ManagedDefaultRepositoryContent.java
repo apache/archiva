@@ -864,21 +864,27 @@ public class ManagedDefaultRepositoryContent
         return getItem( selector ).getAsset( ).exists( );
     }
 
-    /*
-        TBD
+    /**
+     * Moves the file to the artifact destination
      */
     @Override
-    public void copyArtifact( Path sourceFile, ContentItem destination ) throws IllegalArgumentException
+    public void addArtifact( Path sourceFile, Artifact destination ) throws IllegalArgumentException, ContentAccessException
     {
-
+        try
+        {
+            StorageAsset asset = destination.getAsset( );
+            if (!asset.exists()) {
+                asset.create();
+            }
+            asset.replaceDataFromFile( sourceFile );
+        }
+        catch ( IOException e )
+        {
+            log.error( "Could not push data to asset source={} destination={}. {}", sourceFile, destination.getAsset().getFilePath(), e.getMessage( ) );
+            throw new ContentAccessException( e.getMessage( ), e );
+        }
     }
 
-    /**
-     * TBD
-     * @param path the path string that points to the item
-     * @return
-     * @throws LayoutException
-     */
     @Override
     public ContentItem toItem( String path ) throws LayoutException
     {
