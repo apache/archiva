@@ -1572,7 +1572,7 @@ public class ManagedDefaultRepositoryContentTest
 
 
     @Test
-    public void testCopyArtifact() throws IOException, URISyntaxException
+    public void testAddArtifact() throws IOException, URISyntaxException
     {
         ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
         ManagedRepositoryContent myRepoContent = repo.getContent( );
