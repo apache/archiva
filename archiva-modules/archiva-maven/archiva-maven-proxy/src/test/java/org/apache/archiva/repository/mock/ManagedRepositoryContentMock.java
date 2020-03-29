@@ -287,12 +287,6 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public Set<String> getVersions( ProjectReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        return null;
-    }
-
-    @Override
     public Set<String> getVersions( VersionedReference reference ) throws ContentNotFoundException, ContentAccessException, LayoutException
     {
         return null;
@@ -300,12 +294,6 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
     @Override
     public boolean hasContent( ArtifactReference reference ) throws ContentAccessException
-    {
-        return false;
-    }
-
-    @Override
-    public boolean hasContent( ProjectReference reference ) throws ContentAccessException
     {
         return false;
     }

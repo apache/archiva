@@ -668,13 +668,6 @@ public class DefaultRepositoriesService
 
             repository.deleteVersion( ref );
 
-            /*
-            ProjectReference projectReference = new ProjectReference();
-            projectReference.setGroupId( namespace );
-            projectReference.setArtifactId( projectId );
-
-            repository.getVersions(  )
-            */
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setGroupId( namespace );

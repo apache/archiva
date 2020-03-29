@@ -173,7 +173,7 @@ public class ManagedDefaultRepositoryContent
     }
 
 
-    /// ************* End of new generation interface ******************
+    /// ************* Start of new generation interface ******************
 
     /**
      * Removes the item from the filesystem. For namespaces, projects and versions it deletes
@@ -1245,59 +1245,6 @@ public class ManagedDefaultRepositoryContent
         return repository;
     }
 
-    /**
-     * Gather the Available Versions (on disk) for a specific Project Reference, based on filesystem
-     * information.
-     *
-     * @return the Set of available versions, based on the project reference.
-     * @throws LayoutException
-     */
-    @Override
-    public Set<String> getVersions( ProjectReference reference )
-        throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        final String path = toPath( reference );
-        final Path projDir = getRepoDir().resolve(toPath(reference));
-        if ( !Files.exists(projDir) )
-        {
-            throw new ContentNotFoundException(
-                "Unable to get Versions on a non-existant directory for repository "+getId()+": " + path );
-        }
-
-        if ( !Files.isDirectory(projDir) )
-        {
-            throw new ContentNotFoundException(
-                "Unable to get Versions on a non-directory for repository "+getId()+": " + path );
-        }
-
-        final String groupId = reference.getGroupId();
-        final String artifactId = reference.getArtifactId();
-        try(Stream<Path> stream = Files.list(projDir)) {
-            return stream.filter(Files::isDirectory).map(
-                    p -> toVersion(groupId, artifactId, p.getFileName().toString())
-            ).filter(this::hasArtifact).map(ref -> ref.getVersion())
-                    .collect(Collectors.toSet());
-        } catch (IOException e) {
-            log.error("Could not read directory {}: {}", projDir, e.getMessage(), e);
-            throw new ContentAccessException( "Could not read path for repository "+getId()+": "+ path, e );
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause( );
-            if (cause!=null)
-            {
-                if ( cause instanceof LayoutException )
-                {
-                    throw (LayoutException) cause;
-                } else {
-                    log.error("Could not read directory {}: {}", projDir, cause.getMessage(), cause);
-                    throw new ContentAccessException( "Could not read path for repository "+getId()+": "+ path, cause );
-                }
-            } else {
-                log.error("Could not read directory {}: {}", projDir, e.getMessage(), e);
-                throw new ContentAccessException( "Could not read path for repository "+getId()+": "+ path, cause );
-            }
-        }
-    }
-
     @Override
     public Set<String> getVersions( VersionedReference reference )
         throws ContentNotFoundException, ContentAccessException, LayoutException
@@ -1319,20 +1266,6 @@ public class ManagedDefaultRepositoryContent
     {
         StorageAsset artifactFile = toFile( reference );
         return artifactFile.exists() && !artifactFile.isContainer();
-    }
-
-    @Override
-    public boolean hasContent( ProjectReference reference ) throws ContentAccessException
-    {
-        try
-        {
-            Set<String> versions = getVersions( reference );
-            return !versions.isEmpty();
-        }
-        catch ( ContentNotFoundException | LayoutException e )
-        {
-            return false;
-        }
     }
 
     @Override

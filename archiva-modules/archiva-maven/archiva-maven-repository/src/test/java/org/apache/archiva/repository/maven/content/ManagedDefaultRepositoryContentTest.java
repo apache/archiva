@@ -124,41 +124,6 @@ public class ManagedDefaultRepositoryContentTest
     }
 
     @Test
-    public void testGetVersionsBadArtifact()
-        throws Exception
-    {
-        assertGetVersions( "bad_artifact", Collections.emptyList() );
-    }
-
-    @Test
-    public void testGetVersionsMissingMultipleVersions()
-        throws Exception
-    {
-        assertGetVersions( "missing_metadata_b", Arrays.asList( "1.0", "1.0.1", "2.0", "2.0.1", "2.0-20070821-dev" ) );
-    }
-
-    @Test
-    public void testGetVersionsSimple()
-        throws Exception
-    {
-        assertVersions( "proxied_multi", "2.1", new String[]{ "2.1" } );
-    }
-
-    @Test
-    public void testGetVersionsSimpleYetIncomplete()
-        throws Exception
-    {
-        assertGetVersions( "incomplete_metadata_a", Collections.singletonList( "1.0" ) );
-    }
-
-    @Test
-    public void testGetVersionsSimpleYetMissing()
-        throws Exception
-    {
-        assertGetVersions( "missing_metadata_a", Collections.singletonList( "1.0" ) );
-    }
-
-    @Test
     public void testGetVersionsSnapshotA()
         throws Exception
     {
@@ -213,39 +178,6 @@ public class ManagedDefaultRepositoryContentTest
         assertVersions( "include_xml", "1.0", new String[]{ "1.0" } );
     }
 
-    private void assertGetVersions( String artifactId, List<String> expectedVersions )
-        throws Exception
-    {
-        ProjectReference reference = new ProjectReference();
-        reference.setGroupId( "org.apache.archiva.metadata.tests" );
-        reference.setArtifactId( artifactId );
-
-        // Use the test metadata-repository, which is already setup for
-        // These kind of version tests.
-        Path repoDir = getRepositoryPath( "metadata-repository" );
-        (( EditableManagedRepository)repoContent.getRepository()).setLocation( repoDir.toAbsolutePath().toUri() );
-
-        // Request the versions.
-        Set<String> testedVersionSet = repoContent.getVersions( reference );
-
-        // Sort the list (for asserts)
-        VersionComparator comparator = new VersionComparator( );
-        List<String> testedVersions = new ArrayList<>();
-        testedVersions.addAll( testedVersionSet );
-        Collections.sort( testedVersions, comparator );
-
-        // Test the expected array of versions, to the actual tested versions
-        assertEquals( "available versions", expectedVersions, testedVersions );
-
-        ItemSelector selector = ArchivaItemSelector.builder( )
-            .withNamespace( "org.apache.archiva.metadata.tests" )
-            .withProjectId( artifactId )
-            .build( );
-        Project project = repoContent.getProject( selector );
-        assertNotNull( project );
-        List<String> versions = repoContent.getVersions( project ).stream().map(v -> v.getVersion()).sorted( comparator ).collect( Collectors.toList());
-        assertArrayEquals( expectedVersions.toArray(), versions.toArray( ) );
-    }
 
     private void assertVersions( String artifactId, String version, String[] expectedVersions )
         throws Exception

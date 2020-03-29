@@ -34,6 +34,10 @@ import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.metadata.audit.RepositoryListener;
+import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 
@@ -105,9 +109,11 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 return;
             }
 
-            ProjectReference reference = new ProjectReference( );
-            reference.setGroupId( artifactRef.getGroupId( ) );
-            reference.setArtifactId( artifactRef.getArtifactId( ) );
+            ItemSelector selector = ArchivaItemSelector.builder( )
+                .withNamespace( artifactRef.getGroupId( ) )
+                .withProjectId( artifactRef.getArtifactId( ) )
+                .build();
+
 
             // Gether the released versions
             List<String> releasedVersions = new ArrayList<>( );
@@ -118,20 +124,14 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 
                 if ( repo.getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ))
                 {
-                    try
+                    ManagedRepositoryContent repoContent = repo.getContent();
+                    Project proj = repoContent.getProject( selector );
+                    for ( Version version : repoContent.getVersions( proj ) )
                     {
-                        ManagedRepositoryContent repoContent = repo.getContent();
-                        for ( String version : repoContent.getVersions( reference ) )
+                        if ( !VersionUtil.isSnapshot( version.getVersion() ) )
                         {
-                            if ( !VersionUtil.isSnapshot( version ) )
-                            {
-                                releasedVersions.add( version );
-                            }
+                            releasedVersions.add( version.getVersion() );
                         }
-                    }
-                    catch ( RepositoryException e )
-                    {
-                        // swallow
                     }
                 }
             }

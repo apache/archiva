@@ -45,6 +45,9 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -66,6 +69,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -525,14 +529,21 @@ public class MetadataTools
         metadata.setArtifactId( reference.getArtifactId() );
 
         // Gather up all versions found in the managed repository.
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( reference.getGroupId( ) )
+            .withProjectId( reference.getArtifactId( ) )
+            .build();
         Set<String> allVersions = null;
         try
         {
-            allVersions = managedRepository.getVersions( reference );
+            Project project = managedRepository.getProject( selector );
+            allVersions = managedRepository.getVersions( project ).stream()
+            .map( v -> v.getVersion() ).collect( Collectors.toSet());
         }
         catch ( org.apache.archiva.repository.ContentAccessException e )
         {
-            e.printStackTrace( );
+            log.error( "Error while accessing repository: {}", e.getMessage( ), e );
+            throw new RepositoryMetadataException( "Error while accessing repository " + e.getMessage( ), e );
         }
 
         // Gather up all plugins found in the managed repository.

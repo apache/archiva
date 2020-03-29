@@ -484,19 +484,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     ManagedRepository getRepository();
 
-    /**
-     * Given a specific {@link ProjectReference}, return the list of available versions for
-     * that project reference.
-     *
-     * @param reference the project reference to work off of.
-     * @return the list of versions found for that project reference.
-     * @throws ContentNotFoundException if the project reference does nto exist within the repository.
-     * @throws LayoutException
-     */
-    Set<String> getVersions( ProjectReference reference )
-        throws ContentNotFoundException, LayoutException, ContentAccessException;
-
-
 
     /**
      * <p>
@@ -521,14 +508,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @return true if the artifact referenced exists.
      */
     boolean hasContent( ArtifactReference reference ) throws ContentAccessException;
-
-    /**
-     * Determines if the project referenced exists in the repository.
-     *
-     * @param reference the project reference to check for.
-     * @return true it the project referenced exists.
-     */
-    boolean hasContent( ProjectReference reference ) throws ContentAccessException;
 
     /**
      * Determines if the version reference exists in the repository.
