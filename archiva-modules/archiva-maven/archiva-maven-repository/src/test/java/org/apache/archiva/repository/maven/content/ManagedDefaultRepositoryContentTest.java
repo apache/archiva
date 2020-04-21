@@ -44,6 +44,7 @@ import org.apache.archiva.repository.maven.MavenManagedRepository;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -182,34 +183,15 @@ public class ManagedDefaultRepositoryContentTest
     private void assertVersions( String artifactId, String version, String[] expectedVersions )
         throws Exception
     {
-        VersionedReference reference = new VersionedReference();
-        reference.setGroupId( "org.apache.archiva.metadata.tests" );
-        reference.setArtifactId( artifactId );
-        reference.setVersion( version );
-
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
         Path repoDir = getRepositoryPath( "metadata-repository" );
         ((EditableManagedRepository)repoContent.getRepository()).setLocation( repoDir.toAbsolutePath().toUri() );
 
         // Request the versions.
-        Set<String> testedVersionSet = repoContent.getVersions( reference );
 
         // Sort the list (for asserts later)
         final VersionComparator comparator = new VersionComparator( );
-        List<String> testedVersions = new ArrayList<>();
-        testedVersions.addAll( testedVersionSet );
-        Collections.sort( testedVersions, comparator );
-
-        // Test the expected array of versions, to the actual tested versions
-        assertEquals( "Assert Versions: length/size", expectedVersions.length, testedVersions.size() );
-
-        for ( int i = 0; i < expectedVersions.length; i++ )
-        {
-            String actualVersion = testedVersions.get( i );
-            assertEquals( "Versions[" + i + "]", expectedVersions[i], actualVersion );
-        }
-
 
         ItemSelector selector = ArchivaItemSelector.builder( )
             .withNamespace( "org.apache.archiva.metadata.tests" )
