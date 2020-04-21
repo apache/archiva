@@ -192,8 +192,9 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
         key.append( defaultString( getVersion().getProject().getNamespace().getNamespace() )).append( ":" );
         key.append( defaultString( getId() ) ).append( ":" );
         key.append( defaultString( getVersion().getVersion() ) ).append( ":" );
+        key.append( defaultString( getArtifactVersion( ) ) ).append( ":" );
         key.append( defaultString( getClassifier() ) ).append( ":" );
-        key.append( defaultString( getType() ) );
+        key.append( defaultString( getRemainder() ) );
 
         return key.toString();
     }
