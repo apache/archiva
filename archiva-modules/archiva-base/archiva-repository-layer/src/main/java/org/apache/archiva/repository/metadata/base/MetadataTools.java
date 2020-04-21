@@ -45,6 +45,7 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
@@ -153,11 +154,22 @@ public class MetadataTools
         Set<String> foundVersions = null;
         try
         {
-            foundVersions = managedRepository.getVersions( reference );
+            ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+                .withNamespace( reference.getGroupId( ) )
+                .withProjectId( reference.getArtifactId( ) )
+                .withArtifactId( reference.getArtifactId( ) )
+                .withVersion( reference.getVersion( ) )
+                .build( );
+            try(Stream<? extends Artifact> stream = managedRepository.newArtifactStream( selector )) {
+                foundVersions = stream.map( a -> a.getArtifactVersion( ) )
+                    .filter( StringUtils::isNotEmpty )
+                    .collect( Collectors.toSet( ) );
+            }
         }
         catch ( org.apache.archiva.repository.ContentAccessException e )
         {
-            e.printStackTrace( );
+            log.error( "Error while accessing content {}", e.getMessage( ) );
+            throw new IOException( "Could not access repository content: " + e.getMessage( ) );
         }
 
         // Next gather up the referenced 'latest' versions found in any proxied repositories
