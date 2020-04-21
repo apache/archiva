@@ -80,12 +80,6 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier )
-    {
-        return null;
-    }
-
-    @Override
     public void deleteItem( ContentItem item ) throws ItemNotFoundException, ContentAccessException
     {
 
@@ -230,19 +224,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public List<ArtifactReference> getRelatedArtifacts( ArtifactReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        return null;
-    }
-
-    @Override
     public List<ArtifactReference> getRelatedArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        return null;
-    }
-
-    @Override
-    public List<StorageAsset> getRelatedAssets( ArtifactReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
     {
         return null;
     }

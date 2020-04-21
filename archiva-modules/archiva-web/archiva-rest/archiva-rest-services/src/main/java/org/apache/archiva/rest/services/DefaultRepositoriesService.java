@@ -51,6 +51,8 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.content.ItemNotFoundException;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.storage.fs.FsStorageUtil;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -787,6 +789,16 @@ public class DefaultRepositoriesService
             artifactReference.setClassifier( artifact.getClassifier() );
             artifactReference.setType( artifact.getType() );
 
+            ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+                .withNamespace( artifact.getGroupId( ) )
+                .withProjectId( artifact.getArtifactId( ) )
+                .withVersion( artifact.getVersion( ) )
+                .withClassifier( artifact.getClassifier( ) )
+                .withArtifactId( artifact.getArtifactId( ) )
+                .withType( artifact.getType( ) )
+                .includeRelatedArtifacts()
+                .build( );
+
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
             String path = repository.toMetadataPath( ref );
@@ -798,9 +810,16 @@ public class DefaultRepositoriesService
                     throw new ArchivaRestServiceException( "You must configure a type/packaging when using classifier",
                                                            400, null );
                 }
-                List<ArtifactReference> artifacts = repository.getRelatedArtifacts( artifactReference );
-                for (ArtifactReference aRef : artifacts ) {
-                    repository.deleteArtifact( aRef );
+                List<? extends org.apache.archiva.repository.content.Artifact> artifactItems = repository.getArtifacts( selector );
+                for ( org.apache.archiva.repository.content.Artifact aRef : artifactItems ) {
+                    try
+                    {
+                        repository.deleteItem( aRef );
+                    }
+                    catch ( ItemNotFoundException e )
+                    {
+                        log.error( "Could not delete item, seems to be deleted by other thread. {}, {} ", aRef, e.getMessage( ) );
+                    }
                 }
 
             }

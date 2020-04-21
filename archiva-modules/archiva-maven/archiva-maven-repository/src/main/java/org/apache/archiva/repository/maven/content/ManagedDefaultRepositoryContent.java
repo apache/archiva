@@ -20,7 +20,6 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -927,11 +926,6 @@ public class ManagedDefaultRepositoryContent
         return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), artifactReference.getVersion( ) );
     }
 
-    @Override
-    public ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier) {
-        return new ArtifactReference( ).groupId( groupId ).artifactId( artifactId ).version( version ).type( type ).classifier( classifier );
-    }
-
 
     @Override
     public void deleteVersion( VersionedReference ref ) throws ContentNotFoundException, ContentAccessException
@@ -1152,69 +1146,6 @@ public class ManagedDefaultRepositoryContent
         }
 
 
-    }
-
-    @Override
-    public List<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
-        throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        if ( StringUtils.isEmpty( reference.getType() ) && StringUtils.isEmpty( reference.getClassifier() ) ) {
-            return getRelatedArtifacts( toVersion( reference ) );
-        }
-
-        StorageAsset artifactFile = toFile( reference );
-        StorageAsset repoDir = artifactFile.getParent();
-        String ext;
-        if (!artifactFile.isContainer()) {
-            ext = StringUtils.substringAfterLast( artifactFile.getName(), ".");
-        } else {
-            ext = "";
-        }
-
-        if ( !repoDir.exists())
-        {
-            throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-existant directory: " + repoDir.getPath() );
-        }
-
-        if ( !repoDir.isContainer() )
-        {
-            throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-directory: " + repoDir.getPath() );
-        }
-
-        // First gather up the versions found as artifacts in the managed repository.
-
-        try (Stream<? extends StorageAsset> stream = repoDir.list().stream() ) {
-            return stream.filter(
-                asset -> !asset.isContainer())
-                .map(path -> {
-                try {
-                    return toArtifactReference(path.getPath());
-                } catch (LayoutException e) {
-                    log.debug( "Not processing file that is not an artifact: {}", e.getMessage() );
-                    return null;
-                }
-            }).filter(Objects::nonNull).filter(getChecker( reference, ext )).collect(Collectors.toList());
-        } catch (RuntimeException e) {
-            Throwable cause = e.getCause( );
-            if (cause!=null) {
-                if (cause instanceof LayoutException) {
-                    throw (LayoutException)cause;
-                } else
-                {
-                    throw new ContentAccessException( cause.getMessage( ), cause );
-                }
-            } else {
-                throw new ContentAccessException( e.getMessage( ), e );
-            }
-        }
-    }
-
-    @Override
-    public List<StorageAsset> getRelatedAssets( ArtifactReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        return null;
     }
 
     @Override

@@ -312,19 +312,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     VersionedReference toVersion( ArtifactReference artifactReference);
 
-    /**
-     * Returns a artifact reference for the given coordinates.
-     * @param groupId the group id
-     * @param artifactId the artifact id
-     * @param version the version
-     * @param type the type
-     * @param classifier the classifier
-     * @return a artifact reference object
-     */
-    ArtifactReference toArtifact( String groupId, String artifactId, String version, String type, String classifier);
-
-
-
 
     /**
      * Delete from the managed repository all files / directories associated with the
@@ -394,26 +381,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
     /**
      * <p>
      * Gather up the list of related artifacts to the ArtifactReference provided.
-     * If type and / or classifier of the reference is set, this returns only a list of artifacts that is directly
-     * related to the given artifact, like checksums.
-     * If type and classifier is <code>null</code> it will return the same artifacts as 
-     * {@link #getRelatedArtifacts(VersionedReference)}
-     * </p>
-     * <p>
-     * <strong>NOTE:</strong> Some layouts (such as maven 1 "legacy") are not compatible with this query.
-     * </p>
-     *
-     * @param reference the reference to work off of.
-     * @return the list of ArtifactReferences for related artifacts, if
-     * @throws ContentNotFoundException if the initial artifact reference does not exist within the repository.
-     * @see #getRelatedArtifacts(VersionedReference)
-     */
-    List<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
-        throws ContentNotFoundException, LayoutException, ContentAccessException;
-
-    /**
-     * <p>
-     * Gather up the list of related artifacts to the ArtifactReference provided.
      * This typically includes the pom files, and those things with
      * classifiers (such as doc, source code, test libs, etc...). Even if the classifier
      * is set in the artifact reference, it may return artifacts with different classifiers.
@@ -429,22 +396,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
     List<ArtifactReference> getRelatedArtifacts( VersionedReference reference )
         throws ContentNotFoundException, LayoutException, ContentAccessException;
 
-
-
-
-
-
-
-    /**
-     * Returns all the assets that belong to a given artifact type. The list returned contain
-     * all the files that correspond to the given artifact reference.
-     * This method is the same as {@link #getRelatedArtifacts(ArtifactReference)} but may also return
-     * e.g. hash files.
-     *
-     * @param reference
-     * @return
-     */
-    List<StorageAsset> getRelatedAssets(ArtifactReference reference) throws ContentNotFoundException, LayoutException, ContentAccessException;
 
     /**
      * Returns all artifacts that belong to a given version
