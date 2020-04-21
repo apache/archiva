@@ -429,22 +429,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
 
 
     /**
-     * <p>
-     * Given a specific {@link VersionedReference}, return the list of available versions for that
-     * versioned reference.
-     * </p>
-     * <p>
-     * <strong>NOTE:</strong> This is really only useful when working with SNAPSHOTs.
-     * </p>
-     *
-     * @param reference the versioned reference to work off of.
-     * @return the set of versions found.
-     * @throws ContentNotFoundException if the versioned reference does not exist within the repository.
-     */
-    Set<String> getVersions( VersionedReference reference )
-        throws ContentNotFoundException, ContentAccessException, LayoutException;
-
-    /**
      * Determines if the artifact referenced exists in the repository.
      *
      * @param reference the artifact reference to check for.

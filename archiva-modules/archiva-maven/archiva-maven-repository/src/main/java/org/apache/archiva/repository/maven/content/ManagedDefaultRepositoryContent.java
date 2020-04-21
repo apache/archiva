@@ -67,7 +67,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1168,22 +1167,6 @@ public class ManagedDefaultRepositoryContent
     public ManagedRepository getRepository()
     {
         return repository;
-    }
-
-    @Override
-    public Set<String> getVersions( VersionedReference reference )
-        throws ContentNotFoundException, ContentAccessException, LayoutException
-    {
-        try(Stream<ArtifactReference> stream = newArtifactStream( reference ))
-        {
-            return stream.filter( Objects::nonNull )
-                .map( ar -> ar.getVersion( ) )
-                .collect( Collectors.toSet( ) );
-        } catch (IOException e) {
-            final String path = toPath( reference );
-            log.error("Could not read directory from repository {} - {}: ", getId(), path, e.getMessage(), e);
-            throw new ContentAccessException( "Could not read path for repository "+getId()+": "+ path, e );
-        }
     }
 
     @Override

@@ -40,7 +40,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -234,12 +233,6 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public ManagedRepository getRepository( )
     {
         return repository;
-    }
-
-    @Override
-    public Set<String> getVersions( VersionedReference reference ) throws ContentNotFoundException, ContentAccessException, LayoutException
-    {
-        return null;
     }
 
     @Override
