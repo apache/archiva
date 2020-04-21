@@ -100,27 +100,27 @@ public class RetentionCountRepositoryPurgeTest
         String[]  exts = { ".md5", ".sha1", ""};
         for (int i=0 ; i<exts.length; i++) {
             listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
-                    "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1.jar"+exts[i]);
+                    "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.153317-1.jar"+exts[i]);
             listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
-                    "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1.pom"+exts[i]);
+                    "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.153317-1.pom"+exts[i]);
 
             listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
-                    "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.jar"+exts[i]);
+                    "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.160758-2.jar"+exts[i]);
 
 
             listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
-                    "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.pom"+exts[i]);
+                    "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.160758-2.pom"+exts[i]);
         }
         listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
-                "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2-javadoc.jar");
+                "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.160758-2-javadoc.jar");
 
         listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
-                "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2-javadoc.zip");
+                "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.160758-2-javadoc.zip");
         listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
-                "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.jar");
+                "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.jar");
 
         listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
-                "1.0RC1-20070504.153317-1", "jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.zip");
+                "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.zip");
 
         listenerControl.replay();
 
@@ -198,17 +198,17 @@ public class RetentionCountRepositoryPurgeTest
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
-                "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.jar.md5" );
+                "1.1.2-SNAPSHOT", "castor-anttasks-1.1.2-20070427.065136-1.jar.md5" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
-                "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.jar.sha1" );
+                "1.1.2-SNAPSHOT", "castor-anttasks-1.1.2-20070427.065136-1.jar.sha1" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
-                                 "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.jar" );
+                                 "1.1.2-SNAPSHOT", "castor-anttasks-1.1.2-20070427.065136-1.jar" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
-                "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.pom.md5" );
+                "1.1.2-SNAPSHOT", "castor-anttasks-1.1.2-20070427.065136-1.pom.md5" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
-                "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.pom.sha1" );
+                "1.1.2-SNAPSHOT", "castor-anttasks-1.1.2-20070427.065136-1.pom.sha1" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
-                                 "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.pom" );
+                                 "1.1.2-SNAPSHOT", "castor-anttasks-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
 
         // Provide the metadata list
@@ -280,22 +280,22 @@ public class RetentionCountRepositoryPurgeTest
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                "maven-assembly-plugin", "1.1.2-SNAPSHOT",
                 "maven-assembly-plugin-1.1.2-20070427.065136-1.jar.md5" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                "maven-assembly-plugin", "1.1.2-SNAPSHOT",
                 "maven-assembly-plugin-1.1.2-20070427.065136-1.jar.sha1" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                                 "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                                 "maven-assembly-plugin", "1.1.2-SNAPSHOT",
                                  "maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                "maven-assembly-plugin", "1.1.2-SNAPSHOT",
                 "maven-assembly-plugin-1.1.2-20070427.065136-1.pom.md5" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                "maven-assembly-plugin", "1.1.2-SNAPSHOT",
                 "maven-assembly-plugin-1.1.2-20070427.065136-1.pom.sha1" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                                 "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                                 "maven-assembly-plugin", "1.1.2-SNAPSHOT",
                                  "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
 

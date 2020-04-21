@@ -28,6 +28,8 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.metadata.audit.RepositoryListener;
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -183,63 +185,57 @@ public abstract class AbstractRepositoryPurge
      *
      * @param references
      */
-    protected void purge( Set<ArtifactReference> references )
+    protected void purge( Set<Artifact> references )
     {
         if ( references != null && !references.isEmpty( ) )
         {
             MetadataRepository metadataRepository = repositorySession.getRepository( );
             Map<ArtifactInfo, ArtifactMetadata> metaRemovalList = new HashMap<>( );
             Map<String, Collection<ArtifactMetadata>> metaResolved = new HashMap<>( );
-            for ( ArtifactReference reference : references )
+            for ( Artifact reference : references )
             {
-                String baseVersion = VersionUtil.getBaseVersion( reference.getVersion( ) );
+                String baseVersion = reference.getVersion( ).getVersion( );
+                String namespace = reference.getVersion( ).getProject( ).getNamespace( ).getNamespace( );
                 // Needed for tracking in the hashmap
-                String metaBaseId = reference.getGroupId( ) + "/" + reference.getArtifactId( ) + "/" + baseVersion;
+                String metaBaseId = reference.toKey();
 
                 if ( !metaResolved.containsKey( metaBaseId ) )
                 {
                     try
                     {
                         metaResolved.put( metaBaseId, metadataRepository.getArtifacts(repositorySession, repository.getId( ),
-                            reference.getGroupId( ), reference.getArtifactId( ), baseVersion ) );
+                            namespace, reference.getId( ), baseVersion ) );
                     }
                     catch ( MetadataResolutionException e )
                     {
                         log.error( "Error during metadata retrieval {}: {}", metaBaseId, e.getMessage( ) );
                     }
                 }
-                StorageAsset artifactFile = repository.toFile( reference );
+                StorageAsset artifactFile = reference.getAsset();
 
                 for ( RepositoryListener listener : listeners )
                 {
-                    listener.deleteArtifact( metadataRepository, repository.getId( ), reference.getGroupId( ),
-                        reference.getArtifactId( ), reference.getVersion( ),
+                    listener.deleteArtifact( metadataRepository, repository.getId( ), namespace,
+                        reference.getId( ), reference.getVersion( ).getVersion(),
                             artifactFile.getName( ));
                 }
-                try
+                if (reference.exists())
                 {
-                    artifactFile.getStorage().removeAsset(artifactFile);
-                    log.debug( "File deleted: {}", artifactFile );
-                }
-                catch ( IOException e )
-                {
-                    log.error( "Could not delete file {}: {}", artifactFile.toString(), e.getMessage( ), e );
-                    continue;
-                }
-                try
-                {
-                    repository.deleteArtifact( reference );
-                }
-                catch ( ContentNotFoundException e )
-                {
-                    log.warn( "skip error deleting artifact {}: {}", reference, e.getMessage( ) );
-                }
-                catch ( org.apache.archiva.repository.ContentAccessException e )
-                {
-                    e.printStackTrace( );
+                    try
+                    {
+                        repository.deleteItem( reference );
+                    }
+                    catch ( org.apache.archiva.repository.ContentAccessException e )
+                    {
+                        log.error( "Error while trying to delete artifact {}: {}", reference.toString( ), e.getMessage( ), e );
+                    }
+                    catch ( ItemNotFoundException e )
+                    {
+                        log.error( "Asset deleted from background other thread: {}", e.getMessage( ) );
+                    }
                 }
 
-                boolean snapshotVersion = VersionUtil.isSnapshot( reference.getVersion( ) );
+                boolean snapshotVersion = VersionUtil.isSnapshot( baseVersion );
 
 
                 // If this is a snapshot we have to search for artifacts with the same version. And remove all of them.
@@ -253,7 +249,7 @@ public abstract class AbstractRepositoryPurge
                         for ( ArtifactMetadata artifactMetadata : artifacts )
                         {
                             // Artifact metadata and reference version should match.
-                            if ( artifactMetadata.getVersion( ).equals( reference.getVersion( ) ) )
+                            if ( artifactMetadata.getVersion( ).equals( reference.getArtifactVersion( ) ) )
                             {
                                 ArtifactInfo info = new ArtifactInfo( artifactMetadata.getNamespace( ), artifactMetadata.getProject( ), artifactMetadata.getProjectVersion( ), artifactMetadata.getVersion( ) );
                                 if ( StringUtils.isNotBlank( reference.getClassifier( ) ) )
@@ -272,15 +268,15 @@ public abstract class AbstractRepositoryPurge
                 }
                 else // otherwise we delete the artifact version
                 {
-                    ArtifactInfo info = new ArtifactInfo( reference.getGroupId( ), reference.getArtifactId( ), baseVersion, reference.getVersion( ) );
+                    ArtifactInfo info = new ArtifactInfo( namespace, reference.getId( ), baseVersion, reference.getArtifactVersion() );
                     for ( ArtifactMetadata metadata : metaResolved.get( metaBaseId ) )
                     {
                         metaRemovalList.put( info, metadata );
                     }
                 }
-                triggerAuditEvent( repository.getRepository( ).getId( ), ArtifactReference.toKey( reference ),
+                triggerAuditEvent( repository.getRepository( ).getId( ), reference.toKey(),
                     AuditEvent.PURGE_ARTIFACT );
-                purgeSupportFiles( artifactFile );
+                // purgeSupportFiles( artifactFile );
             }
             purgeMetadata( metadataRepository, metaRemovalList );
             try

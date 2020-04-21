@@ -156,7 +156,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      *
      * @param selector the selector with the artifact coordinates
      * @return a artifact object
-     * @throws ItemNotFoundException if the selector coordinates do not specify a artifact
+     * @throws IllegalArgumentException if the selector coordinates do not specify a artifact
      * @throws ContentAccessException if the access to the underlying storage failed
      */
     Artifact getArtifact(ItemSelector selector) throws ContentAccessException;
@@ -168,7 +168,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      *
      * @param selector the selector for the artifacts
      * @return a list of artifacts.
-     * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
+     * @throws IllegalArgumentException if the specified coordinates cannot be found in the repository
      * @throws ContentAccessException if the access to the underlying storage failed
      */
     List<? extends Artifact> getArtifacts( ItemSelector selector) throws ContentAccessException;
@@ -303,14 +303,6 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     VersionedReference toVersion( String groupId, String artifactId, String version );
 
-
-    /**
-     * Returns the version reference that represents the generic version, which means that
-     * snapshot versions are converted to <VERSION>-SNAPSHOT
-     * @param artifactReference the artifact reference
-     * @return the generic version
-     */
-    VersionedReference toGenericVersion( ArtifactReference artifactReference );
 
     /**
      * Return the version reference that matches exactly the version string of the artifact

@@ -27,7 +27,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
        default-lazy-init="true">
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.metadata.repository"/>
+  <context:component-scan base-package="org.apache.archiva.metadata.repository,org.apache.archiva.repository.maven.content,org.apache.archiva.metadata.maven"/>
 
   <bean name="commons-configuration" class="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry">
     <property name="initialConfiguration">

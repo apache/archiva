@@ -28,7 +28,7 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.metadata.repository"/>
+  <context:component-scan base-package="org.apache.archiva.metadata.repository,org.apache.archiva.repository.maven.content"/>
 
   <!-- for testing repo purge using retention count -->
 

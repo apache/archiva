@@ -702,7 +702,7 @@ public class ManagedDefaultRepositoryContent
                 fileNamePattern.append( Pattern.quote( extension ) );
             }
         } else {
-            fileNamePattern.append( "[A-Za-z0-9]+" );
+            fileNamePattern.append( "[A-Za-z0-9.]+" );
         }
         final Pattern pattern = Pattern.compile( fileNamePattern.toString() );
         return p.and( a -> pattern.matcher( a.getName( ) ).matches());
@@ -916,12 +916,6 @@ public class ManagedDefaultRepositoryContent
     @Override
     public VersionedReference toVersion( String groupId, String artifactId, String version ) {
         return new VersionedReference().groupId( groupId ).artifactId( artifactId ).version( version );
-    }
-
-    @Override
-    public VersionedReference toGenericVersion( ArtifactReference artifactReference )
-    {
-        return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), VersionUtil.getBaseVersion( artifactReference.getVersion( ) ));
     }
 
     /**

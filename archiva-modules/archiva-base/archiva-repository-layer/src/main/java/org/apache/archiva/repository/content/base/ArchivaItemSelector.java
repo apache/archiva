@@ -19,7 +19,12 @@ package org.apache.archiva.repository.content.base;
  * under the License.
  */
 
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.Namespace;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -58,6 +63,34 @@ public class ArchivaItemSelector implements ItemSelector
     public static class Builder
     {
         private final ArchivaItemSelector selector = new ArchivaItemSelector( );
+
+        public Builder withItem( ContentItem item ) {
+            if (item instanceof Namespace ) {
+                Namespace ns = (Namespace) item;
+                selector.namespace = ns.getNamespace();
+            } else if (item instanceof Project ) {
+                Project proj = (Project)item;
+                selector.namespace = proj.getNamespace( ).getNamespace( );
+                selector.projectId = proj.getId( );
+            } else if (item instanceof Version) {
+                Version version = (Version)item;
+                selector.namespace = version.getProject( ).getNamespace( ).getNamespace( );
+                selector.projectId = version.getProject( ).getId( );
+                selector.version = version.getVersion( );
+            } else if (item instanceof Artifact ) {
+                Artifact artifact = (Artifact)item;
+                selector.namespace = artifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( );
+                selector.projectId = artifact.getVersion( ).getProject( ).getId( );
+                selector.version = artifact.getVersion( ).getVersion( );
+                selector.artifactId = artifact.getId( );
+                selector.artifactVersion = artifact.getArtifactVersion( );
+                selector.extension = artifact.getExtension( );
+            }
+            for (Map.Entry<String, String> att : item.getAttributes().entrySet()) {
+                selector.setAttribute( att.getKey( ), att.getValue( ) );
+            }
+            return this;
+        }
 
         public Builder withNamespace( String namespace )
         {

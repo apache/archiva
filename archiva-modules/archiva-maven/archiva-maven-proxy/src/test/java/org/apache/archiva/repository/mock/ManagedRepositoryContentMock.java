@@ -78,12 +78,6 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public VersionedReference toGenericVersion( ArtifactReference artifactReference )
-    {
-        return null;
-    }
-
-    @Override
     public VersionedReference toVersion( ArtifactReference artifactReference )
     {
         return null;

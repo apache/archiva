@@ -56,6 +56,9 @@ public class MavenContentProvider implements RepositoryContentProvider
     @Inject
     protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
+    @Inject
+    @Named("MavenContentHelper")
+    MavenContentHelper mavenContentHelper;
 
     private static final Set<RepositoryType> REPOSITORY_TYPES = new HashSet<>(  );
     static {
@@ -104,6 +107,7 @@ public class MavenContentProvider implements RepositoryContentProvider
             throw new RepositoryException( "Repository layout "+repository.getLayout()+" is not supported by this implementation." );
         }
         ManagedDefaultRepositoryContent content = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, filetypes ,fileLockManager);
+        content.setMavenContentHelper( mavenContentHelper );
         return content;
     }
 
