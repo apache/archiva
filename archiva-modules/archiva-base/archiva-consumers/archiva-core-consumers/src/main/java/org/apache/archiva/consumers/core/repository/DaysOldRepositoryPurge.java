@@ -91,11 +91,6 @@ public class DaysOldRepositoryPurge
                 Calendar olderThanThisDate = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
                 olderThanThisDate.add( Calendar.DATE, -retentionPeriod );
 
-                // respect retention count
-                // VersionedReference reference = new VersionedReference( );
-                // reference.setGroupId( artifact.getGroupId( ) );
-                // reference.setArtifactId( artifact.getArtifactId( ) );
-                // reference.setVersion( artifact.getVersion( ) );
                 ArchivaItemSelector selector = ArchivaItemSelector.builder( )
                     .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) )
                     .withProjectId( artifactItem.getVersion( ).getProject( ).getId( ) )
