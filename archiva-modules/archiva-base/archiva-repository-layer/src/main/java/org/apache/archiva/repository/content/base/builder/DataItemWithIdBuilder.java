@@ -1,5 +1,3 @@
-package org.apache.archiva.repository.content;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,13 +16,12 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
+package org.apache.archiva.repository.content.base.builder;
+
 /**
- *
- * Type of the artifact to distinguish different flavours.
- *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface ArtifactType extends DataItemType
+public interface DataItemWithIdBuilder
 {
-    String name();
+    DataItemOptBuilder withId( String id );
 }

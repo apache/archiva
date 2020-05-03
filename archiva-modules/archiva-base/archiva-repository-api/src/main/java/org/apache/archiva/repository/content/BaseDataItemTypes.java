@@ -19,12 +19,9 @@ package org.apache.archiva.repository.content;
  */
 
 /**
- *
- * Type of the artifact to distinguish different flavours.
- *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface ArtifactType extends DataItemType
+public enum BaseDataItemTypes implements DataItemType
 {
-    String name();
+    METADATA,UNKNOWN
 }

@@ -25,6 +25,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentAccessException;
 import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.ItemDeleteStatus;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -40,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -60,6 +62,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public VersionedReference toVersion( ArtifactReference artifactReference )
     {
         return null;
+    }
+
+    @Override
+    public void deleteAllItems( ItemSelector selector, Consumer<ItemDeleteStatus> consumer ) throws ContentAccessException, IllegalArgumentException
+    {
+
     }
 
     @Override
@@ -121,6 +129,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
     @Override
     public Stream<? extends Artifact> newArtifactStream( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public Stream<? extends ContentItem> newItemStream( ItemSelector selector, boolean parallel ) throws ContentAccessException, IllegalArgumentException
     {
         return null;
     }

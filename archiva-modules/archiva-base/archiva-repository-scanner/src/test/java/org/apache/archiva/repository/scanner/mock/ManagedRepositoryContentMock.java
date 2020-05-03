@@ -45,6 +45,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -76,6 +77,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public VersionedReference toVersion( ArtifactReference artifactReference )
     {
         return null;
+    }
+
+    @Override
+    public void deleteAllItems( ItemSelector selector, Consumer<ItemDeleteStatus> consumer ) throws ContentAccessException, IllegalArgumentException
+    {
+
     }
 
     @Override
@@ -122,6 +129,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
     @Override
     public Stream<? extends Artifact> newArtifactStream( ItemSelector selector ) throws ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
+    public Stream<? extends ContentItem> newItemStream( ItemSelector selector, boolean parallel ) throws ContentAccessException, IllegalArgumentException
     {
         return null;
     }

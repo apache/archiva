@@ -1,5 +1,3 @@
-package org.apache.archiva.repository.content;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,13 +16,27 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
+package org.apache.archiva.repository.content.base.builder;
+
+import org.apache.archiva.repository.content.ArtifactType;
+import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.DataItem;
+import org.apache.archiva.repository.content.DataItemType;
+import org.apache.archiva.repository.content.base.ArchivaArtifact;
+import org.apache.archiva.repository.content.base.ArchivaDataItem;
+
 /**
- *
- * Type of the artifact to distinguish different flavours.
- *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface ArtifactType extends DataItemType
+public interface DataItemOptBuilder
+    extends OptBuilder<ArchivaDataItem, DataItemOptBuilder>
 {
-    String name();
+
+    DataItemOptBuilder withParent( ContentItem parent );
+
+    DataItemOptBuilder withContentType( String contentType );
+
+    DataItemOptBuilder withDataType( DataItemType type );
+
+    ArchivaDataItem build( );
 }

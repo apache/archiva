@@ -33,8 +33,10 @@ import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.nio.file.Path;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -47,6 +49,27 @@ public interface ManagedRepositoryContent extends RepositoryContent
 {
 
     /// *****************   New generation interface **********************
+
+    /**
+     * Delete all items that match the given selector. The type and number of deleted items
+     * depend on the specific selector:
+     * <ul>
+     *     <li>namespace: the complete namespace is deleted (recursively if the recurse flag is set)</li>
+     *     <li>project: the complete project and all contained versions are deleted</li>
+     *     <li>version: the version inside the project is deleted (project is required)</li>
+     *     <li>artifactId: all artifacts that match the id (project and version are required)</li>
+     *     <li>artifactVersion: all artifacts that match the version (project and version are required)</li>
+     *     <li></li>
+     * </ul>
+     *
+     * @param selector the item selector that selects the artifacts to delete
+     * @param consumer a consumer of the items that will be called after deletion
+     * @returns the list of items that are deleted
+     * @throws ContentAccessException if the deletion was not possible or only partly successful, because the access
+     * to the artifacts failed
+     * @throws IllegalArgumentException if the selector does not specify valid artifacts to delete
+     */
+    void deleteAllItems( ItemSelector selector, Consumer<ItemDeleteStatus> consumer) throws ContentAccessException, IllegalArgumentException;
 
     /**
      * Removes the specified content item and if the item is a container or directory,
@@ -137,11 +160,11 @@ public interface ManagedRepositoryContent extends RepositoryContent
      *     <li>artifactId or projectId</li>
      * </ul>
      * If the coordinates do not provide enough information for selecting a artifact, a {@link IllegalArgumentException} will be thrown
-     * It depends on the repository type, what exactly is deleted for a given set of coordinates. Some repository type
+     * It depends on the repository type, what exactly is returned for a given set of coordinates. Some repository type
      * may have different required and optional coordinates. For further information please check the documentation for the
      * type specific implementations.
      *
-     * The following coordinates are optional and may further specify the artifact to delete.
+     * The following coordinates are optional and may further specify the artifact to return.
      * <ul>
      *     <li>classifier</li>
      *     <li>type</li>
@@ -187,6 +210,19 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @throws ContentAccessException if the access to the underlying storage failed
      */
     Stream<? extends Artifact> newArtifactStream( ItemSelector selector) throws ContentAccessException;
+
+    /**
+     * Returns a stream of items that match the given selector. It may return a stream of mixed types,
+     * like namespaces, projects, versions and artifacts. It will not select a specific type.
+     * The selector can specify the '*' pattern for all fields.
+     * The returned elements will be provided by depth first.
+     *
+     * @param selector the item selector that specifies the items
+     * @return the stream of content items
+     * @throws ContentAccessException if the access to the underlying storage failed
+     * @throws IllegalArgumentException if a illegal coordinate combination was provided
+     */
+    Stream<? extends ContentItem> newItemStream(ItemSelector selector, boolean parallel) throws ContentAccessException, IllegalArgumentException;
 
 
     /**

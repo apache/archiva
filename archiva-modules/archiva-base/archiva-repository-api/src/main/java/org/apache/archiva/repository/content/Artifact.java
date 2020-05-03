@@ -34,7 +34,7 @@ import org.apache.archiva.model.ArtifactReference;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface Artifact extends ContentItem
+public interface Artifact extends DataItem
 {
 
     /**
@@ -45,6 +45,7 @@ public interface Artifact extends ContentItem
      *
      * @return the identifier of the artifact. Never returns <code>null</code> or empty string
      */
+    @Override
     String getId( );
 
     /**
@@ -83,10 +84,33 @@ public interface Artifact extends ContentItem
     String getClassifier( );
 
     /**
+     * This may be different from extension and gives the remainder that is used to build the file path from
+     * the artifact coordinates (namespace, id, version, classifier, type)
+     *
+     * @return the file name remainder
+     */
+    String getRemainder( );
+
+    /**
+     * Returns the type of the artifact
+     * @return
+     */
+    @Override
+    ArtifactType getDataType();
+
+    /**
+     * Returns a unique key
+     * @return
+     */
+    String toKey();
+
+
+    /**
      * Short cut for the file name. Should always return the same value as the artifact name.
      *
      * @return the name of the file
      */
+    @Override
     default String getFileName( )
     {
         return getAsset( ).getName( );
@@ -98,6 +122,7 @@ public interface Artifact extends ContentItem
      *
      * @return the file name extension
      */
+    @Override
     default String getExtension( )
     {
         final String name = getAsset( ).getName( );
@@ -112,33 +137,8 @@ public interface Artifact extends ContentItem
         }
     }
 
-    /**
-     * This may be different from extension and gives the remainder that is used to build the file path from
-     * the artifact coordinates (namespace, id, version, classifier, type)
-     *
-     * @return the file name remainder
-     */
-    String getRemainder( );
-
-    /**
-     * Should return the mime type of the artifact.
-     *
-     * @return the mime type of the artifact.
-     */
-    String getContentType( );
-
-    /**
-     * Returns the type of the artifact
-     * @return
-     */
-    ArtifactType getArtifactType();
-
-    /**
-     * Returns a unique key
-     * @return
-     */
-    String toKey();
-
-
-
+    default ContentItem getParent( )
+    {
+        return getVersion();
+    }
 }

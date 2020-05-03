@@ -22,6 +22,8 @@ package org.apache.archiva.repository.content.base;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ArtifactType;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
+import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.DataItem;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
 import org.apache.archiva.repository.content.base.builder.ArtifactVersionBuilder;
@@ -66,7 +68,6 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
 
     }
 
-
     @Override
     public String getId( )
     {
@@ -110,7 +111,7 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
     }
 
     @Override
-    public ArtifactType getArtifactType( )
+    public ArtifactType getDataType( )
     {
         return artifactType;
     }
