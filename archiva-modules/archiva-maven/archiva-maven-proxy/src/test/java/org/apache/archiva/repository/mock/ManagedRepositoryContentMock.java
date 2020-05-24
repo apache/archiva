@@ -47,6 +47,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -80,6 +81,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public VersionedReference toVersion( ArtifactReference artifactReference )
     {
         return null;
+    }
+
+    @Override
+    public void deleteAllItems( ItemSelector selector, Consumer<ItemDeleteStatus> consumer ) throws ContentAccessException, IllegalArgumentException
+    {
+
     }
 
     @Override
@@ -131,6 +138,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public Stream<? extends ContentItem> newItemStream( ItemSelector selector, boolean parallel ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+    @Override
     public List<? extends Project> getProjects( Namespace namespace ) throws ContentAccessException
     {
         return null;
@@ -155,6 +168,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public List<String> getArtifactVersions( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+    @Override
     public List<? extends Artifact> getArtifacts( ContentItem item ) throws ContentAccessException
     {
         return null;
@@ -170,6 +189,24 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public boolean hasContent( ItemSelector selector )
     {
         return false;
+    }
+
+    @Override
+    public ContentItem getParent( ContentItem item )
+    {
+        return null;
+    }
+
+    @Override
+    public List<? extends ContentItem> getChildren( ContentItem item )
+    {
+        return null;
+    }
+
+    @Override
+    public <T extends ContentItem> T applyCharacteristic( Class<T> clazz, ContentItem item ) throws LayoutException
+    {
+        return null;
     }
 
     @Override

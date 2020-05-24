@@ -24,24 +24,30 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaArtifact;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentAccessException;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.EditableManagedRepository;
+import org.apache.archiva.repository.ItemDeleteStatus;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ArtifactType;
+import org.apache.archiva.repository.content.BaseArtifactTypes;
+import org.apache.archiva.repository.content.BaseDataItemTypes;
 import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.DataItem;
+import org.apache.archiva.repository.content.DataItemType;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
-import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaContentItem;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.content.base.ArchivaNamespace;
 import org.apache.archiva.repository.content.base.ArchivaProject;
@@ -49,6 +55,7 @@ import org.apache.archiva.repository.content.base.ArchivaVersion;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.maven.metadata.storage.DefaultArtifactMappingProvider;
+import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
@@ -57,6 +64,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.Name;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -67,6 +75,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,7 +95,8 @@ public class ManagedDefaultRepositoryContent
 
     private FileTypes filetypes;
 
-    public void setFileTypes(FileTypes fileTypes) {
+    public void setFileTypes( FileTypes fileTypes )
+    {
         this.filetypes = fileTypes;
     }
 
@@ -95,7 +105,7 @@ public class ManagedDefaultRepositoryContent
     private FileLockManager lockManager;
 
     @Inject
-    @Named("repositoryPathTranslator#maven2")
+    @Named( "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
@@ -121,17 +131,17 @@ public class ManagedDefaultRepositoryContent
      * the hierarchical structure.
      * TODO: Better use a object cache? E.g. our spring cache implementation?
      */
-    private ReferenceMap<String, Namespace> namespaceMap = new ReferenceMap<>( );
-    private ReferenceMap<StorageAsset, Project> projectMap = new ReferenceMap<>( );
-    private ReferenceMap<StorageAsset, Version> versionMap = new ReferenceMap<>( );
-    private ReferenceMap<StorageAsset, Artifact> artifactMap = new ReferenceMap<>( );
+    private ReferenceMap<StorageAsset, ContentItem> itemMap = new ReferenceMap<>( );
+    private ReferenceMap<StorageAsset, DataItem> dataItemMap = new ReferenceMap<>( );
 
-    public ManagedDefaultRepositoryContent() {
-        super(Collections.singletonList( new DefaultArtifactMappingProvider() ));
+    public ManagedDefaultRepositoryContent( )
+    {
+        super( Collections.singletonList( new DefaultArtifactMappingProvider( ) ) );
     }
 
-    public ManagedDefaultRepositoryContent(ManagedRepository repository, FileTypes fileTypes, FileLockManager lockManager) {
-        super(Collections.singletonList( new DefaultArtifactMappingProvider() ));
+    public ManagedDefaultRepositoryContent( ManagedRepository repository, FileTypes fileTypes, FileLockManager lockManager )
+    {
+        super( Collections.singletonList( new DefaultArtifactMappingProvider( ) ) );
         setFileTypes( fileTypes );
         this.lockManager = lockManager;
         setRepository( repository );
@@ -139,39 +149,73 @@ public class ManagedDefaultRepositoryContent
 
     public ManagedDefaultRepositoryContent( ManagedRepository repository, List<? extends ArtifactMappingProvider> artifactMappingProviders, FileTypes fileTypes, FileLockManager lockManager )
     {
-        super(artifactMappingProviders==null ? Collections.singletonList( new DefaultArtifactMappingProvider() ) : artifactMappingProviders);
+        super( artifactMappingProviders == null ? Collections.singletonList( new DefaultArtifactMappingProvider( ) ) : artifactMappingProviders );
         setFileTypes( fileTypes );
         this.lockManager = lockManager;
         setRepository( repository );
 
     }
 
-    private StorageAsset getAssetByPath(String assetPath) {
+    private StorageAsset getAssetByPath( String assetPath )
+    {
         return getStorage( ).getAsset( assetPath );
     }
 
-    private StorageAsset getAsset(String namespace) {
-        String namespacePath = formatAsDirectory( namespace.trim() );
-        if (StringUtils.isEmpty( namespacePath )) {
+    private StorageAsset getAsset( String namespace )
+    {
+        String namespacePath = formatAsDirectory( namespace.trim( ) );
+        if ( StringUtils.isEmpty( namespacePath ) )
+        {
             namespacePath = "";
         }
-        return getAssetByPath(namespacePath);
+        return getAssetByPath( namespacePath );
     }
 
-    private StorageAsset getAsset(String namespace, String project) {
+    private StorageAsset getAsset( String namespace, String project )
+    {
         return getAsset( namespace ).resolve( project );
     }
 
-    private StorageAsset getAsset(String namespace, String project, String version) {
+    private StorageAsset getAsset( String namespace, String project, String version )
+    {
         return getAsset( namespace, project ).resolve( version );
     }
 
-    private StorageAsset getAsset(String namespace, String project, String version, String fileName) {
+    private StorageAsset getAsset( String namespace, String project, String version, String fileName )
+    {
         return getAsset( namespace, project, version ).resolve( fileName );
     }
 
 
     /// ************* Start of new generation interface ******************
+
+
+    @Override
+    public void deleteAllItems( ItemSelector selector, Consumer<ItemDeleteStatus> consumer ) throws ContentAccessException, IllegalArgumentException
+    {
+        try ( Stream<? extends ContentItem> stream = newItemStream( selector, false ) )
+        {
+            stream.forEach( item -> {
+                try
+                {
+                    deleteItem( item );
+                    consumer.accept( new ItemDeleteStatus( item ) );
+                }
+                catch ( ItemNotFoundException e )
+                {
+                    consumer.accept( new ItemDeleteStatus( item, ItemDeleteStatus.ITEM_NOT_FOUND, e ) );
+                }
+                catch ( Exception e )
+                {
+                    consumer.accept( new ItemDeleteStatus( item, ItemDeleteStatus.DELETION_FAILED, e ) );
+                }
+                catch ( Throwable e )
+                {
+                    consumer.accept( new ItemDeleteStatus( item, ItemDeleteStatus.UNKNOWN, e ) );
+                }
+            } );
+        }
+    }
 
     /**
      * Removes the item from the filesystem. For namespaces, projects and versions it deletes
@@ -180,11 +224,11 @@ public class ManagedDefaultRepositoryContent
      * parallel to projects. Which means deleting a namespaces also deletes the sub namespaces and
      * not only the projects of the given namespace. Better run the delete for each project of
      * a namespace.
-     *
+     * <p>
      * Artifacts are deleted as provided. No related artifacts will be deleted.
      *
      * @param item the item that should be removed
-     * @throws ItemNotFoundException if the item does not exist
+     * @throws ItemNotFoundException  if the item does not exist
      * @throws ContentAccessException if some error occurred while accessing the filesystem
      */
     @Override
@@ -194,9 +238,9 @@ public class ManagedDefaultRepositoryContent
         final Path itemPath = item.getAsset( ).getFilePath( );
         if ( !Files.exists( itemPath ) )
         {
-            throw new ItemNotFoundException( "The item " + item.toString() + "does not exist in the repository " + getId( ) );
+            throw new ItemNotFoundException( "The item " + item.toString( ) + "does not exist in the repository " + getId( ) );
         }
-        if ( !itemPath.toAbsolutePath().startsWith( baseDirectory.toAbsolutePath() ) )
+        if ( !itemPath.toAbsolutePath( ).startsWith( baseDirectory.toAbsolutePath( ) ) )
         {
             log.error( "The namespace {} to delete from repository {} is not a subdirectory of the repository base.", item, getId( ) );
             log.error( "Namespace directory: {}", itemPath );
@@ -205,10 +249,12 @@ public class ManagedDefaultRepositoryContent
         }
         try
         {
-            if (Files.isDirectory( itemPath ))
+            if ( Files.isDirectory( itemPath ) )
             {
                 FileUtils.deleteDirectory( itemPath );
-            } else {
+            }
+            else
+            {
                 Files.deleteIfExists( itemPath );
             }
         }
@@ -222,13 +268,20 @@ public class ManagedDefaultRepositoryContent
     @Override
     public ContentItem getItem( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
-        if (selector.hasVersion() && selector.hasArtifactId()) {
+        if ( selector.hasVersion( ) && selector.hasArtifactId( ) )
+        {
             return getArtifact( selector );
-        } else if (selector.hasProjectId() && selector.hasVersion()) {
+        }
+        else if ( selector.hasProjectId( ) && selector.hasVersion( ) )
+        {
             return getVersion( selector );
-        } else if (selector.hasProjectId()) {
+        }
+        else if ( selector.hasProjectId( ) )
+        {
             return getProject( selector );
-        } else {
+        }
+        else
+        {
             return getNamespace( selector );
         }
     }
@@ -236,191 +289,199 @@ public class ManagedDefaultRepositoryContent
     @Override
     public Namespace getNamespace( final ItemSelector namespaceSelector ) throws ContentAccessException, IllegalArgumentException
     {
-        return namespaceMap.computeIfAbsent( namespaceSelector.getNamespace(),
-            namespace -> {
-                StorageAsset nsPath = getAsset( namespace );
-                return ArchivaNamespace.withRepository( this ).withAsset( nsPath ).
-                    withNamespace( namespace ).build( );
-            });
+        StorageAsset nsPath = getAsset( namespaceSelector.getNamespace() );
+        return getNamespaceFromPath( nsPath );
     }
 
 
     @Override
     public Project getProject( final ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
-        if (!selector.hasProjectId()) {
+        if ( !selector.hasProjectId( ) )
+        {
             throw new IllegalArgumentException( "Project id must be set" );
         }
         final StorageAsset path = getAsset( selector.getNamespace( ), selector.getProjectId( ) );
-        return projectMap.computeIfAbsent( path, projectPath -> {
-            final Namespace ns = getNamespace( selector );
-            return ArchivaProject.withAsset( projectPath ).withNamespace( ns ).withId( selector.getProjectId( ) ).build( );
-        }
-        );
+        return getProjectFromPath( path );
     }
 
 
     @Override
     public Version getVersion( final ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
-        if (!selector.hasProjectId()) {
+        if ( !selector.hasProjectId( ) )
+        {
             throw new IllegalArgumentException( "Project id must be set" );
         }
-        if (!selector.hasVersion() ) {
+        if ( !selector.hasVersion( ) )
+        {
             throw new IllegalArgumentException( "Version must be set" );
         }
-        final StorageAsset path = getAsset(selector.getNamespace(), selector.getProjectId(), selector.getVersion());
-        return versionMap.computeIfAbsent( path, versionPath -> {
-            final Project project = getProject( selector );
-            return ArchivaVersion.withAsset( path )
-                .withProject( project )
-                .withVersion( selector.getVersion( ) ).build();
-        } );
+        final StorageAsset path = getAsset( selector.getNamespace( ), selector.getProjectId( ), selector.getVersion( ) );
+        return getVersionFromPath( path );
     }
 
 
-
-
-
-    public Artifact createArtifact(final StorageAsset artifactPath, final ItemSelector selector,
-        final String classifier, final String extension) {
-        Version version = getVersion(selector);
+    public Artifact createArtifact( final StorageAsset artifactPath, final ItemSelector selector,
+                                    final String classifier, final String extension )
+    {
+        Version version = getVersion( selector );
         ArtifactOptBuilder builder = org.apache.archiva.repository.content.base.ArchivaArtifact.withAsset( artifactPath )
             .withVersion( version )
             .withId( selector.getArtifactId( ) )
             .withArtifactVersion( mavenContentHelper.getArtifactVersion( artifactPath, selector ) )
             .withClassifier( classifier );
-        if (selector.hasType()) {
+        if ( selector.hasType( ) )
+        {
             builder.withType( selector.getType( ) );
         }
         return builder.build( );
     }
 
-    public Namespace getNamespaceFromArtifactPath( final StorageAsset artifactPath) {
+    public Namespace getNamespaceFromArtifactPath( final StorageAsset artifactPath )
+    {
         final StorageAsset namespacePath = artifactPath.getParent( ).getParent( ).getParent( );
-        final String namespace = MavenContentHelper.getNamespaceFromNamespacePath( namespacePath );
-        return namespaceMap.computeIfAbsent( namespace,
-            myNamespace -> ArchivaNamespace.withRepository( this )
-                .withAsset( namespacePath )
-                .withNamespace( namespace )
-                .build( ) );
+        return getNamespaceFromPath( namespacePath );
     }
 
-    public Namespace getNamespaceFromPath( final StorageAsset namespacePath) {
-        final String namespace = MavenContentHelper.getNamespaceFromNamespacePath( namespacePath );
-        return namespaceMap.computeIfAbsent( namespace,
-            myNamespace -> ArchivaNamespace.withRepository( this )
-                .withAsset( namespacePath )
-                .withNamespace( namespace )
-                .build( ) );
+    public Namespace getNamespaceFromPath( final StorageAsset nsPath )
+    {
+        ContentItem item = itemMap.computeIfAbsent( nsPath,
+            path -> createNamespaceFromPath( nsPath ) );
+        if (!item.hasCharacteristic( Namespace.class )) {
+            item.setCharacteristic( Namespace.class, createNamespaceFromPath( nsPath ) );
+        }
+        return item.adapt( Namespace.class );
     }
 
-    private Project getProjectFromPath( final StorageAsset projectPath) {
-        return projectMap.computeIfAbsent( projectPath,
-            myProjectPath -> ArchivaProject.withAsset( projectPath )
-                .withNamespace( getNamespaceFromPath( projectPath.getParent() ) )
-                .withId( projectPath.getName( ) ).build( )
+    public Namespace createNamespaceFromPath( final StorageAsset namespacePath) {
+        final String namespace = MavenContentHelper.getNamespaceFromNamespacePath( namespacePath );
+        return ArchivaNamespace.withRepository( this )
+            .withAsset( namespacePath )
+            .withNamespace( namespace )
+            .build( );
+    }
+
+    private Project getProjectFromPath( final StorageAsset path )
+    {
+        ContentItem item = itemMap.computeIfAbsent( path, projectPath ->
+                createProjectFromPath( projectPath )
         );
+        if (!item.hasCharacteristic( Project.class )) {
+            item.setCharacteristic( Project.class, createProjectFromPath( path ) );
+        }
+        return item.adapt( Project.class );
     }
 
-    private Project getProjectFromArtifactPath( final StorageAsset artifactPath) {
+    private Project createProjectFromPath( final StorageAsset projectPath ) {
+        Namespace namespace = getNamespaceFromPath( projectPath.getParent( ) );
+        return ArchivaProject.withRepository( this ).withAsset( projectPath )
+            .withNamespace( namespace )
+            .withId( projectPath.getName( ) ).build( );
+    }
+
+    private Project getProjectFromArtifactPath( final StorageAsset artifactPath )
+    {
         final StorageAsset projectPath = artifactPath.getParent( ).getParent( );
-        return projectMap.computeIfAbsent( projectPath,
-            myProjectPath -> ArchivaProject.withAsset( projectPath )
-                .withNamespace( getNamespaceFromArtifactPath( artifactPath ) )
-                .withId( projectPath.getName( ) ).build( )
-        );
+        return getProjectFromPath( projectPath );
     }
 
-    private Version getVersionFromArtifactPath( final StorageAsset artifactPath) {
+    private Version getVersionFromArtifactPath( final StorageAsset artifactPath )
+    {
         final StorageAsset versionPath = artifactPath.getParent( );
-        return versionMap.computeIfAbsent( versionPath,
-            myVersionPath -> ArchivaVersion.withAsset( versionPath )
-                .withProject( getProjectFromArtifactPath( artifactPath ) )
-                .withVersion( versionPath.getName( ) ).build( ) );
+        return getVersionFromPath( versionPath );
     }
 
-    private Artifact getArtifactFromPath(final StorageAsset artifactPath) {
+    private Version getVersionFromPath( StorageAsset path )
+    {
+        ContentItem item = itemMap.computeIfAbsent( path, versionPath ->
+            createVersionFromPath( versionPath )
+        );
+        if (!item.hasCharacteristic( Version.class )) {
+            item.setCharacteristic( Version.class, createVersionFromPath( path ) );
+        }
+        return item.adapt( Version.class );
+    }
+
+    private Version createVersionFromPath(StorageAsset path) {
+        Project proj = getProjectFromPath( path.getParent( ) );
+        return ArchivaVersion.withRepository( this ).withAsset( path )
+            .withProject( proj ).withVersion(path.getName()).build();
+    }
+
+    private Artifact getArtifactFromPath( final StorageAsset artifactPath )
+    {
+        DataItem item = dataItemMap.computeIfAbsent( artifactPath, myArtifactPath ->
+            createArtifactFromPath( myArtifactPath )
+        );
+        if (!item.hasCharacteristic( Artifact.class )) {
+            item.setCharacteristic( Artifact.class, createArtifactFromPath( artifactPath ) );
+        }
+        return item.adapt( Artifact.class );
+    }
+
+    private Artifact createArtifactFromPath( final StorageAsset artifactPath ) {
         final Version version = getVersionFromArtifactPath( artifactPath );
-        final ArtifactInfo info  = getArtifactInfoFromPath( version.getVersion(), artifactPath );
-        return artifactMap.computeIfAbsent( artifactPath, myArtifactPath ->
-            org.apache.archiva.repository.content.base.ArchivaArtifact.withAsset( artifactPath )
-                .withVersion( version )
-                .withId( info.id )
-                .withClassifier( info.classifier )
-                .withRemainder( info.remainder )
-                .withType( info.type )
-                .withArtifactVersion( info.version )
-                .withContentType( info.contentType )
-                .withArtifactType( info.artifactType )
+        final ArtifactInfo info = getArtifactInfoFromPath( version.getVersion( ), artifactPath );
+        return org.apache.archiva.repository.content.base.ArchivaArtifact.withAsset( artifactPath )
+            .withVersion( version )
+            .withId( info.id )
+            .withClassifier( info.classifier )
+            .withRemainder( info.remainder )
+            .withType( info.type )
+            .withArtifactVersion( info.version )
+            .withContentType( info.contentType )
+            .withArtifactType( info.artifactType )
+            .build( );
+    }
+
+    private String getContentType(StorageAsset artifactPath) {
+        try
+        {
+            return Files.probeContentType( artifactPath.getFilePath( ) );
+
+        }
+        catch ( IOException e )
+        {
+            return "";
+        }
+    }
+
+    private DataItem getDataItemFromPath( final StorageAsset artifactPath )
+    {
+        final String extension = StringUtils.substringAfterLast( artifactPath.getName( ), "." );
+        final String contentType = getContentType( artifactPath );
+        return dataItemMap.computeIfAbsent( artifactPath, myArtifactPath ->
+            org.apache.archiva.repository.content.base.ArchivaDataItem.withAsset( artifactPath )
+                .withId( artifactPath.getName( ) )
+                .withContentType( contentType )
                 .build( )
         );
+
     }
 
-    private ContentItem getItemFromPath(final StorageAsset itemPath) {
-        if (itemPath.isLeaf()) {
-            return getArtifactFromPath( itemPath );
-        } else {
-            if (versionMap.containsKey( itemPath )) {
-                return versionMap.get( itemPath );
+    private ContentItem getItemFromPath( final StorageAsset itemPath )
+    {
+        if ( itemPath.isLeaf( ) )
+        {
+            if (dataItemMap.containsKey( itemPath )) {
+                return dataItemMap.get( itemPath );
             }
-            if (projectMap.containsKey( itemPath )) {
-                return projectMap.get( itemPath );
-            }
-            String ns = MavenContentHelper.getNamespaceFromNamespacePath( itemPath );
-            if (namespaceMap.containsKey( ns )) {
-                return namespaceMap.get( ns );
-            }
-            // No cached item, so we have to gather more information:
-            // Check for version directory (contains at least a pom or metadata file)
-            if (itemPath.list( ).stream( ).map(a -> a.getName().toLowerCase()).anyMatch( n ->
-                n.endsWith( ".pom" )
-            )) {
-                return versionMap.computeIfAbsent( itemPath,
-                    myVersionPath -> ArchivaVersion.withAsset( itemPath )
-                        .withProject( (Project)getItemFromPath( itemPath.getParent() ) )
-                        .withVersion( itemPath.getName() ).build());
+            return getDataItemFromPath( itemPath );
+        }
+        else
+        {
+            if (itemMap.containsKey( itemPath )) {
+                return itemMap.get( itemPath );
             } else {
-                // We have to dig further and find the next directory with a pom
-                Optional<StorageAsset> foundFile = StorageUtil.newAssetStream( itemPath )
-                    .filter( a -> a.getName().toLowerCase().endsWith( ".pom" )
-                        || a.getName().toLowerCase().startsWith( "maven-metadata" ) )
-                    .findFirst( );
-                if (foundFile.isPresent())
-                {
-                    int level = 0;
-                    StorageAsset current = foundFile.get( );
-                    while (current.hasParent() && !current.equals(itemPath)) {
-                        level++;
-                        current = current.getParent( );
-                    }
-                    // Project path if it is one level up from the found file
-                    if (level==2) {
-                        return projectMap.computeIfAbsent( itemPath,
-                            myItemPath -> getProjectFromArtifactPath( foundFile.get( ) ) );
-                    } else {
-                        // All other paths are treated as namespace
-                        return namespaceMap.computeIfAbsent( ns,
-                            myNamespace -> ArchivaNamespace.withRepository( this )
-                                .withAsset( itemPath )
-                                .withNamespace( ns )
-                                .build( ) );
-                    }
-                } else {
-                    // Don't know what to do with it, so we treat it as namespace path
-                    return namespaceMap.computeIfAbsent( ns,
-                        myNamespace -> ArchivaNamespace.withRepository( this )
-                            .withAsset( itemPath )
-                            .withNamespace( ns )
-                            .build( ) );
-                }
-
+                return ArchivaContentItem.withRepository( this ).withAsset( itemPath ).build();
             }
         }
     }
 
     // Simple object to hold artifact information
-    private class ArtifactInfo  {
+    private class ArtifactInfo
+    {
         private String id;
         private String version;
         private String extension;
@@ -432,7 +493,8 @@ public class ManagedDefaultRepositoryContent
         private ArtifactType artifactType = BaseArtifactTypes.MAIN;
     }
 
-    private ArtifactInfo getArtifactInfoFromPath(String genericVersion, StorageAsset path) {
+    private ArtifactInfo getArtifactInfoFromPath( String genericVersion, StorageAsset path )
+    {
         final ArtifactInfo info = new ArtifactInfo( );
         info.asset = path;
         info.id = path.getParent( ).getParent( ).getName( );
@@ -440,51 +502,64 @@ public class ManagedDefaultRepositoryContent
         if ( genericVersion.endsWith( "-" + SNAPSHOT ) )
         {
             String baseVersion = StringUtils.substringBeforeLast( genericVersion, "-" + SNAPSHOT );
-            String prefix = info.id+"-"+baseVersion+"-";
-            if (fileName.startsWith( prefix ))
+            String prefix = info.id + "-" + baseVersion + "-";
+            if ( fileName.startsWith( prefix ) )
             {
                 String versionPostfix = StringUtils.removeStart( fileName, prefix );
                 Matcher matcher = UNIQUE_SNAPSHOT_PATTERN.matcher( versionPostfix );
-                if (matcher.matches()) {
+                if ( matcher.matches( ) )
+                {
                     info.version = baseVersion + "-" + matcher.group( 1 );
                     String newPrefix = info.id + "-" + info.version;
-                    if (fileName.startsWith( newPrefix ))
+                    if ( fileName.startsWith( newPrefix ) )
                     {
                         String classPostfix = StringUtils.removeStart( fileName, newPrefix );
                         Matcher cMatch = CLASSIFIER_PATTERN.matcher( classPostfix );
-                        if (cMatch.matches()) {
+                        if ( cMatch.matches( ) )
+                        {
                             info.classifier = cMatch.group( 1 );
                             info.remainder = cMatch.group( 2 );
-                        } else {
+                        }
+                        else
+                        {
                             info.classifier = "";
                             info.remainder = classPostfix;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         log.debug( "Artifact does not match the maven name pattern {}", path );
                         info.artifactType = BaseArtifactTypes.UNKNOWN;
                         info.classifier = "";
                         info.remainder = StringUtils.substringAfter( fileName, prefix );
                     }
-                } else {
+                }
+                else
+                {
                     log.debug( "Artifact does not match the snapshot version pattern {}", path );
 
                     info.artifactType = BaseArtifactTypes.UNKNOWN;
                     // This is just a guess. No guarantee to the get a usable version.
                     info.version = StringUtils.removeStart( fileName, info.id + '-' );
-                    String postfix = StringUtils.substringAfterLast( info.version, "." ).toLowerCase();
-                    while (COMMON_EXTENSIONS.matcher(postfix).matches()) {
+                    String postfix = StringUtils.substringAfterLast( info.version, "." ).toLowerCase( );
+                    while ( COMMON_EXTENSIONS.matcher( postfix ).matches( ) )
+                    {
                         info.version = StringUtils.substringBeforeLast( info.version, "." );
-                        postfix = StringUtils.substringAfterLast( info.version, "." ).toLowerCase();
+                        postfix = StringUtils.substringAfterLast( info.version, "." ).toLowerCase( );
                     }
                     info.classifier = "";
                     info.remainder = StringUtils.substringAfter( fileName, prefix );
                 }
-            } else {
+            }
+            else
+            {
                 log.debug( "Artifact does not match the maven name pattern: {}", path );
-                if ( fileName.contains( "-"+baseVersion ) )
+                if ( fileName.contains( "-" + baseVersion ) )
                 {
-                    info.id = StringUtils.substringBefore( fileName, "-"+baseVersion );
-                } else {
+                    info.id = StringUtils.substringBefore( fileName, "-" + baseVersion );
+                }
+                else
+                {
                     info.id = fileName;
                 }
                 info.artifactType = BaseArtifactTypes.UNKNOWN;
@@ -492,24 +567,34 @@ public class ManagedDefaultRepositoryContent
                 info.classifier = "";
                 info.remainder = StringUtils.substringAfterLast( fileName, "." );
             }
-        } else {
-            String prefix = info.id+"-"+genericVersion;
-            if (fileName.startsWith( prefix ))
+        }
+        else
+        {
+            String prefix = info.id + "-" + genericVersion;
+            if ( fileName.startsWith( prefix ) )
             {
-                info.version=genericVersion;
+                info.version = genericVersion;
                 String classPostfix = StringUtils.removeStart( fileName, prefix );
                 Matcher cMatch = CLASSIFIER_PATTERN.matcher( classPostfix );
-                if (cMatch.matches()) {
+                if ( cMatch.matches( ) )
+                {
                     info.classifier = cMatch.group( 1 );
                     info.remainder = cMatch.group( 2 );
-                } else {
+                }
+                else
+                {
                     info.classifier = "";
                     info.remainder = classPostfix;
                 }
-            } else {
-                if (fileName.contains( "-"+genericVersion )) {
-                    info.id = StringUtils.substringBefore( fileName, "-"+genericVersion );
-                } else {
+            }
+            else
+            {
+                if ( fileName.contains( "-" + genericVersion ) )
+                {
+                    info.id = StringUtils.substringBefore( fileName, "-" + genericVersion );
+                }
+                else
+                {
                     info.id = fileName;
                 }
                 log.debug( "Artifact does not match the version pattern {}", path );
@@ -521,19 +606,27 @@ public class ManagedDefaultRepositoryContent
         }
         info.extension = StringUtils.substringAfterLast( fileName, "." );
         info.type = MavenContentHelper.getTypeFromClassifierAndExtension( info.classifier, info.extension );
-        try {
+        try
+        {
             info.contentType = Files.probeContentType( path.getFilePath( ) );
-        } catch (IOException e) {
+        }
+        catch ( IOException e )
+        {
             info.contentType = "";
             //
         }
-        if (MavenContentHelper.METADATA_FILENAME.equalsIgnoreCase( fileName )) {
+        if ( MavenContentHelper.METADATA_FILENAME.equalsIgnoreCase( fileName ) )
+        {
             info.artifactType = BaseArtifactTypes.METADATA;
-        } else if (MavenContentHelper.METADATA_REPOSITORY_FILENAME.equalsIgnoreCase( fileName )) {
+        }
+        else if ( MavenContentHelper.METADATA_REPOSITORY_FILENAME.equalsIgnoreCase( fileName ) )
+        {
             info.artifactType = MavenTypes.REPOSITORY_METADATA;
-        } else if (StringUtils.isNotEmpty( info.remainder ) && StringUtils.countMatches( info.remainder, "." )>=2) {
+        }
+        else if ( StringUtils.isNotEmpty( info.remainder ) && StringUtils.countMatches( info.remainder, "." ) >= 2 )
+        {
             String mainFile = StringUtils.substringBeforeLast( fileName, "." );
-            if (path.getParent().resolve( mainFile ).exists())
+            if ( path.getParent( ).resolve( mainFile ).exists( ) )
             {
                 info.artifactType = BaseArtifactTypes.RELATED;
             }
@@ -545,17 +638,20 @@ public class ManagedDefaultRepositoryContent
     @Override
     public Artifact getArtifact( final ItemSelector selector ) throws ContentAccessException
     {
-        if (!selector.hasProjectId( )) {
+        if ( !selector.hasProjectId( ) )
+        {
             throw new IllegalArgumentException( "Project id must be set" );
         }
-        if (!selector.hasVersion( )) {
+        if ( !selector.hasVersion( ) )
+        {
             throw new IllegalArgumentException( "Version must be set" );
         }
-        if (!selector.hasArtifactId( )) {
+        if ( !selector.hasArtifactId( ) )
+        {
             throw new IllegalArgumentException( "Artifact id must be set" );
         }
-        final StorageAsset artifactDir = getAsset(selector.getNamespace(), selector.getProjectId(),
-            selector.getVersion());
+        final StorageAsset artifactDir = getAsset( selector.getNamespace( ), selector.getProjectId( ),
+            selector.getVersion( ) );
         final String artifactVersion = mavenContentHelper.getArtifactVersion( artifactDir, selector );
         final String classifier = MavenContentHelper.getClassifier( selector );
         final String extension = MavenContentHelper.getArtifactExtension( selector );
@@ -563,7 +659,7 @@ public class ManagedDefaultRepositoryContent
         final String fileName = MavenContentHelper.getArtifactFileName( artifactId, artifactVersion, classifier, extension );
         final StorageAsset path = getAsset( selector.getNamespace( ), selector.getProjectId( ),
             selector.getVersion( ), fileName );
-        return artifactMap.computeIfAbsent( path, artifactPath -> createArtifact( path, selector, classifier, extension ) );
+        return getArtifactFromPath( path );
     }
 
     /**
@@ -575,7 +671,7 @@ public class ManagedDefaultRepositoryContent
         return namespace.getAsset( ).list( ).stream( )
             .filter( a -> a.isContainer( ) )
             .map( a -> getProjectFromPath( a ) )
-            .collect( Collectors.toList());
+            .collect( Collectors.toList( ) );
     }
 
     @Override
@@ -586,6 +682,7 @@ public class ManagedDefaultRepositoryContent
 
     /**
      * Returns a version object for each directory that is a direct child of the project directory.
+     *
      * @param project the project for which the versions should be returned
      * @return the list of versions or a empty list, if not version was found
      */
@@ -596,38 +693,67 @@ public class ManagedDefaultRepositoryContent
         return asset.list( ).stream( ).filter( a -> a.isContainer( ) )
             .map( a -> ArchivaVersion.withAsset( a )
                 .withProject( project )
-                .withVersion( a.getName() ).build() )
+                .withVersion( a.getName( ) ).build( ) )
             .collect( Collectors.toList( ) );
     }
 
     /**
-     * If the selector specifies a version, all artifact versions are returned, which means for snapshot
-     * versions the artifact versions are returned too.
+     * Returns the versions that can be found for the given selector.
      *
      * @param selector the item selector. At least namespace and projectId must be set.
      * @return the list of version objects or a empty list, if the selector does not match a version
-     * @throws ContentAccessException if the access to the underlying backend failed
+     * @throws ContentAccessException   if the access to the underlying backend failed
      * @throws IllegalArgumentException if the selector has no projectId specified
      */
     @Override
     public List<? extends Version> getVersions( final ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
-        if (!selector.hasProjectId()) {
+        if ( !selector.hasProjectId( ) )
+        {
             log.error( "Bad item selector for version list: {}", selector );
             throw new IllegalArgumentException( "Project id not set, while retrieving versions." );
         }
         final Project project = getProject( selector );
-        if (selector.hasVersion()) {
+        if ( selector.hasVersion( ) )
+        {
             final StorageAsset asset = getAsset( selector.getNamespace( ), selector.getProjectId( ), selector.getVersion( ) );
             return asset.list( ).stream( ).map( a -> getArtifactInfoFromPath( selector.getVersion( ), a ) )
                 .filter( ai -> StringUtils.isNotEmpty( ai.version ) )
-                .map( v -> ArchivaVersion.withAsset( v.asset.getParent() )
-                    .withProject( project ).withVersion( v.version )
-                    .withAttribute(SNAPSHOT_ARTIFACT_VERSION,"true").build() )
-                .distinct()
+                .map( v -> getVersionFromArtifactPath( v.asset ) )
+                .distinct( )
                 .collect( Collectors.toList( ) );
-        } else {
+        }
+        else
+        {
             return getVersions( project );
+        }
+    }
+
+    public List<String> getArtifactVersions( final ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        if ( !selector.hasProjectId( ) )
+        {
+            log.error( "Bad item selector for version list: {}", selector );
+            throw new IllegalArgumentException( "Project id not set, while retrieving versions." );
+        }
+        final Project project = getProject( selector );
+        if ( selector.hasVersion( ) )
+        {
+            final StorageAsset asset = getAsset( selector.getNamespace( ), selector.getProjectId( ), selector.getVersion( ) );
+            return asset.list( ).stream( ).map( a -> getArtifactInfoFromPath( selector.getVersion( ), a ) )
+                .filter( ai -> StringUtils.isNotEmpty( ai.version ) )
+                .map( v -> v.version )
+                .distinct( )
+                .collect( Collectors.toList( ) );
+        }
+        else
+        {
+            return project.getAsset( ).list( ).stream( ).map( a -> getVersionFromPath( a ) )
+                .flatMap( v -> v.getAsset( ).list( ).stream( ).map( a -> getArtifactInfoFromPath( v.getVersion( ), a ) ) )
+                .filter( ai -> StringUtils.isNotEmpty( ai.version ) )
+                .map( v -> v.version )
+                .distinct( )
+                .collect( Collectors.toList( ) );
         }
     }
 
@@ -642,8 +768,9 @@ public class ManagedDefaultRepositoryContent
     @Override
     public List<? extends Artifact> getArtifacts( ItemSelector selector ) throws ContentAccessException
     {
-        try(Stream<? extends Artifact> stream = newArtifactStream( selector )) {
-            return stream.collect( Collectors.toList());
+        try ( Stream<? extends Artifact> stream = newArtifactStream( selector ) )
+        {
+            return stream.collect( Collectors.toList( ) );
         }
     }
 
@@ -651,33 +778,44 @@ public class ManagedDefaultRepositoryContent
     /*
      * File filter to select certain artifacts using the selector data.
      */
-    private Predicate<StorageAsset> getFileFilterFromSelector(final ItemSelector selector) {
+    private Predicate<StorageAsset> getArtifactFileFilterFromSelector( final ItemSelector selector )
+    {
         Predicate<StorageAsset> p = a -> a.isLeaf( );
-        StringBuilder fileNamePattern = new StringBuilder("^" );
-        if (selector.hasArtifactId()) {
-            fileNamePattern.append( Pattern.quote(selector.getArtifactId( )) ).append("-");
-        } else {
-            fileNamePattern.append("[A-Za-z0-9_\\-.]+-");
+        StringBuilder fileNamePattern = new StringBuilder( "^" );
+        if ( selector.hasArtifactId( ) )
+        {
+            fileNamePattern.append( Pattern.quote( selector.getArtifactId( ) ) ).append( "-" );
         }
-        if (selector.hasArtifactVersion()) {
-            if ( selector.getArtifactVersion( ).contains("*")) {
+        else
+        {
+            fileNamePattern.append( "[A-Za-z0-9_\\-.]+-" );
+        }
+        if ( selector.hasArtifactVersion( ) )
+        {
+            if ( selector.getArtifactVersion( ).contains( "*" ) )
+            {
                 String[] tokens = StringUtils.splitByWholeSeparator( selector.getArtifactVersion( ), "*" );
-                for (String currentToken : tokens) {
-                    if (!currentToken.equals("")) {
+                for ( String currentToken : tokens )
+                {
+                    if ( !currentToken.equals( "" ) )
+                    {
                         fileNamePattern.append( Pattern.quote( currentToken ) );
                     }
                     fileNamePattern.append( "[A-Za-z0-9_\\-.]*" );
                 }
-            } else
+            }
+            else
             {
                 fileNamePattern.append( Pattern.quote( selector.getArtifactVersion( ) ) );
             }
-        } else  {
+        }
+        else
+        {
             fileNamePattern.append( "[A-Za-z0-9_\\-.]+" );
         }
         String classifier = selector.hasClassifier( ) ? selector.getClassifier( ) :
             ( selector.hasType( ) ? MavenContentHelper.getClassifierFromType( selector.getType( ) ) : null );
-        if (classifier != null)
+        if ( classifier != null )
         {
             if ( "*".equals( classifier ) )
             {
@@ -685,25 +823,32 @@ public class ManagedDefaultRepositoryContent
             }
             else
             {
-                fileNamePattern.append("-").append( Pattern.quote( classifier ) ).append( "\\." );
+                fileNamePattern.append( "-" ).append( Pattern.quote( classifier ) ).append( "\\." );
             }
-        } else {
+        }
+        else
+        {
             fileNamePattern.append( "\\." );
         }
         String extension = selector.hasExtension( ) ? selector.getExtension( ) :
             ( selector.hasType( ) ? MavenContentHelper.getArtifactExtension( selector ) : null );
-        if (extension != null) {
-            if (selector.includeRelatedArtifacts())
+        if ( extension != null )
+        {
+            if ( selector.includeRelatedArtifacts( ) )
             {
-                fileNamePattern.append( Pattern.quote( extension ) ).append("(\\.[A-Za-z0-9]+)?");
-            } else {
+                fileNamePattern.append( Pattern.quote( extension ) ).append( "(\\.[A-Za-z0-9]+)?" );
+            }
+            else
+            {
                 fileNamePattern.append( Pattern.quote( extension ) );
             }
-        } else {
+        }
+        else
+        {
             fileNamePattern.append( "[A-Za-z0-9.]+" );
         }
-        final Pattern pattern = Pattern.compile( fileNamePattern.toString() );
-        return p.and( a -> pattern.matcher( a.getName( ) ).matches());
+        final Pattern pattern = Pattern.compile( fileNamePattern.toString( ) );
+        return p.and( a -> pattern.matcher( a.getName( ) ).matches( ) );
     }
 
 
@@ -725,11 +870,11 @@ public class ManagedDefaultRepositoryContent
      *     To select only artifacts that match the layout you should add the artifact id and artifact version
      *     (can contain a '*' pattern).</li>
      * </ul>
-     *
+     * <p>
      * The '*' pattern can be used in classifiers and artifact versions and match zero or more characters.
-     *
+     * <p>
      * There is no determinate order of the elements in the stream.
-     *
+     * <p>
      * Returned streams are auto closable and should be used in a try-with-resources statement.
      *
      * @param selector the item selector
@@ -740,28 +885,34 @@ public class ManagedDefaultRepositoryContent
     {
         String projectId = selector.hasProjectId( ) ? selector.getProjectId( ) : ( selector.hasArtifactId( ) ? selector.getArtifactId( )
             : null );
-        final Predicate<StorageAsset> filter = getFileFilterFromSelector( selector );
-        if (projectId!=null && selector.hasVersion()) {
+        final Predicate<StorageAsset> filter = getArtifactFileFilterFromSelector( selector );
+        if ( projectId != null && selector.hasVersion( ) )
+        {
             return getAsset( selector.getNamespace( ), projectId, selector.getVersion( ) )
                 .list( ).stream( ).filter( filter )
                 .map( this::getArtifactFromPath );
-        } else if (projectId!=null) {
+        }
+        else if ( projectId != null )
+        {
             final StorageAsset projDir = getAsset( selector.getNamespace( ), projectId );
             return projDir.list( ).stream( )
-                .map(a -> a.isContainer( ) ? a.list( ) : Arrays.asList( a ) )
+                .map( a -> a.isContainer( ) ? a.list( ) : Arrays.asList( a ) )
                 .flatMap( List::stream )
                 .filter( filter )
                 .map( this::getArtifactFromPath );
-        } else
+        }
+        else
         {
             StorageAsset namespaceDir = getAsset( selector.getNamespace( ) );
-            if (selector.recurse())
+            if ( selector.recurse( ) )
             {
                 return StorageUtil.newAssetStream( namespaceDir, true )
                     .filter( filter )
-                        .map( this::getArtifactFromPath );
+                    .map( this::getArtifactFromPath );
 
-            } else {
+            }
+            else
+            {
                 // We descend into 2 subdirectories (project and version)
                 return namespaceDir.list( ).stream( )
                     .map( a -> a.isContainer( ) ? a.list( ) : Arrays.asList( a ) )
@@ -783,13 +934,15 @@ public class ManagedDefaultRepositoryContent
     @Override
     public List<? extends Artifact> getArtifacts( ContentItem item )
     {
-        try(Stream<? extends Artifact> stream = newArtifactStream( item )) {
-            return stream.collect( Collectors.toList());
+        try ( Stream<? extends Artifact> stream = newArtifactStream( item ) )
+        {
+            return stream.collect( Collectors.toList( ) );
         }
     }
 
     /**
      * Returns all artifacts
+     *
      * @param item
      * @return
      * @throws ContentAccessException
@@ -801,20 +954,21 @@ public class ManagedDefaultRepositoryContent
 
     public Stream<? extends Artifact> newArtifactStream( Project item ) throws ContentAccessException
     {
-        return newArtifactStream( ArchivaItemSelector.builder( ).withNamespace( item.getNamespace( ).getNamespace() )
-            .withProjectId( item.getId() ).build( ) );
+        return newArtifactStream( ArchivaItemSelector.builder( ).withNamespace( item.getNamespace( ).getNamespace( ) )
+            .withProjectId( item.getId( ) ).build( ) );
     }
 
     public Stream<? extends Artifact> newArtifactStream( Version item ) throws ContentAccessException
     {
-        return newArtifactStream( ArchivaItemSelector.builder( ).withNamespace( item.getProject().getNamespace( ).getNamespace() )
-            .withProjectId( item.getProject().getId() )
-            .withVersion( item.getVersion() ).build( ) );
+        return newArtifactStream( ArchivaItemSelector.builder( ).withNamespace( item.getProject( ).getNamespace( ).getNamespace( ) )
+            .withProjectId( item.getProject( ).getId( ) )
+            .withVersion( item.getVersion( ) ).build( ) );
     }
 
     /**
      * Returns all related artifacts that match the given artifact. That means all artifacts that have
      * the same filename plus an additional extension, e.g. ${fileName}.sha2
+     *
      * @param item the artifact
      * @return the stream of artifacts
      * @throws ContentAccessException
@@ -828,6 +982,7 @@ public class ManagedDefaultRepositoryContent
         return v.getAsset( ).list( ).stream( ).filter( filter )
             .map( a -> getArtifactFromPath( a ) );
     }
+
     /**
      * Returns the stream of artifacts that are children of the given item.
      *
@@ -838,19 +993,160 @@ public class ManagedDefaultRepositoryContent
     @Override
     public Stream<? extends Artifact> newArtifactStream( ContentItem item ) throws ContentAccessException
     {
-        if (item instanceof Namespace) {
+        if ( item instanceof Namespace )
+        {
             return newArtifactStream( ( (Namespace) item ) );
-        } else if (item instanceof Project) {
+        }
+        else if ( item instanceof Project )
+        {
             return newArtifactStream( (Project) item );
-        } else if (item instanceof Version) {
+        }
+        else if ( item instanceof Version )
+        {
             return newArtifactStream( (Version) item );
-        } else if (item instanceof Artifact) {
+        }
+        else if ( item instanceof Artifact )
+        {
             return newArtifactStream( (Artifact) item );
-        } else
+        }
+        else
         {
             log.warn( "newArtifactStream for unsupported item requested: {}", item.getClass( ).getName( ) );
             return Stream.empty( );
         }
+    }
+
+    private void appendPatternRegex( StringBuilder builder, String name )
+    {
+        String[] patternArray = name.split( "[*]" );
+        for ( int i = 0; i < patternArray.length - 1; i++ )
+        {
+            builder.append( Pattern.quote( patternArray[i] ) )
+                .append( "[A-Za-z0-9_\\-]*" );
+        }
+        builder.append( Pattern.quote( patternArray[patternArray.length - 1] ) );
+    }
+
+    Predicate<StorageAsset> getItemFileFilterFromSelector( ItemSelector selector )
+    {
+        if ( !selector.hasNamespace( ) && !selector.hasProjectId( ) )
+        {
+            throw new IllegalArgumentException( "Selector must have at least namespace and projectid" );
+        }
+        StringBuilder pathMatcher = new StringBuilder( "^" );
+        if ( selector.hasNamespace( ) )
+        {
+            String path = "/" + String.join( "/", selector.getNamespace( ).split( "\\." ) );
+            if ( path.contains( "*" ) )
+            {
+                appendPatternRegex( pathMatcher, path );
+            }
+            else
+            {
+                pathMatcher.append( Pattern.quote( path ) );
+            }
+
+        }
+        if ( selector.hasProjectId( ) )
+        {
+            pathMatcher.append( "/" );
+            if ( selector.getProjectId( ).contains( "*" ) )
+            {
+                appendPatternRegex( pathMatcher, selector.getProjectId( ) );
+            }
+            else
+            {
+                pathMatcher.append( Pattern.quote( selector.getProjectId( ) ) );
+            }
+        }
+        if ( selector.hasVersion( ) )
+        {
+            pathMatcher.append( "/" );
+            if ( selector.getVersion( ).contains( "*" ) )
+            {
+                appendPatternRegex( pathMatcher, selector.getVersion( ) );
+            }
+            else
+            {
+                pathMatcher.append( Pattern.quote( selector.getVersion( ) ) );
+            }
+        }
+        pathMatcher.append( ".*" );
+        final Pattern pathPattern = Pattern.compile( pathMatcher.toString( ) );
+        final Predicate<StorageAsset> pathPredicate = ( StorageAsset asset ) -> pathPattern.matcher( asset.getPath( ) ).matches( );
+        if ( selector.hasArtifactId( ) || selector.hasArtifactVersion( ) || selector.hasClassifier( )
+            || selector.hasType( ) || selector.hasExtension( ) )
+        {
+            return getArtifactFileFilterFromSelector( selector ).and( pathPredicate );
+        }
+        else
+        {
+            return pathPredicate;
+        }
+    }
+
+    /**
+     * Returns a concatenation of the asset and its children as stream, if they exist.
+     * It descends <code>level+1</code> levels down.
+     *
+     * @param a the asset to start from
+     * @param level the number of child levels to descend. 0 means only the children of the given asset, 1 means the children of childrens of the given asset, ...
+     * @return the stream of storage assets
+     */
+    private Stream<StorageAsset> getChildrenDF( StorageAsset a, int level )
+    {
+        if ( a.isContainer( ) )
+        {
+            if (level>0) {
+                return Stream.concat( a.list().stream( ).flatMap( ch -> getChildrenDF( ch, level - 1 ) ), Stream.of( a ) );
+            } else
+            {
+                return Stream.concat( a.list( ).stream( ), Stream.of( a ) );
+            }
+        }
+        else
+        {
+            return Stream.of( a );
+        }
+    }
+
+    @Override
+    public Stream<? extends ContentItem> newItemStream( ItemSelector selector, boolean parallel ) throws ContentAccessException, IllegalArgumentException
+    {
+        final Predicate<StorageAsset> filter = getItemFileFilterFromSelector( selector );
+        StorageAsset startDir;
+        if (selector.getNamespace().contains("*")) {
+            startDir = getAsset( "" );
+        } else if ( selector.hasProjectId( ) && selector.getProjectId().contains("*") )
+        {
+            startDir = getAsset( selector.getNamespace( ) );
+        } else if ( selector.hasProjectId() && selector.hasVersion() && selector.getVersion().contains("*")) {
+            startDir = getAsset( selector.getNamespace( ), selector.getProjectId( ) );
+        }
+        else if ( selector.hasProjectId( ) && selector.hasVersion( ) )
+        {
+            startDir = getAsset( selector.getNamespace( ), selector.getProjectId( ), selector.getVersion() );
+        }
+        else if ( selector.hasProjectId( ) )
+        {
+            startDir = getAsset( selector.getNamespace( ), selector.getProjectId( ) );
+        }
+        else
+        {
+            startDir = getAsset( selector.getNamespace( ) );
+            if ( !selector.recurse( ) )
+            {
+                // We descend into 2 subdirectories (project and version)
+                return startDir.list( ).stream( )
+                    .flatMap( a -> getChildrenDF( a, 1 ) )
+                    .map( this::getItemFromPath );
+            }
+        }
+        ;
+        return StorageUtil.newAssetStream( startDir, parallel )
+            .filter( filter )
+            .map( this::getItemFromPath );
+
     }
 
     /**
@@ -862,6 +1158,52 @@ public class ManagedDefaultRepositoryContent
         return getItem( selector ).getAsset( ).exists( );
     }
 
+    @Override
+    public ContentItem getParent( ContentItem item )
+    {
+        return getItemFromPath( item.getAsset( ).getParent( ) );
+    }
+
+    @Override
+    public List<? extends ContentItem> getChildren( ContentItem item )
+    {
+        if (item.getAsset().isLeaf()) {
+            return Collections.emptyList( );
+        } else {
+            return item.getAsset( ).list( ).stream( ).map( a -> getItemFromPath( a ) ).collect( Collectors.toList( ) );
+        }
+    }
+
+    @Override
+    public <T extends ContentItem> T applyCharacteristic( Class<T> clazz, ContentItem item ) throws LayoutException
+    {
+            if (item.getAsset().isLeaf()) {
+                if (clazz.isAssignableFrom( Artifact.class )) {
+                    Artifact artifact = getArtifactFromPath( item.getAsset( ) );
+                    item.setCharacteristic( Artifact.class, artifact );
+                    return (T) artifact;
+                } else {
+                    throw new LayoutException( "Could not adapt file to clazz " + clazz );
+                }
+            } else {
+                if (clazz.isAssignableFrom( Version.class )) {
+                    Version version = getVersionFromPath( item.getAsset( ) );
+                    item.setCharacteristic( Version.class, version );
+                    return (T) version;
+                } else if (clazz.isAssignableFrom( Project.class )) {
+                    Project project = getProjectFromPath( item.getAsset( ) );
+                    item.setCharacteristic( Project.class, project );
+                    return (T) project;
+                } else if (clazz.isAssignableFrom( Namespace.class )) {
+                    Namespace ns = getNamespaceFromPath( item.getAsset( ) );
+                    item.setCharacteristic( Namespace.class, ns );
+                    return (T) ns;
+                } else {
+                    throw new LayoutException( "Cannot adapt directory to clazz " + clazz );
+                }
+            }
+    }
+
     /**
      * Moves the file to the artifact destination
      */
@@ -871,14 +1213,15 @@ public class ManagedDefaultRepositoryContent
         try
         {
             StorageAsset asset = destination.getAsset( );
-            if (!asset.exists()) {
-                asset.create();
+            if ( !asset.exists( ) )
+            {
+                asset.create( );
             }
             asset.replaceDataFromFile( sourceFile );
         }
         catch ( IOException e )
         {
-            log.error( "Could not push data to asset source={} destination={}. {}", sourceFile, destination.getAsset().getFilePath(), e.getMessage( ) );
+            log.error( "Could not push data to asset source={} destination={}. {}", sourceFile, destination.getAsset( ).getFilePath( ), e.getMessage( ) );
             throw new ContentAccessException( e.getMessage( ), e );
         }
     }
@@ -887,11 +1230,13 @@ public class ManagedDefaultRepositoryContent
     public ContentItem toItem( String path ) throws LayoutException
     {
         StorageAsset asset = getRepository( ).getAsset( path );
-        if (asset.isLeaf())
+        if ( asset.isLeaf( ) )
         {
             ItemSelector selector = getPathParser( ).toItemSelector( path );
             return getItem( selector );
-        } else {
+        }
+        else
+        {
             return getItemFromPath( asset );
         }
     }
@@ -906,22 +1251,26 @@ public class ManagedDefaultRepositoryContent
 
     /**
      * Returns a version reference from the coordinates
-     * @param groupId the group id
+     *
+     * @param groupId    the group id
      * @param artifactId the artifact id
-     * @param version the version
+     * @param version    the version
      * @return the versioned reference object
      */
     @Override
-    public VersionedReference toVersion( String groupId, String artifactId, String version ) {
-        return new VersionedReference().groupId( groupId ).artifactId( artifactId ).version( version );
+    public VersionedReference toVersion( String groupId, String artifactId, String version )
+    {
+        return new VersionedReference( ).groupId( groupId ).artifactId( artifactId ).version( version );
     }
 
     /**
      * Return the version the artifact is part of
+     *
      * @param artifactReference
      * @return
      */
-    public VersionedReference toVersion( ArtifactReference artifactReference) {
+    public VersionedReference toVersion( ArtifactReference artifactReference )
+    {
         return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), artifactReference.getVersion( ) );
     }
 
@@ -930,13 +1279,13 @@ public class ManagedDefaultRepositoryContent
     public void deleteVersion( VersionedReference ref ) throws ContentNotFoundException, ContentAccessException
     {
         final String path = toPath( ref );
-        final Path deleteTarget = getRepoDir().resolve(path);
-        if ( !Files.exists(deleteTarget) )
+        final Path deleteTarget = getRepoDir( ).resolve( path );
+        if ( !Files.exists( deleteTarget ) )
         {
-            log.warn( "Version path for repository {} does not exist: {}", getId(), deleteTarget );
-            throw new ContentNotFoundException( "Version not found for repository "+getId()+": "+path );
+            log.warn( "Version path for repository {} does not exist: {}", getId( ), deleteTarget );
+            throw new ContentNotFoundException( "Version not found for repository " + getId( ) + ": " + path );
         }
-        if ( Files.isDirectory(deleteTarget) )
+        if ( Files.isDirectory( deleteTarget ) )
         {
             try
             {
@@ -945,11 +1294,13 @@ public class ManagedDefaultRepositoryContent
             catch ( IOException e )
             {
                 log.error( "Could not delete file path {}: {}", deleteTarget, e.getMessage( ), e );
-                throw new ContentAccessException( "Error while trying to delete path "+path+" from repository "+getId()+": "+e.getMessage( ), e );
+                throw new ContentAccessException( "Error while trying to delete path " + path + " from repository " + getId( ) + ": " + e.getMessage( ), e );
             }
-        } else {
-            log.warn( "Version path for repository {} is not a directory {}", getId(), deleteTarget );
-            throw new ContentNotFoundException( "Version path for repository "+getId()+" is not directory: " + path );
+        }
+        else
+        {
+            log.warn( "Version path for repository {} is not a directory {}", getId( ), deleteTarget );
+            throw new ContentNotFoundException( "Version path for repository " + getId( ) + " is not directory: " + path );
         }
     }
 
@@ -959,12 +1310,12 @@ public class ManagedDefaultRepositoryContent
     {
         final String path = toPath( ref );
         final Path deleteTarget = getRepoDir( ).resolve( path );
-        if ( !Files.exists(deleteTarget) )
+        if ( !Files.exists( deleteTarget ) )
         {
-            log.warn( "Project path for repository {} does not exist: {}", getId(), deleteTarget );
-            throw new ContentNotFoundException( "Project not found for repository "+getId()+": "+path );
+            log.warn( "Project path for repository {} does not exist: {}", getId( ), deleteTarget );
+            throw new ContentNotFoundException( "Project not found for repository " + getId( ) + ": " + path );
         }
-        if ( Files.isDirectory(deleteTarget) )
+        if ( Files.isDirectory( deleteTarget ) )
         {
             try
             {
@@ -973,13 +1324,13 @@ public class ManagedDefaultRepositoryContent
             catch ( IOException e )
             {
                 log.error( "Could not delete file path {}: {}", deleteTarget, e.getMessage( ), e );
-                throw new ContentAccessException( "Error while trying to delete path "+path+" from repository "+getId()+": "+e.getMessage( ), e );
+                throw new ContentAccessException( "Error while trying to delete path " + path + " from repository " + getId( ) + ": " + e.getMessage( ), e );
             }
         }
         else
         {
-            log.warn( "Project path for repository {} is not a directory {}", getId(), deleteTarget );
-            throw new ContentNotFoundException( "Project path for repository "+getId()+" is not directory: " + path );
+            log.warn( "Project path for repository {} is not a directory {}", getId( ), deleteTarget );
+            throw new ContentNotFoundException( "Project path for repository " + getId( ) + " is not directory: " + path );
         }
 
     }
@@ -987,7 +1338,7 @@ public class ManagedDefaultRepositoryContent
     @Override
     public void deleteProject( String namespace, String projectId ) throws ContentNotFoundException, ContentAccessException
     {
-        this.deleteProject( new ProjectReference().groupId( namespace ).artifactId( projectId ) );
+        this.deleteProject( new ProjectReference( ).groupId( namespace ).artifactId( projectId ) );
     }
 
     @Override
@@ -996,25 +1347,29 @@ public class ManagedDefaultRepositoryContent
         final String path = toPath( ref );
         final Path repoDir = getRepoDir( );
         Path deleteTarget = repoDir.resolve( path );
-        if ( Files.exists(deleteTarget) )
+        if ( Files.exists( deleteTarget ) )
         {
             try
             {
-                if (Files.isDirectory( deleteTarget ))
+                if ( Files.isDirectory( deleteTarget ) )
                 {
                     org.apache.archiva.common.utils.FileUtils.deleteDirectory( deleteTarget );
-                } else {
+                }
+                else
+                {
                     Files.delete( deleteTarget );
                 }
             }
             catch ( IOException e )
             {
                 log.error( "Could not delete file path {}: {}", deleteTarget, e.getMessage( ), e );
-                throw new ContentAccessException( "Error while trying to delete path "+path+" from repository "+getId()+": "+e.getMessage( ), e );
+                throw new ContentAccessException( "Error while trying to delete path " + path + " from repository " + getId( ) + ": " + e.getMessage( ), e );
             }
-        } else {
-            log.warn( "Artifact path for repository {} does not exist: {}", getId(), deleteTarget );
-            throw new ContentNotFoundException( "Artifact not found for repository "+getId()+": "+path );
+        }
+        else
+        {
+            log.warn( "Artifact path for repository {} does not exist: {}", getId( ), deleteTarget );
+            throw new ContentNotFoundException( "Artifact not found for repository " + getId( ) + ": " + path );
         }
 
     }
@@ -1025,11 +1380,12 @@ public class ManagedDefaultRepositoryContent
     {
         final String path = toPath( groupId );
         final Path deleteTarget = getRepoDir( ).resolve( path );
-        if (!Files.exists(deleteTarget)) {
-            log.warn( "Namespace path for repository {} does not exist: {}", getId(), deleteTarget );
-            throw new ContentNotFoundException( "Namespace not found for repository "+getId()+": "+path );
+        if ( !Files.exists( deleteTarget ) )
+        {
+            log.warn( "Namespace path for repository {} does not exist: {}", getId( ), deleteTarget );
+            throw new ContentNotFoundException( "Namespace not found for repository " + getId( ) + ": " + path );
         }
-        if ( Files.isDirectory(deleteTarget) )
+        if ( Files.isDirectory( deleteTarget ) )
         {
             try
             {
@@ -1038,19 +1394,21 @@ public class ManagedDefaultRepositoryContent
             catch ( IOException e )
             {
                 log.error( "Could not delete file path {}: {}", deleteTarget, e.getMessage( ), e );
-                throw new ContentAccessException( "Error while trying to delete path "+path+" from repository "+getId()+": "+e.getMessage( ), e );
+                throw new ContentAccessException( "Error while trying to delete path " + path + " from repository " + getId( ) + ": " + e.getMessage( ), e );
             }
-        } else {
-            log.warn( "Namespace path for repository {} is not a directory {}", getId(), deleteTarget );
-            throw new ContentNotFoundException( "Namespace path for repository "+getId()+" is not directory: " + path );
+        }
+        else
+        {
+            log.warn( "Namespace path for repository {} is not a directory {}", getId( ), deleteTarget );
+            throw new ContentNotFoundException( "Namespace path for repository " + getId( ) + " is not directory: " + path );
 
         }
     }
 
     @Override
-    public String getId()
+    public String getId( )
     {
-        return repository.getId();
+        return repository.getId( );
     }
 
     @Override
@@ -1058,45 +1416,59 @@ public class ManagedDefaultRepositoryContent
         throws ContentNotFoundException, LayoutException, ContentAccessException
     {
         StorageAsset artifactDir = toFile( reference );
-        if ( !artifactDir.exists())
+        if ( !artifactDir.exists( ) )
         {
             throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-existant directory: " + artifactDir.getPath() );
+                "Unable to get related artifacts using a non-existant directory: " + artifactDir.getPath( ) );
         }
 
-        if ( !artifactDir.isContainer() )
+        if ( !artifactDir.isContainer( ) )
         {
             throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-directory: " + artifactDir.getPath() );
+                "Unable to get related artifacts using a non-directory: " + artifactDir.getPath( ) );
         }
 
         // First gather up the versions found as artifacts in the managed repository.
 
-        try (Stream<? extends StorageAsset> stream = artifactDir.list().stream() ) {
-            return stream.filter(asset -> !asset.isContainer()).map(path -> {
-                try {
-                    ArtifactReference artifact = toArtifactReference(path.getPath());
-                    if( artifact.getGroupId().equals( reference.getGroupId() ) && artifact.getArtifactId().equals(
-                            reference.getArtifactId() ) && artifact.getVersion().equals( reference.getVersion() )) {
+        try ( Stream<? extends StorageAsset> stream = artifactDir.list( ).stream( ) )
+        {
+            return stream.filter( asset -> !asset.isContainer( ) ).map( path -> {
+                try
+                {
+                    ArtifactReference artifact = toArtifactReference( path.getPath( ) );
+                    if ( artifact.getGroupId( ).equals( reference.getGroupId( ) ) && artifact.getArtifactId( ).equals(
+                        reference.getArtifactId( ) ) && artifact.getVersion( ).equals( reference.getVersion( ) ) )
+                    {
                         return artifact;
-                    } else {
+                    }
+                    else
+                    {
                         return null;
                     }
-                } catch (LayoutException e) {
-                    log.debug( "Not processing file that is not an artifact: {}", e.getMessage() );
+                }
+                catch ( LayoutException e )
+                {
+                    log.debug( "Not processing file that is not an artifact: {}", e.getMessage( ) );
                     return null;
                 }
-            }).filter(Objects::nonNull).collect(Collectors.toList());
-        } catch (RuntimeException e) {
+            } ).filter( Objects::nonNull ).collect( Collectors.toList( ) );
+        }
+        catch ( RuntimeException e )
+        {
             Throwable cause = e.getCause( );
-            if (cause!=null) {
-                if (cause instanceof LayoutException) {
-                    throw (LayoutException)cause;
-                } else
+            if ( cause != null )
+            {
+                if ( cause instanceof LayoutException )
+                {
+                    throw (LayoutException) cause;
+                }
+                else
                 {
                     throw new ContentAccessException( cause.getMessage( ), cause );
                 }
-            } else {
+            }
+            else
+            {
                 throw new ContentAccessException( e.getMessage( ), e );
             }
         }
@@ -1105,41 +1477,49 @@ public class ManagedDefaultRepositoryContent
     /*
      * Create the filter for various combinations of classifier and type
      */
-    private Predicate<ArtifactReference> getChecker(ArtifactReference referenceObject, String extension) {
+    private Predicate<ArtifactReference> getChecker( ArtifactReference referenceObject, String extension )
+    {
         // TODO: Check, if extension is the correct parameter here
         // We compare type with extension which works for artifacts like .jar.md5 but may
         // be not the best way.
 
-        if (referenceObject.getClassifier()!=null && referenceObject.getType()!=null) {
-            return ((ArtifactReference a) ->
-                referenceObject.getGroupId().equals( a.getGroupId() )
-                && referenceObject.getArtifactId().equals( a.getArtifactId() )
-                && referenceObject.getVersion( ).equals( a.getVersion( ) )
-                && ( (a.getType()==null)
-                    || referenceObject.getType().equals( a.getType() )
-                    || a.getType().startsWith(extension) )
-                && referenceObject.getClassifier().equals( a.getClassifier() )
-            );
-        } else if (referenceObject.getClassifier()!=null && referenceObject.getType()==null){
-            return ((ArtifactReference a) ->
-                referenceObject.getGroupId().equals( a.getGroupId() )
-                    && referenceObject.getArtifactId().equals( a.getArtifactId() )
+        if ( referenceObject.getClassifier( ) != null && referenceObject.getType( ) != null )
+        {
+            return ( ( ArtifactReference a ) ->
+                referenceObject.getGroupId( ).equals( a.getGroupId( ) )
+                    && referenceObject.getArtifactId( ).equals( a.getArtifactId( ) )
                     && referenceObject.getVersion( ).equals( a.getVersion( ) )
-                    && referenceObject.getClassifier().equals( a.getClassifier() )
+                    && ( ( a.getType( ) == null )
+                    || referenceObject.getType( ).equals( a.getType( ) )
+                    || a.getType( ).startsWith( extension ) )
+                    && referenceObject.getClassifier( ).equals( a.getClassifier( ) )
             );
-        } else if (referenceObject.getClassifier()==null && referenceObject.getType()!=null){
-            return ((ArtifactReference a) ->
-                referenceObject.getGroupId().equals( a.getGroupId() )
-                    && referenceObject.getArtifactId().equals( a.getArtifactId() )
+        }
+        else if ( referenceObject.getClassifier( ) != null && referenceObject.getType( ) == null )
+        {
+            return ( ( ArtifactReference a ) ->
+                referenceObject.getGroupId( ).equals( a.getGroupId( ) )
+                    && referenceObject.getArtifactId( ).equals( a.getArtifactId( ) )
                     && referenceObject.getVersion( ).equals( a.getVersion( ) )
-                    && ( (a.getType()==null)
-                    || referenceObject.getType().equals( a.getType() )
-                    || a.getType().startsWith(extension) )
+                    && referenceObject.getClassifier( ).equals( a.getClassifier( ) )
             );
-        } else {
-            return ((ArtifactReference a) ->
-                referenceObject.getGroupId().equals( a.getGroupId() )
-                    && referenceObject.getArtifactId().equals( a.getArtifactId() )
+        }
+        else if ( referenceObject.getClassifier( ) == null && referenceObject.getType( ) != null )
+        {
+            return ( ( ArtifactReference a ) ->
+                referenceObject.getGroupId( ).equals( a.getGroupId( ) )
+                    && referenceObject.getArtifactId( ).equals( a.getArtifactId( ) )
+                    && referenceObject.getVersion( ).equals( a.getVersion( ) )
+                    && ( ( a.getType( ) == null )
+                    || referenceObject.getType( ).equals( a.getType( ) )
+                    || a.getType( ).startsWith( extension ) )
+            );
+        }
+        else
+        {
+            return ( ( ArtifactReference a ) ->
+                referenceObject.getGroupId( ).equals( a.getGroupId( ) )
+                    && referenceObject.getArtifactId( ).equals( a.getArtifactId( ) )
                     && referenceObject.getVersion( ).equals( a.getVersion( ) )
             );
         }
@@ -1148,23 +1528,29 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
-    public String getRepoRoot()
+    public String getRepoRoot( )
     {
-        return convertUriToPath( repository.getLocation() );
+        return convertUriToPath( repository.getLocation( ) );
     }
 
-    private String convertUriToPath( URI uri ) {
-        if (uri.getScheme()==null) {
-            return Paths.get(uri.getPath()).toString();
-        } else if ("file".equals(uri.getScheme())) {
-            return Paths.get(uri).toString();
-        } else {
-            return uri.toString();
+    private String convertUriToPath( URI uri )
+    {
+        if ( uri.getScheme( ) == null )
+        {
+            return Paths.get( uri.getPath( ) ).toString( );
+        }
+        else if ( "file".equals( uri.getScheme( ) ) )
+        {
+            return Paths.get( uri ).toString( );
+        }
+        else
+        {
+            return uri.toString( );
         }
     }
 
     @Override
-    public ManagedRepository getRepository()
+    public ManagedRepository getRepository( )
     {
         return repository;
     }
@@ -1173,7 +1559,7 @@ public class ManagedDefaultRepositoryContent
     public boolean hasContent( ArtifactReference reference ) throws ContentAccessException
     {
         StorageAsset artifactFile = toFile( reference );
-        return artifactFile.exists() && !artifactFile.isContainer();
+        return artifactFile.exists( ) && !artifactFile.isContainer( );
     }
 
     @Override
@@ -1190,7 +1576,7 @@ public class ManagedDefaultRepositoryContent
         catch ( IOException e )
         {
             String path = toPath( reference );
-            log.error("Could not read directory from repository {} - {}: ", getId(), path, e.getMessage(), e);
+            log.error( "Could not read directory from repository {} - {}: ", getId( ), path, e.getMessage( ), e );
             throw new ContentAccessException( "Could not read path from repository " + getId( ) + ": " + path, e );
         }
     }
@@ -1199,18 +1585,22 @@ public class ManagedDefaultRepositoryContent
     public void setRepository( final ManagedRepository repo )
     {
         this.repository = repo;
-        if (repo!=null) {
-            if (repository instanceof EditableManagedRepository) {
-                ((EditableManagedRepository) repository).setContent(this);
+        if ( repo != null )
+        {
+            if ( repository instanceof EditableManagedRepository )
+            {
+                ( (EditableManagedRepository) repository ).setContent( this );
             }
         }
     }
 
-    private Path getRepoDir() {
+    private Path getRepoDir( )
+    {
         return repository.getAsset( "" ).getFilePath( );
     }
 
-    private RepositoryStorage getStorage() {
+    private RepositoryStorage getStorage( )
+    {
         return repository.getAsset( "" ).getStorage( );
     }
 
@@ -1224,15 +1614,19 @@ public class ManagedDefaultRepositoryContent
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        String repoPath = convertUriToPath( repository.getLocation() );
-        if ( ( path != null ) && path.startsWith( repoPath ) && repoPath.length() > 0 )
+        String repoPath = convertUriToPath( repository.getLocation( ) );
+        if ( ( path != null ) && path.startsWith( repoPath ) && repoPath.length( ) > 0 )
         {
-            return super.toArtifactReference( path.substring( repoPath.length() + 1 ) );
-        } else {
+            return super.toArtifactReference( path.substring( repoPath.length( ) + 1 ) );
+        }
+        else
+        {
             repoPath = path;
-            if (repoPath!=null) {
-                while (repoPath.startsWith("/")) {
-                    repoPath = repoPath.substring(1);
+            if ( repoPath != null )
+            {
+                while ( repoPath.startsWith( "/" ) )
+                {
+                    repoPath = repoPath.substring( 1 );
                 }
             }
             return super.toArtifactReference( repoPath );
@@ -1241,20 +1635,23 @@ public class ManagedDefaultRepositoryContent
 
 
     // The variant with runtime exception for stream usage
-    private ArtifactReference toArtifactRef(String path) {
-        try {
-            return toArtifactReference(path);
-        } catch (LayoutException e) {
-            throw new RuntimeException(e);
+    private ArtifactReference toArtifactRef( String path )
+    {
+        try
+        {
+            return toArtifactReference( path );
+        }
+        catch ( LayoutException e )
+        {
+            throw new RuntimeException( e );
         }
     }
-
 
 
     @Override
     public StorageAsset toFile( ArtifactReference reference )
     {
-        return repository.getAsset(toPath(reference));
+        return repository.getAsset( toPath( reference ) );
     }
 
     @Override
@@ -1274,52 +1671,56 @@ public class ManagedDefaultRepositoryContent
      *
      * @param reference the reference to the versioned reference to search within
      * @return the ArtifactReference to the first artifact located within the versioned reference. or null if
-     *         no artifact was found within the versioned reference.
-     * @throws java.io.IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
+     * no artifact was found within the versioned reference.
+     * @throws java.io.IOException if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
      * @throws LayoutException
      */
     private ArtifactReference getFirstArtifact( VersionedReference reference )
         throws ContentNotFoundException, LayoutException, IOException
     {
-        try(Stream<ArtifactReference> stream = newArtifactStream( reference ))
+        try ( Stream<ArtifactReference> stream = newArtifactStream( reference ) )
         {
             return stream.findFirst( ).orElse( null );
-        } catch (RuntimeException e) {
+        }
+        catch ( RuntimeException e )
+        {
             throw new ContentNotFoundException( e.getMessage( ), e.getCause( ) );
         }
     }
 
-    private Stream<ArtifactReference> newArtifactStream( VersionedReference reference) throws ContentNotFoundException, LayoutException, IOException {
+    private Stream<ArtifactReference> newArtifactStream( VersionedReference reference ) throws ContentNotFoundException, LayoutException, IOException
+    {
         final Path repoBase = getRepoDir( );
         String path = toMetadataPath( reference );
-        Path versionDir = repoBase.resolve( path ).getParent();
-        if ( !Files.exists(versionDir) )
+        Path versionDir = repoBase.resolve( path ).getParent( );
+        if ( !Files.exists( versionDir ) )
         {
             throw new ContentNotFoundException( "Unable to gather the list of artifacts on a non-existant directory: "
-                + versionDir.toAbsolutePath() );
+                + versionDir.toAbsolutePath( ) );
         }
 
-        if ( !Files.isDirectory(versionDir) )
+        if ( !Files.isDirectory( versionDir ) )
         {
             throw new ContentNotFoundException(
-                "Unable to gather the list of snapshot versions on a non-directory: " + versionDir.toAbsolutePath() );
+                "Unable to gather the list of snapshot versions on a non-directory: " + versionDir.toAbsolutePath( ) );
         }
-        return Files.list(versionDir).filter(Files::isRegularFile)
-                .map(p -> repoBase.relativize(p).toString())
-                .filter(p -> !filetypes.matchesDefaultExclusions(p))
-                .filter(filetypes::matchesArtifactPattern)
-                .map(this::toArtifactRef);
+        return Files.list( versionDir ).filter( Files::isRegularFile )
+            .map( p -> repoBase.relativize( p ).toString( ) )
+            .filter( p -> !filetypes.matchesDefaultExclusions( p ) )
+            .filter( filetypes::matchesArtifactPattern )
+            .map( this::toArtifactRef );
     }
 
-    public List<ArtifactReference> getArtifacts(VersionedReference reference) throws ContentNotFoundException, LayoutException, ContentAccessException
+    public List<ArtifactReference> getArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
     {
-        try (Stream<ArtifactReference> stream = newArtifactStream( reference ))
+        try ( Stream<ArtifactReference> stream = newArtifactStream( reference ) )
         {
             return stream.collect( Collectors.toList( ) );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             String path = toPath( reference );
-            log.error("Could not read directory from repository {} - {}: ", getId(), path, e.getMessage(), e);
+            log.error( "Could not read directory from repository {} - {}: ", getId( ), path, e.getMessage( ), e );
             throw new ContentAccessException( "Could not read path from repository " + getId( ) + ": " + path, e );
 
         }
@@ -1328,14 +1729,18 @@ public class ManagedDefaultRepositoryContent
     private boolean hasArtifact( VersionedReference reference )
 
     {
-        try(Stream<ArtifactReference> stream = newArtifactStream( reference ))
+        try ( Stream<ArtifactReference> stream = newArtifactStream( reference ) )
         {
             return stream.anyMatch( e -> true );
-        } catch (ContentNotFoundException e) {
+        }
+        catch ( ContentNotFoundException e )
+        {
             return false;
-        } catch ( LayoutException | IOException e) {
+        }
+        catch ( LayoutException | IOException e )
+        {
             // We throw the runtime exception for better stream handling
-            throw new RuntimeException(e);
+            throw new RuntimeException( e );
         }
     }
 
@@ -1344,9 +1749,19 @@ public class ManagedDefaultRepositoryContent
         this.filetypes = filetypes;
     }
 
-    public void setMavenContentHelper( MavenContentHelper contentHelper) {
+    public void setMavenContentHelper( MavenContentHelper contentHelper )
+    {
         this.mavenContentHelper = contentHelper;
     }
 
 
+    public MavenMetadataReader getMetadataReader( )
+    {
+        return metadataReader;
+    }
+
+    public void setMetadataReader( MavenMetadataReader metadataReader )
+    {
+        this.metadataReader = metadataReader;
+    }
 }

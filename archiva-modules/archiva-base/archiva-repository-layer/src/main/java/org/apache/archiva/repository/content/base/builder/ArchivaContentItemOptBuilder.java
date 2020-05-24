@@ -1,3 +1,5 @@
+package org.apache.archiva.repository.content.base.builder;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,25 +18,21 @@
  * under the License.
  */
 
-package org.apache.archiva.repository.content.base.builder;
-
-import org.apache.archiva.repository.content.ArtifactType;
-import org.apache.archiva.repository.content.ContentItem;
-import org.apache.archiva.repository.content.DataItem;
-import org.apache.archiva.repository.content.DataItemType;
-import org.apache.archiva.repository.content.base.ArchivaArtifact;
-import org.apache.archiva.repository.content.base.ArchivaDataItem;
+import org.apache.archiva.repository.content.Namespace;
+import org.apache.archiva.repository.content.Project;
+import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaContentItem;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface DataItemOptBuilder
-    extends OptBuilder<ArchivaDataItem, DataItemOptBuilder>
+public interface ArchivaContentItemOptBuilder extends OptBuilder<ArchivaContentItem, ArchivaContentItemOptBuilder>
 {
+    ArchivaContentItemOptBuilder withNamespace( Namespace namespace );
 
-    DataItemOptBuilder withContentType( String contentType );
+    ArchivaContentItemOptBuilder withProject( Project project );
 
-    DataItemOptBuilder withDataType( DataItemType type );
+    ArchivaContentItemOptBuilder withVersion( Version version );
 
-    ArchivaDataItem build( );
+    ArchivaContentItem build();
 }

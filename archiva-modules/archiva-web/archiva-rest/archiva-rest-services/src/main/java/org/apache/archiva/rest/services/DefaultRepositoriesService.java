@@ -52,6 +52,7 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.ItemNotFoundException;
+import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.storage.fs.FsStorageUtil;
 import org.apache.archiva.repository.storage.RepositoryStorage;
@@ -663,27 +664,18 @@ public class DefaultRepositoriesService
         {
             ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
 
-            VersionedReference ref = new VersionedReference();
-            ref.setArtifactId( projectId );
-            ref.setGroupId( namespace );
-            ref.setVersion( version );
 
-            repository.deleteVersion( ref );
-
-
-            ArtifactReference artifactReference = new ArtifactReference();
-            artifactReference.setGroupId( namespace );
-            artifactReference.setArtifactId( projectId );
-            artifactReference.setVersion( version );
+            ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+                .withNamespace( namespace )
+                .withProjectId( projectId )
+                .withVersion( version )
+                .build( );
+            Version versionItem = repository.getVersion( selector );
+            if (versionItem!=null && versionItem.exists()) {
+                repository.deleteItem( versionItem );
+            }
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
-
-            List<ArtifactReference> related = repository.getRelatedArtifacts( repository.toVersion(artifactReference) );
-            log.debug( "related: {}", related );
-            for ( ArtifactReference artifactRef : related )
-            {
-                repository.deleteArtifact( artifactRef );
-            }
 
             Collection<ArtifactMetadata> artifacts =
                 metadataRepository.getArtifacts(repositorySession , repositoryId, namespace, projectId, version );
@@ -695,7 +687,7 @@ public class DefaultRepositoriesService
 
             metadataRepository.removeProjectVersion(repositorySession , repositoryId, namespace, projectId, version );
         }
-        catch ( MetadataRepositoryException | MetadataResolutionException | RepositoryException | LayoutException e )
+        catch ( MetadataRepositoryException | MetadataResolutionException | RepositoryException | ItemNotFoundException e )
         {
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }

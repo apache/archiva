@@ -22,8 +22,6 @@ package org.apache.archiva.repository.content.base;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ArtifactType;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
-import org.apache.archiva.repository.content.ContentItem;
-import org.apache.archiva.repository.content.DataItem;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
 import org.apache.archiva.repository.content.base.builder.ArtifactVersionBuilder;
@@ -52,7 +50,7 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class ArchivaArtifact extends ArchivaContentItem implements Artifact
+public class ArchivaArtifact extends BaseContentItem implements Artifact
 {
     private String id;
     private String artifactVersion;
@@ -135,8 +133,6 @@ public class ArchivaArtifact extends ArchivaContentItem implements Artifact
     {
         if ( this == o ) return true;
         if ( o == null || getClass( ) != o.getClass( ) ) return false;
-        if ( !super.equals( o ) ) return false;
-
         ArchivaArtifact that = (ArchivaArtifact) o;
 
         if ( !id.equals( that.id ) ) return false;

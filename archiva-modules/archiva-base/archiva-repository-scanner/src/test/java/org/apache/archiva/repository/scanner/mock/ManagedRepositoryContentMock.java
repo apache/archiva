@@ -164,6 +164,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public List<String> getArtifactVersions( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
+    {
+        return null;
+    }
+
+    @Override
     public List<? extends Artifact> getArtifacts( ContentItem item ) throws ContentAccessException
     {
         return null;
@@ -179,6 +185,24 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public boolean hasContent( ItemSelector selector )
     {
         return false;
+    }
+
+    @Override
+    public ContentItem getParent( ContentItem item )
+    {
+        return null;
+    }
+
+    @Override
+    public List<? extends ContentItem> getChildren( ContentItem item )
+    {
+        return null;
+    }
+
+    @Override
+    public <T extends ContentItem> T applyCharacteristic( Class<T> clazz, ContentItem item ) throws LayoutException
+    {
+        return null;
     }
 
     @Override

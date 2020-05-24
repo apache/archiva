@@ -29,12 +29,6 @@ public interface DataItem extends ContentItem
 {
 
     /**
-     * Returns the parent of the data item
-     * @return the parent item, which is either a Version, Project or Namespace
-     */
-    ContentItem getParent( );
-
-    /**
      * Returns the identifier of the data item.
      * @return the identifier string
      */

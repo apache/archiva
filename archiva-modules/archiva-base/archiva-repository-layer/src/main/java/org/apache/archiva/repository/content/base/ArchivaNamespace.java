@@ -38,7 +38,7 @@ import java.util.regex.PatternSyntaxException;
  * @author Martin Stockhammer <martin_s@apache.org>
  * @since 3.0
  */
-public class ArchivaNamespace extends ArchivaContentItem implements Namespace
+public class ArchivaNamespace extends BaseContentItem implements Namespace
 {
     private String namespace;
     private List<String> namespacePath;
@@ -72,10 +72,9 @@ public class ArchivaNamespace extends ArchivaContentItem implements Namespace
     {
         if ( this == o ) return true;
         if ( o == null || getClass( ) != o.getClass( ) ) return false;
-        if ( !super.equals( o ) ) return false;
-
         ArchivaNamespace that = (ArchivaNamespace) o;
 
+        if (!repository.equals( that.repository )) return false;
         return namespace.equals( that.namespace );
     }
 

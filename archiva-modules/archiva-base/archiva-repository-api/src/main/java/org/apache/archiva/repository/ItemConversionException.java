@@ -1,3 +1,5 @@
+package org.apache.archiva.repository;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,25 +18,32 @@
  * under the License.
  */
 
-package org.apache.archiva.repository.content.base.builder;
-
-import org.apache.archiva.repository.content.ArtifactType;
-import org.apache.archiva.repository.content.ContentItem;
-import org.apache.archiva.repository.content.DataItem;
-import org.apache.archiva.repository.content.DataItemType;
-import org.apache.archiva.repository.content.base.ArchivaArtifact;
-import org.apache.archiva.repository.content.base.ArchivaDataItem;
-
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface DataItemOptBuilder
-    extends OptBuilder<ArchivaDataItem, DataItemOptBuilder>
+public class ItemConversionException extends RuntimeException
 {
+    public ItemConversionException( )
+    {
+    }
 
-    DataItemOptBuilder withContentType( String contentType );
+    public ItemConversionException( String message )
+    {
+        super( message );
+    }
 
-    DataItemOptBuilder withDataType( DataItemType type );
+    public ItemConversionException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-    ArchivaDataItem build( );
+    public ItemConversionException( Throwable cause )
+    {
+        super( cause );
+    }
+
+    public ItemConversionException( String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace )
+    {
+        super( message, cause, enableSuppression, writableStackTrace );
+    }
 }

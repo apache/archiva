@@ -19,9 +19,7 @@ package org.apache.archiva.repository.content.base;
  * under the License.
  */
 
-import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.BaseDataItemTypes;
-import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.DataItem;
 import org.apache.archiva.repository.content.DataItemType;
 import org.apache.archiva.repository.content.base.builder.DataItemOptBuilder;
@@ -49,10 +47,9 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class ArchivaDataItem extends ArchivaContentItem implements DataItem
+public class ArchivaDataItem extends BaseContentItem implements DataItem
 {
     private String id;
-    private ContentItem parent;
     private String contentType;
     private DataItemType dataItemType;
 
@@ -65,12 +62,6 @@ public class ArchivaDataItem extends ArchivaContentItem implements DataItem
     public String getId( )
     {
         return id;
-    }
-
-    @Override
-    public ContentItem getParent( )
-    {
-        return parent;
     }
 
     @Override
@@ -109,7 +100,6 @@ public class ArchivaDataItem extends ArchivaContentItem implements DataItem
         ArchivaDataItem that = (ArchivaDataItem) o;
 
         if ( !id.equals( that.id ) ) return false;
-        if ( !parent.equals( that.parent ) ) return false;
         return dataItemType.equals(that.dataItemType );
     }
 
@@ -118,7 +108,6 @@ public class ArchivaDataItem extends ArchivaContentItem implements DataItem
     {
         int result = super.hashCode( );
         result = 31 * result + id.hashCode( );
-        result = 31 * result + parent.hashCode( );
         result = 31 * result + dataItemType.hashCode( );
         return result;
     }
@@ -126,9 +115,8 @@ public class ArchivaDataItem extends ArchivaContentItem implements DataItem
     @Override
     public String toString( )
     {
-        final StringBuilder sb = new StringBuilder( "ArchivaArtifact{" );
+        final StringBuilder sb = new StringBuilder( "ArchivaDataItem{" );
         sb.append( "id='" ).append( id ).append( '\'' );
-        sb.append( ", parent=" ).append( parent );
         sb.append( ", contentType='" ).append( contentType ).append( '\'' );
         sb.append( ", artifactType=" ).append( dataItemType );
         sb.append( '}' );
@@ -164,18 +152,6 @@ public class ArchivaDataItem extends ArchivaContentItem implements DataItem
         @Override
         protected DataItemWithIdBuilder getNextBuilder( )
         {
-            return this;
-        }
-
-        @Override
-        public DataItemOptBuilder withParent( ContentItem parent )
-        {
-            if ( parent == null )
-            {
-                throw new IllegalArgumentException( "version may not be null" );
-            }
-            item.parent = parent;
-            super.setRepository( parent.getRepository( ) );
             return this;
         }
 

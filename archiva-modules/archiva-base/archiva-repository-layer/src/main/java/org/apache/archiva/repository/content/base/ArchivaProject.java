@@ -19,11 +19,15 @@ package org.apache.archiva.repository.content.base;
  * under the License.
  */
 
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.base.builder.ProjectOptBuilder;
 import org.apache.archiva.repository.content.base.builder.ProjectWithIdBuilder;
+import org.apache.archiva.repository.content.base.builder.WithAssetBuilder;
+import org.apache.archiva.repository.content.base.builder.WithNamespaceBuilder;
 import org.apache.archiva.repository.content.base.builder.WithNamespaceObjectBuilder;
+import org.apache.archiva.repository.content.base.builder.WithProjectBuilder;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,7 +42,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author Martin Stockhammer <martin_s@apache.org>
  * @since 3.0
  */
-public class ArchivaProject extends ArchivaContentItem implements Project
+public class ArchivaProject extends BaseContentItem implements Project
 {
     private Namespace namespace;
     private String id;
@@ -62,6 +66,11 @@ public class ArchivaProject extends ArchivaContentItem implements Project
         return new Builder( ).withAsset( storageAsset );
     }
 
+    public static WithAssetBuilder<WithNamespaceObjectBuilder> withRepository( ManagedRepositoryContent repository )
+    {
+        return new ArchivaProject.Builder( ).withRepository( repository );
+    }
+
     @Override
     public Namespace getNamespace( )
     {
@@ -80,10 +89,10 @@ public class ArchivaProject extends ArchivaContentItem implements Project
     {
         if ( this == o ) return true;
         if ( o == null || getClass( ) != o.getClass( ) ) return false;
-        if ( !super.equals( o ) ) return false;
 
         ArchivaProject that = (ArchivaProject) o;
 
+        if (!repository.equals( that.repository )) return false;
         if ( !namespace.equals( that.namespace ) ) return false;
         return id.equals( that.id );
     }
@@ -100,7 +109,7 @@ public class ArchivaProject extends ArchivaContentItem implements Project
     @Override
     public String toString( )
     {
-        return id + ", namespace="+namespace.toString();
+        return "ArchivaProject{ "+id + ", namespace="+namespace.toString()+"}";
     }
 
     /*

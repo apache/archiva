@@ -19,9 +19,12 @@ package org.apache.archiva.repository.content.base;
  * under the License.
  */
 
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.builder.VersionOptBuilder;
+import org.apache.archiva.repository.content.base.builder.WithAssetBuilder;
+import org.apache.archiva.repository.content.base.builder.WithNamespaceBuilder;
 import org.apache.archiva.repository.content.base.builder.WithProjectBuilder;
 import org.apache.archiva.repository.content.base.builder.WithVersionBuilder;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -41,7 +44,7 @@ import java.util.regex.PatternSyntaxException;
  * <p>
  * Two instances are equal, if the project and the version match in addition to the base attributes repository and asset.
  */
-public class ArchivaVersion extends ArchivaContentItem implements Version
+public class ArchivaVersion extends BaseContentItem implements Version
 {
 
     private String version;
@@ -64,6 +67,11 @@ public class ArchivaVersion extends ArchivaContentItem implements Version
     public static WithProjectBuilder withAsset( StorageAsset storageAsset )
     {
         return new Builder( ).withAsset( storageAsset );
+    }
+
+    public static WithAssetBuilder<WithProjectBuilder> withRepository( ManagedRepositoryContent repository )
+    {
+        return new ArchivaVersion.Builder( ).withRepository( repository );
     }
 
     @Override
@@ -90,10 +98,9 @@ public class ArchivaVersion extends ArchivaContentItem implements Version
     {
         if ( this == o ) return true;
         if ( o == null || getClass( ) != o.getClass( ) ) return false;
-        if ( !super.equals( o ) ) return false;
 
         ArchivaVersion that = (ArchivaVersion) o;
-
+        if (!repository.equals( that.repository )) return false;
         if ( !version.equals( that.version ) ) return false;
         return project.equals( that.project );
     }
@@ -110,7 +117,7 @@ public class ArchivaVersion extends ArchivaContentItem implements Version
     @Override
     public String toString( )
     {
-        return version+", project="+project.toString();
+        return "ArchivaVersion{ "+version+", project="+project.toString()+"}";
     }
 
     private static final class Builder extends ContentItemBuilder<ArchivaVersion, VersionOptBuilder, WithProjectBuilder>

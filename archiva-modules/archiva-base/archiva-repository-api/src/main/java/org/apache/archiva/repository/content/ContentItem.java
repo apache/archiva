@@ -19,6 +19,7 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.archiva.repository.ItemConversionException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.UnsupportedConversionException;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -34,7 +35,7 @@ public interface ContentItem
      * @param <T>   the class or interface
      * @return the specific project implementation
      */
-    <T extends Project> T adapt( Class<T> clazz ) throws UnsupportedConversionException;
+    <T extends ContentItem> T adapt( Class<T> clazz ) throws ItemConversionException;
 
     /**
      * Returns <code>true</code>, if this project supports the given adaptor class.
@@ -43,7 +44,9 @@ public interface ContentItem
      * @param <T>   the type
      * @return <code>true/code>, if the implementation is supported, otherwise false
      */
-    <T extends Project> boolean supports( Class<T> clazz );
+    <T extends ContentItem> boolean hasCharacteristic( Class<T> clazz );
+
+    <T extends ContentItem> void setCharacteristic( Class<T> clazz, T item );
 
     /**
      * Additional attributes

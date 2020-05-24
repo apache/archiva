@@ -23,6 +23,7 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
@@ -34,17 +35,20 @@ import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.DataItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaContentItem;
+import org.apache.archiva.repository.content.base.ArchivaDataItem;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.MavenManagedRepository;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
+import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,11 +63,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -89,6 +89,10 @@ public class ManagedDefaultRepositoryContentTest
 
     @Inject
     MavenContentHelper contentHelper;
+
+    @Inject
+    @Named( "metadataReader#maven" )
+    MavenMetadataReader metadataReader;
 
     @Inject
     FileLockManager fileLockManager;
@@ -120,6 +124,7 @@ public class ManagedDefaultRepositoryContentTest
 
         repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
         repoContent.setMavenContentHelper( contentHelper );
+        repoContent.setMetadataReader( metadataReader );
         
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
     }
@@ -128,7 +133,7 @@ public class ManagedDefaultRepositoryContentTest
     public void testGetVersionsSnapshotA()
         throws Exception
     {
-        assertVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT",
+        assertArtifactVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT",
                         new String[]{ "1.0-alpha-11-SNAPSHOT", "1.0-alpha-11-20070221.194724-2",
                             "1.0-alpha-11-20070302.212723-3", "1.0-alpha-11-20070303.152828-4",
                             "1.0-alpha-11-20070305.215149-5", "1.0-alpha-11-20070307.170909-6",
@@ -200,6 +205,31 @@ public class ManagedDefaultRepositoryContentTest
             .build( );
         List<String> versions = repoContent.getVersions( selector ).stream()
             .map(v -> v.getVersion()).sorted( comparator ).collect( Collectors.toList());
+        assertArrayEquals( expectedVersions, versions.toArray( ) );
+
+
+    }
+
+    private void assertArtifactVersions( String artifactId, String version, String[] expectedVersions )
+        throws Exception
+    {
+        // Use the test metadata-repository, which is already setup for
+        // These kind of version tests.
+        Path repoDir = getRepositoryPath( "metadata-repository" );
+        ((EditableManagedRepository)repoContent.getRepository()).setLocation( repoDir.toAbsolutePath().toUri() );
+
+        // Request the versions.
+
+        // Sort the list (for asserts later)
+        final VersionComparator comparator = new VersionComparator( );
+
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.archiva.metadata.tests" )
+            .withProjectId( artifactId )
+            .withVersion( version )
+            .build( );
+        List<String> versions = repoContent.getArtifactVersions( selector ).stream()
+            .sorted( comparator ).collect( Collectors.toList());
         assertArrayEquals( expectedVersions, versions.toArray( ) );
 
 
@@ -558,10 +588,10 @@ public class ManagedDefaultRepositoryContentTest
         assertEquals( 2, results.size( ) );
         Artifact mainArtifact = results.stream( ).filter( a -> a.getFileName( ).equals( "jdbc-2.0.jar" ) ).findFirst( ).get( );
         assertNotNull( mainArtifact );
-        assertEquals( BaseArtifactTypes.MAIN, mainArtifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.MAIN, mainArtifact.getDataType( ) );
         Artifact metaArtifact = results.stream( ).filter( a -> a.getFileName( ).equals( "maven-metadata-repository.xml" ) ).findFirst( ).get( );
         assertNotNull( metaArtifact );
-        assertEquals( MavenTypes.REPOSITORY_METADATA, metaArtifact.getArtifactType( ) );
+        assertEquals( MavenTypes.REPOSITORY_METADATA, metaArtifact.getDataType( ) );
     }
 
     @Test
@@ -598,7 +628,7 @@ public class ManagedDefaultRepositoryContentTest
 
         assertNotNull( artifact );
         assertEquals( "pom", artifact.getExtension( ) );
-        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getDataType( ) );
         assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
         assertEquals( "1.3-20070725.210059-1", artifact.getArtifactVersion( ) );
         assertEquals( ".pom", artifact.getRemainder( ) );
@@ -614,7 +644,7 @@ public class ManagedDefaultRepositoryContentTest
 
         assertNotNull( artifact );
         assertEquals( "md5", artifact.getExtension( ) );
-        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getDataType( ) );
         assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
         assertEquals( "1.3-20070725.210059-1", artifact.getArtifactVersion( ) );
         assertEquals( ".pom.md5", artifact.getRemainder( ) );
@@ -629,7 +659,7 @@ public class ManagedDefaultRepositoryContentTest
         artifact = results.stream( ).filter( a -> a.getFileName( ).equals( "maven-metadata.xml" ) )
             .findFirst( ).get( );
         assertNotNull( artifact );
-        assertEquals( BaseArtifactTypes.METADATA, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.METADATA, artifact.getDataType( ) );
         assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
         assertEquals( "xml", artifact.getExtension( ) );
     }
@@ -668,7 +698,7 @@ public class ManagedDefaultRepositoryContentTest
         assertEquals( 1, results.size( ) );
         Artifact artifact = results.get( 0 );
         assertEquals( "pom", artifact.getExtension( ) );
-        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getDataType( ) );
     }
 
     @Test
@@ -711,13 +741,13 @@ public class ManagedDefaultRepositoryContentTest
             .findFirst( ).get( );
         assertNotNull( artifact );
         assertEquals( "pom", artifact.getExtension( ) );
-        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getDataType( ) );
 
         artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "axis2-1.3-20070731.113304-21.pom.sha1" ) )
             .findFirst( ).get( );
         assertNotNull( artifact );
         assertEquals( "sha1", artifact.getExtension( ) );
-        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getDataType( ) );
     }
 
 
@@ -752,19 +782,19 @@ public class ManagedDefaultRepositoryContentTest
             .findFirst( ).get( );
         assertNotNull( artifact );
         assertEquals( "xml", artifact.getExtension( ) );
-        assertEquals( BaseArtifactTypes.METADATA, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.METADATA, artifact.getDataType( ) );
 
         artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "maven-downloader-1.0-sources.jar" ) )
             .findFirst( ).get( );
         assertNotNull( artifact );
-        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getDataType( ) );
         assertEquals( "sources", artifact.getClassifier( ) );
         assertEquals( "java-source", artifact.getType( ) );
 
         artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "maven-downloader-1.0-sources.jar.sha1" ) )
             .findFirst( ).get( );
         assertNotNull( artifact );
-        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getDataType( ) );
         assertEquals( "sources", artifact.getClassifier( ) );
         assertEquals( "sha1", artifact.getType( ) );
         assertEquals( ".jar.sha1", artifact.getRemainder( ) );
@@ -994,6 +1024,59 @@ public class ManagedDefaultRepositoryContentTest
         assertNotNull( artifact );
     }
 
+
+    @Test
+    public void testNewItemStreamWithNamespace1() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.axis2" )
+            .build();
+
+        Stream<? extends ContentItem> stream = repoContent.newItemStream( selector, false );
+        List<? extends ContentItem> result = stream.collect( Collectors.toList( ) );
+        assertEquals( 41, result.size( ) );
+        ContentItem item = result.get( 39 );
+        Version version = item.adapt( Version.class );
+        assertNotNull( version );
+        assertEquals( "1.3-SNAPSHOT", version.getVersion( ) );
+        Project project = result.get( 40 ).adapt( Project.class );
+        assertNotNull( project );
+        assertEquals( "axis2", project.getId( ) );
+        assertTrue( result.stream( ).anyMatch( a -> "axis2-1.3-20070725.210059-1.pom".equals( a.getAsset( ).getName( ) ) ) );
+    }
+
+//    @Test
+//    public void testNewItemStreamWithNamespace2() {
+//        ItemSelector selector = ArchivaItemSelector.builder( )
+//            .withNamespace( "org.apache.maven" )
+//            .build();
+//
+//        Stream<? extends ContentItem> stream = repoContent.newItemStream( selector, false );
+//        List<? extends ContentItem> result = stream.collect( Collectors.toList( ) );
+//        int versions = 0;
+//        int projects = 0;
+//        int artifacts = 0;
+//        int namespaces = 0;
+//        int dataitems = 0;
+//        for (int i=0; i<result.size(); i++) {
+//            ContentItem ci = result.get( i );
+//            System.out.println( i + ": " + result.get( i ) + " - " +result.get(i).getClass().getName() + " - " + result.get(i).getAsset().getPath() );
+//            if (ci instanceof Version) {
+//                versions++;
+//            } else if (ci instanceof Project) {
+//                projects++;
+//            } else if (ci instanceof Namespace) {
+//                namespaces++;
+//            } else if (ci instanceof Artifact) {
+//                artifacts++;
+//            } else if (ci instanceof DataItem ) {
+//                dataitems++;
+//            }
+//        }
+//        System.out.println( "namespaces=" + namespaces + ", projects=" + projects + ", versions=" + versions + ", artifacts=" + artifacts + ", dataitems=" + dataitems );
+//        assertEquals( 170, result.size( ) );
+//        assertEquals( 92, result.stream( ).filter( a -> a instanceof Artifact ).count( ) );
+//    }
+
     @Test
     public void testGetArtifactFromContentItem() {
         ItemSelector selector = ArchivaItemSelector.builder( )
@@ -1053,17 +1136,17 @@ public class ManagedDefaultRepositoryContentTest
         String path = "/org/apache/maven/shared";
         ContentItem item = repoContent.toItem( path );
         assertNotNull( item );
-        assertTrue( item instanceof Namespace );
+        assertTrue( item instanceof ArchivaContentItem );
 
         path = "/org/apache/maven/shared/maven-downloader";
         item = repoContent.toItem( path );
         assertNotNull( item );
-        assertTrue( item instanceof Project );
+        assertTrue( item instanceof ArchivaContentItem );
 
         path = "/org/apache/maven/shared/maven-downloader/1.1";
         item = repoContent.toItem( path );
         assertNotNull( item );
-        assertTrue( item instanceof Version );
+        assertTrue( item instanceof ArchivaContentItem );
 
         path = "/org/apache/maven/shared/maven-downloader/1.1/maven-downloader-1.1.jar";
         item = repoContent.toItem( path );
@@ -1078,22 +1161,22 @@ public class ManagedDefaultRepositoryContentTest
         StorageAsset path = repoContent.getRepository().getAsset("/org/apache/maven/shared");
         ContentItem item = repoContent.toItem( path );
         assertNotNull( item );
-        assertTrue( item instanceof Namespace );
+        assertTrue( item instanceof ArchivaContentItem );
 
         path = repoContent.getRepository( ).getAsset( "/org/apache/maven/shared/maven-downloader" );
         item = repoContent.toItem( path );
         assertNotNull( item );
-        assertTrue( item instanceof Project );
+        assertTrue( item instanceof ArchivaContentItem );
 
         path = repoContent.getRepository( ).getAsset( "/org/apache/maven/shared/maven-downloader/1.1" );
         item = repoContent.toItem( path );
         assertNotNull( item );
-        assertTrue( item instanceof Version );
+        assertTrue( item instanceof ArchivaContentItem );
 
         path = repoContent.getRepository( ).getAsset( "/org/apache/maven/shared/maven-downloader/1.1/maven-downloader-1.1.jar" );
         item = repoContent.toItem( path );
         assertNotNull( item );
-        assertTrue( item instanceof Artifact );
+        assertTrue( item instanceof DataItem );
 
     }
 
@@ -1197,18 +1280,18 @@ public class ManagedDefaultRepositoryContentTest
         Artifact artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "samplejar-1.0.jar" ) )
             .findFirst().get();
         assertNotNull( artifact );
-        assertEquals( BaseArtifactTypes.MAIN, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.MAIN, artifact.getDataType( ) );
 
         artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "samplejar-1.0.jar.md5" ) )
             .findFirst().get();
         assertNotNull( artifact );
-        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getDataType( ) );
         assertEquals( "md5", artifact.getExtension( ) );
 
         artifact = results.stream( ).filter( a -> a.getFileName( ).equalsIgnoreCase( "samplejar-1.0.jar.sha1" ) )
             .findFirst().get();
         assertNotNull( artifact );
-        assertEquals( BaseArtifactTypes.RELATED, artifact.getArtifactType( ) );
+        assertEquals( BaseArtifactTypes.RELATED, artifact.getDataType( ) );
         assertEquals( "sha1", artifact.getExtension( ) );
 
     }
@@ -1545,5 +1628,6 @@ public class ManagedDefaultRepositoryContentTest
         ln.read( content );
         assertTrue( new String( content ).startsWith( "test.test.test" ) );
     }
+
 
 }

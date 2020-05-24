@@ -21,105 +21,39 @@ package org.apache.archiva.repository.content.base;
 
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
-import org.apache.archiva.repository.content.base.builder.OptBuilder;
+import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.builder.ArchivaContentItemOptBuilder;
 import org.apache.archiva.repository.content.base.builder.WithAssetBuilder;
-import org.apache.archiva.repository.content.base.builder.WithRepositoryBuilder;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Abstract implementation of ContentItem interface.
  * <p>
  * The attribute map is created, when the first values are put to the map.
  */
-public abstract class ArchivaContentItem implements ContentItem
+public class ArchivaContentItem extends BaseContentItem implements ContentItem
 {
 
-    private Map<String, String> attributes;
-    private ManagedRepositoryContent repository;
-    private StorageAsset asset;
-
-    @Override
-    public <T extends Project> T adapt( Class<T> clazz )
-    {
-        return (T) this;
-    }
-
-    @Override
-    public <T extends Project> boolean supports( Class<T> clazz )
-    {
-        return clazz != null && clazz.isAssignableFrom( this.getClass( ) );
-    }
-
 
     /**
-     * Does lazy initialization of the attributes map.
-     * Returns a unmodifiable map.
+     * Creates the builder for creating new archiva project instances.
+     * You have to set all required attributes before you can call the build() method.
      *
-     * @return unmodifiable map of attributes
+     * @param storageAsset the asset
+     * @return a builder instance
      */
-    @Override
-    public Map<String, String> getAttributes( )
+    public static ArchivaContentItemOptBuilder withAsset( StorageAsset storageAsset )
     {
-        if ( this.attributes == null )
-        {
-            return Collections.emptyMap( );
-        }
-        else
-        {
-            return Collections.unmodifiableMap( this.attributes );
-        }
+        return new ArchivaContentItemBuilder().withAsset( storageAsset );
     }
 
-    /**
-     * Adds a attribute value. The key must not be <code>null</code>.
-     *
-     * @param key   the attribute key
-     * @param value the attribute value
-     * @throws IllegalArgumentException if the key is <code>null</code> or empty
-     */
-    public void putAttribute( String key, String value ) throws IllegalArgumentException
+    public static WithAssetBuilder<ArchivaContentItemOptBuilder> withRepository( ManagedRepositoryContent repository )
     {
-        if ( this.attributes == null )
-        {
-            this.attributes = new HashMap<>( );
-        }
-        if ( StringUtils.isEmpty( key ) )
-        {
-            throw new IllegalArgumentException( "Key value must not be empty or null" );
-        }
-        this.attributes.put( key, value );
+        return new ArchivaContentItemBuilder().withRepository( repository );
     }
 
-    @Override
-    public String getAttribute( String key )
-    {
-        if ( this.attributes == null )
-        {
-            return null;
-        }
-        else
-        {
-            return this.attributes.get( key );
-        }
-    }
-
-    @Override
-    public ManagedRepositoryContent getRepository( )
-    {
-        return repository;
-    }
-
-    @Override
-    public StorageAsset getAsset( )
-    {
-        return asset;
-    }
 
     @Override
     public boolean equals( Object o )
@@ -150,86 +84,56 @@ public abstract class ArchivaContentItem implements ContentItem
      */
 
 
-    /**
-     * Builder for content item. Must be extended by subclasses.
-     * The builder uses chained interfaces for building the required attributes. That means you have to set
-     * some certain attributes, before you can build the content item instance via the {@link #build()} method.
-     * <p>
-     * Subclasses should extend from this class and provide the interface/class for the destination item,
-     * a interface for the optional attributes and a interface that is returned after the last required attribute is
-     * set.
-     * <p>
-     * The interface for optional attributes should inherit from {@link OptBuilder}
-     *
-     * @param <I> the item class that should be built
-     * @param <O> the class/interface for the optional attributes
-     * @param <N> the class/interface for the next (required) attribute after the base attributes are set
-     */
-    protected abstract static class ContentItemBuilder<I extends ArchivaContentItem, O extends OptBuilder<I, O>, N>
-        implements WithRepositoryBuilder, WithAssetBuilder<N>,
-        OptBuilder<I, O>
+    public static final class ArchivaContentItemBuilder extends ContentItemBuilder<ArchivaContentItem, ArchivaContentItemOptBuilder, ArchivaContentItemOptBuilder>
+        implements ArchivaContentItemOptBuilder
     {
 
-        protected I item;
-
-        protected ContentItemBuilder( I item )
+        private ArchivaContentItemBuilder(  )
         {
-            this.item = item;
+            super( new ArchivaContentItem() );
         }
 
-        protected abstract O getOptBuilder( );
-
-        protected abstract N getNextBuilder( );
-
         @Override
-        public WithAssetBuilder<N> withRepository( ManagedRepositoryContent repository )
+        public ArchivaContentItemOptBuilder getOptBuilder( )
         {
-            if ( repository == null )
-            {
-                throw new IllegalArgumentException( "Repository may not be null" );
-            }
-            ( (ArchivaContentItem) item ).repository = repository;
             return this;
         }
 
         @Override
-        public N withAsset( StorageAsset asset )
+        public ArchivaContentItemOptBuilder getNextBuilder( )
         {
-            if ( asset == null )
-            {
-                throw new IllegalArgumentException( "Asset may not be null" );
-            }
-            ( (ArchivaContentItem) item ).asset = asset;
-            return getNextBuilder( );
+            return this;
+        }
+
+
+        @Override
+        public ArchivaContentItemOptBuilder withNamespace( Namespace namespace )
+        {
+            item.setCharacteristic( Namespace.class, namespace );
+            return this;
         }
 
         @Override
-        public O withAttribute( String key, String value )
+        public ArchivaContentItemOptBuilder withProject( Project project )
         {
-            if ( StringUtils.isEmpty( key ) )
-            {
-                throw new IllegalArgumentException( "Attribute key may not be null" );
-            }
-            item.putAttribute( key, value );
-            return getOptBuilder( );
-        }
-
-        protected void setRepository( ManagedRepositoryContent repository )
-        {
-            ( (ArchivaContentItem) item ).repository = repository;
+            item.setCharacteristic( Project.class, project );
+            return this;
         }
 
         @Override
-        public I build( )
+        public ArchivaContentItemOptBuilder withVersion( Version version )
         {
+            item.setCharacteristic( Version.class, version );
+            return this;
+        }
+
+        @Override
+        public ArchivaContentItem build( )
+        {
+            super.build( );
             return item;
         }
-
     }
 
-    @Override
-    public boolean exists( )
-    {
-        return asset.exists( );
-    }
+
 }
