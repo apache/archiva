@@ -66,7 +66,7 @@ public interface RepositoryContentProvider
      * @return a new instance
      * @throws RepositoryException if the layout is not supported, or a error occured during initialization
      */
-    ManagedRepositoryContent createManagedContent(ManagedRepository repository) throws RepositoryException;
+    ManagedRepositoryContent createManagedContent( ManagedRepository repository) throws RepositoryException;
 
     /**
      * Creates a generic content object.

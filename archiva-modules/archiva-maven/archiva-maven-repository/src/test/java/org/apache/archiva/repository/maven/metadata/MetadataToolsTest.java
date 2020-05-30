@@ -20,6 +20,7 @@ package org.apache.archiva.repository.maven.metadata;
 
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.maven.metadata.storage.mock.MockConfiguration;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
@@ -29,7 +30,6 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.maven.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
@@ -407,7 +407,7 @@ public class MetadataToolsTest
                                  ProjectReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        Path metadataFile = Paths.get( repository.getRepoRoot(), tools.toPath( reference ) );
+        Path metadataFile = repository.getRepository().getAsset( "" ).getFilePath().resolve(tools.toPath( reference ) );
         String actualMetadata = org.apache.archiva.common.utils.FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
 
         Diff detailedDiff = DiffBuilder.compare( expectedMetadata ).withTest( actualMetadata ).checkForSimilar().build();
@@ -425,7 +425,7 @@ public class MetadataToolsTest
                                  VersionedReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        Path metadataFile = Paths.get( repository.getRepoRoot(), tools.toPath( reference ) );
+        Path metadataFile = repository.getRepository().getAsset("").getFilePath().resolve( tools.toPath( reference ) );
         String actualMetadata = org.apache.archiva.common.utils.FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
 
         Diff detailedDiff = DiffBuilder.compare( expectedMetadata ).withTest( actualMetadata ).checkForSimilar().build();
@@ -656,7 +656,7 @@ public class MetadataToolsTest
 
         Path srcRepoDir = getRepositoryPath( "metadata-repository" );
         Path srcDir = srcRepoDir.resolve( path );
-        Path destDir = Paths.get( repo.getRepoRoot(), path );
+        Path destDir = repo.getRepository().getAsset( "" ).getFilePath().resolve( path );
 
         assertTrue( "Source Dir exists: " + srcDir, Files.exists(srcDir) );
         Files.createDirectories(destDir);

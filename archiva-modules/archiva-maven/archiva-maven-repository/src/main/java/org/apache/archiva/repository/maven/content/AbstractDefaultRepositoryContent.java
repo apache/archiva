@@ -20,6 +20,7 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.maven.metadata.storage.Maven2RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaArtifact;
@@ -207,6 +208,8 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
         return toPath( reference.getGroupId(), reference.getArtifactId(), null, null,
                        reference.getClassifier(), reference.getType() );
     }
+
+
 
     protected String formatAsDirectory( String directory )
     {

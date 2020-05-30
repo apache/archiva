@@ -20,7 +20,7 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
@@ -69,7 +69,7 @@ public class RemoteDefaultRepositoryContentTest
     }
 
     @Override
-    protected ManagedRepositoryContent getManaged( )
+    protected BaseRepositoryContentLayout getManaged( )
     {
         return null;
     }

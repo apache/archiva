@@ -22,7 +22,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.maven.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
@@ -642,7 +642,7 @@ public abstract class AbstractRepositoryContentTest
 
     protected abstract ItemSelector toItemSelector(String path) throws LayoutException;
 
-    protected abstract ManagedRepositoryContent getManaged();
+    protected abstract BaseRepositoryContentLayout getManaged();
 
     protected abstract RepositoryContent getContent( );
 }

@@ -30,6 +30,8 @@ import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
@@ -48,6 +50,7 @@ import org.eclipse.aether.collection.CollectResult;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyVisitor;
+import org.jsoup.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -156,7 +159,14 @@ public class Maven3DependencyTreeBuilder
         // FIXME take care of relative path
         ResolveRequest resolveRequest = new ResolveRequest();
         resolveRequest.dependencyVisitor = dependencyVisitor;
-        resolveRequest.localRepoDir = repository.getContent().getRepoRoot();
+        try
+        {
+            resolveRequest.localRepoDir = repository.getContent().getLayout( BaseRepositoryContentLayout.class ).getRepoRoot();
+        }
+        catch ( LayoutException e )
+        {
+            throw new DependencyTreeBuilderException( "Could not convert to layout " + e.getMessage( ), e );
+        }
         resolveRequest.groupId = groupId;
         resolveRequest.artifactId = artifactId;
         resolveRequest.version = version;

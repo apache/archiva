@@ -22,7 +22,6 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.features.RepositoryFeature;
-import org.apache.archiva.repository.maven.content.DefaultPathParser;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.commons.lang3.StringUtils;
 
@@ -244,7 +243,7 @@ public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
     }
 
     /**
-     * Adjust the requestedPath to conform to the native layout of the provided {@link org.apache.archiva.repository.ManagedRepositoryContent}.
+     * Adjust the requestedPath to conform to the native layout of the provided {@link BaseRepositoryContentLayout}.
      *
      * @param requestedPath the incoming requested path.
      * @return the adjusted (to native) path.
@@ -281,7 +280,7 @@ public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
 
         // Treat as an artifact reference.
         ArtifactReference ref = toArtifactReference( referencedResource );
-        String adjustedPath = repository.getContent().toPath( ref );
+        String adjustedPath = repository.getContent().getLayout( BaseRepositoryContentLayout.class ).toPath( ref );
         return adjustedPath + supportfile;
     }
 

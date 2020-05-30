@@ -44,13 +44,15 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
@@ -189,7 +191,7 @@ public class DefaultRepositoriesService
         }
     }
 
-    private ManagedRepositoryContent getManagedRepositoryContent(String id) throws RepositoryException
+    private ManagedRepositoryContent getManagedRepositoryContent( String id) throws RepositoryException
     {
         org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( id );
         if (repo==null) {
@@ -372,8 +374,8 @@ public class DefaultRepositoriesService
 
             ManagedRepositoryContent sourceRepository =
                 getManagedRepositoryContent( artifactTransferRequest.getRepositoryId() );
-
-            String artifactSourcePath = sourceRepository.toPath( artifactReference );
+            BaseRepositoryContentLayout layout = sourceRepository.getLayout( BaseRepositoryContentLayout.class );
+            String artifactSourcePath = layout.toPath( artifactReference );
 
             if ( StringUtils.isEmpty( artifactSourcePath ) )
             {
@@ -394,7 +396,7 @@ public class DefaultRepositoriesService
             ManagedRepositoryContent targetRepository =
                 getManagedRepositoryContent( artifactTransferRequest.getTargetRepositoryId() );
 
-            String artifactPath = targetRepository.toPath( artifactReference );
+            String artifactPath = layout.toPath( artifactReference );
 
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
@@ -469,7 +471,7 @@ public class DefaultRepositoriesService
             log.debug("copyArtifact {}", msg);
 
         }
-        catch ( RepositoryException e )
+        catch ( RepositoryException | LayoutException e )
         {
             log.error( "RepositoryException: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
@@ -663,14 +665,14 @@ public class DefaultRepositoriesService
         try
         {
             ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
-
+            BaseRepositoryContentLayout layout = repository.getLayout( BaseRepositoryContentLayout.class );
 
             ArchivaItemSelector selector = ArchivaItemSelector.builder( )
                 .withNamespace( namespace )
                 .withProjectId( projectId )
                 .withVersion( version )
                 .build( );
-            Version versionItem = repository.getVersion( selector );
+            Version versionItem = layout.getVersion( selector );
             if (versionItem!=null && versionItem.exists()) {
                 repository.deleteItem( versionItem );
             }
@@ -687,7 +689,7 @@ public class DefaultRepositoriesService
 
             metadataRepository.removeProjectVersion(repositorySession , repositoryId, namespace, projectId, version );
         }
-        catch ( MetadataRepositoryException | MetadataResolutionException | RepositoryException | ItemNotFoundException e )
+        catch ( MetadataRepositoryException | MetadataResolutionException | RepositoryException | ItemNotFoundException | LayoutException e )
         {
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
@@ -773,6 +775,7 @@ public class DefaultRepositoriesService
             ref.setVersion( artifact.getVersion() );
 
             ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
+            BaseRepositoryContentLayout layout = repository.getLayout( BaseRepositoryContentLayout.class );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifact.getArtifactId() );
@@ -793,7 +796,7 @@ public class DefaultRepositoriesService
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            String path = repository.toMetadataPath( ref );
+            String path = layout.toMetadataPath( ref );
 
             if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
             {
@@ -802,7 +805,7 @@ public class DefaultRepositoriesService
                     throw new ArchivaRestServiceException( "You must configure a type/packaging when using classifier",
                                                            400, null );
                 }
-                List<? extends org.apache.archiva.repository.content.Artifact> artifactItems = repository.getArtifacts( selector );
+                List<? extends org.apache.archiva.repository.content.Artifact> artifactItems = layout.getArtifacts( selector );
                 for ( org.apache.archiva.repository.content.Artifact aRef : artifactItems ) {
                     try
                     {
@@ -834,19 +837,19 @@ public class DefaultRepositoriesService
                 // delete from file system
                 if ( !snapshotVersion )
                 {
-                    repository.deleteVersion( ref );
+                    layout.deleteVersion( ref );
                 }
                 else
                 {
                     // We are deleting all version related artifacts for a snapshot version
-                    VersionedReference versionRef = repository.toVersion( artifactReference );
-                    List<ArtifactReference> related = repository.getRelatedArtifacts( versionRef );
+                    VersionedReference versionRef = layout.toVersion( artifactReference );
+                    List<ArtifactReference> related = layout.getRelatedArtifacts( versionRef );
                     log.debug( "related: {}", related );
                     for ( ArtifactReference artifactRef : related )
                     {
                         try
                         {
-                            repository.deleteArtifact( artifactRef );
+                            layout.deleteArtifact( artifactRef );
                         } catch (ContentNotFoundException e) {
                             log.warn( "Artifact that should be deleted, was not found: {}", artifactRef );
                         }
@@ -1014,8 +1017,9 @@ public class DefaultRepositoriesService
         try
         {
             ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
-
-            repository.deleteGroupId( groupId );
+            ArchivaItemSelector itemselector = ArchivaItemSelector.builder( ).withNamespace( groupId ).build();
+            ContentItem item = repository.getItem( itemselector );
+            repository.deleteItem( item );
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
@@ -1036,6 +1040,11 @@ public class DefaultRepositoriesService
         catch ( RepositoryException e )
         {
             log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
+        catch ( ItemNotFoundException e )
+        {
+            log.error( "Item not found {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
         finally
@@ -1083,8 +1092,11 @@ public class DefaultRepositoriesService
         try
         {
             ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
+            ArchivaItemSelector itemSelector = ArchivaItemSelector.builder( ).withNamespace( groupId )
+                .withProjectId( projectId ).build( );
+            ContentItem item = repository.getItem( itemSelector );
 
-            repository.deleteProject( groupId, projectId );
+            repository.deleteItem( item );
         }
         catch ( ContentNotFoundException e )
         {
@@ -1093,6 +1105,11 @@ public class DefaultRepositoriesService
         catch ( RepositoryException e )
         {
             log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
+        }
+        catch ( ItemNotFoundException e )
+        {
+            log.error( "Item not found {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
 

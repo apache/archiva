@@ -22,7 +22,9 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
 
@@ -79,7 +81,16 @@ public class ArtifactBuilder
 
         ref.setClassifier( classifier );
         ref.setType( type );
-        StorageAsset file = managedRepositoryContent.toFile( ref );
+        BaseRepositoryContentLayout layout;
+        try
+        {
+             layout = managedRepositoryContent.getLayout( BaseRepositoryContentLayout.class );
+        }
+        catch ( LayoutException e )
+        {
+            throw new RuntimeException( "Could not convert to layout " + e.getMessage( ) );
+        }
+        StorageAsset file = layout.toFile( ref );
 
         String extension = getExtensionFromFile(file);
         
@@ -89,7 +100,7 @@ public class ArtifactBuilder
         artifact.setPackaging( type );
         artifact.setType( type );
         artifact.setFileExtension( extension );
-        artifact.setPath( managedRepositoryContent.toPath( ref ) );
+        artifact.setPath( layout.toPath( ref ) );
         // TODO: find a reusable formatter for this
         double s = this.artifactMetadata.getSize();
         String symbol = "b";

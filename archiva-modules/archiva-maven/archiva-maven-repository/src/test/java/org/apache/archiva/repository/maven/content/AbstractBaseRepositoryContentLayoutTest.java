@@ -30,7 +30,7 @@ import static org.junit.Assert.fail;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public abstract class AbstractManagedRepositoryContentTest extends AbstractRepositoryContentTest
+public abstract class AbstractBaseRepositoryContentLayoutTest extends AbstractRepositoryContentTest
 {
 
     @Override

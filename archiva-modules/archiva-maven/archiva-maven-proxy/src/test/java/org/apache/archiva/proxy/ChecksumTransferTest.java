@@ -25,6 +25,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.easymock.EasyMock;
@@ -41,439 +42,454 @@ import static org.junit.Assert.assertNull;
 
 /**
  * ChecksumTransferTest
- *
- *
  */
 public class ChecksumTransferTest
     extends AbstractProxyTestCase
 {
     @Test
-    public void testGetChecksumWhenConnectorIsDisabled()
+    public void testGetChecksumWhenConnectorIsDisabled( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-right/1.0/get-checksum-both-right-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        org.apache.archiva.common.utils.FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
+
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, true );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, true );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         assertNull( downloadedFile );
     }
 
     @Test
-    public void testGetChecksumBothCorrect()
+    public void testGetChecksumBothCorrect( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-right/1.0/get-checksum-both-right-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        org.apache.archiva.common.utils.FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "066d76e459f7782c312c31e8a11b3c0f1e3e43a7 *get-checksum-both-right-1.0.jar",
-                         "e58f30c6a150a2e843552438d18e15cb *get-checksum-both-right-1.0.jar" );
+            "e58f30c6a150a2e843552438d18e15cb *get-checksum-both-right-1.0.jar" );
     }
 
     @Test
-    public void testGetChecksumCorrectSha1NoMd5()
+    public void testGetChecksumCorrectSha1NoMd5( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
-                         null );
+            null );
     }
 
     @Test
-    public void testGetChecksumNoSha1CorrectMd5()
+    public void testGetChecksumNoSha1CorrectMd5( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, null, "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
     }
 
     @Test
-    public void testGetWithNoChecksumsUsingIgnoredSetting()
+    public void testGetWithNoChecksumsUsingIgnoredSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, null, null );
     }
 
     @Test
-    public void testGetChecksumBadSha1BadMd5IgnoredSetting()
+    public void testGetChecksumBadSha1BadMd5IgnoredSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
     }
 
     @Test
-    public void testGetChecksumBadSha1BadMd5FailSetting()
+    public void testGetChecksumBadSha1BadMd5FailSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
     }
 
     @Test
-    public void testGetChecksumBadSha1BadMd5FixSetting()
+    public void testGetChecksumBadSha1BadMd5FixSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "4ec20a12dc91557330bd0b39d1805be5e329ae56  get-checksum-both-bad-1.0.jar",
-                         "a292491a35925465e693a44809a078b5  get-checksum-both-bad-1.0.jar" );
+            "a292491a35925465e693a44809a078b5  get-checksum-both-bad-1.0.jar" );
     }
 
     @Test
-    public void testGetChecksumCorrectSha1BadMd5UsingFailSetting()
+    public void testGetChecksumCorrectSha1BadMd5UsingFailSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
         setupTestableManagedRepository( path );
 
-        Path expectedFile = managedDefaultDir.resolve(path);
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Path expectedFile = managedDefaultDir.resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
     }
 
     @Test
-    public void testGetChecksumNoSha1CorrectMd5UsingFailSetting()
+    public void testGetChecksumNoSha1CorrectMd5UsingFailSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
         setupTestableManagedRepository( path );
 
-        Path expectedFile = managedDefaultDir.resolve(path);
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Path expectedFile = managedDefaultDir.resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         // This is a success situation. No SHA1 with a Good MD5.
-        Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, null, "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
     }
 
     @Test
-    public void testGetWithNoChecksumsUsingFailSetting()
+    public void testGetWithNoChecksumsUsingFailSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
 
-        Path expectedFile = managedDefaultDir.resolve(path);
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Path expectedFile = managedDefaultDir.resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
     }
 
     @Test
-    public void testGetChecksumCorrectSha1BadMd5UsingIgnoredSetting()
+    public void testGetChecksumCorrectSha1BadMd5UsingIgnoredSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
         setupTestableManagedRepository( path );
 
-        Path expectedFile = managedDefaultDir.resolve(path);
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Path expectedFile = managedDefaultDir.resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "3dd1a3a57b807d3ef3fbc6013d926c891cbb8670 *get-checksum-sha1-bad-md5-1.0.jar",
-                         "invalid checksum file" );
+            "invalid checksum file" );
     }
 
     @Test
-    public void testGetChecksumCorrectSha1BadMd5UsingFixSetting()
+    public void testGetChecksumCorrectSha1BadMd5UsingFixSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
         setupTestableManagedRepository( path );
 
-        Path expectedFile = managedDefaultDir.resolve(path);
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Path expectedFile = managedDefaultDir.resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "3dd1a3a57b807d3ef3fbc6013d926c891cbb8670 *get-checksum-sha1-bad-md5-1.0.jar",
-                         "c35f3b76268b73a4ba617f6f275c49ab  get-checksum-sha1-bad-md5-1.0.jar" );
+            "c35f3b76268b73a4ba617f6f275c49ab  get-checksum-sha1-bad-md5-1.0.jar" );
     }
 
     @Test
-    public void testGetChecksumNoSha1CorrectMd5UsingFixSetting()
+    public void testGetChecksumNoSha1CorrectMd5UsingFixSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
         setupTestableManagedRepository( path );
 
-        Path expectedFile = managedDefaultDir.resolve(path);
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Path expectedFile = managedDefaultDir.resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "71f7dc3f72053a3f2d9fdd6fef9db055ef957ffb  get-checksum-md5-only-1.0.jar",
-                         "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
+            "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
     }
 
     @Test
-    public void testGetWithNoChecksumsUsingFixSetting()
+    public void testGetWithNoChecksumsUsingFixSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
 
-        Path expectedFile = managedDefaultDir.resolve(path);
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Path expectedFile = managedDefaultDir.resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "1f12821c5e43e1a0b76b9564a6ddb0548ccb9486  get-default-layout-1.0.jar",
-                         "3f7341545f21226b6f49a3c2704cb9be  get-default-layout-1.0.jar" );
+            "3f7341545f21226b6f49a3c2704cb9be  get-default-layout-1.0.jar" );
     }
 
     @Test
-    public void testGetChecksumNotFoundOnRemote()
+    public void testGetChecksumNotFoundOnRemote( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
         setupTestableManagedRepository( path );
 
         Path expectedFile = managedDefaultDir.resolve( path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        FileUtils.deleteDirectory( expectedFile.getParent() );
-        assertFalse( Files.exists(expectedFile.getParent()) );
-        assertFalse( Files.exists(expectedFile) );
+        FileUtils.deleteDirectory( expectedFile.getParent( ) );
+        assertFalse( Files.exists( expectedFile.getParent( ) ) );
+        assertFalse( Files.exists( expectedFile ) );
 
         saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "http://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
-        EasyMock.expectLastCall().once();
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall( ).once( );
 
-        wagonMock.get( EasyMock.eq( path + ".sha1" ), EasyMock.anyObject( File.class ));
-        EasyMock.expectLastCall().once();
+        wagonMock.get( EasyMock.eq( path + ".sha1" ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall( ).once( );
 
-        wagonMock.get( EasyMock.eq( path + ".md5" ), EasyMock.anyObject( File.class ));
-        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Resource does not exist." ) ).once();
+        wagonMock.get( EasyMock.eq( path + ".md5" ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall( ).andThrow( new ResourceDoesNotExistException( "Resource does not exist." ) ).once( );
 
-        wagonMockControl.replay();
+        wagonMockControl.replay( );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        wagonMockControl.verify();
+        wagonMockControl.verify( );
 
         // Do what the mock doesn't do.
-        Path proxyPath = Paths.get( REPOPATH_PROXIED1, path ).toAbsolutePath();
-        Path localPath = managedDefaultDir.resolve( path ).toAbsolutePath();
-        Files.copy( proxyPath, localPath, StandardCopyOption.REPLACE_EXISTING);
-        Files.copy( proxyPath.resolveSibling( proxyPath.getFileName() + ".sha1" ),
-            localPath.resolveSibling(  localPath.getFileName() + ".sha1" ), StandardCopyOption.REPLACE_EXISTING );
+        Path proxyPath = Paths.get( REPOPATH_PROXIED1, path ).toAbsolutePath( );
+        Path localPath = managedDefaultDir.resolve( path ).toAbsolutePath( );
+        Files.copy( proxyPath, localPath, StandardCopyOption.REPLACE_EXISTING );
+        Files.copy( proxyPath.resolveSibling( proxyPath.getFileName( ) + ".sha1" ),
+            localPath.resolveSibling( localPath.getFileName( ) + ".sha1" ), StandardCopyOption.REPLACE_EXISTING );
 
         // Test results.
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
-                         null );
+            null );
     }
 
     @Test
-    public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingIgnoredSetting()
+    public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingIgnoredSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
@@ -484,23 +500,24 @@ public class ChecksumTransferTest
 
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         // There are no hashcodes on the proxy side to download, hence the local ones should remain invalid.
         assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
     }
 
     @Test
-    public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingFailSetting()
+    public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingFailSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
@@ -511,13 +528,14 @@ public class ChecksumTransferTest
 
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -528,29 +546,30 @@ public class ChecksumTransferTest
     }
 
     @Test
-    public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingFixSetting()
+    public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingFixSetting( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
         setupTestableManagedRepository( path );
 
-        Path expectedFile = managedDefaultDir.resolve(path);
-        Path remoteFile = Paths.get(REPOPATH_PROXIED1, path);
+        Path expectedFile = managedDefaultDir.resolve( path );
+        Path remoteFile = Paths.get( REPOPATH_PROXIED1, path );
 
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
+        Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "96a08dc80a108cba8efd3b20aec91b32a0b2cbd4  get-bad-local-checksum-1.0.jar",
-                         "46fdd6ca55bf1d7a7eb0c858f41e0ccd  get-bad-local-checksum-1.0.jar" );
+            "46fdd6ca55bf1d7a7eb0c858f41e0ccd  get-bad-local-checksum-1.0.jar" );
     }
 }

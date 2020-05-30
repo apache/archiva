@@ -24,24 +24,23 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaArtifact;
-import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentAccessException;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.EditableManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ItemDeleteStatus;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.ManagedRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ArtifactType;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
-import org.apache.archiva.repository.content.BaseDataItemTypes;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.DataItem;
-import org.apache.archiva.repository.content.DataItemType;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
@@ -55,7 +54,6 @@ import org.apache.archiva.repository.content.base.ArchivaVersion;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.maven.metadata.storage.DefaultArtifactMappingProvider;
-import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
@@ -64,7 +62,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.naming.Name;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -74,7 +71,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -87,7 +83,7 @@ import java.util.stream.Stream;
  */
 public class ManagedDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
-    implements ManagedRepositoryContent
+    implements BaseRepositoryContentLayout
 {
 
     // attribute flag that marks version objects that point to a snapshot artifact version
@@ -477,6 +473,12 @@ public class ManagedDefaultRepositoryContent
                 return ArchivaContentItem.withRepository( this ).withAsset( itemPath ).build();
             }
         }
+    }
+
+    @Override
+    public ManagedRepositoryContent getGenericContent( )
+    {
+        return this;
     }
 
     // Simple object to hold artifact information
@@ -1204,6 +1206,22 @@ public class ManagedDefaultRepositoryContent
             }
     }
 
+    @Override
+    public <T extends ManagedRepositoryContentLayout> T getLayout( Class<T> clazz ) throws LayoutException
+    {
+        if (clazz.isAssignableFrom( this.getClass() )) {
+            return (T) this;
+        } else {
+            throw new LayoutException( "Cannot convert to layout " + clazz );
+        }
+    }
+
+    @Override
+    public <T extends ManagedRepositoryContentLayout> boolean supportsLayout( Class<T> clazz )
+    {
+        return clazz.isAssignableFrom( this.getClass( ) );
+    }
+
     /**
      * Moves the file to the artifact destination
      */
@@ -1274,6 +1292,10 @@ public class ManagedDefaultRepositoryContent
         return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), artifactReference.getVersion( ) );
     }
 
+    @Override
+    public String toPath( ContentItem item ) {
+        return item.getAsset( ).getPath( );
+    }
 
     @Override
     public void deleteVersion( VersionedReference ref ) throws ContentNotFoundException, ContentAccessException

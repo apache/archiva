@@ -28,9 +28,10 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.EditableManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
@@ -42,11 +43,9 @@ import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaContentItem;
-import org.apache.archiva.repository.content.base.ArchivaDataItem;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.MavenManagedRepository;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -73,7 +72,7 @@ import static org.junit.Assert.*;
  * ManagedDefaultRepositoryContentTest
  */
 public class ManagedDefaultRepositoryContentTest
-    extends AbstractManagedRepositoryContentTest
+    extends AbstractBaseRepositoryContentLayoutTest
 {
     private ManagedDefaultRepositoryContent repoContent;
 
@@ -411,7 +410,7 @@ public class ManagedDefaultRepositoryContentTest
     }
 
     @Override
-    protected ManagedRepositoryContent getManaged( )
+    protected BaseRepositoryContentLayout getManaged( )
     {
         return repoContent;
     }
@@ -1044,38 +1043,18 @@ public class ManagedDefaultRepositoryContentTest
         assertTrue( result.stream( ).anyMatch( a -> "axis2-1.3-20070725.210059-1.pom".equals( a.getAsset( ).getName( ) ) ) );
     }
 
-//    @Test
-//    public void testNewItemStreamWithNamespace2() {
-//        ItemSelector selector = ArchivaItemSelector.builder( )
-//            .withNamespace( "org.apache.maven" )
-//            .build();
-//
-//        Stream<? extends ContentItem> stream = repoContent.newItemStream( selector, false );
-//        List<? extends ContentItem> result = stream.collect( Collectors.toList( ) );
-//        int versions = 0;
-//        int projects = 0;
-//        int artifacts = 0;
-//        int namespaces = 0;
-//        int dataitems = 0;
-//        for (int i=0; i<result.size(); i++) {
-//            ContentItem ci = result.get( i );
-//            System.out.println( i + ": " + result.get( i ) + " - " +result.get(i).getClass().getName() + " - " + result.get(i).getAsset().getPath() );
-//            if (ci instanceof Version) {
-//                versions++;
-//            } else if (ci instanceof Project) {
-//                projects++;
-//            } else if (ci instanceof Namespace) {
-//                namespaces++;
-//            } else if (ci instanceof Artifact) {
-//                artifacts++;
-//            } else if (ci instanceof DataItem ) {
-//                dataitems++;
-//            }
-//        }
-//        System.out.println( "namespaces=" + namespaces + ", projects=" + projects + ", versions=" + versions + ", artifacts=" + artifacts + ", dataitems=" + dataitems );
-//        assertEquals( 170, result.size( ) );
-//        assertEquals( 92, result.stream( ).filter( a -> a instanceof Artifact ).count( ) );
-//    }
+    @Test
+    public void testNewItemStreamWithNamespace2() {
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .recurse()
+            .build();
+
+        Stream<? extends ContentItem> stream = repoContent.newItemStream( selector, false );
+        List<? extends ContentItem> result = stream.collect( Collectors.toList( ) );
+        assertEquals( 170, result.size( ) );
+        assertEquals( 92, result.stream( ).filter( a -> a instanceof DataItem ).count( ) );
+    }
 
     @Test
     public void testGetArtifactFromContentItem() {
@@ -1569,10 +1548,11 @@ public class ManagedDefaultRepositoryContentTest
 
 
     @Test
-    public void testAddArtifact() throws IOException, URISyntaxException
+    public void testAddArtifact() throws IOException, URISyntaxException, LayoutException
     {
         ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
         ManagedRepositoryContent myRepoContent = repo.getContent( );
+        BaseRepositoryContentLayout layout = myRepoContent.getLayout( BaseRepositoryContentLayout.class );
         Path repoRoot = repo.getAsset( "" ).getFilePath( );
 
         Path tmpFile = Files.createTempFile( "archiva-mvn-repotest", "jar" );
@@ -1594,8 +1574,8 @@ public class ManagedDefaultRepositoryContentTest
             .withArtifactVersion( "2.0" )
             .withExtension( "jar" )
             .build( );
-        Artifact artifact = myRepoContent.getArtifact( selector );
-        myRepoContent.addArtifact( tmpFile, artifact );
+        Artifact artifact = layout.getArtifact( selector );
+        layout.addArtifact( tmpFile, artifact );
         FileTime lmtAfter = Files.getLastModifiedTime( file );
         assertNotEquals( lmtAfter, lmt );
         Reader ln = Files.newBufferedReader( file, Charset.forName( "UTF-8" ) );
@@ -1622,8 +1602,8 @@ public class ManagedDefaultRepositoryContentTest
             .withArtifactVersion( "2.0" )
             .withExtension( "test" )
             .build( );
-        artifact = myRepoContent.getArtifact( selector );
-        myRepoContent.addArtifact( tmpFile, artifact );
+        artifact = layout.getArtifact( selector );
+        layout.addArtifact( tmpFile, artifact );
         ln = Files.newBufferedReader( file, Charset.forName( "UTF-8" ) );
         ln.read( content );
         assertTrue( new String( content ).startsWith( "test.test.test" ) );

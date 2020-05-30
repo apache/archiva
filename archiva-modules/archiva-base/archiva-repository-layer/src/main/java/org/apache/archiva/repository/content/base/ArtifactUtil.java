@@ -19,8 +19,10 @@ package org.apache.archiva.repository.content.base;
  */
 
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -52,7 +54,15 @@ public class ArtifactUtil
     public Path getArtifactPath( ManagedRepository repository, ArtifactReference artifactReference ) throws RepositoryException
     {
         final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent( repository );
-        final String artifactPath = content.toPath( artifactReference );
+        final String artifactPath;
+        try
+        {
+            artifactPath = content.getLayout( BaseRepositoryContentLayout.class ).toPath( artifactReference );
+        }
+        catch ( LayoutException e )
+        {
+            throw new RepositoryException( "Could not convert to layout BaseRepositoryContentLayout" );
+        }
         return Paths.get( repository.getLocation( ) ).resolve( artifactPath );
     }
 
@@ -68,7 +78,15 @@ public class ArtifactUtil
     public StorageAsset getArtifactAsset( ManagedRepository repository, ArtifactReference artifactReference ) throws RepositoryException
     {
         final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent( repository );
-        final String artifactPath = content.toPath( artifactReference );
+        final String artifactPath;
+        try
+        {
+            artifactPath = content.getLayout( BaseRepositoryContentLayout.class ).toPath( artifactReference );
+        }
+        catch ( LayoutException e )
+        {
+            throw new RepositoryException( "Could not convert to layout BaseRepositoryContentLayout" );
+        }
         return repository.getAsset( artifactPath );
     }
 

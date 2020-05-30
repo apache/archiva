@@ -21,8 +21,6 @@ package org.apache.archiva.repository.maven;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentProvider;
-import org.apache.archiva.repository.maven.MavenManagedRepository;
-import org.apache.archiva.repository.maven.MavenRemoteRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Rule;
 import org.junit.rules.TestName;

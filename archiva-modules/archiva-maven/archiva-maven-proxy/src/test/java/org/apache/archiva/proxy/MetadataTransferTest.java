@@ -31,6 +31,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
@@ -128,8 +129,9 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
         StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
-                                                                     managedDefaultRepository.toMetadataPath(
+                                                                     layout.toMetadataPath(
                                                                          metadata ) ).getFile();
 
         assertNull( "Should not have downloaded a file.", downloadedFile );
@@ -991,8 +993,10 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+
         StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
-                                                                     managedDefaultRepository.toMetadataPath(
+                                                                     layout.toMetadataPath(
                                                                          metadata ) ).getFile();
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
@@ -1017,8 +1021,9 @@ public class MetadataTransferTest
         Path expectedFile = managedDefaultDir.resolve(requestedResource);
         ProjectReference metadata = createProjectReference( requestedResource );
 
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
         StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
-                                                                     managedDefaultRepository.toMetadataPath(
+                                                                     layout.toMetadataPath(
                                                                          metadata ) ).getFile();
 
         assertNull( downloadedFile );
@@ -1038,8 +1043,9 @@ public class MetadataTransferTest
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
         StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
-                                                                     managedDefaultRepository.toMetadataPath(
+                                                                     layout.toMetadataPath(
                                                                          metadata ) ).getFile();
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
@@ -1064,8 +1070,9 @@ public class MetadataTransferTest
         Path expectedFile = managedDefaultDir.resolve(requestedResource);
         VersionedReference metadata = createVersionedReference( requestedResource );
 
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
         StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
-                                                                     managedDefaultRepository.toMetadataPath(
+                                                                     layout.toMetadataPath(
                                                                          metadata ) ).getFile();
 
         assertNull( downloadedFile );

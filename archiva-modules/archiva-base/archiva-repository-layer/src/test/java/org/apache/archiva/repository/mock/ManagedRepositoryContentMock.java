@@ -25,10 +25,12 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentAccessException;
 import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ItemDeleteStatus;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.ManagedRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
@@ -48,7 +50,7 @@ import java.util.stream.Stream;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Service("managedRepositoryContent#mock")
-public class ManagedRepositoryContentMock implements ManagedRepositoryContent
+public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 {
     private ManagedRepository repository;
 
@@ -206,6 +208,18 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public <T extends ManagedRepositoryContentLayout> T getLayout( Class<T> clazz ) throws LayoutException
+    {
+        return null;
+    }
+
+    @Override
+    public <T extends ManagedRepositoryContentLayout> boolean supportsLayout( Class<T> clazz )
+    {
+        return false;
+    }
+
+    @Override
     public void addArtifact( Path sourceFile, Artifact destination ) throws IllegalArgumentException
     {
 
@@ -241,6 +255,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public void deleteProject( ProjectReference reference ) throws ContentNotFoundException, ContentAccessException
     {
 
+    }
+
+    @Override
+    public String toPath( ContentItem item )
+    {
+        return null;
     }
 
     @Override
@@ -351,4 +371,9 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
         return null;
     }
 
+    @Override
+    public ManagedRepositoryContent getGenericContent( )
+    {
+        return null;
+    }
 }

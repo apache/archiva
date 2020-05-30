@@ -25,9 +25,7 @@ import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.base.builder.ProjectOptBuilder;
 import org.apache.archiva.repository.content.base.builder.ProjectWithIdBuilder;
 import org.apache.archiva.repository.content.base.builder.WithAssetBuilder;
-import org.apache.archiva.repository.content.base.builder.WithNamespaceBuilder;
 import org.apache.archiva.repository.content.base.builder.WithNamespaceObjectBuilder;
-import org.apache.archiva.repository.content.base.builder.WithProjectBuilder;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 

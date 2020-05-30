@@ -24,7 +24,6 @@ import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.builder.VersionOptBuilder;
 import org.apache.archiva.repository.content.base.builder.WithAssetBuilder;
-import org.apache.archiva.repository.content.base.builder.WithNamespaceBuilder;
 import org.apache.archiva.repository.content.base.builder.WithProjectBuilder;
 import org.apache.archiva.repository.content.base.builder.WithVersionBuilder;
 import org.apache.archiva.repository.storage.StorageAsset;

@@ -58,9 +58,10 @@ import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
@@ -281,7 +282,7 @@ public class ArchivaDavResourceFactory
             repositoryRequestInfo = repo.getRequestInfo();
             String logicalResource = getLogicalResource( archivaLocator, null, false );
             resourcesInAbsolutePath.add(
-                Paths.get( managedRepositoryContent.getRepoRoot(), logicalResource ).toAbsolutePath().toString() );
+                managedRepositoryContent.getRepository().getAsset( "" ).getFilePath().resolve(logicalResource ).toAbsolutePath().toString() );
 
         }
 
@@ -466,7 +467,7 @@ public class ArchivaDavResourceFactory
                         logicalResource = logicalResource.substring( 1 );
                     }
                     resourcesInAbsolutePath.add(
-                        Paths.get( managedRepositoryContent.getRepoRoot(), logicalResource ).toAbsolutePath().toString() );
+                        managedRepositoryContent.getRepository().getAsset( "" ).resolve( logicalResource ).getFilePath().toAbsolutePath().toString() );
                 }
                 catch ( DavException e )
                 {
@@ -649,12 +650,13 @@ public class ArchivaDavResourceFactory
                     ArtifactReference artifact = null;
                     try
                     {
-                        artifact = managedRepositoryContent.toArtifactReference( resourcePath );
+                        BaseRepositoryContentLayout layout = managedRepositoryContent.getLayout( BaseRepositoryContentLayout.class );
+                        artifact = layout.toArtifactReference( resourcePath );
 
                         if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
                         {
                             // check if artifact already exists and if artifact re-deployment to the repository is allowed
-                            if ( managedRepositoryContent.hasContent( artifact )
+                            if ( layout.hasContent( artifact )
                                 && managedRepositoryContent.getRepository().blocksRedeployments())
                             {
                                 log.warn( "Overwriting released artifacts in repository '{}' is not allowed.",
@@ -681,23 +683,23 @@ public class ArchivaDavResourceFactory
                  * create the collections themselves.
                  */
 
-                Path rootDirectory = Paths.get( managedRepositoryContent.getRepoRoot() );
-                Path destDir = rootDirectory.resolve( logicalResource.getPath() ).getParent();
+                StorageAsset rootDirectory = managedRepositoryContent.getRepository( ).getAsset( "" );
+                StorageAsset destDir = rootDirectory.resolve( logicalResource.getPath() ).getParent();
 
-                if ( !Files.exists(destDir) )
+                if ( !destDir.exists() )
                 {
                     try
                     {
-                        Files.createDirectories( destDir );
+                        destDir.create();
                     }
                     catch ( IOException e )
                     {
                         log.error("Could not create directory {}: {}", destDir, e.getMessage(), e);
                         throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not create directory "+destDir );
                     }
-                    String relPath = PathUtil.getRelative( rootDirectory.toAbsolutePath().toString(), destDir );
+                    String relPath = PathUtil.getRelative( rootDirectory.getPath(), destDir.getPath() );
 
-                    log.debug( "Creating destination directory '{}' (current user '{}')", destDir.getFileName(),
+                    log.debug( "Creating destination directory '{}' (current user '{}')", destDir.getName(),
                                activePrincipal );
 
                     triggerAuditEvent( request.getRemoteAddr(), managedRepositoryContent.getId(), relPath,
@@ -798,7 +800,7 @@ public class ArchivaDavResourceFactory
 
                 StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, artifact );
 
-                resource.setPath( managedRepository.getContent().toPath( artifact ) );
+                resource.setPath( managedRepository.getContent().getLayout( BaseRepositoryContentLayout.class ).toPath( artifact ) );
 
                 log.debug( "Proxied artifact '{}:{}:{}'", artifact.getGroupId(), artifact.getArtifactId(),
                            artifact.getVersion() );

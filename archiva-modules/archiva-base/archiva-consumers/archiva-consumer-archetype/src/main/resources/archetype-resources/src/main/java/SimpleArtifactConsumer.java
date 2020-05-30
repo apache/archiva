@@ -31,9 +31,10 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryListener;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +125,8 @@ public class SimpleArtifactConsumer
         try
         {
             ManagedRepositoryContent repositoryContent = repository.getContent();
-            ArtifactReference artifact = repositoryContent.toArtifactReference( path );
+            BaseRepositoryContentLayout layout = repositoryContent.getLayout( BaseRepositoryContentLayout.class );
+            ArtifactReference artifact = layout.toArtifactReference( path );
 
             repositorySession.getRepository().getArtifacts( repositorySession, repository.getId(), artifact.getGroupId(),
                                                             artifact.getArtifactId(), artifact.getVersion() );

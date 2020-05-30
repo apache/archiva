@@ -21,6 +21,8 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.dependency.tree.DependencyTreeBuilder;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
@@ -32,12 +34,10 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMetadataVersionComparator;
 import org.apache.archiva.repository.maven.metadata.storage.MavenProjectFacet;
-import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.components.cache.Cache;
-import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
@@ -93,7 +93,7 @@ public class DefaultBrowseService
     @Named( value = "browse#versionMetadata" )
     private Cache<String, ProjectVersionMetadata> versionMetadataCache;
 
-    private ManagedRepositoryContent getManagedRepositoryContent(String id) throws RepositoryException
+    private ManagedRepositoryContent getManagedRepositoryContent( String id) throws RepositoryException
     {
         org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( id );
         if (repo==null) {
@@ -746,10 +746,12 @@ public class DefaultBrowseService
 
                 ManagedRepositoryContent managedRepositoryContent =
                     getManagedRepositoryContent( repoId );
-                ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
-                                                                       StringUtils.isEmpty( type ) ? "jar" : type,
-                                                                       repoId );
-                StorageAsset file = managedRepositoryContent.toFile( archivaArtifact );
+                ArchivaItemSelector itemSelector = ArchivaItemSelector.builder( ).withNamespace( groupId )
+                    .withProjectId( artifactId ).withVersion( version ).withClassifier( classifier )
+                    .withType( StringUtils.isEmpty( type ) ? "jar" : type )
+                    .withArtifactId( artifactId ).build();
+                org.apache.archiva.repository.content.Artifact archivaArtifact = managedRepositoryContent.getItem( itemSelector ).adapt( org.apache.archiva.repository.content.Artifact.class );
+                StorageAsset file = archivaArtifact.getAsset();
                 if ( file.exists() )
                 {
                     return readFileEntries( file, path, repoId );
@@ -835,10 +837,12 @@ public class DefaultBrowseService
                     log.error("No repository content found for "+repoId);
                     continue;
                 }
-                ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
-                                                                       StringUtils.isEmpty( type ) ? "jar" : type,
-                                                                       repoId );
-                StorageAsset file = managedRepositoryContent.toFile( archivaArtifact );
+                ArchivaItemSelector itemSelector = ArchivaItemSelector.builder( ).withNamespace( groupId )
+                    .withProjectId( artifactId ).withVersion( version ).withClassifier( classifier )
+                    .withType( StringUtils.isEmpty( type ) ? "jar" : type )
+                    .withArtifactId( artifactId ).build();
+                org.apache.archiva.repository.content.Artifact archivaArtifact = managedRepositoryContent.getItem( itemSelector ).adapt( org.apache.archiva.repository.content.Artifact.class );
+                StorageAsset file = archivaArtifact.getAsset( );
                 if ( !file.exists() )
                 {
                     log.debug( "file: {} not exists for repository: {} try next repository", file, repoId );
@@ -905,11 +909,14 @@ public class DefaultBrowseService
                 ManagedRepositoryContent managedRepositoryContent = getManagedRepositoryContent( repoId );
 
                 // FIXME default to jar which can be wrong for war zip etc....
-                ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version,
-                                                                       StringUtils.isEmpty( classifier )
-                                                                           ? ""
-                                                                           : classifier, "jar", repoId );
-                StorageAsset file = managedRepositoryContent.toFile( archivaArtifact );
+                ArchivaItemSelector itemSelector = ArchivaItemSelector.builder( ).withNamespace( groupId )
+                    .withProjectId( artifactId ).withVersion( version ).withClassifier( StringUtils.isEmpty( classifier )
+                        ? ""
+                        : classifier )
+                    .withType( "jar" )
+                    .withArtifactId( artifactId ).build();
+                org.apache.archiva.repository.content.Artifact archivaArtifact = managedRepositoryContent.getItem( itemSelector ).adapt( org.apache.archiva.repository.content.Artifact.class );
+                StorageAsset file = archivaArtifact.getAsset( );
 
                 if ( file != null && file.exists() )
                 {

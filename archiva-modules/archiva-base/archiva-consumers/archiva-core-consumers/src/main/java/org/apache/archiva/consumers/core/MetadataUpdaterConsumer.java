@@ -27,14 +27,16 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -42,10 +44,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -90,7 +88,7 @@ public class MetadataUpdaterConsumer
 
     private ManagedRepositoryContent repository;
 
-    private Path repositoryDir;
+    private StorageAsset repositoryDir;
 
     private List<String> includes = new ArrayList<>( 0 );
 
@@ -127,7 +125,7 @@ public class MetadataUpdaterConsumer
             if (this.repository==null) {
                 throw new RepositoryNotFoundException( "Repository content not found: "+repoConfig.getId() );
             }
-            this.repositoryDir = Paths.get( repository.getRepoRoot( ) );
+            this.repositoryDir = repository.getRepository().getAsset( "" );
             this.scanStartTimestamp = System.currentTimeMillis( );
         }
         catch ( RepositoryException e )
@@ -176,7 +174,7 @@ public class MetadataUpdaterConsumer
         {
             try
             {
-                ArtifactReference artifact = repository.toArtifactReference( path );
+                ArtifactReference artifact = repository.getLayout( BaseRepositoryContentLayout.class ).toArtifactReference( path );
                 updateVersionMetadata( artifact, path );
                 updateProjectMetadata( artifact, path );
             }
@@ -204,9 +202,9 @@ public class MetadataUpdaterConsumer
         {
             String metadataPath = this.metadataTools.toPath( projectRef );
 
-            Path projectMetadata = this.repositoryDir.resolve( metadataPath );
+            StorageAsset projectMetadata = this.repositoryDir.resolve( metadataPath );
 
-            if ( Files.exists(projectMetadata) && ( Files.getLastModifiedTime( projectMetadata).toMillis() >= this.scanStartTimestamp ) )
+            if ( projectMetadata.exists() && ( projectMetadata.getModificationTime().toEpochMilli() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
                 log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( projectRef ) );
@@ -221,12 +219,6 @@ public class MetadataUpdaterConsumer
             triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
                 "Unable to write project metadata for artifact [" + path + "]: " + e.getMessage( ) );
         }
-        catch ( IOException e )
-        {
-            log.warn( "Project metadata not written due to IO warning: ", e );
-            triggerConsumerWarning( TYPE_METADATA_IO,
-                "Project metadata not written due to IO warning: " + e.getMessage( ) );
-        }
     }
 
     private void updateVersionMetadata( ArtifactReference artifact, String path )
@@ -240,9 +232,9 @@ public class MetadataUpdaterConsumer
         {
             String metadataPath = this.metadataTools.toPath( versionRef );
 
-            Path projectMetadata = this.repositoryDir.resolve( metadataPath );
+            StorageAsset projectMetadata = this.repositoryDir.resolve( metadataPath );
 
-            if ( Files.exists(projectMetadata) && ( Files.getLastModifiedTime( projectMetadata ).toMillis() >= this.scanStartTimestamp ) )
+            if ( projectMetadata.exists() && ( projectMetadata.getModificationTime().toEpochMilli() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
                 log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( versionRef ) );
@@ -257,12 +249,6 @@ public class MetadataUpdaterConsumer
             log.error( "Unable to write version metadata for artifact [{}]: ", path, e );
             triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
                 "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage( ) );
-        }
-        catch ( IOException e )
-        {
-            log.warn( "Version metadata not written due to IO warning: ", e );
-            triggerConsumerWarning( TYPE_METADATA_IO,
-                "Version metadata not written due to IO warning: " + e.getMessage( ) );
         }
     }
 

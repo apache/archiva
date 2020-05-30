@@ -23,22 +23,15 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.VersionedReference;
-import org.apache.archiva.repository.ContentNotFoundException;
-import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
-import org.apache.archiva.repository.content.ItemSelector;
-import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.commons.lang3.StringUtils;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -88,7 +81,7 @@ public class RetentionCountRepositoryPurge
 
 
                     List<String> versions;
-                    try( Stream<? extends Artifact> stream = repository.newArtifactStream( selector) ){
+                    try( Stream<? extends Artifact> stream = repository.getLayout( BaseRepositoryContentLayout.class ).newArtifactStream( selector) ){
                         versions = stream.map( a -> a.getArtifactVersion( ) )
                             .filter( StringUtils::isNotEmpty )
                             .distinct()
@@ -119,7 +112,7 @@ public class RetentionCountRepositoryPurge
                         {
                             break;
                         }
-                        List<? extends Artifact> delArtifacts = repository.getArtifacts( selectorBuilder.withArtifactVersion( version ).build( ) );
+                        List<? extends Artifact> delArtifacts = repository.getLayout( BaseRepositoryContentLayout.class ).getArtifacts( selectorBuilder.withArtifactVersion( version ).build( ) );
                         if (delArtifacts!=null && delArtifacts.size()>0)
                         {
                             artifactsToDelete.addAll( delArtifacts );

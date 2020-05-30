@@ -112,7 +112,7 @@ public interface RepositoryRequestInfo
     String getLayout( String requestPath );
 
     /**
-     * Adjust the requestedPath to conform to the native layout of the provided {@link org.apache.archiva.repository.ManagedRepositoryContent}.
+     * Adjust the requestedPath to conform to the native layout of the provided {@link BaseRepositoryContentLayout}.
      *
      * @param requestPath the incoming requested path.
      * @return the adjusted (to native) path.

@@ -26,6 +26,7 @@ import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.easymock.EasyMock;
@@ -42,8 +43,6 @@ import static org.junit.Assert.assertNotNull;
 
 /**
  * CacheFailuresTransferTest
- *
- *
  */
 public class CacheFailuresTransferTest
     extends AbstractProxyTestCase
@@ -55,7 +54,7 @@ public class CacheFailuresTransferTest
     UrlFailureCache urlFailureCache;
 
     @Test
-    public void testGetWithCacheFailuresOn()
+    public void testGetWithCacheFailuresOn( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
@@ -64,7 +63,8 @@ public class CacheFailuresTransferTest
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
@@ -72,34 +72,34 @@ public class CacheFailuresTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
 
-        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
+        EasyMock.expectLastCall( ).andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
 
 
-        wagonMockControl.replay();
+        wagonMockControl.replay( );
 
         //noinspection UnusedAssignment
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        wagonMockControl.verify();
+        wagonMockControl.verify( );
 
         // Second attempt to download same artifact use cache
-        wagonMockControl.reset();
-        wagonMockControl.replay();
-        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
-        wagonMockControl.verify();
+        wagonMockControl.reset( );
+        wagonMockControl.replay( );
+        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
+        wagonMockControl.verify( );
 
-        assertNotDownloaded( downloadedFile);
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 
     @Test
-    public void testGetWithCacheFailuresOff()
+    public void testGetWithCacheFailuresOff( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
@@ -108,7 +108,8 @@ public class CacheFailuresTransferTest
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
@@ -117,69 +118,70 @@ public class CacheFailuresTransferTest
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
-        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall( ).andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
 
-        wagonMockControl.replay();
+        wagonMockControl.replay( );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        wagonMockControl.verify();
+        wagonMockControl.verify( );
 
         // Second attempt to download same artifact DOES NOT use cache
-        wagonMockControl.reset();
+        wagonMockControl.reset( );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
-        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall( ).andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
 
-        wagonMockControl.replay();
+        wagonMockControl.replay( );
 
-        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
-        wagonMockControl.verify();
+        wagonMockControl.verify( );
 
-        assertNotDownloaded( downloadedFile);
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 
     @Test
-    public void testGetWhenInBothProxiedButFirstCacheFailure()
+    public void testGetWhenInBothProxiedButFirstCacheFailure( )
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
-        Path expectedFile = managedDefaultDir.resolve(path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Path expectedFile = managedDefaultDir.resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
-        Files.deleteIfExists(expectedFile);
-        assertFalse( Files.exists(expectedFile) );
+        Files.deleteIfExists( expectedFile );
+        assertFalse( Files.exists( expectedFile ) );
 
         String url = PathUtil.toUrl( REPOPATH_PROXIED1 + "/" + path );
 
         // Intentionally set failure on url in proxied1 (for test)
-        UrlFailureCache failurlCache = lookupUrlFailureCache();
+        UrlFailureCache failurlCache = lookupUrlFailureCache( );
         failurlCache.cacheFailure( url );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
         saveConnector( ID_DEFAULT_MANAGED, "proxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
-                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
+            SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
 
-        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
 
         // Validate that file actually came from proxied2 (as intended).
         Path proxied2File = Paths.get( REPOPATH_PROXIED2, path );
-        assertNotNull(downloadedFile);
-        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied2File );
+        assertNotNull( downloadedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath( ), proxied2File );
         assertNoTempFiles( expectedFile );
     }
 
-    protected UrlFailureCache lookupUrlFailureCache()
+    protected UrlFailureCache lookupUrlFailureCache( )
         throws Exception
     {
         assertNotNull( "URL Failure Cache cannot be null.", urlFailureCache );

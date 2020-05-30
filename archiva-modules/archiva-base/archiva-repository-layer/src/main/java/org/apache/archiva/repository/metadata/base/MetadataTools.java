@@ -40,8 +40,9 @@ import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.repository.ContentNotFoundException;
-import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
@@ -160,7 +161,7 @@ public class MetadataTools
                 .withArtifactId( reference.getArtifactId( ) )
                 .withVersion( reference.getVersion( ) )
                 .build( );
-            try(Stream<? extends Artifact> stream = managedRepository.newArtifactStream( selector )) {
+            try(Stream<? extends Artifact> stream = managedRepository.getLayout( BaseRepositoryContentLayout.class ).newArtifactStream( selector )) {
                 foundVersions = stream.map( a -> a.getArtifactVersion( ) )
                     .filter( StringUtils::isNotEmpty )
                     .collect( Collectors.toSet( ) );
@@ -533,6 +534,7 @@ public class MetadataTools
 
         StorageAsset metadataFile = managedRepository.getRepository().getAsset( toPath( reference ) );
         ArchivaRepositoryMetadata existingMetadata = readMetadataFile( managedRepository, metadataFile );
+        BaseRepositoryContentLayout layout = managedRepository.getLayout( BaseRepositoryContentLayout.class );
 
         long lastUpdated = getExistingLastUpdated( existingMetadata );
 
@@ -548,8 +550,8 @@ public class MetadataTools
         Set<String> allVersions = null;
         try
         {
-            Project project = managedRepository.getProject( selector );
-            allVersions = managedRepository.getVersions( project ).stream()
+            Project project = layout.getProject( selector );
+            allVersions = layout.getVersions( project ).stream()
             .map( v -> v.getVersion() ).collect( Collectors.toSet());
         }
         catch ( org.apache.archiva.repository.ContentAccessException e )
@@ -923,7 +925,7 @@ public class MetadataTools
      * @throws IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
      * @throws LayoutException
      */
-    public ArtifactReference getFirstArtifact( ManagedRepositoryContent managedRepository,
+    public ArtifactReference getFirstArtifact( BaseRepositoryContentLayout managedRepository,
                                                VersionedReference reference )
         throws LayoutException, IOException
     {

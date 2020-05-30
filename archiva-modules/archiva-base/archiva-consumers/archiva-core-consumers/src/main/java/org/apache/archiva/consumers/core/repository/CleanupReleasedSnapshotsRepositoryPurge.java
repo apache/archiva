@@ -28,10 +28,10 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
-import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.content.ItemSelector;
@@ -40,11 +40,9 @@ import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,15 +91,16 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     {
         try
         {
-            Path artifactFile = Paths.get( repository.getRepoRoot( ), path );
+            StorageAsset artifactFile = repository.getRepository( ).getAsset( "" ).resolve( path );
+            BaseRepositoryContentLayout layout = repository.getLayout( BaseRepositoryContentLayout.class );
 
-            if ( !Files.exists(artifactFile) )
+            if ( !artifactFile.exists() )
             {
                 // Nothing to do here, file doesn't exist, skip it.
                 return;
             }
 
-            ArtifactReference artifactRef = repository.toArtifactReference( path );
+            ArtifactReference artifactRef = repository.getLayout( BaseRepositoryContentLayout.class ).toArtifactReference( path );
 
             if ( !VersionUtil.isSnapshot( artifactRef.getVersion( ) ) )
             {
@@ -124,7 +123,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 
                 if ( repo.getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ))
                 {
-                    ManagedRepositoryContent repoContent = repo.getContent();
+                    BaseRepositoryContentLayout repoContent = repo.getContent().getLayout( BaseRepositoryContentLayout.class );
                     Project proj = repoContent.getProject( selector );
                     for ( Version version : repoContent.getVersions( proj ) )
                     {
@@ -150,13 +149,13 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             if ( releasedVersions.contains( VersionUtil.getReleaseVersion( artifactRef.getVersion( ) ) ) )
             {
                 versionRef.setVersion( artifactRef.getVersion( ) );
-                repository.deleteVersion( versionRef );
+                layout.deleteVersion( versionRef );
 
                 for ( RepositoryListener listener : listeners )
                 {
                     listener.deleteArtifact( metadataRepository, repository.getId( ), artifactRef.getGroupId( ),
                         artifactRef.getArtifactId( ), artifactRef.getVersion( ),
-                        artifactFile.getFileName().toString() );
+                        artifactFile.getName() );
                 }
                 metadataRepository.removeProjectVersion( repositorySession, repository.getId( ),
                     artifactRef.getGroupId( ), artifactRef.getArtifactId( ), artifactRef.getVersion( ) );

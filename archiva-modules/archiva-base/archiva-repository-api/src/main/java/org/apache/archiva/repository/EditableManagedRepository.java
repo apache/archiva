@@ -34,7 +34,7 @@ public interface EditableManagedRepository extends EditableRepository, ManagedRe
      * Sets the content
      * @param content
      */
-    void setContent(ManagedRepositoryContent content);
+    void setContent( ManagedRepositoryContent content);
 
     /**
      * Adds an active release scheme. Release schemes may be combined.

@@ -56,7 +56,7 @@ import java.util.stream.Stream;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Service("managedRepositoryContent#mock")
-public class ManagedRepositoryContentMock implements ManagedRepositoryContent
+public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout, ManagedRepositoryContent
 {
     private static final String PATH_SEPARATOR = "/";
     private static final String GROUP_SEPARATOR = ".";
@@ -210,6 +210,18 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
+    public <T extends ManagedRepositoryContentLayout> T getLayout( Class<T> clazz ) throws LayoutException
+    {
+        return (T) this;
+    }
+
+    @Override
+    public <T extends ManagedRepositoryContentLayout> boolean supportsLayout( Class<T> clazz )
+    {
+        return true;
+    }
+
+    @Override
     public void addArtifact( Path sourceFile, Artifact destination ) throws IllegalArgumentException
     {
 
@@ -255,6 +267,12 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     public void deleteProject( ProjectReference reference ) throws ContentNotFoundException, ContentAccessException
     {
 
+    }
+
+    @Override
+    public String toPath( ContentItem item )
+    {
+        return null;
     }
 
     @Override
@@ -579,4 +597,9 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
         return null;
     }
 
+    @Override
+    public ManagedRepositoryContent getGenericContent( )
+    {
+        return null;
+    }
 }

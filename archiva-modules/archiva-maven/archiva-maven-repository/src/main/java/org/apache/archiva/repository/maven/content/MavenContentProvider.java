@@ -22,7 +22,7 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.Repository;
@@ -98,7 +98,7 @@ public class MavenContentProvider implements RepositoryContentProvider
     }
 
     @Override
-    public ManagedRepositoryContent createManagedContent( ManagedRepository repository ) throws RepositoryException
+    public BaseRepositoryContentLayout createManagedContent( ManagedRepository repository ) throws RepositoryException
     {
         if (!supports( repository.getType() )) {
             throw new RepositoryException( "Repository type "+repository.getType()+" is not supported by this implementation." );
@@ -118,7 +118,7 @@ public class MavenContentProvider implements RepositoryContentProvider
         if (!supports( repository.getType() )) {
             throw new RepositoryException( "Repository type "+repository.getType()+" is not supported by this implementation." );
         }
-        if (repository instanceof ManagedRepository && ManagedRepositoryContent.class.isAssignableFrom( clazz ) ) {
+        if (repository instanceof ManagedRepository && BaseRepositoryContentLayout.class.isAssignableFrom( clazz ) ) {
             return (T) this.createManagedContent( (ManagedRepository) repository );
         } else if (repository instanceof RemoteRepository && RemoteRepository.class.isAssignableFrom( clazz )) {
             return (T) this.createRemoteContent( (RemoteRepository) repository );

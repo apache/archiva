@@ -585,7 +585,15 @@ public class Maven2RepositoryStorage
         proxyHandler.fetchFromProxies(managedRepository, pomReference);
 
         // Open and read the POM from the managed repo
-        StorageAsset pom = managedRepository.getContent().toFile(pomReference);
+        StorageAsset pom = null;
+        try
+        {
+            pom = managedRepository.getContent().getLayout( BaseRepositoryContentLayout.class ).toFile(pomReference);
+        }
+        catch ( LayoutException e )
+        {
+            throw new ProxyDownloadException( "Cannot convert layout ", new HashMap<>( ) );
+        }
 
         if (!pom.exists()) {
             return;

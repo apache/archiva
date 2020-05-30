@@ -43,6 +43,8 @@ import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.components.taskqueue.TaskQueueException;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
@@ -141,7 +143,17 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     public StorageAsset fetchFromProxies( ManagedRepository repository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
-        StorageAsset localFile = toLocalFile( repository, artifact );
+        StorageAsset localFile = null;
+        Map<String, Exception> previousExceptions = new LinkedHashMap<>();
+        try
+        {
+            localFile = toLocalFile( repository, artifact );
+        }
+        catch ( LayoutException e )
+        {
+            previousExceptions.put( "LayoutException", e );
+            throw new ProxyDownloadException( "Could not convert to BasicRepositoryContentLayout " + e.getMessage( ), previousExceptions);
+        }
 
         Properties requestProperties = new Properties();
         requestProperties.setProperty( "filetype", "artifact" );
@@ -149,7 +161,6 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         requestProperties.setProperty( "managedRepositoryId", repository.getId() );
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
-        Map<String, Exception> previousExceptions = new LinkedHashMap<>();
         for ( ProxyConnector connector : connectors )
         {
             if ( !connector.isEnabled() )
@@ -399,9 +410,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
     }
 
-    private StorageAsset toLocalFile(ManagedRepository repository, ArtifactReference artifact )
+    private StorageAsset toLocalFile(ManagedRepository repository, ArtifactReference artifact ) throws LayoutException
     {
-        return repository.getContent().toFile( artifact );
+        return repository.getContent().getLayout( BaseRepositoryContentLayout.class ).toFile( artifact );
     }
 
     /**

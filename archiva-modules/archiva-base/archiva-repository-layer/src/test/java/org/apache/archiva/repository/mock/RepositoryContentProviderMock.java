@@ -20,7 +20,7 @@ package org.apache.archiva.repository.mock;
  */
 
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.Repository;
@@ -63,7 +63,7 @@ public class RepositoryContentProviderMock implements RepositoryContentProvider 
     }
 
     @Override
-    public ManagedRepositoryContent createManagedContent(ManagedRepository repository) throws RepositoryException {
+    public BaseRepositoryContentLayout createManagedContent( ManagedRepository repository) throws RepositoryException {
         return new ManagedRepositoryContentMock();
     }
 

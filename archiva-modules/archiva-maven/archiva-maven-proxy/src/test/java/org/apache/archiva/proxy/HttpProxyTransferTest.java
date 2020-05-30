@@ -219,9 +219,10 @@ public class HttpProxyTransferTest
 
         managedDefaultRepository = repositoryRegistry.getManagedRepository(MANAGED_ID).getContent();
 
-        Path expectedFile = Paths.get( managedDefaultRepository.getRepoRoot() ).resolve( path );
+        BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        Path expectedFile = managedDefaultRepository.getRepository().getAsset( "" ).resolve( path ).getFilePath();
         Files.deleteIfExists( expectedFile );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        ArtifactReference artifact = layout.toArtifactReference( path );
 
         // Attempt the proxy fetch.
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );

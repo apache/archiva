@@ -19,9 +19,8 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.archiva.repository.ItemConversionException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.UnsupportedConversionException;
+import org.apache.archiva.repository.ItemConversionException;
 import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.util.Map;
