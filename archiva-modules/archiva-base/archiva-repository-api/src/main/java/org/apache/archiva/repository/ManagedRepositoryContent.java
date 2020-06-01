@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface ManagedRepositoryContent
+public interface ManagedRepositoryContent extends RepositoryContent
 {
 
 
@@ -41,7 +41,6 @@ public interface ManagedRepositoryContent
      * @return
      */
     String toPath( ContentItem item );
-
 
 
     /**

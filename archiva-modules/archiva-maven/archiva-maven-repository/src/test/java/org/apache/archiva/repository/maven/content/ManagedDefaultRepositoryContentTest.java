@@ -1609,5 +1609,30 @@ public class ManagedDefaultRepositoryContentTest
         assertTrue( new String( content ).startsWith( "test.test.test" ) );
     }
 
+    @Test
+    public void getExistingMetadataItem() {
+        // org/apache/maven/some-ejb/1.0
+        ArchivaItemSelector versionSelector = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.maven" )
+            .withProjectId( "some-ejb" )
+            .withVersion( "1.0" ).build( );
+        Version version = repoContent.getVersion( versionSelector );
+        DataItem metaData = repoContent.getMetadataItem( version );
+        assertTrue( metaData.exists( ) );
+        assertEquals( "/org/apache/maven/some-ejb/1.0/maven-metadata.xml", metaData.getAsset( ).getPath( ) );
+    }
+
+    @Test
+    public void getNonExistingMetadataItem() {
+        // org/apache/maven/some-ejb/1.0
+        ArchivaItemSelector versionSelector = ArchivaItemSelector.builder( )
+            .withNamespace( "javax.sql" )
+            .withProjectId( "jdbc" )
+            .withVersion( "2.0" ).build( );
+        Version version = repoContent.getVersion( versionSelector );
+        DataItem metaData = repoContent.getMetadataItem( version );
+        assertFalse( metaData.exists( ) );
+        assertEquals( "/javax/sql/jdbc/2.0/maven-metadata.xml", metaData.getAsset( ).getPath( ) );
+    }
 
 }

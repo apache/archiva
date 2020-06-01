@@ -18,6 +18,9 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.DataItem;
+
 /**
  *
  * Basic interface for content layouts.
@@ -28,5 +31,21 @@ package org.apache.archiva.repository;
  */
 public interface ManagedRepositoryContentLayout
 {
+
+    /**
+     * Returns the repository content, that this layout is attached to.
+     * @return the content instance
+     */
     ManagedRepositoryContent getGenericContent();
+
+    /**
+     * Adapts a generic content item to a specific implementation class.
+     *
+     * @param clazz the target implementation
+     * @param item the content item
+     * @param <T> the target class
+     * @return the adapted instance
+     * @throws LayoutException if the conversion is not possible
+     */
+    <T extends ContentItem> T adaptItem( Class<T> clazz, ContentItem item ) throws LayoutException;
 }

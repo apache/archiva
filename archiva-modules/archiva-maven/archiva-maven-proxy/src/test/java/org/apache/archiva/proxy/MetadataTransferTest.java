@@ -32,6 +32,9 @@ import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.DataItem;
+import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
@@ -1041,12 +1044,19 @@ public class MetadataTransferTest
     {
         Path expectedFile = managedDefaultDir.resolve(requestedResource);
 
-        VersionedReference metadata = createVersionedReference( requestedResource );
-
+        ContentItem item = managedDefaultRepository.toItem( requestedResource );
+        if (item instanceof DataItem) {
+            item = managedDefaultRepository.getParent( item );
+        }
+        assertNotNull( item );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        Version version = layout.adaptItem( Version.class, item );
+        assertNotNull( version );
+        String metaPath = managedDefaultRepository.toPath( layout.getMetadataItem(
+            version ) );
+
         StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
-                                                                     layout.toMetadataPath(
-                                                                         metadata ) ).getFile();
+                                                                     metaPath).getFile();
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -1068,12 +1078,16 @@ public class MetadataTransferTest
         throws Exception
     {
         Path expectedFile = managedDefaultDir.resolve(requestedResource);
-        VersionedReference metadata = createVersionedReference( requestedResource );
-
+        ContentItem item = managedDefaultRepository.toItem( requestedResource );
+        assertNotNull( item );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
+        Version version = layout.adaptItem( Version.class, item );
+        assertNotNull( version );
+        String metaPath = managedDefaultRepository.toPath( layout.getMetadataItem(
+            version ) );
+        assertNotNull( metaPath );
         StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository.getRepository(),
-                                                                     layout.toMetadataPath(
-                                                                         metadata ) ).getFile();
+                                                                     metaPath ).getFile();
 
         assertNull( downloadedFile );
         assertNoTempFiles( expectedFile );

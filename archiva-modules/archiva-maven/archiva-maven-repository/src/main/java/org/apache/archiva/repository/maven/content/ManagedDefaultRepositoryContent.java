@@ -20,6 +20,7 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -184,6 +185,38 @@ public class ManagedDefaultRepositoryContent
 
 
     /// ************* Start of new generation interface ******************
+
+
+    @Override
+    public <T extends ContentItem> T adaptItem( Class<T> clazz, ContentItem item ) throws LayoutException
+    {
+        if (clazz.isAssignableFrom( Version.class ))
+        {
+            if ( !item.hasCharacteristic( Version.class ) )
+            {
+                item.setCharacteristic( Version.class, createVersionFromPath( item.getAsset() ) );
+            }
+            return (T) item.adapt( Version.class );
+        } else if ( clazz.isAssignableFrom( Project.class )) {
+            if ( !item.hasCharacteristic( Project.class ) )
+            {
+                item.setCharacteristic( Project.class, createProjectFromPath( item.getAsset() ) );
+            }
+            return (T) item.adapt( Project.class );
+        } else if ( clazz.isAssignableFrom( Namespace.class )) {
+            if ( !item.hasCharacteristic( Namespace.class ) )
+            {
+                item.setCharacteristic( Namespace.class, createNamespaceFromPath( item.getAsset() ) );
+            }
+            return (T) item.adapt( Namespace.class );
+        } else if ( clazz.isAssignableFrom( Artifact.class )) {
+            if (!item.hasCharacteristic( Artifact.class )) {
+                item.setCharacteristic( Artifact.class, createArtifactFromPath( item.getAsset( ) ) );
+            }
+            return (T) item.adapt( Artifact.class );
+        }
+        throw new LayoutException( "Could not convert item to class " + clazz);
+    }
 
 
     @Override
@@ -1296,6 +1329,13 @@ public class ManagedDefaultRepositoryContent
     public String toPath( ContentItem item ) {
         return item.getAsset( ).getPath( );
     }
+
+    @Override
+    public DataItem getMetadataItem( Version version ) {
+        StorageAsset metaPath = version.getAsset( ).resolve( MAVEN_METADATA );
+        return getDataItemFromPath( metaPath );
+    }
+
 
     @Override
     public void deleteVersion( VersionedReference ref ) throws ContentNotFoundException, ContentAccessException

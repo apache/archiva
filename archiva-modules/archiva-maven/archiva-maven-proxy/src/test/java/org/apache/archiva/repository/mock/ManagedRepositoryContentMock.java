@@ -29,12 +29,19 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.BaseDataItemTypes;
 import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.DataItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaContentItem;
+import org.apache.archiva.repository.content.base.ArchivaDataItem;
+import org.apache.archiva.repository.content.base.ArchivaNamespace;
+import org.apache.archiva.repository.content.base.ArchivaProject;
+import org.apache.archiva.repository.content.base.ArchivaVersion;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -81,6 +88,51 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     public VersionedReference toVersion( ArtifactReference artifactReference )
     {
         return null;
+    }
+
+    @Override
+    public <T extends ContentItem> T adaptItem( Class<T> clazz, ContentItem item ) throws LayoutException
+    {
+        if (clazz.isAssignableFrom( Version.class ))
+        {
+            if ( !item.hasCharacteristic( Version.class ) )
+            {
+                item.setCharacteristic( Version.class, createVersionFromPath( item.getAsset() ) );
+            }
+            return (T) item.adapt( Version.class );
+        } else if ( clazz.isAssignableFrom( Project.class )) {
+            if ( !item.hasCharacteristic( Project.class ) )
+            {
+                item.setCharacteristic( Project.class, createProjectFromPath( item.getAsset() ) );
+            }
+            return (T) item.adapt( Project.class );
+        } else if ( clazz.isAssignableFrom( Namespace.class )) {
+            if ( !item.hasCharacteristic( Namespace.class ) )
+            {
+                item.setCharacteristic( Namespace.class, createNamespaceFromPath( item.getAsset() ) );
+            }
+            return (T) item.adapt( Namespace.class );
+        }
+        throw new LayoutException( "Could not convert item to class " + clazz);
+    }
+
+    private Version createVersionFromPath( StorageAsset asset )
+    {
+        Project proj = createProjectFromPath( asset.getParent( ) );
+        return ArchivaVersion.withRepository( this ).withAsset( asset )
+            .withProject( proj ).withVersion( asset.getName( ) ).build();
+    }
+
+    private Project createProjectFromPath( StorageAsset asset)  {
+        Namespace ns = createNamespaceFromPath( asset );
+        return ArchivaProject.withRepository( this ).withAsset( asset )
+            .withNamespace( ns ).withId( asset.getName( ) ).build( );
+    }
+
+    private Namespace createNamespaceFromPath( StorageAsset asset) {
+        String namespace = asset.getPath( ).replace( "/", "." );
+        return ArchivaNamespace.withRepository( this )
+            .withAsset( asset ).withNamespace( namespace ).build();
     }
 
     @Override
@@ -194,7 +246,14 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     @Override
     public ContentItem getParent( ContentItem item )
     {
-        return null;
+        try
+        {
+            return toItem( item.getAsset( ).getParent( ) );
+        }
+        catch ( LayoutException e )
+        {
+            throw new RuntimeException( "Bad layout conversion " + e.getMessage( ) );
+        }
     }
 
     @Override
@@ -228,15 +287,30 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public ContentItem toItem( String path ) throws LayoutException
+    public DataItem getMetadataItem( Version version )
     {
-        return null;
+        return ArchivaDataItem.withAsset( version.getAsset( ).resolve( "maven-metadata.xml" ) ).withId( "maven-metadata.xml" )
+            .withDataType( BaseDataItemTypes.METADATA ).build();
     }
 
     @Override
-    public ContentItem toItem( StorageAsset assetPath ) throws LayoutException
+    public ContentItem toItem( String path ) throws LayoutException
     {
-        return null;
+        StorageAsset asset = repository.getAsset( "" ).resolve( path );
+        return toItem( asset );
+    }
+
+    @Override
+    public ContentItem toItem( StorageAsset asset ) throws LayoutException
+    {
+        if (asset.isLeaf()) {
+            return ArchivaDataItem.withAsset( asset ).withId( asset.getName( ) ).build();
+        } else
+        {
+            return ArchivaContentItem.withRepository( this )
+                .withAsset( asset )
+                .build( );
+        }
     }
 
     @Override
@@ -272,7 +346,7 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     @Override
     public String toPath( ContentItem item )
     {
-        return null;
+        return item.getAsset( ).getPath( );
     }
 
     @Override
@@ -557,22 +631,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
         return path.toString();
     }
 
-    public String toMetadataPath( VersionedReference reference )
-    {
-        StringBuilder path = new StringBuilder();
-
-        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        if ( reference.getVersion() != null )
-        {
-            // add the version only if it is present
-            path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
-        }
-        path.append( MAVEN_METADATA );
-
-        return path.toString();
-    }
-
     @Override
     public String toPath( ArtifactReference reference )
     {
@@ -587,12 +645,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 
     @Override
     public ItemSelector toItemSelector( String path ) throws LayoutException
-    {
-        return null;
-    }
-
-    @Override
-    public String toPath( ArchivaArtifact reference )
     {
         return null;
     }

@@ -25,6 +25,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.DataItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
@@ -46,6 +47,7 @@ public interface BaseRepositoryContentLayout extends RepositoryContent, ManagedR
 {
 
     /// *****************   New generation interface **********************
+
 
 
     /**
@@ -248,6 +250,14 @@ public interface BaseRepositoryContentLayout extends RepositoryContent, ManagedR
      */
     void addArtifact( Path sourceFile, Artifact destination ) throws IllegalArgumentException, ContentAccessException;
 
+    /**
+     * Returns the metadata file for the given version.
+     *
+     * @param version the version
+     * @return the metadata file
+     */
+    DataItem getMetadataItem( Version version );
+
 
     /// *****************   End of new generation interface **********************
 
@@ -418,23 +428,6 @@ public interface BaseRepositoryContentLayout extends RepositoryContent, ManagedR
      * @return the path to the metadata file, or null if no metadata is appropriate.
      */
     String toMetadataPath( ProjectReference reference );
-
-    /**
-     * Given a {@link VersionedReference}, return the path to the metadata for
-     * the specific version of the project.
-     *
-     * @param reference the reference to use.
-     * @return the path to the metadata file, or null if no metadata is appropriate.
-     */
-    String toMetadataPath( VersionedReference reference );
-
-    /**
-     * Given an {@link ArchivaArtifact}, return the relative path to the artifact.
-     *
-     * @param reference the archiva artifact to use.
-     * @return the relative path to the artifact.
-     */
-    String toPath( ArchivaArtifact reference );
 
 
 }

@@ -769,13 +769,15 @@ public class DefaultRepositoriesService
             fmt.setTimeZone( timezone );
             ManagedRepository repo = repositoryRegistry.getManagedRepository( repositoryId );
 
-            VersionedReference ref = new VersionedReference();
-            ref.setArtifactId( artifact.getArtifactId() );
-            ref.setGroupId( artifact.getGroupId() );
-            ref.setVersion( artifact.getVersion() );
-
             ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
             BaseRepositoryContentLayout layout = repository.getLayout( BaseRepositoryContentLayout.class );
+
+            ArchivaItemSelector versionSelector = ArchivaItemSelector.builder( ).withNamespace( artifact.getGroupId( ) )
+                .withProjectId( artifact.getArtifactId( ) )
+                .withVersion( artifact.getVersion( ) ).build( );
+
+            Version version1 = layout.getVersion( versionSelector );
+            String path = layout.toPath( version1 );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifact.getArtifactId() );
@@ -795,8 +797,6 @@ public class DefaultRepositoriesService
                 .build( );
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
-
-            String path = layout.toMetadataPath( ref );
 
             if ( StringUtils.isNotBlank( artifact.getClassifier() ) )
             {
@@ -835,9 +835,16 @@ public class DefaultRepositoriesService
 
                 // TODO: this should be in the storage mechanism so that it is all tied together
                 // delete from file system
-                if ( !snapshotVersion )
+                if ( !snapshotVersion && version1.exists() )
                 {
-                    layout.deleteVersion( ref );
+                    try
+                    {
+                        layout.deleteItem( version1 );
+                    }
+                    catch ( ItemNotFoundException e )
+                    {
+                        log.error( "Could not delete version item {}", e.getMessage( ) );
+                    }
                 }
                 else
                 {
