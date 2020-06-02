@@ -20,11 +20,9 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
@@ -1625,32 +1623,6 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
-    public boolean hasContent( ArtifactReference reference ) throws ContentAccessException
-    {
-        StorageAsset artifactFile = toFile( reference );
-        return artifactFile.exists( ) && !artifactFile.isContainer( );
-    }
-
-    @Override
-    public boolean hasContent( VersionedReference reference ) throws ContentAccessException
-    {
-        try
-        {
-            return ( getFirstArtifact( reference ) != null );
-        }
-        catch ( LayoutException | ContentNotFoundException e )
-        {
-            return false;
-        }
-        catch ( IOException e )
-        {
-            String path = toPath( reference );
-            log.error( "Could not read directory from repository {} - {}: ", getId( ), path, e.getMessage( ), e );
-            throw new ContentAccessException( "Could not read path from repository " + getId( ) + ": " + path, e );
-        }
-    }
-
-    @Override
     public void setRepository( final ManagedRepository repo )
     {
         this.repository = repo;
@@ -1719,12 +1691,6 @@ public class ManagedDefaultRepositoryContent
 
     @Override
     public StorageAsset toFile( ArtifactReference reference )
-    {
-        return repository.getAsset( toPath( reference ) );
-    }
-
-    @Override
-    public StorageAsset toFile( ArchivaArtifact reference )
     {
         return repository.getAsset( toPath( reference ) );
     }

@@ -386,23 +386,6 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
      */
     String getRepoRoot();
 
-    /**
-     * Determines if the artifact referenced exists in the repository.
-     *
-     * @param reference the artifact reference to check for.
-     * @return true if the artifact referenced exists.
-     */
-    boolean hasContent( ArtifactReference reference ) throws ContentAccessException;
-
-    /**
-     * Determines if the version reference exists in the repository.
-     *
-     * @param reference the version reference to check for.
-     * @return true if the version referenced exists.
-     */
-    boolean hasContent( VersionedReference reference ) throws ContentAccessException;
-
-
 
     /**
      * Given an {@link ArtifactReference}, return the file reference to the artifact.
@@ -419,14 +402,6 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
      * @return the relative path to the artifact.
      */
     StorageAsset toFile( ArtifactReference reference );
-
-    /**
-     * Given an {@link ArchivaArtifact}, return the file reference to the artifact.
-     *
-     * @param reference the archiva artifact to use.
-     * @return the relative path to the artifact.
-     */
-    StorageAsset toFile( ArchivaArtifact reference );
 
 
 }

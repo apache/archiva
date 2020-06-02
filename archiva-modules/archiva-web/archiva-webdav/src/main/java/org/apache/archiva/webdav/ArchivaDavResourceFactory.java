@@ -66,6 +66,8 @@ import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRequestInfo;
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.metadata.audit.AuditListener;
@@ -647,16 +649,17 @@ public class ArchivaDavResourceFactory
                 if ( managedRepositoryContent.getRepository().getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ) && !repositoryRequestInfo.isMetadata(
                     resourcePath ) && !repositoryRequestInfo.isSupportFile( resourcePath ) )
                 {
-                    ArtifactReference artifact = null;
+                    // ArtifactReference artifact = null;
+                    Artifact artifact = null;
                     try
                     {
                         BaseRepositoryContentLayout layout = managedRepositoryContent.getLayout( BaseRepositoryContentLayout.class );
-                        artifact = managedRepositoryContent.toArtifactReference( resourcePath );
-
-                        if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
+                        ContentItem artifactItem = managedRepositoryContent.toItem( resourcePath );
+                        artifact = layout.adaptItem( Artifact.class, artifactItem );
+                        if ( !VersionUtil.isSnapshot( artifact.getVersion().getVersion() ) )
                         {
                             // check if artifact already exists and if artifact re-deployment to the repository is allowed
-                            if ( layout.hasContent( artifact )
+                            if ( artifactItem.exists()
                                 && managedRepositoryContent.getRepository().blocksRedeployments())
                             {
                                 log.warn( "Overwriting released artifacts in repository '{}' is not allowed.",

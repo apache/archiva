@@ -23,7 +23,6 @@ import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
-import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
@@ -386,18 +385,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public boolean hasContent( ArtifactReference reference ) throws ContentAccessException
-    {
-        return false;
-    }
-
-    @Override
-    public boolean hasContent( VersionedReference reference ) throws ContentAccessException
-    {
-        return false;
-    }
-
-    @Override
     public void setRepository( ManagedRepository repo )
     {
         this.repository = repo;
@@ -602,12 +589,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     public StorageAsset toFile( ArtifactReference reference )
     {
         return getRepoRootAsset().resolve(refs.get(reference));
-    }
-
-    @Override
-    public StorageAsset toFile( ArchivaArtifact reference )
-    {
-        return null;
     }
 
     private String formatAsDirectory( String directory )
