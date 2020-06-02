@@ -428,14 +428,5 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
      */
     StorageAsset toFile( ArchivaArtifact reference );
 
-    /**
-     * Given a {@link ProjectReference}, return the path to the metadata for
-     * the project.
-     *
-     * @param reference the reference to use.
-     * @return the path to the metadata file, or null if no metadata is appropriate.
-     */
-    String toMetadataPath( ProjectReference reference );
-
 
 }

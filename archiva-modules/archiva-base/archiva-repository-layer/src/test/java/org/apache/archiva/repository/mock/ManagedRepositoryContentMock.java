@@ -418,12 +418,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public String toMetadataPath( ProjectReference reference )
-    {
-        return null;
-    }
-
-    @Override
     public String toPath( ArtifactReference reference )
     {
         return null;

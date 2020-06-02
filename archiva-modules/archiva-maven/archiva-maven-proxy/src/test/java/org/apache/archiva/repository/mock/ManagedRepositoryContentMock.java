@@ -627,17 +627,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
         return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
     }
 
-    public String toMetadataPath( ProjectReference reference )
-    {
-        StringBuilder path = new StringBuilder();
-
-        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        path.append( MAVEN_METADATA );
-
-        return path.toString();
-    }
-
     @Override
     public String toPath( ArtifactReference reference )
     {
