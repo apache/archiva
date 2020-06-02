@@ -174,7 +174,7 @@ public class MetadataUpdaterConsumer
         {
             try
             {
-                ArtifactReference artifact = repository.getLayout( BaseRepositoryContentLayout.class ).toArtifactReference( path );
+                ArtifactReference artifact = repository.toArtifactReference( path );
                 updateVersionMetadata( artifact, path );
                 updateProjectMetadata( artifact, path );
             }

@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  *
  * 
  */
-public interface BaseRepositoryContentLayout extends RepositoryContent, ManagedRepositoryContent, ManagedRepositoryContentLayout
+public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLayout
 {
 
     /// *****************   New generation interface **********************

@@ -84,7 +84,7 @@ import java.util.stream.Stream;
  */
 public class ManagedDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
-    implements BaseRepositoryContentLayout
+    implements ManagedRepositoryContent, BaseRepositoryContentLayout
 {
 
     // attribute flag that marks version objects that point to a snapshot artifact version

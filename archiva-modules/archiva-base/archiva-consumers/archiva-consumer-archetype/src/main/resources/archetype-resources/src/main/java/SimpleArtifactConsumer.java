@@ -126,7 +126,7 @@ public class SimpleArtifactConsumer
         {
             ManagedRepositoryContent repositoryContent = repository.getContent();
             BaseRepositoryContentLayout layout = repositoryContent.getLayout( BaseRepositoryContentLayout.class );
-            ArtifactReference artifact = layout.toArtifactReference( path );
+            ArtifactReference artifact = repositoryContent.toArtifactReference( path );
 
             repositorySession.getRepository().getArtifacts( repositorySession, repository.getId(), artifact.getGroupId(),
                                                             artifact.getArtifactId(), artifact.getVersion() );

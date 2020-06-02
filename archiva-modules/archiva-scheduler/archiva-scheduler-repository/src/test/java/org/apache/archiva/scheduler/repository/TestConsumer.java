@@ -98,7 +98,7 @@ public class TestConsumer
         {
             try
             {
-                consumed.add( repository.getLayout( BaseRepositoryContentLayout.class ).toArtifactReference( path ) );
+                consumed.add( repository.toArtifactReference( path ) );
             }
             catch ( LayoutException e )
             {

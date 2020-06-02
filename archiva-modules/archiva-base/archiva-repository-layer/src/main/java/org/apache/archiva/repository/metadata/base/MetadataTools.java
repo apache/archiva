@@ -956,7 +956,7 @@ public class MetadataTools
                 PathUtil.getRelative( managedRepository.getRepoRoot(), path1 )
             ).filter( filetypes::matchesArtifactPattern ).findFirst().orElse( null );
             if (result!=null) {
-                return managedRepository.toArtifactReference( result );
+                return managedRepository.getGenericContent().toArtifactReference( result );
             }
         }
         // No artifact was found.

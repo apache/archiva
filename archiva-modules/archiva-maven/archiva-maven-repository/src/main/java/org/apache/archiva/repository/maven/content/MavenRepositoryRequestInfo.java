@@ -280,7 +280,7 @@ public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
 
         // Treat as an artifact reference.
         ArtifactReference ref = toArtifactReference( referencedResource );
-        String adjustedPath = repository.getContent().getLayout( BaseRepositoryContentLayout.class ).toPath( ref );
+        String adjustedPath = repository.getContent().toPath( ref );
         return adjustedPath + supportfile;
     }
 

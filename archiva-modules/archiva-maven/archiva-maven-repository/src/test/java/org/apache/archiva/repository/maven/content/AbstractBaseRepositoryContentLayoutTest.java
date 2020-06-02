@@ -18,6 +18,7 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
@@ -50,10 +51,11 @@ public abstract class AbstractBaseRepositoryContentLayoutTest extends AbstractRe
     }
 
     @Test
-    public void testGetArtifactOnEmptyPath() {
+    public void testGetArtifactOnEmptyPath() throws LayoutException
+    {
         ItemSelector selector = ArchivaItemSelector.builder( ).build( );
         try {
-            getManaged( ).getArtifact( selector );
+            getManaged( ).getLayout( BaseRepositoryContentLayout.class ).getArtifact( selector );
             fail( "getArtifact(ItemSelector) with empty selector should throw IllegalArgumentException" );
         } catch (IllegalArgumentException e) {
             // Good

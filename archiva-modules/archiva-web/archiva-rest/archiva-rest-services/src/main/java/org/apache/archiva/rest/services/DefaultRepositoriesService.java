@@ -375,7 +375,7 @@ public class DefaultRepositoriesService
             ManagedRepositoryContent sourceRepository =
                 getManagedRepositoryContent( artifactTransferRequest.getRepositoryId() );
             BaseRepositoryContentLayout layout = sourceRepository.getLayout( BaseRepositoryContentLayout.class );
-            String artifactSourcePath = layout.toPath( artifactReference );
+            String artifactSourcePath = sourceRepository.toPath( artifactReference );
 
             if ( StringUtils.isEmpty( artifactSourcePath ) )
             {
@@ -396,7 +396,7 @@ public class DefaultRepositoriesService
             ManagedRepositoryContent targetRepository =
                 getManagedRepositoryContent( artifactTransferRequest.getTargetRepositoryId() );
 
-            String artifactPath = layout.toPath( artifactReference );
+            String artifactPath = sourceRepository.toPath( artifactReference );
 
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
@@ -777,7 +777,7 @@ public class DefaultRepositoriesService
                 .withVersion( artifact.getVersion( ) ).build( );
 
             Version version1 = layout.getVersion( versionSelector );
-            String path = layout.toPath( version1 );
+            String path = repository.toPath( version1 );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifact.getArtifactId() );
@@ -839,7 +839,7 @@ public class DefaultRepositoriesService
                 {
                     try
                     {
-                        layout.deleteItem( version1 );
+                        repository.deleteItem( version1 );
                     }
                     catch ( ItemNotFoundException e )
                     {

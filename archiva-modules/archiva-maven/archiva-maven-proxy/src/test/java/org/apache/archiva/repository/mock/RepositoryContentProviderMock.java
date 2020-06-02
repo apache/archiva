@@ -55,7 +55,7 @@ public class RepositoryContentProviderMock implements RepositoryContentProvider 
     }
 
     @Override
-    public BaseRepositoryContentLayout createManagedContent( ManagedRepository repository) throws RepositoryException {
+    public ManagedRepositoryContent createManagedContent( ManagedRepository repository) throws RepositoryException {
         return new ManagedRepositoryContentMock(repository);
     }
 

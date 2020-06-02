@@ -54,7 +54,7 @@ public class SnapshotTransferTest
         
         Path expectedFile = managedDefaultDir.resolve(path);
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         Files.deleteIfExists(expectedFile);
         assertFalse( Files.exists(expectedFile) );
@@ -77,7 +77,7 @@ public class SnapshotTransferTest
         Path expectedFile = managedDefaultDir.resolve(path);
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         Files.deleteIfExists(expectedFile);
         assertFalse( Files.exists(expectedFile) );
@@ -102,7 +102,7 @@ public class SnapshotTransferTest
         Path expectedFile = managedDefaultDir.resolve(path);
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( Files.exists(expectedFile) );
         Files.setLastModifiedTime( expectedFile, FileTime.from( getPastDate().getTime(), TimeUnit.MILLISECONDS ));
@@ -131,7 +131,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
@@ -220,7 +220,7 @@ public class SnapshotTransferTest
         
         Path expectedFile = managedDefaultDir.resolve(path);
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( Files.exists(expectedFile) );
 
@@ -251,7 +251,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
@@ -274,7 +274,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         Files.deleteIfExists(expectedFile);
         assertFalse( Files.exists(expectedFile) );
@@ -303,7 +303,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         Files.deleteIfExists(expectedFile);
         assertFalse( Files.exists(expectedFile) );
@@ -332,7 +332,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( Files.exists(expectedFile) );
 

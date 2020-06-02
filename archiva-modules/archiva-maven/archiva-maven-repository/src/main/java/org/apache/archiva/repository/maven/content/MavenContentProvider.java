@@ -20,6 +20,7 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
@@ -98,7 +99,7 @@ public class MavenContentProvider implements RepositoryContentProvider
     }
 
     @Override
-    public BaseRepositoryContentLayout createManagedContent( ManagedRepository repository ) throws RepositoryException
+    public ManagedRepositoryContent createManagedContent( ManagedRepository repository ) throws RepositoryException
     {
         if (!supports( repository.getType() )) {
             throw new RepositoryException( "Repository type "+repository.getType()+" is not supported by this implementation." );

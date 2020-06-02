@@ -599,7 +599,7 @@ public class ErrorHandlingTest
         {
             BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
             downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(),
-                                                            layout.toArtifactReference( path ) );
+                managedDefaultRepository.toArtifactReference( path ) );
             fail( "Proxy should not have succeeded" );
         }
         catch ( ProxyDownloadException e )
@@ -642,7 +642,7 @@ public class ErrorHandlingTest
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(),
-                                                             layout.toArtifactReference( path ) );
+            managedDefaultRepository.toArtifactReference( path ) );
 
         wagonMockControl.verify();
         return downloadedFile;

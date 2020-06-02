@@ -59,7 +59,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Ensure file isn't present first.
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -84,7 +84,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Ensure file isn't present first.
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -147,7 +147,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( Files.exists(expectedFile) );
 
@@ -230,7 +230,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( Files.exists(expectedFile) );
 
@@ -277,7 +277,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( Files.exists(expectedFile) );
 
@@ -311,7 +311,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( Files.exists(expectedFile) );
         Files.setLastModifiedTime( expectedFile, FileTime.from(getPastDate().getTime(), TimeUnit.MILLISECONDS ));
@@ -339,7 +339,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
@@ -373,7 +373,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
@@ -400,7 +400,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
@@ -427,7 +427,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
@@ -464,7 +464,7 @@ public class ManagedDefaultTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
 

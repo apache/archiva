@@ -34,6 +34,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.repository.EditableManagedRepository;
@@ -250,11 +251,11 @@ public class ArchivaDavResourceFactoryTest
         return repoConfig;
     }
 
-    private BaseRepositoryContentLayout createManagedRepositoryContent( String repoId )
+    private ManagedRepositoryContent createManagedRepositoryContent( String repoId )
         throws RepositoryAdminException
     {
         org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repoId );
-        BaseRepositoryContentLayout repoContent = new ManagedDefaultRepositoryContent(repo, artifactMappingProviders, fileTypes, fileLockManager);
+        ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repo, artifactMappingProviders, fileTypes, fileLockManager);
         if (repo!=null && repo instanceof EditableManagedRepository)
         {
             ( (EditableManagedRepository) repo ).setContent( repoContent );
@@ -262,7 +263,7 @@ public class ArchivaDavResourceFactoryTest
         return repoContent;
     }
 
-    private RepositoryContentProvider createRepositoryContentProvider( BaseRepositoryContentLayout content) {
+    private RepositoryContentProvider createRepositoryContentProvider( ManagedRepositoryContent content) {
         Set<RepositoryType> TYPES = new HashSet<>(  );
         TYPES.add(RepositoryType.MAVEN);
         return new RepositoryContentProvider( )
@@ -294,7 +295,7 @@ public class ArchivaDavResourceFactoryTest
             }
 
             @Override
-            public BaseRepositoryContentLayout createManagedContent( org.apache.archiva.repository.ManagedRepository repository ) throws RepositoryException
+            public ManagedRepositoryContent createManagedContent( org.apache.archiva.repository.ManagedRepository repository ) throws RepositoryException
             {
                 content.setRepository( repository );
                 return content;
@@ -330,8 +331,8 @@ public class ArchivaDavResourceFactoryTest
             + "/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar", LOCAL_REPO_GROUP,
                                                                     new ArchivaDavLocatorFactory() );
 
-        BaseRepositoryContentLayout internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
-        BaseRepositoryContentLayout releasesRepo = createManagedRepositoryContent( RELEASES_REPO );
+        ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
+        ManagedRepositoryContent releasesRepo = createManagedRepositoryContent( RELEASES_REPO );
 
         try
         {
@@ -407,9 +408,9 @@ public class ArchivaDavResourceFactoryTest
 
         config.setRepositoryGroups( repoGroups );
 
-        BaseRepositoryContentLayout internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
+        ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
-        BaseRepositoryContentLayout releasesRepo = createManagedRepositoryContent( RELEASES_REPO );
+        ManagedRepositoryContent releasesRepo = createManagedRepositoryContent( RELEASES_REPO );
 
         try
         {
@@ -490,8 +491,8 @@ public class ArchivaDavResourceFactoryTest
 
         config.setRepositoryGroups( repoGroups );
 
-        BaseRepositoryContentLayout internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
-        BaseRepositoryContentLayout localMirrorRepo = createManagedRepositoryContent( LOCAL_MIRROR_REPO );
+        ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
+        ManagedRepositoryContent localMirrorRepo = createManagedRepositoryContent( LOCAL_MIRROR_REPO );
 
         repositoryRegistry.putRepositoryGroup( repoGroup );
 
@@ -565,7 +566,7 @@ public class ArchivaDavResourceFactoryTest
             new ArchivaDavResourceLocator( "", "/repository/" + INTERNAL_REPO + "/eclipse/jdtcore/maven-metadata.xml",
                                            INTERNAL_REPO, new ArchivaDavLocatorFactory() );
 
-        BaseRepositoryContentLayout internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
+        ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
         MavenRepositoryRequestInfo repoRequest = new MavenRepositoryRequestInfo(internalRepo.getRepository() );
@@ -622,7 +623,7 @@ public class ArchivaDavResourceFactoryTest
             new ArchivaDavResourceLocator( "", "/repository/" + INTERNAL_REPO + "/eclipse/maven-metadata.xml",
                                            INTERNAL_REPO, new ArchivaDavLocatorFactory() );
 
-        BaseRepositoryContentLayout internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
+        ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
         try
         {
@@ -662,7 +663,7 @@ public class ArchivaDavResourceFactoryTest
     public void testRequestMetadataRepoIsLegacy()
         throws Exception
     {
-        BaseRepositoryContentLayout legacyRepo = createManagedRepositoryContent( LEGACY_REPO );
+        ManagedRepositoryContent legacyRepo = createManagedRepositoryContent( LEGACY_REPO );
         ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
         RepositoryContentProvider provider = createRepositoryContentProvider(legacyRepo );
         beanFactory.registerSingleton("repositoryContentProvider#legacy", provider);

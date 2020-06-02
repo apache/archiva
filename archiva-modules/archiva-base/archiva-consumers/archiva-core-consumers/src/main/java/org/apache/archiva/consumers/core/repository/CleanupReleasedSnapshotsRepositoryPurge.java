@@ -100,7 +100,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 return;
             }
 
-            ArtifactReference artifactRef = repository.getLayout( BaseRepositoryContentLayout.class ).toArtifactReference( path );
+            ArtifactReference artifactRef = repository.toArtifactReference( path );
 
             if ( !VersionUtil.isSnapshot( artifactRef.getVersion( ) ) )
             {

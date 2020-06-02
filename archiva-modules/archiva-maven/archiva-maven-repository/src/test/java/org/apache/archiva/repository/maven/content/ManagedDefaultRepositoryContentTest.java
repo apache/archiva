@@ -410,7 +410,7 @@ public class ManagedDefaultRepositoryContentTest
     }
 
     @Override
-    protected BaseRepositoryContentLayout getManaged( )
+    protected ManagedRepositoryContent getManaged( )
     {
         return repoContent;
     }

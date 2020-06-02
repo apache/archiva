@@ -55,14 +55,7 @@ public class ArtifactUtil
     {
         final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent( repository );
         final String artifactPath;
-        try
-        {
-            artifactPath = content.getLayout( BaseRepositoryContentLayout.class ).toPath( artifactReference );
-        }
-        catch ( LayoutException e )
-        {
-            throw new RepositoryException( "Could not convert to layout BaseRepositoryContentLayout" );
-        }
+        artifactPath = content.toPath( artifactReference );
         return Paths.get( repository.getLocation( ) ).resolve( artifactPath );
     }
 
@@ -79,14 +72,7 @@ public class ArtifactUtil
     {
         final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent( repository );
         final String artifactPath;
-        try
-        {
-            artifactPath = content.getLayout( BaseRepositoryContentLayout.class ).toPath( artifactReference );
-        }
-        catch ( LayoutException e )
-        {
-            throw new RepositoryException( "Could not convert to layout BaseRepositoryContentLayout" );
-        }
+        artifactPath = content.toPath( artifactReference );
         return repository.getAsset( artifactPath );
     }
 

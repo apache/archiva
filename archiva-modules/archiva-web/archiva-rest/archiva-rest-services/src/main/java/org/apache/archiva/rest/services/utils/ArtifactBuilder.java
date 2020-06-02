@@ -100,7 +100,7 @@ public class ArtifactBuilder
         artifact.setPackaging( type );
         artifact.setType( type );
         artifact.setFileExtension( extension );
-        artifact.setPath( layout.toPath( ref ) );
+        artifact.setPath( managedRepositoryContent.toPath( ref ) );
         // TODO: find a reusable formatter for this
         double s = this.artifactMetadata.getSize();
         String symbol = "b";

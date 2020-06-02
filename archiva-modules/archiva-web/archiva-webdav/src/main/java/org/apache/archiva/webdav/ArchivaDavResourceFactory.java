@@ -651,7 +651,7 @@ public class ArchivaDavResourceFactory
                     try
                     {
                         BaseRepositoryContentLayout layout = managedRepositoryContent.getLayout( BaseRepositoryContentLayout.class );
-                        artifact = layout.toArtifactReference( resourcePath );
+                        artifact = managedRepositoryContent.toArtifactReference( resourcePath );
 
                         if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
                         {
@@ -800,7 +800,7 @@ public class ArchivaDavResourceFactory
 
                 StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, artifact );
 
-                resource.setPath( managedRepository.getContent().getLayout( BaseRepositoryContentLayout.class ).toPath( artifact ) );
+                resource.setPath( managedRepository.getContent().toPath( artifact ) );
 
                 log.debug( "Proxied artifact '{}:{}:{}'", artifact.getGroupId(), artifact.getArtifactId(),
                            artifact.getVersion() );

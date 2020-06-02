@@ -57,7 +57,7 @@ import java.util.stream.Stream;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Service("managedRepositoryContent#mock")
-public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
+public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout, ManagedRepositoryContent
 {
     private ManagedRepository repository;
 

@@ -64,7 +64,7 @@ public class CacheFailuresTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
@@ -109,7 +109,7 @@ public class CacheFailuresTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
@@ -155,7 +155,7 @@ public class CacheFailuresTransferTest
         setupTestableManagedRepository( path );
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = layout.toArtifactReference( path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         Files.deleteIfExists( expectedFile );
         assertFalse( Files.exists( expectedFile ) );

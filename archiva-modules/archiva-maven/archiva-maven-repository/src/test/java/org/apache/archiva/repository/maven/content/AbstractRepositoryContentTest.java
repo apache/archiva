@@ -19,6 +19,7 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.maven.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.LayoutException;
@@ -581,25 +582,25 @@ public abstract class AbstractRepositoryContentTest
             Version ver = null;
             if ( StringUtils.isNotEmpty( groupId ) )
             {
-                ns = getManaged( ).getNamespace( expectedArtifact );
+                ns = getManaged( ).getLayout( BaseRepositoryContentLayout.class ).getNamespace( expectedArtifact );
                 assertNotNull( ns );
                 assertEquals( groupId, ns.getNamespace( ) );
             }
             if ( StringUtils.isNotEmpty( artifactId ) )
             {
-                pr = getManaged( ).getProject( expectedArtifact );
+                pr = getManaged( ).getLayout( BaseRepositoryContentLayout.class ).getProject( expectedArtifact );
                 assertNotNull( pr );
                 assertEquals( artifactId, pr.getId( ) );
                 assertEquals( ns, pr.getNamespace( ) );
             }
             if ( StringUtils.isNotEmpty( version ) )
             {
-                ver = getManaged( ).getVersion( expectedArtifact );
+                ver = getManaged( ).getLayout( BaseRepositoryContentLayout.class ).getVersion( expectedArtifact );
                 assertNotNull( ver );
                 assertEquals( version, ver.getVersion( ) );
                 assertEquals( pr, ver.getProject( ) );
             }
-            Artifact artifact = getManaged( ).getArtifact( expectedArtifact );
+            Artifact artifact = getManaged( ).getLayout( BaseRepositoryContentLayout.class ).getArtifact( expectedArtifact );
             assertNotNull( artifact );
             assertEquals( artifactId, artifact.getId( ) );
             assertEquals( ver, artifact.getVersion( ) );
@@ -642,7 +643,7 @@ public abstract class AbstractRepositoryContentTest
 
     protected abstract ItemSelector toItemSelector(String path) throws LayoutException;
 
-    protected abstract BaseRepositoryContentLayout getManaged();
+    protected abstract ManagedRepositoryContent getManaged();
 
     protected abstract RepositoryContent getContent( );
 }

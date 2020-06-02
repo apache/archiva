@@ -57,7 +57,7 @@ import java.util.stream.Stream;
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
+public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout, ManagedRepositoryContent
 {
     private static final String PATH_SEPARATOR = "/";
     private static final String GROUP_SEPARATOR = ".";
