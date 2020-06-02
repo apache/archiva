@@ -69,6 +69,19 @@ public class ArtifactReference
     private String type;
 
 
+    public String getProjectVersion( )
+    {
+        return projectVersion;
+    }
+
+    public void setProjectVersion( String projectVersion )
+    {
+        this.projectVersion = projectVersion;
+    }
+
+    private String projectVersion;
+
+
       //-----------/
      //- Methods -/
     //-----------/

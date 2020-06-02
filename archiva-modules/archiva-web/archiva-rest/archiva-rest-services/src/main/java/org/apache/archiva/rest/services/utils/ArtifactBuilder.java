@@ -25,8 +25,11 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -65,11 +68,6 @@ public class ArtifactBuilder
 
     public Artifact build()
     {
-        ArtifactReference ref = new ArtifactReference();
-        ref.setArtifactId( artifactMetadata.getProject() );
-        ref.setGroupId( artifactMetadata.getNamespace() );
-        ref.setVersion( artifactMetadata.getVersion() );
-
         String type = null, classifier = null;
 
         MavenArtifactFacet facet = (MavenArtifactFacet) artifactMetadata.getFacet( MavenArtifactFacet.FACET_ID );
@@ -79,8 +77,20 @@ public class ArtifactBuilder
             classifier = facet.getClassifier();
         }
 
-        ref.setClassifier( classifier );
-        ref.setType( type );
+        ArchivaItemSelector.Builder selectorBuilder = ArchivaItemSelector.builder( )
+            .withNamespace( artifactMetadata.getNamespace( ) )
+            .withProjectId( artifactMetadata.getProject( ) )
+            .withVersion( artifactMetadata.getProjectVersion( ) )
+            .withArtifactId( artifactMetadata.getProject( ) )
+            .withArtifactVersion( artifactMetadata.getVersion( ) );
+        if (StringUtils.isNotEmpty( type ) ) {
+            selectorBuilder.withType( type );
+        }
+        if (StringUtils.isNotEmpty( classifier )) {
+            selectorBuilder.withClassifier( classifier );
+        }
+
+
         BaseRepositoryContentLayout layout;
         try
         {
@@ -90,17 +100,17 @@ public class ArtifactBuilder
         {
             throw new RuntimeException( "Could not convert to layout " + e.getMessage( ) );
         }
-        StorageAsset file = layout.toFile( ref );
+        org.apache.archiva.repository.content.Artifact repoArtifact = layout.getArtifact( selectorBuilder.build( ) );
 
-        String extension = getExtensionFromFile(file);
-        
-        Artifact artifact = new Artifact( ref.getGroupId(), ref.getArtifactId(), ref.getVersion() );
+        String extension = repoArtifact.getExtension();
+
+        Artifact artifact = new Artifact( repoArtifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( ), repoArtifact.getId( ), repoArtifact.getArtifactVersion( ) );
         artifact.setRepositoryId( artifactMetadata.getRepositoryId() );
         artifact.setClassifier( classifier );
         artifact.setPackaging( type );
         artifact.setType( type );
         artifact.setFileExtension( extension );
-        artifact.setPath( managedRepositoryContent.toPath( ref ) );
+        artifact.setPath( managedRepositoryContent.toPath( repoArtifact ) );
         // TODO: find a reusable formatter for this
         double s = this.artifactMetadata.getSize();
         String symbol = "b";
@@ -125,7 +135,7 @@ public class ArtifactBuilder
         DecimalFormat df = new DecimalFormat( "#,###.##", new DecimalFormatSymbols( Locale.US ) );
         artifact.setSize( df.format( s ) + " " + symbol );
 
-        artifact.setId( ref.getArtifactId() + "-" + ref.getVersion() + "." + ref.getType() );
+        artifact.setId( repoArtifact.getId() + "-" + repoArtifact.getArtifactVersion() + "." + repoArtifact.getType() );
 
         return artifact;
 

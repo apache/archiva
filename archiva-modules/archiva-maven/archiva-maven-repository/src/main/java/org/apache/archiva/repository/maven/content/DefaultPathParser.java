@@ -79,6 +79,7 @@ public class DefaultPathParser
         artifact.setGroupId( metadata.getNamespace() );
         artifact.setArtifactId( metadata.getProject() );
         artifact.setVersion( metadata.getVersion() );
+        artifact.setProjectVersion( metadata.getProjectVersion( ) );
         MavenArtifactFacet facet = (MavenArtifactFacet) metadata.getFacet( MavenArtifactFacet.FACET_ID );
         if ( facet != null )
         {

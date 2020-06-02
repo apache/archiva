@@ -36,6 +36,7 @@ import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaArtifact;
 import org.apache.archiva.repository.content.base.ArchivaContentItem;
 import org.apache.archiva.repository.content.base.ArchivaDataItem;
 import org.apache.archiva.repository.content.base.ArchivaNamespace;
@@ -173,7 +174,15 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     @Override
     public Artifact getArtifact( ItemSelector selector ) throws ContentAccessException
     {
-        return null;
+        StringBuilder path = new StringBuilder(selector.getNamespace( ).replace( ".", "/" ));
+        path.append( "/" ).append( selector.getProjectId( ) ).append( "/" ).append( selector.getVersion( ) );
+        path.append( "/" ).append( selector.getArtifactId( ) ).append( "-" ).append( selector.getArtifactVersion( ) ).append( "." ).append( selector.getType( ) );
+        StorageAsset asset = fsStorage.getAsset( path.toString( ) );
+        ArchivaNamespace ns = ArchivaNamespace.withRepository( repository.getContent( ) ).withAsset( asset.getParent( ).getParent( ).getParent( ) ).withNamespace( selector.getNamespace( ) ).build( );
+        ArchivaProject project = ArchivaProject.withRepository( repository.getContent( ) ).withAsset( asset.getParent( ).getParent( ) ).withNamespace( ns ).withId( selector.getProjectId( ) ).build( );
+        ArchivaVersion version = ArchivaVersion.withRepository( repository.getContent( ) ).withAsset( asset.getParent( ) ).withProject( project ).withVersion( selector.getVersion( ) ).build( );
+        ArchivaArtifact artifact = ArchivaArtifact.withAsset( asset ).withVersion( version ).withId( selector.getArtifactId( ) ).withArtifactVersion( selector.getArtifactVersion( ) ).withType( selector.getType( ) ).build( );
+        return artifact;
     }
 
     @Override
@@ -424,6 +433,7 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
         artifact.setGroupId( metadata.getNamespace() );
         artifact.setArtifactId( metadata.getProject() );
         artifact.setVersion( metadata.getVersion() );
+        artifact.setProjectVersion( metadata.getProjectVersion( ) );
         MavenArtifactFacet facet = (MavenArtifactFacet) metadata.getFacet( MavenArtifactFacet.FACET_ID );
         if ( facet != null )
         {

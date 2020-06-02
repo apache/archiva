@@ -35,6 +35,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.maven.content.MavenContentHelper;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.repository.EditableManagedRepository;
@@ -68,6 +69,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -141,6 +143,9 @@ public class ArchivaDavResourceFactoryTest
     @Inject
     ProxyRegistry proxyRegistry;
 
+    @Inject
+    @Named( "MavenContentHelper" )
+    MavenContentHelper mavenContentHelper;
 
     @Inject
     DefaultRepositoryGroupAdmin defaultRepositoryGroupAdmin;
@@ -255,11 +260,12 @@ public class ArchivaDavResourceFactoryTest
         throws RepositoryAdminException
     {
         org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repoId );
-        ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repo, artifactMappingProviders, fileTypes, fileLockManager);
+        ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repo, artifactMappingProviders, fileTypes, fileLockManager);
         if (repo!=null && repo instanceof EditableManagedRepository)
         {
             ( (EditableManagedRepository) repo ).setContent( repoContent );
         }
+        repoContent.setMavenContentHelper( mavenContentHelper );
         return repoContent;
     }
 

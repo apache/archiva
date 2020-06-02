@@ -49,6 +49,9 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
@@ -418,7 +421,15 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
     private StorageAsset toLocalFile(ManagedRepository repository, ArtifactReference artifact ) throws LayoutException
     {
-        return repository.getContent().getLayout( BaseRepositoryContentLayout.class ).toFile( artifact );
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( artifact.getGroupId( ) )
+            .withProjectId( artifact.getArtifactId( ) )
+            .withArtifactId( artifact.getArtifactId( ) )
+            .withArtifactVersion( artifact.getVersion() )
+            .withVersion( artifact.getProjectVersion( ) )
+            .withType( artifact.getType( ) ).build();
+        Artifact repoArtifact = repository.getContent( ).getLayout( BaseRepositoryContentLayout.class ).getArtifact( selector );
+        return repoArtifact.getAsset( );
     }
 
     /**

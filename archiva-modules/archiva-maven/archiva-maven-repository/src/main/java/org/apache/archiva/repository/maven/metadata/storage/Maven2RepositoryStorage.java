@@ -39,7 +39,10 @@ import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.MavenSystemManager;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -572,12 +575,32 @@ public class Maven2RepositoryStorage
         pomReference.setGroupId(artifact.getGroupId());
         pomReference.setArtifactId(artifact.getArtifactId());
         pomReference.setVersion(artifact.getVersion());
+        pomReference.setProjectVersion( artifact.getProjectVersion() );
         pomReference.setType("pom");
+        BaseRepositoryContentLayout layout;
+        try
+        {
+            layout = managedRepository.getContent( ).getLayout( BaseRepositoryContentLayout.class );
+        }
+        catch ( LayoutException e )
+        {
+            throw new ProxyDownloadException( "Could not set layout " + e.getMessage( ), new HashMap<>(  ) );
+        }
 
         RepositoryType repositoryType = managedRepository.getType();
         if (!proxyRegistry.hasHandler(repositoryType)) {
             throw new ProxyDownloadException("No proxy handler found for repository type " + repositoryType, new HashMap<>());
         }
+
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( artifact.getGroupId( ) )
+            .withProjectId( artifact.getArtifactId( ) )
+            .withArtifactId( artifact.getArtifactId( ) )
+            .withVersion( artifact.getVersion( ) )
+            .withArtifactVersion( artifact.getVersion( ) )
+            .withType( "pom" ).build( );
+
+        Artifact pom = layout.getArtifact( selector );
 
         RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(repositoryType).get(0);
 
@@ -585,15 +608,6 @@ public class Maven2RepositoryStorage
         proxyHandler.fetchFromProxies(managedRepository, pomReference);
 
         // Open and read the POM from the managed repo
-        StorageAsset pom = null;
-        try
-        {
-            pom = managedRepository.getContent().getLayout( BaseRepositoryContentLayout.class ).toFile(pomReference);
-        }
-        catch ( LayoutException e )
-        {
-            throw new ProxyDownloadException( "Cannot convert layout ", new HashMap<>( ) );
-        }
 
         if (!pom.exists()) {
             return;
@@ -603,7 +617,7 @@ public class Maven2RepositoryStorage
             // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
 
             Model model;
-            try (Reader reader = Channels.newReader(pom.getReadChannel(), Charset.defaultCharset().name())) {
+            try (Reader reader = Channels.newReader(pom.getAsset().getReadChannel(), Charset.defaultCharset().name())) {
                 model = MAVEN_XPP_3_READER.read(reader);
             }
 

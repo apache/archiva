@@ -34,8 +34,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * SnapshotTransferTest 
@@ -314,6 +313,7 @@ public class SnapshotTransferTest
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
+        assertNotNull( downloadedFile );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -333,6 +333,7 @@ public class SnapshotTransferTest
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        artifact.setProjectVersion( "1.0-SNAPSHOT" );
 
         assertTrue( Files.exists(expectedFile) );
 
@@ -344,6 +345,7 @@ public class SnapshotTransferTest
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
+        assertNotNull( downloadedFile );
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
