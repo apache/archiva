@@ -29,6 +29,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.BaseDataItemTypes;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.DataItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
@@ -36,6 +37,7 @@ import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
+import org.apache.archiva.repository.content.base.ArchivaDataItem;
 import org.apache.archiva.repository.content.base.ArchivaNamespace;
 import org.apache.archiva.repository.content.base.ArchivaProject;
 import org.apache.archiva.repository.content.base.ArchivaVersion;
@@ -285,6 +287,14 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     {
         return null;
     }
+
+    @Override
+    public DataItem getMetadataItem( Project project )
+    {
+        return ArchivaDataItem.withAsset( project.getAsset( ).resolve( "maven-metadata.xml" ) ).withId( "maven-metadata.xml" )
+            .withDataType( BaseDataItemTypes.METADATA ).build( );
+    }
+
 
     @Override
     public ContentItem toItem( String path ) throws LayoutException

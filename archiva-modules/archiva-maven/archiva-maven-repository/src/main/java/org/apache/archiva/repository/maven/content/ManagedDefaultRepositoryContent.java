@@ -1336,6 +1336,13 @@ public class ManagedDefaultRepositoryContent
         return getDataItemFromPath( metaPath );
     }
 
+    @Override
+    public DataItem getMetadataItem( Project project )
+    {
+        StorageAsset metaPath = project.getAsset( ).resolve( MAVEN_METADATA );
+        return getDataItemFromPath( metaPath );
+    }
+
 
     @Override
     public void deleteVersion( VersionedReference ref ) throws ContentNotFoundException, ContentAccessException

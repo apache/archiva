@@ -258,6 +258,14 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
      */
     DataItem getMetadataItem( Version version );
 
+    /**
+     * Returns the metadata file for the given project
+     *
+     * @param project the project
+     * @return the metadata file
+     */
+    DataItem getMetadataItem( Project project );
+
 
     /// *****************   End of new generation interface **********************
 

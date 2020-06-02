@@ -288,8 +288,14 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     }
 
     @Override
-    public ProxyFetchResult fetchMetadataFromProxies( ManagedRepository repository, String logicalPath )
+    public ProxyFetchResult fetchMetadataFromProxies( ManagedRepository repository, String rawLogicalPath )
     {
+        String logicalPath;
+        if (rawLogicalPath.startsWith( "/" )){
+            logicalPath = rawLogicalPath.substring( 1 );
+        } else {
+            logicalPath = rawLogicalPath;
+        }
         StorageAsset localFile = repository.getAsset( logicalPath );
 
         Properties requestProperties = new Properties();
@@ -470,7 +476,11 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         {
             url = url + "/";
         }
-        url = url + remotePath;
+        if (remotePath.startsWith( "/" )) {
+            url = url + remotePath.substring( 1 );
+        } else {
+            url = url + remotePath;
+        }
         requestProperties.setProperty( "url", url );
 
         // Is a whitelist defined?

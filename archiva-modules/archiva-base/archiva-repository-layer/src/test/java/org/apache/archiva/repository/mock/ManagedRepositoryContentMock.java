@@ -293,6 +293,14 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
+    public DataItem getMetadataItem( Project project )
+    {
+        return ArchivaDataItem.withAsset( project.getAsset( ).resolve( "maven-metadata.xml" ) ).withId( "maven-metadata.xml" )
+            .withDataType( BaseDataItemTypes.METADATA ).build( );
+    }
+
+
+    @Override
     public ContentItem toItem( String path ) throws LayoutException
     {
         StorageAsset asset = repository.getAsset( "" ).resolve( path );
