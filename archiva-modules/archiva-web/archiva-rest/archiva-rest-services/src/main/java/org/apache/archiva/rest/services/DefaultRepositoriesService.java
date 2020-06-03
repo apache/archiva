@@ -750,6 +750,7 @@ public class DefaultRepositoriesService
 
         boolean snapshotVersion =
             VersionUtil.isSnapshot( artifact.getVersion() ) | VersionUtil.isGenericSnapshot( artifact.getVersion() );
+        String baseVersion = VersionUtil.getBaseVersion( artifact.getVersion( ) );
 
         RepositorySession repositorySession = null;
         try
@@ -774,7 +775,7 @@ public class DefaultRepositoriesService
 
             ArchivaItemSelector versionSelector = ArchivaItemSelector.builder( ).withNamespace( artifact.getGroupId( ) )
                 .withProjectId( artifact.getArtifactId( ) )
-                .withVersion( artifact.getVersion( ) ).build( );
+                .withVersion( baseVersion ).build( );
 
             Version version1 = layout.getVersion( versionSelector );
             String path = repository.toPath( version1 );
@@ -789,7 +790,7 @@ public class DefaultRepositoriesService
             ArchivaItemSelector selector = ArchivaItemSelector.builder( )
                 .withNamespace( artifact.getGroupId( ) )
                 .withProjectId( artifact.getArtifactId( ) )
-                .withVersion( artifact.getVersion( ) )
+                .withVersion( baseVersion )
                 .withClassifier( artifact.getClassifier( ) )
                 .withArtifactId( artifact.getArtifactId( ) )
                 .withType( artifact.getType( ) )
@@ -849,21 +850,19 @@ public class DefaultRepositoriesService
                 else
                 {
                     // We are deleting all version related artifacts for a snapshot version
-                    VersionedReference versionRef = layout.toVersion( artifactReference );
-                    List<ArtifactReference> related = layout.getRelatedArtifacts( versionRef );
-                    log.debug( "related: {}", related );
-                    for ( ArtifactReference artifactRef : related )
-                    {
+                    for ( org.apache.archiva.repository.content.Artifact delArtifact : layout.getArtifacts( selector )) {
                         try
                         {
-                            layout.deleteArtifact( artifactRef );
-                        } catch (ContentNotFoundException e) {
-                            log.warn( "Artifact that should be deleted, was not found: {}", artifactRef );
+                            repository.deleteItem( delArtifact );
                         }
+                        catch ( ItemNotFoundException e )
+                        {
+                            log.warn( "Artifact that should be deleted, was not found: {}", delArtifact );
+                        }
+
                     }
                     StorageAsset metadataFile = getMetadata( repo, targetPath.getPath() );
                     ArchivaRepositoryMetadata metadata = getMetadata( repository.getRepository().getType(), metadataFile );
-
                     updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, artifact );
                 }
             }
@@ -871,7 +870,6 @@ public class DefaultRepositoriesService
 
             if ( snapshotVersion )
             {
-                String baseVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
                 artifacts =
                     metadataRepository.getArtifacts(repositorySession , repositoryId, artifact.getGroupId(),
                         artifact.getArtifactId(), baseVersion );

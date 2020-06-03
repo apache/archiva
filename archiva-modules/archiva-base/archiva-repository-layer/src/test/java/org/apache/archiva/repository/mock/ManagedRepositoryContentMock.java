@@ -20,10 +20,7 @@ package org.apache.archiva.repository.mock;
  */
 
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.ProjectReference;
-import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentAccessException;
-import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ItemDeleteStatus;
 import org.apache.archiva.repository.LayoutException;
@@ -59,18 +56,6 @@ import java.util.stream.Stream;
 public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout, ManagedRepositoryContent
 {
     private ManagedRepository repository;
-
-    @Override
-    public VersionedReference toVersion( String groupId, String artifactId, String version )
-    {
-        return null;
-    }
-
-    @Override
-    public VersionedReference toVersion( ArtifactReference artifactReference )
-    {
-        return null;
-    }
 
     @Override
     public void deleteAllItems( ItemSelector selector, Consumer<ItemDeleteStatus> consumer ) throws ContentAccessException, IllegalArgumentException
@@ -153,12 +138,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     public Version getVersion( ItemSelector versionCoordinates ) throws ContentAccessException, IllegalArgumentException
     {
         return null;
-    }
-
-    @Override
-    public void deleteArtifact( ArtifactReference artifactReference ) throws ContentNotFoundException, ContentAccessException
-    {
-
     }
 
 
@@ -313,25 +292,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 
 
     @Override
-    public void deleteGroupId( String groupId ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-
-    @Override
-    public void deleteProject( String namespace, String projectId ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-    @Override
-    public void deleteProject( ProjectReference reference ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-    @Override
     public String toPath( ContentItem item )
     {
         return null;
@@ -339,18 +299,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 
     @Override
     public String getId( )
-    {
-        return null;
-    }
-
-    @Override
-    public List<ArtifactReference> getRelatedArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        return null;
-    }
-
-    @Override
-    public List<ArtifactReference> getArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
     {
         return null;
     }
@@ -371,12 +319,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     public void setRepository( ManagedRepository repo )
     {
         this.repository = repo;
-    }
-
-    @Override
-    public StorageAsset toFile( VersionedReference reference )
-    {
-        return null;
     }
 
     @Override

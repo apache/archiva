@@ -270,98 +270,6 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
     /// *****************   End of new generation interface **********************
 
 
-
-    /**
-     * Returns the version reference for the given coordinates.
-     * @param groupId the group id
-     * @param artifactId the artifact id
-     * @param version the version number
-     * @return a version reference
-     */
-    VersionedReference toVersion( String groupId, String artifactId, String version );
-
-
-    /**
-     * Return the version reference that matches exactly the version string of the artifact
-     *
-     * @param artifactReference The artifact reference
-     * @return the version reference
-     */
-    VersionedReference toVersion( ArtifactReference artifactReference);
-
-
-    /**
-     * delete a specified artifact from the repository
-     *
-     * @param artifactReference
-     * @throws ContentNotFoundException
-     */
-    void deleteArtifact( ArtifactReference artifactReference )
-        throws ContentNotFoundException, ContentAccessException;
-
-
-
-    /**
-     * @param groupId
-     * @throws ContentNotFoundException
-     * @since 1.4-M3
-     */
-    void deleteGroupId( String groupId )
-        throws ContentNotFoundException, ContentAccessException;
-
-
-
-
-    /**
-     *
-     * @param namespace groupId for maven
-     * @param projectId artifactId for maven
-     * @throws ContentNotFoundException
-     */
-    void deleteProject( String namespace, String projectId )
-        throws ContentNotFoundException, ContentAccessException;
-
-
-    /**
-     * Deletes a project
-     * @param reference
-     */
-    void deleteProject(ProjectReference reference) throws ContentNotFoundException, ContentAccessException;
-
-
-
-
-
-
-    /**
-     * <p>
-     * Gather up the list of related artifacts to the ArtifactReference provided.
-     * This typically includes the pom files, and those things with
-     * classifiers (such as doc, source code, test libs, etc...). Even if the classifier
-     * is set in the artifact reference, it may return artifacts with different classifiers.
-     * </p>
-     * <p>
-     * <strong>NOTE:</strong> Some layouts (such as maven 1 "legacy") are not compatible with this query.
-     * </p>
-     *
-     * @param reference the reference to work off of.
-     * @return the list of ArtifactReferences for related artifacts, if
-     * @throws ContentNotFoundException if the initial artifact reference does not exist within the repository.
-     */
-    List<ArtifactReference> getRelatedArtifacts( VersionedReference reference )
-        throws ContentNotFoundException, LayoutException, ContentAccessException;
-
-
-    /**
-     * Returns all artifacts that belong to a given version
-     * @param reference the version reference
-     * @return the list of artifacts or a empty list
-     */
-    List<ArtifactReference> getArtifacts(VersionedReference reference) throws ContentNotFoundException, LayoutException, ContentAccessException;
-
-
-
-
     /**
      * <p>
      * Convenience method to get the repository (on disk) root directory.
@@ -373,15 +281,6 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
      * @return the repository (on disk) root directory.
      */
     String getRepoRoot();
-
-
-    /**
-     * Given an {@link ArtifactReference}, return the file reference to the artifact.
-     *
-     * @param reference the artifact reference to use.
-     * @return the relative path to the artifact.
-     */
-    StorageAsset toFile( VersionedReference reference );
 
 
 }

@@ -24,7 +24,6 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentAccessException;
 import org.apache.archiva.repository.ContentNotFoundException;
@@ -69,7 +68,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -1298,31 +1296,6 @@ public class ManagedDefaultRepositoryContent
 
     /// ************* End of new generation interface ******************
 
-    /**
-     * Returns a version reference from the coordinates
-     *
-     * @param groupId    the group id
-     * @param artifactId the artifact id
-     * @param version    the version
-     * @return the versioned reference object
-     */
-    @Override
-    public VersionedReference toVersion( String groupId, String artifactId, String version )
-    {
-        return new VersionedReference( ).groupId( groupId ).artifactId( artifactId ).version( version );
-    }
-
-    /**
-     * Return the version the artifact is part of
-     *
-     * @param artifactReference
-     * @return
-     */
-    public VersionedReference toVersion( ArtifactReference artifactReference )
-    {
-        return toVersion( artifactReference.getGroupId( ), artifactReference.getArtifactId( ), artifactReference.getVersion( ) );
-    }
-
     @Override
     public String toPath( ContentItem item ) {
         return item.getAsset( ).getPath( );
@@ -1343,173 +1316,9 @@ public class ManagedDefaultRepositoryContent
 
 
     @Override
-    public void deleteProject( ProjectReference ref )
-        throws ContentNotFoundException, ContentAccessException
-    {
-        final String path = toPath( ref );
-        final Path deleteTarget = getRepoDir( ).resolve( path );
-        if ( !Files.exists( deleteTarget ) )
-        {
-            log.warn( "Project path for repository {} does not exist: {}", getId( ), deleteTarget );
-            throw new ContentNotFoundException( "Project not found for repository " + getId( ) + ": " + path );
-        }
-        if ( Files.isDirectory( deleteTarget ) )
-        {
-            try
-            {
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( deleteTarget );
-            }
-            catch ( IOException e )
-            {
-                log.error( "Could not delete file path {}: {}", deleteTarget, e.getMessage( ), e );
-                throw new ContentAccessException( "Error while trying to delete path " + path + " from repository " + getId( ) + ": " + e.getMessage( ), e );
-            }
-        }
-        else
-        {
-            log.warn( "Project path for repository {} is not a directory {}", getId( ), deleteTarget );
-            throw new ContentNotFoundException( "Project path for repository " + getId( ) + " is not directory: " + path );
-        }
-
-    }
-
-    @Override
-    public void deleteProject( String namespace, String projectId ) throws ContentNotFoundException, ContentAccessException
-    {
-        this.deleteProject( new ProjectReference( ).groupId( namespace ).artifactId( projectId ) );
-    }
-
-    @Override
-    public void deleteArtifact( ArtifactReference ref ) throws ContentNotFoundException, ContentAccessException
-    {
-        final String path = toPath( ref );
-        final Path repoDir = getRepoDir( );
-        Path deleteTarget = repoDir.resolve( path );
-        if ( Files.exists( deleteTarget ) )
-        {
-            try
-            {
-                if ( Files.isDirectory( deleteTarget ) )
-                {
-                    org.apache.archiva.common.utils.FileUtils.deleteDirectory( deleteTarget );
-                }
-                else
-                {
-                    Files.delete( deleteTarget );
-                }
-            }
-            catch ( IOException e )
-            {
-                log.error( "Could not delete file path {}: {}", deleteTarget, e.getMessage( ), e );
-                throw new ContentAccessException( "Error while trying to delete path " + path + " from repository " + getId( ) + ": " + e.getMessage( ), e );
-            }
-        }
-        else
-        {
-            log.warn( "Artifact path for repository {} does not exist: {}", getId( ), deleteTarget );
-            throw new ContentNotFoundException( "Artifact not found for repository " + getId( ) + ": " + path );
-        }
-
-    }
-
-    @Override
-    public void deleteGroupId( String groupId )
-        throws ContentNotFoundException, ContentAccessException
-    {
-        final String path = toPath( groupId );
-        final Path deleteTarget = getRepoDir( ).resolve( path );
-        if ( !Files.exists( deleteTarget ) )
-        {
-            log.warn( "Namespace path for repository {} does not exist: {}", getId( ), deleteTarget );
-            throw new ContentNotFoundException( "Namespace not found for repository " + getId( ) + ": " + path );
-        }
-        if ( Files.isDirectory( deleteTarget ) )
-        {
-            try
-            {
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( deleteTarget );
-            }
-            catch ( IOException e )
-            {
-                log.error( "Could not delete file path {}: {}", deleteTarget, e.getMessage( ), e );
-                throw new ContentAccessException( "Error while trying to delete path " + path + " from repository " + getId( ) + ": " + e.getMessage( ), e );
-            }
-        }
-        else
-        {
-            log.warn( "Namespace path for repository {} is not a directory {}", getId( ), deleteTarget );
-            throw new ContentNotFoundException( "Namespace path for repository " + getId( ) + " is not directory: " + path );
-
-        }
-    }
-
-    @Override
     public String getId( )
     {
         return repository.getId( );
-    }
-
-    @Override
-    public List<ArtifactReference> getRelatedArtifacts( VersionedReference reference )
-        throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        StorageAsset artifactDir = toFile( reference );
-        if ( !artifactDir.exists( ) )
-        {
-            throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-existant directory: " + artifactDir.getPath( ) );
-        }
-
-        if ( !artifactDir.isContainer( ) )
-        {
-            throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-directory: " + artifactDir.getPath( ) );
-        }
-
-        // First gather up the versions found as artifacts in the managed repository.
-
-        try ( Stream<? extends StorageAsset> stream = artifactDir.list( ).stream( ) )
-        {
-            return stream.filter( asset -> !asset.isContainer( ) ).map( path -> {
-                try
-                {
-                    ArtifactReference artifact = toArtifactReference( path.getPath( ) );
-                    if ( artifact.getGroupId( ).equals( reference.getGroupId( ) ) && artifact.getArtifactId( ).equals(
-                        reference.getArtifactId( ) ) && artifact.getVersion( ).equals( reference.getVersion( ) ) )
-                    {
-                        return artifact;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                catch ( LayoutException e )
-                {
-                    log.debug( "Not processing file that is not an artifact: {}", e.getMessage( ) );
-                    return null;
-                }
-            } ).filter( Objects::nonNull ).collect( Collectors.toList( ) );
-        }
-        catch ( RuntimeException e )
-        {
-            Throwable cause = e.getCause( );
-            if ( cause != null )
-            {
-                if ( cause instanceof LayoutException )
-                {
-                    throw (LayoutException) cause;
-                }
-                else
-                {
-                    throw new ContentAccessException( cause.getMessage( ), cause );
-                }
-            }
-            else
-            {
-                throw new ContentAccessException( e.getMessage( ), e );
-            }
-        }
     }
 
     /*
@@ -1660,12 +1469,6 @@ public class ManagedDefaultRepositoryContent
     }
 
 
-    @Override
-    public StorageAsset toFile( VersionedReference reference )
-    {
-        return repository.getAsset( toPath( reference ) );
-    }
-
     /**
      * Get the first Artifact found in the provided VersionedReference location.
      *
@@ -1709,21 +1512,6 @@ public class ManagedDefaultRepositoryContent
             .filter( p -> !filetypes.matchesDefaultExclusions( p ) )
             .filter( filetypes::matchesArtifactPattern )
             .map( this::toArtifactRef );
-    }
-
-    public List<ArtifactReference> getArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        try ( Stream<ArtifactReference> stream = newArtifactStream( reference ) )
-        {
-            return stream.collect( Collectors.toList( ) );
-        }
-        catch ( IOException e )
-        {
-            String path = toPath( reference );
-            log.error( "Could not read directory from repository {} - {}: ", getId( ), path, e.getMessage( ), e );
-            throw new ContentAccessException( "Could not read path from repository " + getId( ) + ": " + path, e );
-
-        }
     }
 
     private boolean hasArtifact( VersionedReference reference )

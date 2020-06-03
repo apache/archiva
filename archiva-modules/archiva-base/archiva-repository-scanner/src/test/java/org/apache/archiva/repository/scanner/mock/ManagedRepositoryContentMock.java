@@ -24,8 +24,6 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.ProjectReference;
-import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseDataItemTypes;
@@ -70,18 +68,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 
     public ManagedRepositoryContentMock(ManagedRepository repo) {
         this.repository = repo;
-    }
-
-    @Override
-    public VersionedReference toVersion( String groupId, String artifactId, String version )
-    {
-        return null;
-    }
-
-    @Override
-    public VersionedReference toVersion( ArtifactReference artifactReference )
-    {
-        return null;
     }
 
     @Override
@@ -308,30 +294,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public void deleteArtifact( ArtifactReference artifactReference ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-    @Override
-    public void deleteGroupId( String groupId ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-    @Override
-    public void deleteProject( String namespace, String projectId ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-    @Override
-    public void deleteProject( ProjectReference reference ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-    @Override
     public String toPath( ContentItem item )
     {
         return null;
@@ -341,18 +303,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     public String getId( )
     {
         return repository.getId();
-    }
-
-    @Override
-    public List<ArtifactReference> getRelatedArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        return null;
-    }
-
-    @Override
-    public List<ArtifactReference> getArtifacts( VersionedReference reference ) throws ContentNotFoundException, LayoutException, ContentAccessException
-    {
-        return null;
     }
 
     @Override
@@ -382,12 +332,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     public void setRepository( ManagedRepository repo )
     {
         this.repository = repo;
-    }
-
-    @Override
-    public StorageAsset toFile( VersionedReference reference )
-    {
-        return null;
     }
 
     private Map<ArtifactReference, String> refs = new HashMap<>();
