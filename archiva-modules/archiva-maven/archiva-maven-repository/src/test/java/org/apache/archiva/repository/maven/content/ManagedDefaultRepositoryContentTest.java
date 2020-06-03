@@ -522,24 +522,6 @@ public class ManagedDefaultRepositoryContentTest
 
 
     @Test
-    public void testDeleteVersion() throws IOException, org.apache.archiva.repository.ContentNotFoundException, org.apache.archiva.repository.ContentAccessException
-    {
-        Path deleteRepo = setupRepoCopy( "delete-repository", "delete-repository-2" );
-        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0-source.jar" ) ) );
-        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar" ) ) );
-        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.md5" ) ) );
-        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.jar.sha1" ) ) );
-        assertTrue( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0/samplejar-1.0.pom" ) ) );
-
-        VersionedReference ref = new VersionedReference( ).groupId( "org.apache.maven" ).artifactId( "samplejar" ).version( "1.0" );
-
-        repoContent.deleteVersion( ref );
-
-        assertFalse( Files.exists( deleteRepo.resolve( "org/apache/maven/samplejar/1.0" ) ) );
-
-    }
-
-    @Test
     public void testDeleteProject() throws IOException, org.apache.archiva.repository.ContentNotFoundException, org.apache.archiva.repository.ContentAccessException
     {
         Path deleteRepo = setupRepoCopy( "delete-repository", "delete-repository-2" );

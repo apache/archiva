@@ -34,6 +34,7 @@ import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.metadata.audit.RepositoryListener;
+import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
@@ -108,7 +109,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 return;
             }
 
-            ItemSelector selector = ArchivaItemSelector.builder( )
+            ItemSelector projectSelector = ArchivaItemSelector.builder( )
                 .withNamespace( artifactRef.getGroupId( ) )
                 .withProjectId( artifactRef.getArtifactId( ) )
                 .build();
@@ -124,7 +125,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 if ( repo.getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ))
                 {
                     BaseRepositoryContentLayout repoContent = repo.getContent().getLayout( BaseRepositoryContentLayout.class );
-                    Project proj = repoContent.getProject( selector );
+                    Project proj = repoContent.getProject( projectSelector );
                     for ( Version version : repoContent.getVersions( proj ) )
                     {
                         if ( !VersionUtil.isSnapshot( version.getVersion() ) )
@@ -144,13 +145,21 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             versionRef.setGroupId( artifactRef.getGroupId( ) );
             versionRef.setArtifactId( artifactRef.getArtifactId( ) );
 
+            ArchivaItemSelector.Builder versionSelectorBuilder = ArchivaItemSelector.builder( )
+                .withNamespace( artifactRef.getGroupId( ) )
+                .withProjectId( artifactRef.getArtifactId( ) )
+                .withArtifactId( artifactRef.getArtifactId( ) );
+
             MetadataRepository metadataRepository = repositorySession.getRepository( );
 
             if ( releasedVersions.contains( VersionUtil.getReleaseVersion( artifactRef.getVersion( ) ) ) )
             {
-                versionRef.setVersion( artifactRef.getVersion( ) );
-                layout.deleteVersion( versionRef );
-
+                ArchivaItemSelector selector = versionSelectorBuilder.withVersion( artifactRef.getVersion( ) ).build( );
+                Version version = layout.getVersion( selector );
+                if (version.exists())
+                {
+                    repository.deleteItem( version );
+                }
                 for ( RepositoryListener listener : listeners )
                 {
                     listener.deleteArtifact( metadataRepository, repository.getId( ), artifactRef.getGroupId( ),
@@ -172,10 +181,6 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         {
             log.debug( "Not processing file that is not an artifact: {}", e.getMessage( ) );
         }
-        catch ( ContentNotFoundException e )
-        {
-            throw new RepositoryPurgeException( e.getMessage( ), e );
-        }
         catch ( MetadataRepositoryException e )
         {
             log.error( "Could not remove metadata during cleanup of released snapshots of {}", path, e );
@@ -183,6 +188,10 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         catch ( org.apache.archiva.repository.ContentAccessException e )
         {
             e.printStackTrace( );
+        }
+        catch ( ItemNotFoundException e )
+        {
+            log.error( "Could not find item to delete {}",e.getMessage( ), e );
         }
     }
 
@@ -211,15 +220,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         {
             // Ignore. (Just means we have no snapshot versions left to reference).
         }
-        catch ( RepositoryMetadataException e )
-        {
-            // Ignore.
-        }
-        catch ( IOException e )
-        {
-            // Ignore.
-        }
-        catch ( LayoutException e )
+        catch ( RepositoryMetadataException | IOException | LayoutException e )
         {
             // Ignore.
         }
@@ -228,21 +229,10 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         {
             metadataTools.updateMetadata( repository, projectRef );
         }
-        catch ( ContentNotFoundException e )
+        catch ( ContentNotFoundException | RepositoryMetadataException | IOException | LayoutException e )
         {
             // Ignore. (Just means we have no snapshot versions left to reference).
         }
-        catch ( RepositoryMetadataException e )
-        {
-            // Ignore.
-        }
-        catch ( IOException e )
-        {
-            // Ignore.
-        }
-        catch ( LayoutException e )
-        {
-            // Ignore.
-        }
+
     }
 }

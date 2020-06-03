@@ -150,13 +150,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 
 
     @Override
-    public void deleteVersion( VersionedReference reference ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-
-    @Override
     public Version getVersion( ItemSelector versionCoordinates ) throws ContentAccessException, IllegalArgumentException
     {
         return null;
@@ -388,12 +381,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 
     @Override
     public ArtifactReference toArtifactReference( String path ) throws LayoutException
-    {
-        return null;
-    }
-
-    @Override
-    public StorageAsset toFile( ArtifactReference reference )
     {
         return null;
     }

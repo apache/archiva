@@ -291,18 +291,6 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
 
 
     /**
-     * Delete from the managed repository all files / directories associated with the
-     * provided version reference.
-     *
-     * @param reference the version reference to delete.
-     * @throws ContentNotFoundException
-     */
-    void deleteVersion( VersionedReference reference )
-        throws ContentNotFoundException, ContentAccessException;
-
-
-
-    /**
      * delete a specified artifact from the repository
      *
      * @param artifactReference
@@ -394,14 +382,6 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
      * @return the relative path to the artifact.
      */
     StorageAsset toFile( VersionedReference reference );
-
-    /**
-     * Given an {@link ArtifactReference}, return the file reference to the artifact.
-     *
-     * @param reference the artifact reference to use.
-     * @return the relative path to the artifact.
-     */
-    StorageAsset toFile( ArtifactReference reference );
 
 
 }

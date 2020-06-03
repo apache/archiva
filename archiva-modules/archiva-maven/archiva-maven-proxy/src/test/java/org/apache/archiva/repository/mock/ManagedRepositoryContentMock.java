@@ -329,12 +329,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public void deleteVersion( VersionedReference reference ) throws ContentNotFoundException, ContentAccessException
-    {
-
-    }
-
-    @Override
     public void deleteArtifact( ArtifactReference artifactReference ) throws ContentNotFoundException, ContentAccessException
     {
 
@@ -606,12 +600,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
         return metadata;
     }
 
-
-    @Override
-    public StorageAsset toFile( ArtifactReference reference )
-    {
-        return getRepoRootAsset().resolve( refs.get(reference));
-    }
 
     private String formatAsDirectory( String directory )
     {

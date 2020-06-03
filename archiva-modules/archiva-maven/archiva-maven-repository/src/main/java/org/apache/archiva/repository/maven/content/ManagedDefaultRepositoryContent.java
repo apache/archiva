@@ -1343,35 +1343,6 @@ public class ManagedDefaultRepositoryContent
 
 
     @Override
-    public void deleteVersion( VersionedReference ref ) throws ContentNotFoundException, ContentAccessException
-    {
-        final String path = toPath( ref );
-        final Path deleteTarget = getRepoDir( ).resolve( path );
-        if ( !Files.exists( deleteTarget ) )
-        {
-            log.warn( "Version path for repository {} does not exist: {}", getId( ), deleteTarget );
-            throw new ContentNotFoundException( "Version not found for repository " + getId( ) + ": " + path );
-        }
-        if ( Files.isDirectory( deleteTarget ) )
-        {
-            try
-            {
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( deleteTarget );
-            }
-            catch ( IOException e )
-            {
-                log.error( "Could not delete file path {}: {}", deleteTarget, e.getMessage( ), e );
-                throw new ContentAccessException( "Error while trying to delete path " + path + " from repository " + getId( ) + ": " + e.getMessage( ), e );
-            }
-        }
-        else
-        {
-            log.warn( "Version path for repository {} is not a directory {}", getId( ), deleteTarget );
-            throw new ContentNotFoundException( "Version path for repository " + getId( ) + " is not directory: " + path );
-        }
-    }
-
-    @Override
     public void deleteProject( ProjectReference ref )
         throws ContentNotFoundException, ContentAccessException
     {
@@ -1688,12 +1659,6 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
-
-    @Override
-    public StorageAsset toFile( ArtifactReference reference )
-    {
-        return repository.getAsset( toPath( reference ) );
-    }
 
     @Override
     public StorageAsset toFile( VersionedReference reference )
