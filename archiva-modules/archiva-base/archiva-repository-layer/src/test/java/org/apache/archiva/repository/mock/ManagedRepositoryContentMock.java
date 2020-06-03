@@ -304,12 +304,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public String getRepoRoot( )
-    {
-        return null;
-    }
-
-    @Override
     public ManagedRepository getRepository( )
     {
         return repository;

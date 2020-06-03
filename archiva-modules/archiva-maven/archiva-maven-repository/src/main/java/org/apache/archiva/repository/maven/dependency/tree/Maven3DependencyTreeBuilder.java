@@ -159,14 +159,7 @@ public class Maven3DependencyTreeBuilder
         // FIXME take care of relative path
         ResolveRequest resolveRequest = new ResolveRequest();
         resolveRequest.dependencyVisitor = dependencyVisitor;
-        try
-        {
-            resolveRequest.localRepoDir = repository.getContent().getLayout( BaseRepositoryContentLayout.class ).getRepoRoot();
-        }
-        catch ( LayoutException e )
-        {
-            throw new DependencyTreeBuilderException( "Could not convert to layout " + e.getMessage( ), e );
-        }
+        resolveRequest.localRepoDir = repository.getAsset( "" ).getFilePath().toAbsolutePath().toString();
         resolveRequest.groupId = groupId;
         resolveRequest.artifactId = artifactId;
         resolveRequest.version = version;

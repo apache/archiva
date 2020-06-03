@@ -270,17 +270,4 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
     /// *****************   End of new generation interface **********************
 
 
-    /**
-     * <p>
-     * Convenience method to get the repository (on disk) root directory.
-     * </p>
-     * <p>
-     * Equivalent to calling <code>.getRepository().getLocation()</code>
-     * </p>
-     *
-     * @return the repository (on disk) root directory.
-     */
-    String getRepoRoot();
-
-
 }

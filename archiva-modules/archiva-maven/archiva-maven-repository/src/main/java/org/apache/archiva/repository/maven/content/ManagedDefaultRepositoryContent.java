@@ -1374,12 +1374,6 @@ public class ManagedDefaultRepositoryContent
 
     }
 
-    @Override
-    public String getRepoRoot( )
-    {
-        return convertUriToPath( repository.getLocation( ) );
-    }
-
     private String convertUriToPath( URI uri )
     {
         if ( uri.getScheme( ) == null )

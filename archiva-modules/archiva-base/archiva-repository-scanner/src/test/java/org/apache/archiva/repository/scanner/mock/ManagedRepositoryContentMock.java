@@ -305,12 +305,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
         return repository.getId();
     }
 
-    @Override
-    public String getRepoRoot( )
-    {
-        return getRepoRootAsset().getFilePath().toString();
-    }
-
     private StorageAsset getRepoRootAsset() {
         if (fsStorage==null) {
             try {

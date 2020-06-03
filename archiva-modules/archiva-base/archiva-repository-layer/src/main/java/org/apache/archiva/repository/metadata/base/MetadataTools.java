@@ -937,23 +937,24 @@ public class MetadataTools
             path = path.substring( 0, idx );
         }
 
-        Path repoDir = Paths.get( managedRepository.getRepoRoot(), path );
+        StorageAsset repoDir = managedRepository.getGenericContent( ).getRepository( ).getAsset( "" );
 
-        if ( !Files.exists(repoDir))
+        if ( !repoDir.exists())
         {
             throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: "
-                                       + repoDir.toAbsolutePath() );
+                                       + repoDir.toString() );
         }
 
-        if ( !Files.isDirectory( repoDir ))
+        if ( !repoDir.isContainer())
         {
             throw new IOException(
-                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.toAbsolutePath() );
+                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.toString() );
         }
 
-        try(Stream<Path> stream = Files.list(repoDir)) {
+        Path repoRoot = repoDir.getFilePath( );
+        try(Stream<Path> stream = Files.list(repoRoot)) {
             String result = stream.filter(  Files::isRegularFile ).map( path1 ->
-                PathUtil.getRelative( managedRepository.getRepoRoot(), path1 )
+                repoRoot.relativize( path1 ).toString()
             ).filter( filetypes::matchesArtifactPattern ).findFirst().orElse( null );
             if (result!=null) {
                 return managedRepository.getGenericContent().toArtifactReference( result );
