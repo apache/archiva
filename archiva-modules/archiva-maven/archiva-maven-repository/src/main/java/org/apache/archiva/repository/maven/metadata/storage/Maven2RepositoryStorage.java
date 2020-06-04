@@ -166,7 +166,7 @@ public class Maven2RepositoryStorage
                 }
             }
         }
-        StorageAsset basedir = managedRepository.getAsset("");
+        StorageAsset basedir = managedRepository.getRoot();
         if (VersionUtil.isSnapshot(artifactVersion)) {
             StorageAsset metadataFile = pathTranslator.toFile(basedir, readMetadataRequest.getNamespace(),
                     readMetadataRequest.getProjectId(), artifactVersion,
@@ -456,9 +456,9 @@ public class Maven2RepositoryStorage
 
     private StorageAsset getRepositoryBasedir(String repoId)
             throws RepositoryStorageRuntimeException {
-        ManagedRepository repositoryConfiguration = repositoryRegistry.getManagedRepository(repoId);
+        ManagedRepository repository = repositoryRegistry.getManagedRepository(repoId);
 
-        return repositoryConfiguration.getAsset("");
+        return repository.getRoot();
     }
 
     @Override

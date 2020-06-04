@@ -173,7 +173,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             throw new RepositoryException("The location entry is not a valid uri: " + cfg.getLocation());
         }
         setBaseConfig(repo, cfg);
-        Path repoDir = repo.getAsset("").getFilePath();
+        Path repoDir = repo.getRoot().getFilePath();
         if (!Files.exists(repoDir)) {
             log.debug("Creating repo directory {}", repoDir);
             try {
@@ -307,7 +307,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
             indexCreationFeature.setIndexPath( getURIFromString(configuration.getMergedIndexPath()) );
             Path localPath = Paths.get(configuration.getMergedIndexPath());
-            Path repoGroupPath = repositoryGroup.getAsset("").getFilePath().toAbsolutePath();
+            Path repoGroupPath = repositoryGroup.getRoot().getFilePath().toAbsolutePath();
             if (localPath.isAbsolute() && !localPath.startsWith(repoGroupPath)) {
                 try {
                     FilesystemStorage storage = new FilesystemStorage(localPath.getParent(), fileLockManager);

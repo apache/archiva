@@ -595,7 +595,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
     private StorageAsset getIndexPath(URI indexDirUri, RepositoryStorage repoStorage, String defaultDir) throws IOException
     {
-        StorageAsset rootAsset = repoStorage.getAsset("");
+        StorageAsset rootAsset = repoStorage.getRoot();
         RepositoryStorage storage = rootAsset.getStorage();
         Path indexDirectory;
         Path repositoryPath = rootAsset.getFilePath().toAbsolutePath();
@@ -650,7 +650,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
 
         // create remote repository path
-        Path repoDir = remoteRepository.getAsset( "" ).getFilePath();
+        Path repoDir = remoteRepository.getRoot().getFilePath();
         if ( !Files.exists( repoDir ) )
         {
             Files.createDirectories( repoDir );
@@ -709,7 +709,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
         IndexingContext context;
         // take care first about repository location as can be relative
-        Path repositoryDirectory = repository.getAsset( "" ).getFilePath();
+        Path repositoryDirectory = repository.getRoot().getFilePath();
 
         if ( !Files.exists( repositoryDirectory ) )
         {

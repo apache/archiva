@@ -1284,7 +1284,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             return (Repository)asset;
         } else
         {
-            return getRepositories( ).stream( ).filter( r -> r.getAsset( "" )
+            return getRepositories( ).stream( ).filter( r -> r.getRoot()
                 .getStorage( ).equals( asset.getStorage( ) ) ).findFirst( ).orElse( null );
         }
     }

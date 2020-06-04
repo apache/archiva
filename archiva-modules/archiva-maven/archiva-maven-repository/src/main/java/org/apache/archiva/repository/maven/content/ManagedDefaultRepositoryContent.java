@@ -1147,7 +1147,7 @@ public class ManagedDefaultRepositoryContent
         final Predicate<StorageAsset> filter = getItemFileFilterFromSelector( selector );
         StorageAsset startDir;
         if (selector.getNamespace().contains("*")) {
-            startDir = getAsset( "" );
+            startDir = getAsset("");
         } else if ( selector.hasProjectId( ) && selector.getProjectId().contains("*") )
         {
             startDir = getAsset( selector.getNamespace( ) );
@@ -1411,12 +1411,12 @@ public class ManagedDefaultRepositoryContent
 
     private Path getRepoDir( )
     {
-        return repository.getAsset( "" ).getFilePath( );
+        return repository.getRoot().getFilePath( );
     }
 
     private RepositoryStorage getStorage( )
     {
-        return repository.getAsset( "" ).getStorage( );
+        return repository.getRoot().getStorage( );
     }
 
     /**

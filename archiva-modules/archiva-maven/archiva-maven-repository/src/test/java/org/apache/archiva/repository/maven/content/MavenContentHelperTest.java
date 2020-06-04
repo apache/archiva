@@ -73,7 +73,7 @@ class MavenContentHelperTest
         assertNotNull( ns );
         assertEquals( "org.apache.archiva", ns );
 
-        asset = storage.getAsset( "" );
+        asset = storage.getRoot();
         ns = MavenContentHelper.getNamespaceFromNamespacePath( asset );
         assertNotNull( ns );
         assertEquals( "", ns );

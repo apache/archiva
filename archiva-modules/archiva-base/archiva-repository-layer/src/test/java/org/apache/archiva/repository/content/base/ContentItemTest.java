@@ -49,7 +49,7 @@ public abstract class ContentItemTest
 
         this.storage = new FilesystemStorage( Paths.get( "target" ), new DefaultFileLockManager( ) );
 
-        this.asset = storage.getAsset( "" );
+        this.asset = storage.getRoot();
 
     }
 

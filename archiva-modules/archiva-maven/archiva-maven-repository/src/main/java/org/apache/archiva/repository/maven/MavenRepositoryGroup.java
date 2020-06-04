@@ -62,7 +62,7 @@ public class MavenRepositoryGroup extends AbstractRepositoryGroup implements Edi
     }
 
     private Path getRepositoryPath() {
-        return getStorage().getAsset("").getFilePath();
+        return getStorage().getRoot().getFilePath();
     }
 
     private void init() {

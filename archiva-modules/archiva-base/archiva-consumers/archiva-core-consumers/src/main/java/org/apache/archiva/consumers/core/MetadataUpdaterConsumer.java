@@ -125,7 +125,7 @@ public class MetadataUpdaterConsumer
             if (this.repository==null) {
                 throw new RepositoryNotFoundException( "Repository content not found: "+repoConfig.getId() );
             }
-            this.repositoryDir = repository.getRepository().getAsset( "" );
+            this.repositoryDir = repository.getRepository().getRoot();
             this.scanStartTimestamp = System.currentTimeMillis( );
         }
         catch ( RepositoryException e )

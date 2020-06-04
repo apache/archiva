@@ -284,7 +284,7 @@ public class ArchivaDavResourceFactory
             repositoryRequestInfo = repo.getRequestInfo();
             String logicalResource = getLogicalResource( archivaLocator, null, false );
             resourcesInAbsolutePath.add(
-                managedRepositoryContent.getRepository().getAsset( "" ).getFilePath().resolve(logicalResource ).toAbsolutePath().toString() );
+                managedRepositoryContent.getRepository().getLocalPath().getFilePath().resolve(logicalResource ).toAbsolutePath().toString() );
 
         }
 
@@ -469,7 +469,7 @@ public class ArchivaDavResourceFactory
                         logicalResource = logicalResource.substring( 1 );
                     }
                     resourcesInAbsolutePath.add(
-                        managedRepositoryContent.getRepository().getAsset( "" ).resolve( logicalResource ).getFilePath().toAbsolutePath().toString() );
+                        managedRepositoryContent.getRepository().getLocalPath().resolve( logicalResource ).getFilePath().toAbsolutePath().toString() );
                 }
                 catch ( DavException e )
                 {
@@ -686,7 +686,7 @@ public class ArchivaDavResourceFactory
                  * create the collections themselves.
                  */
 
-                StorageAsset rootDirectory = managedRepositoryContent.getRepository( ).getAsset( "" );
+                StorageAsset rootDirectory = managedRepositoryContent.getRepository( ).getLocalPath();
                 StorageAsset destDir = rootDirectory.resolve( logicalResource.getPath() ).getParent();
 
                 if ( !destDir.exists() )
@@ -1090,7 +1090,7 @@ public class ArchivaDavResourceFactory
                     }
                     try {
                         FilesystemStorage storage = new FilesystemStorage(tmpDirectory.getParent(), new DefaultFileLockManager());
-                        mergedRepositoryContents.add( storage.getAsset("") );
+                        mergedRepositoryContents.add( storage.getRoot() );
                     } catch (IOException e) {
                         throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not create storage for " + tmpDirectory);
                     }
@@ -1376,7 +1376,7 @@ public class ArchivaDavResourceFactory
                 Path tempRepoFile = Files.createTempDirectory( "temp" );
                 tempRepoFile.toFile( ).deleteOnExit( );
                 FilesystemStorage storage = new FilesystemStorage(tempRepoFile, new DefaultFileLockManager());
-                StorageAsset tmpAsset = storage.getAsset("");
+                StorageAsset tmpAsset = storage.getRoot();
 
                 IndexMergerRequest indexMergerRequest =
                     new IndexMergerRequest( authzRepos, true, id,

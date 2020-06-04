@@ -61,7 +61,7 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
 
     @Override
     public StorageAsset getPath() {
-        return indexStorage.getAsset("");
+        return indexStorage.getRoot();
     }
 
     @Override

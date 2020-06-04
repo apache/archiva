@@ -71,13 +71,13 @@ public class MavenManagedRepository extends AbstractManagedRepository
 
         super( RepositoryType.MAVEN, id, name, storage);
         this.indexCreationFeature = new IndexCreationFeature(this, this);
-        setLocation(storage.getAsset("").getFilePath().toUri());
+        setLocation(storage.getRoot().getFilePath().toUri());
     }
 
     public MavenManagedRepository( Locale primaryLocale, String id, String name, FilesystemStorage storage )
     {
         super( primaryLocale, RepositoryType.MAVEN, id, name, storage );
-        setLocation(storage.getAsset("").getFilePath().toUri());
+        setLocation(storage.getRoot().getFilePath().toUri());
     }
 
     @Override

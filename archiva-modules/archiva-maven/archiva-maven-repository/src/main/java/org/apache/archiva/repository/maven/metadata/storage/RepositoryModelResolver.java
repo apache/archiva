@@ -112,7 +112,7 @@ public class RepositoryModelResolver
                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository,
                                    MavenSystemManager mavenSystemManager, MavenMetadataReader metadataReader)
     {
-        this( managedRepository.getAsset(""), pathTranslator );
+        this( managedRepository.getRoot(), pathTranslator );
 
         this.managedRepository = managedRepository;
 
@@ -125,7 +125,7 @@ public class RepositoryModelResolver
 
         this.targetRepository = targetRepository;
 
-        this.session = MavenSystemManager.newRepositorySystemSession( managedRepository.getAsset("").getFilePath().toString() );
+        this.session = MavenSystemManager.newRepositorySystemSession( managedRepository.getRoot().getFilePath().toString() );
 
         this.versionRangeResolver = mavenSystemManager.getLocator().getService(VersionRangeResolver.class);
 
@@ -303,7 +303,7 @@ public class RepositoryModelResolver
         Path tmpSha1 = null;
         Path tmpResource = null;
         String artifactPath = pathTranslator.toPath( groupId, artifactId, version, filename );
-        Path resource = targetRepository.getAsset("").getFilePath().resolve( artifactPath );
+        Path resource = targetRepository.getRoot().getFilePath().resolve( artifactPath );
 
         Path workingDirectory = createWorkingDirectory( targetRepository.getLocation().toString() );
         try

@@ -159,7 +159,7 @@ public class Maven3DependencyTreeBuilder
         // FIXME take care of relative path
         ResolveRequest resolveRequest = new ResolveRequest();
         resolveRequest.dependencyVisitor = dependencyVisitor;
-        resolveRequest.localRepoDir = repository.getAsset( "" ).getFilePath().toAbsolutePath().toString();
+        resolveRequest.localRepoDir = repository.getRoot().getFilePath().toAbsolutePath().toString();
         resolveRequest.groupId = groupId;
         resolveRequest.artifactId = artifactId;
         resolveRequest.version = version;
@@ -238,7 +238,7 @@ public class Maven3DependencyTreeBuilder
         for ( String repoId : repositoryIds )
         {
             ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repoId);
-            StorageAsset repoDir = managedRepo.getAsset("");
+            StorageAsset repoDir = managedRepo.getRoot();
 
             StorageAsset file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
                                                projectArtifact.getBaseVersion(),

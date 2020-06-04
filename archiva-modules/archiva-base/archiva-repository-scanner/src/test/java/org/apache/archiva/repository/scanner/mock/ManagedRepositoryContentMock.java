@@ -313,7 +313,7 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
                 e.printStackTrace();
             }
         }
-        return fsStorage.getAsset("");
+        return fsStorage.getRoot();
     }
 
     @Override

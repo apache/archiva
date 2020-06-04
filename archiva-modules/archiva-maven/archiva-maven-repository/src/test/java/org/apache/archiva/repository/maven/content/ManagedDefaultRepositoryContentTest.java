@@ -1182,7 +1182,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
         ManagedRepositoryContent myRepoContent = repo.getContent( );
-        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        Path repoRoot = repo.getRoot().getFilePath( );
         assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven" )) );
         ArchivaItemSelector selector = ArchivaItemSelector.builder( )
             .withNamespace( "org.apache.maven" ).build();
@@ -1209,7 +1209,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
         ManagedRepositoryContent myRepoContent = repo.getContent( );
-        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        Path repoRoot = repo.getRoot().getFilePath( );
         assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A" )) );
         ArchivaItemSelector selector = ArchivaItemSelector.builder( )
             .withNamespace( "org.apache.maven" )
@@ -1239,7 +1239,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
         ManagedRepositoryContent myRepoContent = repo.getContent( );
-        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        Path repoRoot = repo.getRoot().getFilePath( );
         assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0" )) );
         ArchivaItemSelector selector = ArchivaItemSelector.builder( )
             .withNamespace( "org.apache.maven" )
@@ -1273,7 +1273,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
         ManagedRepositoryContent myRepoContent = repo.getContent( );
-        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        Path repoRoot = repo.getRoot().getFilePath( );
         assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0/A-1.0.pom" )) );
         assertTrue( Files.exists(repoRoot.resolve( "org/apache/maven/A/1.0/A-1.0.war" )) );
         ArchivaItemSelector selector = ArchivaItemSelector.builder( )
@@ -1369,7 +1369,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
         ManagedRepositoryContent myRepoContent = repo.getContent( );
-        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        Path repoRoot = repo.getRoot().getFilePath( );
 
         ArchivaItemSelector selector = ArchivaItemSelector.builder( )
             .withNamespace( "org.apache.test2" )
@@ -1437,7 +1437,7 @@ public class ManagedDefaultRepositoryContentTest
         ManagedRepository repo = createManagedRepoWithContent( "delete-repository" );
         ManagedRepositoryContent myRepoContent = repo.getContent( );
         BaseRepositoryContentLayout layout = myRepoContent.getLayout( BaseRepositoryContentLayout.class );
-        Path repoRoot = repo.getAsset( "" ).getFilePath( );
+        Path repoRoot = repo.getRoot().getFilePath( );
 
         Path tmpFile = Files.createTempFile( "archiva-mvn-repotest", "jar" );
         try( OutputStream outputStream = Files.newOutputStream( tmpFile ))

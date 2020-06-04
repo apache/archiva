@@ -132,7 +132,7 @@ public class ArchivaIndexingTaskExecutorTest
     public void testAddArtifactToIndex()
         throws Exception
     {
-        Path basePath = repo.getAsset("").getFilePath();
+        Path basePath = repo.getLocalPath().getFilePath();
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
@@ -174,7 +174,7 @@ public class ArchivaIndexingTaskExecutorTest
     public void testUpdateArtifactInIndex()
         throws Exception
     {
-        Path basePath = repo.getAsset("").getFilePath();
+        Path basePath = repo.getLocalPath().getFilePath();
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
@@ -211,7 +211,7 @@ public class ArchivaIndexingTaskExecutorTest
     public void testRemoveArtifactFromIndex()
         throws Exception
     {
-        Path basePath = repo.getAsset("").getFilePath();
+        Path basePath = repo.getLocalPath().getFilePath();
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
@@ -274,7 +274,7 @@ public class ArchivaIndexingTaskExecutorTest
         throws Exception
     {
 
-        Path basePath = repo.getAsset("").getFilePath();
+        Path basePath = repo.getLocalPath().getFilePath();
         IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
         StorageAsset packedIndexDirectory = icf.getLocalPackedIndexPath();
         StorageAsset indexerDirectory = icf.getLocalIndexPath();

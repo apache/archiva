@@ -106,6 +106,12 @@ public class MockStorage implements RepositoryStorage
     }
 
     @Override
+    public StorageAsset getRoot( )
+    {
+        return root;
+    }
+
+    @Override
     public void consumeData( StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
     {
 

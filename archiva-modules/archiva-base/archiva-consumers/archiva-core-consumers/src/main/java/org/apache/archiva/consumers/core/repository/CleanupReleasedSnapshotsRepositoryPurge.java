@@ -92,7 +92,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     {
         try
         {
-            StorageAsset artifactFile = repository.getRepository( ).getAsset( "" ).resolve( path );
+            StorageAsset artifactFile = repository.getRepository( ).getRoot().resolve( path );
             BaseRepositoryContentLayout layout = repository.getLayout( BaseRepositoryContentLayout.class );
 
             if ( !artifactFile.exists() )

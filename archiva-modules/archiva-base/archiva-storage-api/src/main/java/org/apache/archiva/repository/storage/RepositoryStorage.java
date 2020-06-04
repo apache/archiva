@@ -75,6 +75,12 @@ public interface RepositoryStorage {
     StorageAsset getAsset(String path);
 
     /**
+     * Returns the root asset of the storage
+     * @return the storage asset that represents the root
+     */
+    StorageAsset getRoot( );
+
+    /**
      * Consumes the data and sets a lock for the file during the operation.
      *
      * @param asset The asset from which the data is consumed.

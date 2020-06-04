@@ -328,6 +328,12 @@ public class FilesystemStorage implements RepositoryStorage {
     }
 
     @Override
+    public StorageAsset getRoot( )
+    {
+        return new FilesystemAsset( this, "", basePath, basePath );
+    }
+
+    @Override
     public StorageAsset addAsset( String path, boolean container )
     {
         try {

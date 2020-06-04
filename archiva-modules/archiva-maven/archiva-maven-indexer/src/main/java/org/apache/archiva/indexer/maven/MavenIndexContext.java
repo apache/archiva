@@ -70,7 +70,7 @@ public class MavenIndexContext implements ArchivaIndexingContext {
     @Override
     public StorageAsset getPath() {
         if (dir==null) {
-            StorageAsset repositoryDirAsset = repository.getAsset("");
+            StorageAsset repositoryDirAsset = repository.getRoot();
             Path repositoryDir = repositoryDirAsset.getFilePath().toAbsolutePath();
             Path indexDir = delegate.getIndexDirectoryFile().toPath();
             if (indexDir.startsWith(repositoryDir)) {
@@ -78,7 +78,7 @@ public class MavenIndexContext implements ArchivaIndexingContext {
             } else {
                 try {
                     FilesystemStorage storage = new FilesystemStorage(indexDir, new DefaultFileLockManager());
-                    dir = storage.getAsset("");
+                    dir = storage.getRoot();
                 } catch (IOException e) {
                     log.error("Error occured while creating storage for index dir");
                 }

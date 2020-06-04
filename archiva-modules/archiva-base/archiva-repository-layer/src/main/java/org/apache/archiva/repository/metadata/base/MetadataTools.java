@@ -937,7 +937,7 @@ public class MetadataTools
             path = path.substring( 0, idx );
         }
 
-        StorageAsset repoDir = managedRepository.getGenericContent( ).getRepository( ).getAsset( "" );
+        StorageAsset repoDir = managedRepository.getGenericContent( ).getRepository( ).getRoot();
 
         if ( !repoDir.exists())
         {

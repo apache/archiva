@@ -152,7 +152,7 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
      */
     @Override
     public StorageAsset getLocalPath() {
-        return getStorage().getAsset("");
+        return getStorage().getRoot();
     }
 
     @Override

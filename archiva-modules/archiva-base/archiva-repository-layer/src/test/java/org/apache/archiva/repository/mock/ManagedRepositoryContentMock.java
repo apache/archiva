@@ -274,7 +274,7 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     @Override
     public ContentItem toItem( String path ) throws LayoutException
     {
-        StorageAsset asset = repository.getAsset( "" ).resolve( path );
+        StorageAsset asset = repository.getRoot().resolve( path );
         return toItem( asset );
     }
 
