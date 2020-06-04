@@ -90,15 +90,6 @@ public interface Repository extends EventSource, RepositoryStorage {
 
 
     /**
-     * Returns a storage representation to the local data stored for this repository.
-     * The repository implementation may not store the real artifacts in this path. The directory structure
-     * is completely implementation dependant.
-     *
-     */
-    StorageAsset getLocalPath();
-
-
-    /**
      * A repository may allow additional locations that can be used, if the primary location is not available.
      * @return
      */

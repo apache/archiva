@@ -284,7 +284,7 @@ public class ArchivaDavResourceFactory
             repositoryRequestInfo = repo.getRequestInfo();
             String logicalResource = getLogicalResource( archivaLocator, null, false );
             resourcesInAbsolutePath.add(
-                managedRepositoryContent.getRepository().getLocalPath().getFilePath().resolve(logicalResource ).toAbsolutePath().toString() );
+                managedRepositoryContent.getRepository().getRoot().getFilePath().resolve(logicalResource ).toAbsolutePath().toString() );
 
         }
 
@@ -469,7 +469,7 @@ public class ArchivaDavResourceFactory
                         logicalResource = logicalResource.substring( 1 );
                     }
                     resourcesInAbsolutePath.add(
-                        managedRepositoryContent.getRepository().getLocalPath().resolve( logicalResource ).getFilePath().toAbsolutePath().toString() );
+                        managedRepositoryContent.getRepository().getRoot().resolve( logicalResource ).getFilePath().toAbsolutePath().toString() );
                 }
                 catch ( DavException e )
                 {
@@ -686,7 +686,7 @@ public class ArchivaDavResourceFactory
                  * create the collections themselves.
                  */
 
-                StorageAsset rootDirectory = managedRepositoryContent.getRepository( ).getLocalPath();
+                StorageAsset rootDirectory = managedRepositoryContent.getRepository( ).getRoot();
                 StorageAsset destDir = rootDirectory.resolve( logicalResource.getPath() ).getParent();
 
                 if ( !destDir.exists() )

@@ -25,7 +25,6 @@ import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
-import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.net.URI;
 import java.time.Duration;
@@ -144,15 +143,6 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
     public Duration getTimeout( )
     {
         return timeout;
-    }
-
-    /**
-     * Remote repositories resolve always relative to the base directory.
-     * @return
-     */
-    @Override
-    public StorageAsset getLocalPath() {
-        return getStorage().getRoot();
     }
 
     @Override
