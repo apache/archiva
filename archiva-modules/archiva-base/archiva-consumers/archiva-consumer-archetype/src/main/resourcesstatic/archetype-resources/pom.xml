@@ -40,6 +40,7 @@
     <httpclient.core.version>${httpcoreVersion}</httpclient.core.version>
     <archiva.comp.version>${archivaCompVersion}</archiva.comp.version>
     <commons.beanutils.version>${beanUtilsVersion}</commons.beanutils.version>
+    <maven.wagon.version>${mavenWagonVersion}</maven.wagon.version>
   </properties>
   <dependencies>
     <dependency>
@@ -69,6 +70,18 @@
     </dependency>
 
     <!-- Test scope -->
+    <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http</artifactId>
+      <version>${maven.wagon.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http-lightweight</artifactId>
+      <version>${maven.wagon.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>repository-statistics</artifactId>
@@ -223,14 +236,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    -->
   </dependencies>
 
   <!-- match up with those used by Archiva -->

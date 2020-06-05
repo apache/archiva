@@ -36,9 +36,9 @@ import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.http.HttpWagon;
-import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Request;
@@ -209,8 +209,8 @@ public class HttpProxyTransferTest
     public void testGetOverHttpProxy()
         throws Exception
     {
-        Assertions.assertThat( System.getProperty( "http.proxyHost", "" ) ).isEmpty();
-        Assertions.assertThat( System.getProperty( "http.proxyPort", "" ) ).isEmpty();
+        assertTrue( StringUtils.isEmpty( System.getProperty( "http.proxyHost" , "" ) ));
+        assertTrue( StringUtils.isEmpty( System.getProperty( "http.proxyPort", "" ) ) );
 
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
 
@@ -239,8 +239,8 @@ public class HttpProxyTransferTest
         String actualContents = FileUtils.readFileToString( downloadedFile.getFilePath().toFile(), Charset.defaultCharset() );
         assertEquals( "Check file contents.", expectedContents, actualContents );
 
-        Assertions.assertThat( System.getProperty( "http.proxyHost" , "") ).isEmpty();
-        Assertions.assertThat( System.getProperty( "http.proxyPort" , "") ).isEmpty();
+        assertTrue( StringUtils.isEmpty( System.getProperty( "http.proxyHost", "" ) ) );
+        assertTrue( StringUtils.isEmpty( System.getProperty( "http.proxyPort" , "") ) );
     }
 
     private void addConnector()

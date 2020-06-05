@@ -43,6 +43,7 @@ archiva-modules
     archiva-maven-model
     archiva-maven-metadata
     archiva-maven-model
+    archiva-maven-proxy
     
 
 

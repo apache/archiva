@@ -61,5 +61,9 @@
     <requiredProperty key="httpcoreVersion">
       <defaultValue>${httpclient.core.version}</defaultValue>
     </requiredProperty>
+    <requiredProperty key="mavenWagonVersion">
+      <defaultValue>${wagon.version}</defaultValue>
+    </requiredProperty>
+
   </requiredProperties>
 </archetype-descriptor>
