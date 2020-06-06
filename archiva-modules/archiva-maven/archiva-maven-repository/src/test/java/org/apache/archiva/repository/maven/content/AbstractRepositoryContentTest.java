@@ -584,7 +584,7 @@ public abstract class AbstractRepositoryContentTest
             {
                 ns = getManaged( ).getLayout( BaseRepositoryContentLayout.class ).getNamespace( expectedArtifact );
                 assertNotNull( ns );
-                assertEquals( groupId, ns.getNamespace( ) );
+                assertEquals( groupId, ns.getId( ) );
             }
             if ( StringUtils.isNotEmpty( artifactId ) )
             {
@@ -597,7 +597,7 @@ public abstract class AbstractRepositoryContentTest
             {
                 ver = getManaged( ).getLayout( BaseRepositoryContentLayout.class ).getVersion( expectedArtifact );
                 assertNotNull( ver );
-                assertEquals( version, ver.getVersion( ) );
+                assertEquals( version, ver.getId( ) );
                 assertEquals( pr, ver.getProject( ) );
             }
             Artifact artifact = getManaged( ).getLayout( BaseRepositoryContentLayout.class ).getArtifact( expectedArtifact );

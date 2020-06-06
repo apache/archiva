@@ -53,7 +53,7 @@ class ArchivaNamespaceTest extends ContentItemTest
         assertNotNull( result );
         assertEquals( this.repository, result.getRepository( ) );
         assertEquals( this.asset, result.getAsset( ) );
-        assertEquals( "test.1d.d", result.getNamespace( ) );
+        assertEquals( "test.1d.d", result.getId( ) );
         assertNotNull( result.getAttributes( ) );
         assertEquals( 0, result.getAttributes( ).size( ) );
         assertArrayEquals( new String[]{ "test", "1d", "d" }, result.getNamespacePath().toArray() );
@@ -69,7 +69,7 @@ class ArchivaNamespaceTest extends ContentItemTest
         assertNotNull( result );
         assertEquals( this.repository, result.getRepository( ) );
         assertEquals( this.asset, result.getAsset( ) );
-        assertEquals( "test.1d..d.", result.getNamespace( ) );
+        assertEquals( "test.1d..d.", result.getId( ) );
         assertNotNull( result.getAttributes( ) );
         assertEquals( 0, result.getAttributes( ).size( ) );
         assertArrayEquals( new String[]{ "test", "1d", "","d" }, result.getNamespacePath().toArray() );
@@ -87,7 +87,7 @@ class ArchivaNamespaceTest extends ContentItemTest
         assertNotNull( result );
         assertEquals( this.repository, result.getRepository( ) );
         assertEquals( this.asset, result.getAsset( ) );
-        assertEquals( "test.1d.d/abc/def", result.getNamespace( ) );
+        assertEquals( "test.1d.d/abc/def", result.getId( ) );
         assertNotNull( result.getAttributes( ) );
         assertEquals( 0, result.getAttributes( ).size( ) );
         assertArrayEquals( new String[]{ "test.1d.d", "abc", "def" }, result.getNamespacePath().toArray() );

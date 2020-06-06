@@ -53,7 +53,7 @@ public interface Namespace extends ContentItem
      *
      * @return the unique name of the namespace
      */
-    String getNamespace( );
+    String getId( );
 
     /**
      * Returns the elements that represent the path to the namespace.

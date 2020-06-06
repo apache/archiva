@@ -22,6 +22,8 @@ package org.apache.archiva.repository.content.base;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ArtifactType;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
+import org.apache.archiva.repository.content.Namespace;
+import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
 import org.apache.archiva.repository.content.base.builder.ArtifactVersionBuilder;
@@ -114,6 +116,17 @@ public class ArchivaArtifact extends BaseContentItem implements Artifact
         return artifactType;
     }
 
+    @Override
+    public Namespace getNamespace( )
+    {
+        return version.getProject( ).getNamespace( );
+    }
+
+    @Override
+    public Project getProject( )
+    {
+        return version.getProject( );
+    }
 
     /**
      * Returns the builder for creating a new artifact instance. You have to fill the
@@ -186,9 +199,9 @@ public class ArchivaArtifact extends BaseContentItem implements Artifact
     {
         StringBuilder key = new StringBuilder();
 
-        key.append( defaultString( getVersion().getProject().getNamespace().getNamespace() )).append( ":" );
+        key.append( defaultString( getVersion().getProject().getNamespace().getId() )).append( ":" );
         key.append( defaultString( getId() ) ).append( ":" );
-        key.append( defaultString( getVersion().getVersion() ) ).append( ":" );
+        key.append( defaultString( getVersion().getId() ) ).append( ":" );
         key.append( defaultString( getArtifactVersion( ) ) ).append( ":" );
         key.append( defaultString( getClassifier() ) ).append( ":" );
         key.append( defaultString( getRemainder() ) );

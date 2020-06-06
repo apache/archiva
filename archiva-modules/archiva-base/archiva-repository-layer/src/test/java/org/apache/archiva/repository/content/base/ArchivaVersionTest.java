@@ -55,8 +55,8 @@ class ArchivaVersionTest extends ContentItemTest
         assertEquals( asset, item.getAsset( ) );
         assertNotNull( item.getProject( ) );
         assertEquals( project, item.getProject( ) );
-        assertNotNull( item.getVersion( ) );
-        assertEquals( "3.4.5", item.getVersion( ) );
+        assertNotNull( item.getId( ) );
+        assertEquals( "3.4.5", item.getId( ) );
         assertNotNull( item.getVersionSegments( ) );
         assertArrayEquals( new String[]{"3", "4", "5"}, item.getVersionSegments( ).toArray( ) );
     }

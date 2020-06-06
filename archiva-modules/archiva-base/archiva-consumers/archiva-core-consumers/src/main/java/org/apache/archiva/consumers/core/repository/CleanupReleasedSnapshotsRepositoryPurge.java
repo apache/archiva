@@ -34,6 +34,7 @@ import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.metadata.audit.RepositoryListener;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Project;
@@ -101,17 +102,18 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 return;
             }
 
-            ArtifactReference artifactRef = repository.toArtifactReference( path );
+            Artifact artifactRef = layout.getArtifact( path );
+            // ArtifactReference artifactRef = repository.toArtifactReference( path );
 
-            if ( !VersionUtil.isSnapshot( artifactRef.getVersion( ) ) )
+            if ( !VersionUtil.isSnapshot( artifactRef.getVersion().getId( ) ) )
             {
                 // Nothing to do here, not a snapshot, skip it.
                 return;
             }
 
             ItemSelector projectSelector = ArchivaItemSelector.builder( )
-                .withNamespace( artifactRef.getGroupId( ) )
-                .withProjectId( artifactRef.getArtifactId( ) )
+                .withNamespace( artifactRef.getNamespace( ).getId() )
+                .withProjectId( artifactRef.getId( ) )
                 .build();
 
 
@@ -128,9 +130,9 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                     Project proj = repoContent.getProject( projectSelector );
                     for ( Version version : repoContent.getVersions( proj ) )
                     {
-                        if ( !VersionUtil.isSnapshot( version.getVersion() ) )
+                        if ( !VersionUtil.isSnapshot( version.getId() ) )
                         {
-                            releasedVersions.add( version.getVersion() );
+                            releasedVersions.add( version.getId() );
                         }
                     }
                 }
@@ -142,19 +144,19 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             boolean needsMetadataUpdate = false;
 
             VersionedReference versionRef = new VersionedReference( );
-            versionRef.setGroupId( artifactRef.getGroupId( ) );
-            versionRef.setArtifactId( artifactRef.getArtifactId( ) );
+            versionRef.setGroupId( artifactRef.getNamespace( ).getId() );
+            versionRef.setArtifactId( artifactRef.getId( ) );
 
             ArchivaItemSelector.Builder versionSelectorBuilder = ArchivaItemSelector.builder( )
-                .withNamespace( artifactRef.getGroupId( ) )
-                .withProjectId( artifactRef.getArtifactId( ) )
-                .withArtifactId( artifactRef.getArtifactId( ) );
+                .withNamespace( artifactRef.getNamespace().getId() )
+                .withProjectId( artifactRef.getId( ) )
+                .withArtifactId( artifactRef.getId( ) );
 
             MetadataRepository metadataRepository = repositorySession.getRepository( );
 
-            if ( releasedVersions.contains( VersionUtil.getReleaseVersion( artifactRef.getVersion( ) ) ) )
+            if ( releasedVersions.contains( VersionUtil.getReleaseVersion( artifactRef.getVersion().getId( ) ) ) )
             {
-                ArchivaItemSelector selector = versionSelectorBuilder.withVersion( artifactRef.getVersion( ) ).build( );
+                ArchivaItemSelector selector = versionSelectorBuilder.withVersion( artifactRef.getVersion().getId( ) ).build( );
                 Version version = layout.getVersion( selector );
                 if (version.exists())
                 {
@@ -162,12 +164,12 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 }
                 for ( RepositoryListener listener : listeners )
                 {
-                    listener.deleteArtifact( metadataRepository, repository.getId( ), artifactRef.getGroupId( ),
-                        artifactRef.getArtifactId( ), artifactRef.getVersion( ),
+                    listener.deleteArtifact( metadataRepository, repository.getId( ), artifactRef.getNamespace().getId(),
+                        artifactRef.getId( ), artifactRef.getVersion().getId( ),
                         artifactFile.getName() );
                 }
                 metadataRepository.removeProjectVersion( repositorySession, repository.getId( ),
-                    artifactRef.getGroupId( ), artifactRef.getArtifactId( ), artifactRef.getVersion( ) );
+                    artifactRef.getNamespace().getId(), artifactRef.getId( ), artifactRef.getVersion().getId() );
 
                 needsMetadataUpdate = true;
             }
@@ -201,16 +203,16 @@ public class CleanupReleasedSnapshotsRepositoryPurge
      * -> not sure what needs to be changed here.
      */
     @SuppressWarnings( "deprecation" )
-    private void updateMetadata( ArtifactReference artifact )
+    private void updateMetadata( Artifact artifact )
     {
         VersionedReference versionRef = new VersionedReference( );
-        versionRef.setGroupId( artifact.getGroupId( ) );
-        versionRef.setArtifactId( artifact.getArtifactId( ) );
-        versionRef.setVersion( artifact.getVersion( ) );
+        versionRef.setGroupId( artifact.getNamespace().getId( ) );
+        versionRef.setArtifactId( artifact.getId( ) );
+        versionRef.setVersion( artifact.getVersion().getId( ) );
 
         ProjectReference projectRef = new ProjectReference( );
-        projectRef.setGroupId( artifact.getGroupId( ) );
-        projectRef.setArtifactId( artifact.getArtifactId( ) );
+        projectRef.setGroupId( artifact.getNamespace().getId( ) );
+        projectRef.setArtifactId( artifact.getId( ) );
 
         try
         {

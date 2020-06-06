@@ -50,7 +50,7 @@ public class ArchivaNamespace extends BaseContentItem implements Namespace
     }
 
     @Override
-    public String getNamespace( )
+    public String getId( )
     {
         return namespace;
     }

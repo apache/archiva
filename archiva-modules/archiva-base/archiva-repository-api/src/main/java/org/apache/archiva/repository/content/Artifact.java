@@ -61,6 +61,18 @@ public interface Artifact extends DataItem
     String getArtifactVersion( );
 
     /**
+     * Returns the project this artifact is attached to
+     * @return the project
+     */
+    Project getProject();
+
+    /**
+     * Returns the namespace this artifact is attached to
+     * @return the namespace object
+     */
+    Namespace getNamespace();
+
+    /**
      * Returns the attached version this artifact is part of.
      *
      * @return the version object

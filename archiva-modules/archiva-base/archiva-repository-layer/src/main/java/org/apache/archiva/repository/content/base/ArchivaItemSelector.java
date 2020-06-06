@@ -67,21 +67,21 @@ public class ArchivaItemSelector implements ItemSelector
         public Builder withItem( ContentItem item ) {
             if (item instanceof Namespace ) {
                 Namespace ns = (Namespace) item;
-                selector.namespace = ns.getNamespace();
+                selector.namespace = ns.getId();
             } else if (item instanceof Project ) {
                 Project proj = (Project)item;
-                selector.namespace = proj.getNamespace( ).getNamespace( );
+                selector.namespace = proj.getNamespace( ).getId( );
                 selector.projectId = proj.getId( );
             } else if (item instanceof Version) {
                 Version version = (Version)item;
-                selector.namespace = version.getProject( ).getNamespace( ).getNamespace( );
+                selector.namespace = version.getProject( ).getNamespace( ).getId( );
                 selector.projectId = version.getProject( ).getId( );
-                selector.version = version.getVersion( );
+                selector.version = version.getId( );
             } else if (item instanceof Artifact ) {
                 Artifact artifact = (Artifact)item;
-                selector.namespace = artifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( );
+                selector.namespace = artifact.getVersion( ).getProject( ).getNamespace( ).getId( );
                 selector.projectId = artifact.getVersion( ).getProject( ).getId( );
-                selector.version = artifact.getVersion( ).getVersion( );
+                selector.version = artifact.getVersion( ).getId( );
                 selector.artifactId = artifact.getId( );
                 selector.artifactVersion = artifact.getArtifactVersion( );
                 selector.extension = artifact.getExtension( );

@@ -138,8 +138,16 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
      * @throws IllegalArgumentException if the selector coordinates do not specify a artifact
      * @throws ContentAccessException if the access to the underlying storage failed
      */
-    Artifact getArtifact(ItemSelector selector) throws ContentAccessException;
+    Artifact getArtifact(ItemSelector selector) throws ContentAccessException, IllegalArgumentException;
 
+    /**
+     * Returns the artifact at the given path
+     * @param path the path to the artifact
+     * @return the artifact instance
+     * @throws LayoutException if the path does not point to a artifact
+     * @throws ContentAccessException if the access to the underlying storage failed
+     */
+    Artifact getArtifact( String path ) throws LayoutException, ContentAccessException;
 
     /**
      * Returns the artifacts that match the given selector. It is up to the repository implementation
@@ -162,10 +170,11 @@ public interface BaseRepositoryContentLayout extends ManagedRepositoryContentLay
      *
      * @param selector the selector for the artifacts
      * @return a stream with artifact elements.
+     * @throws IllegalArgumentException if the selector is not valid for the layout
      * @throws ItemNotFoundException if the specified coordinates cannot be found in the repository
      * @throws ContentAccessException if the access to the underlying storage failed
      */
-    Stream<? extends Artifact> newArtifactStream( ItemSelector selector) throws ContentAccessException;
+    Stream<? extends Artifact> newArtifactStream( ItemSelector selector) throws ContentAccessException, IllegalArgumentException;
 
 
     /**

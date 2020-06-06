@@ -68,13 +68,13 @@ public class RetentionCountRepositoryPurge
                     return;
                 }
 
-                if ( VersionUtil.isSnapshot( artifact.getVersion( ).getVersion() ) )
+                if ( VersionUtil.isSnapshot( artifact.getVersion( ).getId() ) )
                 {
                     ArchivaItemSelector selector = ArchivaItemSelector.builder( )
-                        .withNamespace( artifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) )
+                        .withNamespace( artifact.getVersion( ).getProject( ).getNamespace( ).getId( ) )
                         .withProjectId( artifact.getVersion( ).getProject( ).getId( ) )
                         .withArtifactId( artifact.getId( ) )
-                        .withVersion( artifact.getVersion( ).getVersion( ) )
+                        .withVersion( artifact.getVersion( ).getId( ) )
                         .withClassifier( "*" )
                         .includeRelatedArtifacts()
                         .build( );
@@ -98,12 +98,12 @@ public class RetentionCountRepositoryPurge
                     }
 
                     ArchivaItemSelector.Builder selectorBuilder = ArchivaItemSelector.builder( )
-                        .withNamespace( artifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) )
+                        .withNamespace( artifact.getVersion( ).getProject( ).getNamespace( ).getId( ) )
                         .withProjectId( artifact.getVersion( ).getProject( ).getId( ) )
                         .withArtifactId( artifact.getId( ) )
                         .withClassifier( "*" )
                         .includeRelatedArtifacts()
-                        .withVersion( artifact.getVersion( ).getVersion( ) );
+                        .withVersion( artifact.getVersion( ).getId( ) );
                     int countToPurge = versions.size( ) - retentionCount;
                     Set<Artifact> artifactsToDelete = new HashSet<>( );
                     for ( String version : versions )

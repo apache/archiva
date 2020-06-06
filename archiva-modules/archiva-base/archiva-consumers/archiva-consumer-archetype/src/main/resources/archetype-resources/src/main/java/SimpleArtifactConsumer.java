@@ -36,6 +36,8 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.content.Artifact;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -126,10 +128,9 @@ public class SimpleArtifactConsumer
         {
             ManagedRepositoryContent repositoryContent = repository.getContent();
             BaseRepositoryContentLayout layout = repositoryContent.getLayout( BaseRepositoryContentLayout.class );
-            ArtifactReference artifact = repositoryContent.toArtifactReference( path );
-
-            repositorySession.getRepository().getArtifacts( repositorySession, repository.getId(), artifact.getGroupId(),
-                                                            artifact.getArtifactId(), artifact.getVersion() );
+            Artifact artifact = layout.getArtifact( path );
+            repositorySession.getRepository().getArtifacts( repositorySession, repository.getId(), artifact.getNamespace().getId(),
+                                                            artifact.getId(), artifact.getVersion().getId() );
         }
         catch ( LayoutException | MetadataResolutionException  e )
         {

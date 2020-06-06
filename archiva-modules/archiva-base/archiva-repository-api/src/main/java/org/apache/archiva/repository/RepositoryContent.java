@@ -20,8 +20,6 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.VersionedReference;
-import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemSelector;
 
 
@@ -33,7 +31,7 @@ public interface RepositoryContent
 
 
     /**
-     * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.
+     * Given a repository relative path to a filename, return the {@link ArtifactReference} object suitable for the path.
      *
      * @param path the path relative to the repository base dir for the artifact.
      * @return the {@link ArtifactReference} representing the path.  (or null if path cannot be converted to

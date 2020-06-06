@@ -30,12 +30,13 @@ import java.util.List;
  */
 public interface Version extends ContentItem
 {
+
     /**
      * Returns the version string.
      *
      * @return the version string
      */
-    String getVersion( );
+    String getId( );
 
     /**
      * Returns the version segments. E.g. for 1.3.4 it will return ["1","3"."4"]
@@ -43,6 +44,12 @@ public interface Version extends ContentItem
      * @return
      */
     List<String> getVersionSegments( );
+
+    /**
+     * Returns the namespace this version is attached to
+     * @return the namespace instance
+     */
+    Namespace getNamespace();
 
     /**
      * Returns the project this version is attached to.

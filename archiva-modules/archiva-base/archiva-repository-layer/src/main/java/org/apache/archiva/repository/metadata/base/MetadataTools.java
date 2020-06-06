@@ -21,7 +21,6 @@ package org.apache.archiva.repository.metadata.base;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -66,7 +65,6 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -552,7 +550,7 @@ public class MetadataTools
         {
             Project project = layout.getProject( selector );
             allVersions = layout.getVersions( project ).stream()
-            .map( v -> v.getVersion() ).collect( Collectors.toSet());
+            .map( v -> v.getId() ).collect( Collectors.toSet());
         }
         catch ( org.apache.archiva.repository.ContentAccessException e )
         {

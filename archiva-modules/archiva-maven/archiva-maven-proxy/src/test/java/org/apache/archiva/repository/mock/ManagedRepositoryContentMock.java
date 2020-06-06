@@ -172,6 +172,12 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
+    public Artifact getArtifact( String path ) throws LayoutException, ContentAccessException
+    {
+        return null;
+    }
+
+    @Override
     public List<? extends Artifact> getArtifacts( ItemSelector selector ) throws ContentAccessException
     {
         return null;

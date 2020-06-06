@@ -40,7 +40,6 @@ public abstract class BaseContentItem implements ContentItem
     protected StorageAsset asset;
     private Map<String, String> attributes;
     private Map<Class<?>, ContentItem> characteristics  = new HashMap<>(  );
-    private Set<Class<?>> failedConversions = new HashSet<>(  );
 
     @Override
     public <T extends ContentItem> T adapt( Class<T> clazz ) throws ItemConversionException

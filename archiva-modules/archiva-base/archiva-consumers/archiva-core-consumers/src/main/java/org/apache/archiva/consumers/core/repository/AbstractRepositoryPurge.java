@@ -192,8 +192,8 @@ public abstract class AbstractRepositoryPurge
             Map<String, Collection<ArtifactMetadata>> metaResolved = new HashMap<>( );
             for ( Artifact reference : references )
             {
-                String baseVersion = reference.getVersion( ).getVersion( );
-                String namespace = reference.getVersion( ).getProject( ).getNamespace( ).getNamespace( );
+                String baseVersion = reference.getVersion( ).getId( );
+                String namespace = reference.getVersion( ).getProject( ).getNamespace( ).getId( );
                 // Needed for tracking in the hashmap
                 String metaBaseId = reference.toKey();
 
@@ -214,7 +214,7 @@ public abstract class AbstractRepositoryPurge
                 for ( RepositoryListener listener : listeners )
                 {
                     listener.deleteArtifact( metadataRepository, repository.getId( ), namespace,
-                        reference.getId( ), reference.getVersion( ).getVersion(),
+                        reference.getId( ), reference.getVersion( ).getId(),
                             artifactFile.getName( ));
                 }
                 if (reference.exists())

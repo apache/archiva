@@ -89,9 +89,9 @@ public class DaysOldRepositoryPurge
                 olderThanThisDate.add( Calendar.DATE, -retentionPeriod );
 
                 ArchivaItemSelector selector = ArchivaItemSelector.builder( )
-                    .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) )
+                    .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getId( ) )
                     .withProjectId( artifactItem.getVersion( ).getProject( ).getId( ) )
-                    .withVersion( artifactItem.getVersion( ).getVersion( ) )
+                    .withVersion( artifactItem.getVersion( ).getId( ) )
                     .withClassifier( "*" )
                     .includeRelatedArtifacts( )
                     .build( );
@@ -116,9 +116,9 @@ public class DaysOldRepositoryPurge
 
 
                 ArchivaItemSelector.Builder artifactSelectorBuilder = ArchivaItemSelector.builder( )
-                    .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) )
+                    .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getId( ) )
                     .withProjectId( artifactItem.getVersion( ).getProject( ).getId( ) )
-                    .withVersion( artifactItem.getVersion( ).getVersion( ) )
+                    .withVersion( artifactItem.getVersion( ).getId( ) )
                     .withArtifactId( artifactItem.getId() )
                     .withClassifier( "*" )
                     .includeRelatedArtifacts( );

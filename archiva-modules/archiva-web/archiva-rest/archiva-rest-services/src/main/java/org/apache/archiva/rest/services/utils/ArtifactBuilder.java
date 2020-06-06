@@ -21,11 +21,9 @@ package org.apache.archiva.rest.services.utils;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
@@ -104,7 +102,7 @@ public class ArtifactBuilder
 
         String extension = repoArtifact.getExtension();
 
-        Artifact artifact = new Artifact( repoArtifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( ), repoArtifact.getId( ), repoArtifact.getArtifactVersion( ) );
+        Artifact artifact = new Artifact( repoArtifact.getVersion( ).getProject( ).getNamespace( ).getId( ), repoArtifact.getId( ), repoArtifact.getArtifactVersion( ) );
         artifact.setRepositoryId( artifactMetadata.getRepositoryId() );
         artifact.setClassifier( classifier );
         artifact.setPackaging( type );

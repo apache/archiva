@@ -203,7 +203,7 @@ public class ManagedDefaultRepositoryContentTest
             .withVersion( version )
             .build( );
         List<String> versions = repoContent.getVersions( selector ).stream()
-            .map(v -> v.getVersion()).sorted( comparator ).collect( Collectors.toList());
+            .map(v -> v.getId()).sorted( comparator ).collect( Collectors.toList());
         assertArrayEquals( expectedVersions, versions.toArray( ) );
 
 
@@ -512,12 +512,12 @@ public class ManagedDefaultRepositoryContentTest
         assertNotNull( artifact );
         assertEquals( "pom", artifact.getExtension( ) );
         assertEquals( BaseArtifactTypes.MAIN, artifact.getDataType( ) );
-        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
+        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getId( ) );
         assertEquals( "1.3-20070725.210059-1", artifact.getArtifactVersion( ) );
         assertEquals( ".pom", artifact.getRemainder( ) );
         assertEquals( "axis2", artifact.getId( ) );
         assertEquals( "axis2", artifact.getVersion( ).getProject( ).getId( ) );
-        assertEquals( "org.apache.axis2", artifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) );
+        assertEquals( "org.apache.axis2", artifact.getVersion( ).getProject( ).getNamespace( ).getId( ) );
         assertEquals( "", artifact.getClassifier( ) );
         assertEquals( "pom", artifact.getType( ) );
 
@@ -528,12 +528,12 @@ public class ManagedDefaultRepositoryContentTest
         assertNotNull( artifact );
         assertEquals( "md5", artifact.getExtension( ) );
         assertEquals( BaseArtifactTypes.RELATED, artifact.getDataType( ) );
-        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
+        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getId( ) );
         assertEquals( "1.3-20070725.210059-1", artifact.getArtifactVersion( ) );
         assertEquals( ".pom.md5", artifact.getRemainder( ) );
         assertEquals( "axis2", artifact.getId( ) );
         assertEquals( "axis2", artifact.getVersion( ).getProject( ).getId( ) );
-        assertEquals( "org.apache.axis2", artifact.getVersion( ).getProject( ).getNamespace( ).getNamespace( ) );
+        assertEquals( "org.apache.axis2", artifact.getVersion( ).getProject( ).getNamespace( ).getId( ) );
         assertEquals( "", artifact.getClassifier( ) );
         assertEquals( "md5", artifact.getType( ) );
 
@@ -543,7 +543,7 @@ public class ManagedDefaultRepositoryContentTest
             .findFirst( ).get( );
         assertNotNull( artifact );
         assertEquals( BaseArtifactTypes.METADATA, artifact.getDataType( ) );
-        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getVersion( ) );
+        assertEquals( "1.3-SNAPSHOT", artifact.getVersion( ).getId( ) );
         assertEquals( "xml", artifact.getExtension( ) );
     }
 
@@ -920,7 +920,7 @@ public class ManagedDefaultRepositoryContentTest
         ContentItem item = result.get( 39 );
         Version version = item.adapt( Version.class );
         assertNotNull( version );
-        assertEquals( "1.3-SNAPSHOT", version.getVersion( ) );
+        assertEquals( "1.3-SNAPSHOT", version.getId( ) );
         Project project = result.get( 40 ).adapt( Project.class );
         assertNotNull( project );
         assertEquals( "axis2", project.getId( ) );
@@ -1115,11 +1115,12 @@ public class ManagedDefaultRepositoryContentTest
     }
 
     @Test
-    public void testGetNamespaceFromPath() {
+    public void testGetNamespaceFromPath() throws LayoutException
+    {
         StorageAsset path = repoContent.getRepository( ).getAsset( "/org/apache/axis2" );
         Namespace ns = repoContent.getNamespaceFromPath( path );
         assertNotNull( ns );
-        assertEquals( "org.apache.axis2", ns.getNamespace( ) );
+        assertEquals( "org.apache.axis2", ns.getId( ) );
 
     }
 

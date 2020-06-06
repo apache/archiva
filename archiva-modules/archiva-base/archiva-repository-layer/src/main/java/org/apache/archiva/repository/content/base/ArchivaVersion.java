@@ -20,6 +20,7 @@ package org.apache.archiva.repository.content.base;
  */
 
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.builder.VersionOptBuilder;
@@ -80,7 +81,7 @@ public class ArchivaVersion extends BaseContentItem implements Version
     }
 
     @Override
-    public String getVersion( )
+    public String getId( )
     {
         return version;
     }
@@ -91,6 +92,11 @@ public class ArchivaVersion extends BaseContentItem implements Version
         return project;
     }
 
+    @Override
+    public Namespace getNamespace( )
+    {
+        return project.getNamespace( );
+    }
 
     @Override
     public boolean equals( Object o )

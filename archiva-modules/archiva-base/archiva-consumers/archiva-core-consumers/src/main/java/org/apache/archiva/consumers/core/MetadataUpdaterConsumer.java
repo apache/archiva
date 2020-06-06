@@ -24,7 +24,6 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -34,6 +33,7 @@ import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -174,7 +174,8 @@ public class MetadataUpdaterConsumer
         {
             try
             {
-                ArtifactReference artifact = repository.toArtifactReference( path );
+                BaseRepositoryContentLayout layout = repository.getLayout( BaseRepositoryContentLayout.class );
+                Artifact artifact = layout.getArtifact( path );
                 updateVersionMetadata( artifact, path );
                 updateProjectMetadata( artifact, path );
             }
@@ -192,11 +193,11 @@ public class MetadataUpdaterConsumer
         processFile( path );
     }
 
-    private void updateProjectMetadata( ArtifactReference artifact, String path )
+    private void updateProjectMetadata( Artifact artifact, String path )
     {
         ProjectReference projectRef = new ProjectReference( );
-        projectRef.setGroupId( artifact.getGroupId( ) );
-        projectRef.setArtifactId( artifact.getArtifactId( ) );
+        projectRef.setGroupId( artifact.getNamespace( ).getId() );
+        projectRef.setArtifactId( artifact.getId( ) );
 
         try
         {
@@ -221,12 +222,12 @@ public class MetadataUpdaterConsumer
         }
     }
 
-    private void updateVersionMetadata( ArtifactReference artifact, String path )
+    private void updateVersionMetadata( Artifact artifact, String path )
     {
         VersionedReference versionRef = new VersionedReference( );
-        versionRef.setGroupId( artifact.getGroupId( ) );
-        versionRef.setArtifactId( artifact.getArtifactId( ) );
-        versionRef.setVersion( artifact.getVersion( ) );
+        versionRef.setGroupId( artifact.getNamespace( ).getId() );
+        versionRef.setArtifactId( artifact.getId( ) );
+        versionRef.setVersion( artifact.getVersion( ).getId() );
 
         try
         {

@@ -656,7 +656,7 @@ public class ArchivaDavResourceFactory
                         BaseRepositoryContentLayout layout = managedRepositoryContent.getLayout( BaseRepositoryContentLayout.class );
                         ContentItem artifactItem = managedRepositoryContent.toItem( resourcePath );
                         artifact = layout.adaptItem( Artifact.class, artifactItem );
-                        if ( !VersionUtil.isSnapshot( artifact.getVersion().getVersion() ) )
+                        if ( !VersionUtil.isSnapshot( artifact.getVersion().getId() ) )
                         {
                             // check if artifact already exists and if artifact re-deployment to the repository is allowed
                             if ( artifactItem.exists()
