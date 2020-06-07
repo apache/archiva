@@ -336,30 +336,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 
     private Map<ArtifactReference, String> refs = new HashMap<>();
 
-    @Override
-    public ArtifactReference toArtifactReference( String path ) throws LayoutException
-    {
-        if ( StringUtils.isBlank( path ) )
-        {
-            throw new LayoutException( "Unable to convert blank path." );
-        }
-
-        ArtifactMetadata metadata = getArtifactForPath("test-repository", path);
-
-        ArtifactReference artifact = new ArtifactReference();
-        artifact.setGroupId( metadata.getNamespace() );
-        artifact.setArtifactId( metadata.getProject() );
-        artifact.setVersion( metadata.getVersion() );
-        MavenArtifactFacet facet = (MavenArtifactFacet) metadata.getFacet( MavenArtifactFacet.FACET_ID );
-        if ( facet != null )
-        {
-            artifact.setClassifier( facet.getClassifier() );
-            artifact.setType( facet.getType() );
-        }
-        refs.put(artifact, path);
-        return artifact;
-    }
-
     public ArtifactMetadata getArtifactForPath( String repoId, String relativePath )
     {
         String[] parts = relativePath.replace( '\\', '/' ).split( "/" );

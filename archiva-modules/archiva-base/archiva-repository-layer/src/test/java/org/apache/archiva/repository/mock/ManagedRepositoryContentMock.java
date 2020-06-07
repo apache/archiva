@@ -322,12 +322,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public ArtifactReference toArtifactReference( String path ) throws LayoutException
-    {
-        return null;
-    }
-
-    @Override
     public String toPath( ArtifactReference reference )
     {
         return null;

@@ -31,17 +31,6 @@ public interface RepositoryContent
 
 
     /**
-     * Given a repository relative path to a filename, return the {@link ArtifactReference} object suitable for the path.
-     *
-     * @param path the path relative to the repository base dir for the artifact.
-     * @return the {@link ArtifactReference} representing the path.  (or null if path cannot be converted to
-     *         a {@link ArtifactReference})
-     * @throws LayoutException if there was a problem converting the path to an artifact.
-     */
-    ArtifactReference toArtifactReference( String path )
-        throws LayoutException;
-
-    /**
      * Given an {@link ArtifactReference}, return the relative path to the artifact.
      *
      * @param reference the artifact reference to use.

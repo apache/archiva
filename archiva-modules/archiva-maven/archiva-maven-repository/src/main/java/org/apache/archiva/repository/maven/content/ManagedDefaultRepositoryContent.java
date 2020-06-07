@@ -1597,36 +1597,6 @@ public class ManagedDefaultRepositoryContent
         return repository.getRoot().getStorage( );
     }
 
-    /**
-     * Convert a path to an artifact reference.
-     *
-     * @param path the path to convert. (relative or full location path)
-     * @throws LayoutException if the path cannot be converted to an artifact reference.
-     */
-    @Override
-    public ArtifactReference toArtifactReference( String path )
-        throws LayoutException
-    {
-        String repoPath = convertUriToPath( repository.getLocation( ) );
-        if ( ( path != null ) && path.startsWith( repoPath ) && repoPath.length( ) > 0 )
-        {
-            return super.toArtifactReference( path.substring( repoPath.length( ) + 1 ) );
-        }
-        else
-        {
-            repoPath = path;
-            if ( repoPath != null )
-            {
-                while ( repoPath.startsWith( "/" ) )
-                {
-                    repoPath = repoPath.substring( 1 );
-                }
-            }
-            return super.toArtifactReference( repoPath );
-        }
-    }
-
-
     public void setFiletypes( FileTypes filetypes )
     {
         this.filetypes = filetypes;

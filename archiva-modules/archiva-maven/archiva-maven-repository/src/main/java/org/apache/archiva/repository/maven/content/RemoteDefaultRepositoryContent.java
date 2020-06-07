@@ -73,25 +73,6 @@ public class RemoteDefaultRepositoryContent
         this.repository = repository;
     }
 
-    /**
-     * Convert a path to an artifact reference.
-     *
-     * @param path the path to convert. (relative or full url path)
-     * @throws LayoutException if the path cannot be converted to an artifact reference.
-     */
-    @Override
-    public ArtifactReference toArtifactReference( String path )
-        throws LayoutException
-    {
-
-        if ( ( path != null ) && repository.getLocation()!=null && path.startsWith( repository.getLocation().toString() ) )
-        {
-            return super.toArtifactReference( path.substring( repository.getLocation().toString().length( ) ) );
-        }
-
-        return super.toArtifactReference( path );
-    }
-
     @Override
     public RepositoryURL toURL( ArtifactReference reference )
     {

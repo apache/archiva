@@ -78,13 +78,6 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
     }
 
     @Override
-    public ArtifactReference toArtifactReference( String path )
-        throws LayoutException
-    {
-        return defaultPathParser.toArtifactReference( path );
-    }
-
-    @Override
     public ItemSelector toItemSelector( String path ) throws LayoutException
     {
         return defaultPathParser.toItemSelector( path );

@@ -66,12 +66,6 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
     }
 
     @Override
-    public ArtifactReference toArtifactReference( String path ) throws LayoutException
-    {
-        return null;
-    }
-
-    @Override
     public String toPath( ArtifactReference reference )
     {
         String baseVersion;
