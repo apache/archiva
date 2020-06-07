@@ -58,7 +58,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         taskExecutor.executeTask( repoTask );
 
         // check no artifacts processed
-        Collection<ArtifactReference> unprocessedResultList = testConsumer.getConsumed();
+        Collection<String> unprocessedResultList = testConsumer.getConsumed();
 
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected. No new artifacts should have been found.", 0,
@@ -139,7 +139,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         taskExecutor.executeTask( repoTask );
 
         // check no artifacts processed
-        Collection<ArtifactReference> unprocessedResultList = testConsumer.getConsumed();
+        Collection<String> unprocessedResultList = testConsumer.getConsumed();
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected. One new artifact should have been found.", 1,
                       unprocessedResultList.size() );
@@ -186,7 +186,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         taskExecutor.executeTask( repoTask );
 
         // check no artifacts processed
-        Collection<ArtifactReference> unprocessedResultList = testConsumer.getConsumed();
+        Collection<String> unprocessedResultList = testConsumer.getConsumed();
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected. One new artifact should have been found.", 1,
                       unprocessedResultList.size() );
@@ -219,7 +219,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         taskExecutor.executeTask( repoTask );
 
-        Collection<ArtifactReference> unprocessedResultList = testConsumer.getConsumed();
+        Collection<String> unprocessedResultList = testConsumer.getConsumed();
 
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );

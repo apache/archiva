@@ -47,7 +47,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase1Test
 
         taskExecutor.executeTask( repoTask );
 
-        Collection<ArtifactReference> unprocessedResultList = testConsumer.getConsumed();
+        Collection<String> unprocessedResultList = testConsumer.getConsumed();
 
         assertNotNull( unprocessedResultList );
         assertEquals( "Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );
