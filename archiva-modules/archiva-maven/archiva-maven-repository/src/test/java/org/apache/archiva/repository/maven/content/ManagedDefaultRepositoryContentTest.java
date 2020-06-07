@@ -176,6 +176,13 @@ public class ManagedDefaultRepositoryContentTest
         }
     }
 
+    @Override
+    protected Artifact createArtifact( String groupId, String artifactId, String version, String classifier, String type ) throws LayoutException
+    {
+        ItemSelector selector = createItemSelector( groupId, artifactId, version, classifier, type );
+        return repoContent.getLayout( BaseRepositoryContentLayout.class ).getArtifact( selector );
+    }
+
     @Test
     public void testExcludeMetadataFile()
         throws Exception
@@ -386,20 +393,13 @@ public class ManagedDefaultRepositoryContentTest
 
 
     @Override
-    protected ArtifactReference toArtifactReference( String path )
-        throws LayoutException
-    {
-        return repoContent.toArtifactReference( path );
-    }
-
-    @Override
     protected ItemSelector toItemSelector( String path ) throws LayoutException
     {
         return repoContent.toItemSelector( path );
     }
 
     @Override
-    protected String toPath( ArtifactReference reference )
+    protected String toPath( Artifact reference )
     {
         return repoContent.toPath( reference );
     }

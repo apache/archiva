@@ -25,6 +25,7 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.junit.Before;
@@ -57,10 +58,17 @@ public class RemoteDefaultRepositoryContentTest
     }
 
     @Override
-    protected ArtifactReference toArtifactReference( String path )
-        throws LayoutException
+    protected Artifact createArtifact( String groupId, String artifactId, String version, String classifier, String type ) throws LayoutException
     {
-        return repoContent.toArtifactReference( path );
+        return null;
+    }
+
+
+    @Override
+    protected String toPath( Artifact reference ) throws LayoutException
+    {
+        ItemSelector selector = toItemSelector( reference.getAsset( ).getPath( ) );
+        return repoContent.toPath( selector );
     }
 
     @Override
@@ -79,12 +87,6 @@ public class RemoteDefaultRepositoryContentTest
     protected RepositoryContent getContent( )
     {
         return repoContent;
-    }
-
-    @Override
-    protected String toPath( ArtifactReference reference )
-    {
-        return repoContent.toPath( reference );
     }
 
     @Override

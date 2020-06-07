@@ -21,6 +21,7 @@ package org.apache.archiva.repository.maven.content;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
+import org.apache.archiva.repository.content.base.ArchivaArtifact;
 import org.apache.archiva.repository.maven.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
@@ -312,14 +313,15 @@ public abstract class AbstractRepositoryContentTest
     {
         String groupId = "org.apache.archiva.test";
         String artifactId = "redonkulous";
-        String version = "3.1-beta-1-20050831.101112-42";
+        String artifactVersion = "3.1-beta-1-20050831.101112-42";
+        String version = "3.1-beta-1-SNAPSHOT";
         String classifier = null;
         String type = "jar";
         String path =
             "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
-        assertLayoutCi( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
+        assertLayoutCi( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -399,7 +401,7 @@ public abstract class AbstractRepositoryContentTest
     {
         try
         {
-            toArtifactReference( "" );
+            toItemSelector( "" );
             fail( "Should have failed due to empty path." );
         }
         catch ( LayoutException e )
@@ -413,7 +415,7 @@ public abstract class AbstractRepositoryContentTest
     {
         try
         {
-            toArtifactReference( null );
+            toItemSelector( null );
             fail( "Should have failed due to null path." );
         }
         catch ( LayoutException e )
@@ -442,7 +444,7 @@ public abstract class AbstractRepositoryContentTest
     {
         try
         {
-            ArtifactReference reference = null;
+            ItemSelector reference = null;
             toPath( reference );
             fail( "Should have failed due to null artifact reference." );
         }
@@ -467,26 +469,8 @@ public abstract class AbstractRepositoryContentTest
         }
     }
 
-    private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
-                                          String version, String classifier, String type )
-    {
-        String expectedId =
-            "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
-
-        assertNotNull( expectedId + " - Should not be null.", actualReference );
-
-        assertEquals( expectedId + " - Group ID", groupId, actualReference.getGroupId() );
-        assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
-        if ( StringUtils.isNotBlank( classifier ) )
-        {
-            assertEquals( expectedId + " - Classifier", classifier, actualReference.getClassifier() );
-        }
-        assertEquals( expectedId + " - Version ID", version, actualReference.getVersion() );
-        assertEquals( expectedId + " - Type", type, actualReference.getType() );
-    }
-
-    private void assertItemSelector( ItemSelector actualReference, String groupId, String artifactId,
-                                          String version, String classifier, String type )
+    private void assertArtifactReference( ItemSelector actualReference, String groupId, String artifactId,
+                                          String version, String artifactVersion, String classifier, String type )
     {
         String expectedId =
             "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
@@ -499,7 +483,27 @@ public abstract class AbstractRepositoryContentTest
         {
             assertEquals( expectedId + " - Classifier", classifier, actualReference.getClassifier() );
         }
-        assertEquals( expectedId + " - Version ID", version, actualReference.getArtifactVersion() );
+        assertEquals( expectedId + " - Version ID", version, actualReference.getVersion() );
+        assertEquals( expectedId + " - Artifact Version ID", artifactVersion, actualReference.getArtifactVersion() );
+        assertEquals( expectedId + " - Type", type, actualReference.getType() );
+    }
+
+    private void assertItemSelector( ItemSelector actualReference, String groupId, String artifactId,
+                                          String version, String artifactVersion, String classifier, String type )
+    {
+        String expectedId =
+            "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
+
+        assertNotNull( expectedId + " - Should not be null.", actualReference );
+
+        assertEquals( expectedId + " - Group ID", groupId, actualReference.getNamespace() );
+        assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
+        if ( StringUtils.isNotBlank( classifier ) )
+        {
+            assertEquals( expectedId + " - Classifier", classifier, actualReference.getClassifier() );
+        }
+        assertEquals( expectedId + " - Version ID", version, actualReference.getVersion() );
+        assertEquals( expectedId + " - Artifact Version ID", artifactVersion, actualReference.getArtifactVersion() );
         assertEquals( expectedId + " - Type", type, actualReference.getType() );
     }
 
@@ -507,7 +511,7 @@ public abstract class AbstractRepositoryContentTest
     {
         try
         {
-            toArtifactReference( path );
+            toItemSelector( path );
             fail(
                 "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
@@ -538,7 +542,7 @@ public abstract class AbstractRepositoryContentTest
                                String type )
         throws LayoutException
     {
-        ArtifactReference expectedArtifact = createArtifact( groupId, artifactId, version, classifier, type );
+        ItemSelector expectedArtifact = createItemSelector( groupId, artifactId, version, classifier, type );
 
         // --- Artifact Tests.
 
@@ -548,18 +552,21 @@ public abstract class AbstractRepositoryContentTest
         // --- Artifact Reference Tests
 
         // Path to Artifact Reference.
-        ArtifactReference testReference = toArtifactReference( path );
-        assertArtifactReference( testReference, groupId, artifactId, version, classifier, type );
+        ItemSelector testReference = toItemSelector( path );
+        assertArtifactReference( testReference, groupId, artifactId, version, version, classifier, type );
 
         // And back again, using test Reference from previous step.
         assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( testReference ) );
     }
 
-    private void assertLayoutCi( String path, String groupId, String artifactId, String version, String classifier,
+    /**
+     * Perform a roundtrip through the layout routines to determine success.
+     */
+    private void assertLayout( String path, String groupId, String artifactId, String version, String artifactVersion, String classifier,
                                String type )
         throws LayoutException
     {
-        ItemSelector expectedArtifact = createItemSelector( groupId, artifactId, version, classifier, type );
+        ItemSelector expectedArtifact = createItemSelector( groupId, artifactId, version, artifactVersion, classifier, type );
 
         // --- Artifact Tests.
 
@@ -570,7 +577,33 @@ public abstract class AbstractRepositoryContentTest
 
         // Path to Artifact Reference.
         ItemSelector testReference = toItemSelector( path );
-        assertItemSelector( testReference, groupId, artifactId, version, classifier, type );
+        assertArtifactReference( testReference, groupId, artifactId, version, artifactVersion, classifier, type );
+
+        // And back again, using test Reference from previous step.
+        assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( testReference ) );
+    }
+
+    private void assertLayoutCi( String path, String groupId, String artifactId, String version, String classifier,
+                                 String type ) throws LayoutException
+    {
+        assertLayoutCi( path, groupId, artifactId, version, version, classifier, type );
+    }
+    private void assertLayoutCi( String path, String groupId, String artifactId, String version, String artifactVersion,
+                                 String classifier, String type )
+        throws LayoutException
+    {
+        ItemSelector expectedArtifact = createItemSelector( groupId, artifactId, version, artifactVersion, classifier, type );
+
+        // --- Artifact Tests.
+
+        // Artifact to Path
+        assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( expectedArtifact ) );
+
+        // --- Artifact Reference Tests
+
+        // Path to Artifact Reference.
+        ItemSelector testReference = toItemSelector( path );
+        assertItemSelector( testReference, groupId, artifactId, version, artifactVersion, classifier, type );
 
         // And back again, using test Reference from previous step.
         assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( testReference ) );
@@ -608,18 +641,9 @@ public abstract class AbstractRepositoryContentTest
 
     }
 
-    protected ArtifactReference createArtifact( String groupId, String artifactId, String version, String classifier,
-                                              String type )
-    {
-        ArtifactReference artifact = new ArtifactReference();
-        artifact.setGroupId( groupId );
-        artifact.setArtifactId( artifactId );
-        artifact.setVersion( version );
-        artifact.setClassifier( classifier );
-        artifact.setType( type );
-        assertNotNull( artifact );
-        return artifact;
-    }
+
+    abstract protected Artifact createArtifact( String groupId, String artifactId, String version, String classifier,
+                                              String type ) throws LayoutException;
 
     protected ItemSelector createItemSelector(String groupId, String artifactId, String version, String classifier,
                                               String type) {
@@ -633,10 +657,21 @@ public abstract class AbstractRepositoryContentTest
 
     }
 
-    protected abstract ArtifactReference toArtifactReference( String path )
-        throws LayoutException;
+    protected ItemSelector createItemSelector(String groupId, String artifactId, String version, String artifactVersion,
+                                              String classifier, String type) {
+        return ArchivaItemSelector.builder( ).withNamespace( groupId )
+            .withProjectId( artifactId )
+            .withArtifactId( artifactId )
+            .withVersion( version )
+            .withArtifactVersion( artifactVersion )
+            .withClassifier( classifier )
+            .withType( type )
+            .build( );
 
-    protected abstract String toPath( ArtifactReference reference );
+    }
+
+
+    protected abstract String toPath( Artifact reference ) throws LayoutException;
 
 
     protected abstract String toPath( ItemSelector selector );
