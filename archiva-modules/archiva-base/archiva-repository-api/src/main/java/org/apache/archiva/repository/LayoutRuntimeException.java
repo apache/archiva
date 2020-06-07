@@ -19,11 +19,10 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.common.ArchivaException;
-
 /**
- * LayoutException 
+ * Layout exception for methods used in lambda expressions.
  *
+ * @author Martin Stockhammer <martin_s@apache.org>
  *
  */
 public class LayoutRuntimeException extends RuntimeException

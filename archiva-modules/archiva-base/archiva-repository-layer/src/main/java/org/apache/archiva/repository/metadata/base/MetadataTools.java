@@ -913,55 +913,6 @@ public class MetadataTools
         }
     }
 
-    /**
-     * Get the first Artifact found in the provided VersionedReference location.
-     *
-     * @param managedRepository the repository to search within.
-     * @param reference         the reference to the versioned reference to search within
-     * @return the ArtifactReference to the first artifact located within the versioned reference. or null if
-     *         no artifact was found within the versioned reference.
-     * @throws IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
-     * @throws LayoutException
-     */
-    public ArtifactReference getFirstArtifact( BaseRepositoryContentLayout managedRepository,
-                                               VersionedReference reference )
-        throws LayoutException, IOException
-    {
-        String path = toPath( reference );
-
-        int idx = path.lastIndexOf( '/' );
-        if ( idx > 0 )
-        {
-            path = path.substring( 0, idx );
-        }
-
-        StorageAsset repoDir = managedRepository.getGenericContent( ).getRepository( ).getRoot();
-
-        if ( !repoDir.exists())
-        {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: "
-                                       + repoDir.toString() );
-        }
-
-        if ( !repoDir.isContainer())
-        {
-            throw new IOException(
-                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.toString() );
-        }
-
-        Path repoRoot = repoDir.getFilePath( );
-        try(Stream<Path> stream = Files.list(repoRoot)) {
-            String result = stream.filter(  Files::isRegularFile ).map( path1 ->
-                repoRoot.relativize( path1 ).toString()
-            ).filter( filetypes::matchesArtifactPattern ).findFirst().orElse( null );
-            if (result!=null) {
-                return managedRepository.getGenericContent().toArtifactReference( result );
-            }
-        }
-        // No artifact was found.
-        return null;
-    }
-
     public ArchivaConfiguration getConfiguration()
     {
         return configuration;

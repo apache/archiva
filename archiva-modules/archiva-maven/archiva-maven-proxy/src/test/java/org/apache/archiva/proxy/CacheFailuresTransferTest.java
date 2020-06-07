@@ -27,6 +27,7 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.easymock.EasyMock;
@@ -64,7 +65,8 @@ public class CacheFailuresTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
+        // ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );
@@ -109,7 +111,7 @@ public class CacheFailuresTransferTest
         assertNotExistsInManagedDefaultRepo( expectedFile );
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "http://bad.machine.com/repo/", "default" );

@@ -140,7 +140,71 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         return proxyConnectorRuleConfigurations;
     }
 
+    @Override
+    public StorageAsset fetchFromProxies( ManagedRepository repository, Artifact artifact )
+        throws ProxyDownloadException
+    {
+        Map<String, Exception> previousExceptions = new LinkedHashMap<>();
+        StorageAsset localFile = artifact.getAsset( );
 
+        Properties requestProperties = new Properties();
+        requestProperties.setProperty( "filetype", "artifact" );
+        requestProperties.setProperty( "version", artifact.getVersion().getId() );
+        requestProperties.setProperty( "managedRepositoryId", repository.getId() );
+
+        List<ProxyConnector> connectors = getProxyConnectors( repository );
+        for ( ProxyConnector connector : connectors )
+        {
+            if ( !connector.isEnabled() )
+            {
+                continue;
+            }
+
+            RemoteRepository targetRepository = connector.getTargetRepository();
+            requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
+
+            StorageAsset targetFile = targetRepository.getAsset( localFile.getPath( ) );
+            // Removing the leading '/' from the path
+            String targetPath = targetFile.getPath( ).substring( 1 );
+            try
+            {
+                StorageAsset downloadedFile =
+                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
+                        true );
+
+                if ( fileExists(downloadedFile) )
+                {
+                    log.debug( "Successfully transferred: {}", downloadedFile.getPath() );
+                    return downloadedFile;
+                }
+            }
+            catch ( NotFoundException e )
+            {
+                log.debug( "Artifact {} not found on repository \"{}\".", artifact.getId(),
+                    targetRepository.getId() );
+            }
+            catch ( NotModifiedException e )
+            {
+                log.debug( "Artifact {} not updated on repository \"{}\".", artifact.getId(),
+                    targetRepository.getId() );
+            }
+            catch ( ProxyException e )
+            {
+                validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
+                    targetRepository.getContent(), localFile, e, previousExceptions );
+            }
+        }
+
+        if ( !previousExceptions.isEmpty() )
+        {
+            throw new ProxyDownloadException( "Failures occurred downloading from some remote repositories",
+                previousExceptions );
+        }
+
+        log.debug( "Exhausted all target repositories, artifact {} not found.", artifact.getId() );
+
+        return null;
+    }
 
     @Override
     public StorageAsset fetchFromProxies( ManagedRepository repository, ArtifactReference artifact )
@@ -669,6 +733,59 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
                 log.error( e.getMessage(), e );
             }
         }
+    }
+
+    private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<Policy, PolicyOption> settings,
+                                   Properties request, Artifact artifact, RemoteRepositoryContent content,
+                                   StorageAsset localFile, Exception exception, Map<String, Exception> previousExceptions )
+        throws ProxyDownloadException
+    {
+        boolean process = true;
+        for ( Map.Entry<String, ? extends DownloadErrorPolicy> entry : policies.entrySet() )
+        {
+
+            // olamy with spring rolehint is now downloadPolicy#hint
+            // so substring after last # to get the hint as with plexus
+            String key = entry.getValue( ).getId( );
+            DownloadErrorPolicy policy = entry.getValue();
+            PolicyOption option = settings.containsKey( policy ) ? settings.get(policy) : policy.getDefaultOption();
+
+            log.debug( "Applying [{}] policy with [{}]", key, option );
+            try
+            {
+                // all policies must approve the exception, any can cancel
+                process = policy.applyPolicy( option, request, localFile, exception, previousExceptions );
+                if ( !process )
+                {
+                    break;
+                }
+            }
+            catch ( PolicyConfigurationException e )
+            {
+                log.error( e.getMessage(), e );
+            }
+        }
+
+        if ( process )
+        {
+            // if the exception was queued, don't throw it
+            if ( !previousExceptions.containsKey( content.getId() ) )
+            {
+                throw new ProxyDownloadException(
+                    "An error occurred in downloading from the remote repository, and the policy is to fail immediately",
+                    content.getId(), exception );
+            }
+        }
+        else
+        {
+            // if the exception was queued, but cancelled, remove it
+            previousExceptions.remove( content.getId() );
+        }
+
+        log.warn(
+            "Transfer error from repository {} for artifact {} , continuing to next repository. Error message: {}",
+            content.getRepository().getId(), artifact.getId(), exception.getMessage() );
+        log.debug( "Full stack trace", exception );
     }
 
     private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<Policy, PolicyOption> settings,

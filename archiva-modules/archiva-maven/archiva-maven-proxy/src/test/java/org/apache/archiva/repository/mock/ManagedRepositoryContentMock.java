@@ -174,7 +174,19 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     @Override
     public Artifact getArtifact( String path ) throws LayoutException, ContentAccessException
     {
-        return null;
+        StorageAsset asset = fsStorage.getAsset( path.toString( ) );
+        String artifactId = asset.getName( );
+        StorageAsset namespacePath = asset.getParent( ).getParent( ).getParent( );
+        String namespaceId = namespacePath.getPath( ).replace( "/", "." );
+        StorageAsset projectPath = asset.getParent( ).getParent( );
+        String projectId  = projectPath.getName( );
+        StorageAsset versionPath = asset.getParent( );
+        String versionId = versionPath.getName( );
+        ArchivaNamespace ns = ArchivaNamespace.withRepository( repository.getContent( ) ).withAsset( namespacePath ).withNamespace( namespaceId ).build( );
+        ArchivaProject project = ArchivaProject.withRepository( repository.getContent( ) ).withAsset( projectPath ).withNamespace( ns ).withId( projectId ).build( );
+        ArchivaVersion version = ArchivaVersion.withRepository( repository.getContent( ) ).withAsset( versionPath ).withProject( project ).withVersion( versionId ).build( );
+        ArchivaArtifact artifact = ArchivaArtifact.withAsset( asset ).withVersion( version ).withId( projectId ).withArtifactVersion( versionId ).build( );
+        return artifact;
     }
 
     @Override

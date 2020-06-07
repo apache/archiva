@@ -1627,19 +1627,6 @@ public class ManagedDefaultRepositoryContent
     }
 
 
-    // The variant with runtime exception for stream usage
-    private ArtifactReference toArtifactRef( String path )
-    {
-        try
-        {
-            return toArtifactReference( path );
-        }
-        catch ( LayoutException e )
-        {
-            throw new RuntimeException( e );
-        }
-    }
-
     public void setFiletypes( FileTypes filetypes )
     {
         this.filetypes = filetypes;
