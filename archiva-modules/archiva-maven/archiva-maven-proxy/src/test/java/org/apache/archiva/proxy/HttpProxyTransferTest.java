@@ -33,6 +33,7 @@ import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.base.BasicManagedRepository;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
@@ -222,7 +223,7 @@ public class HttpProxyTransferTest
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
         Path expectedFile = managedDefaultRepository.getRepository().getRoot().resolve( path ).getFilePath();
         Files.deleteIfExists( expectedFile );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         // Attempt the proxy fetch.
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );

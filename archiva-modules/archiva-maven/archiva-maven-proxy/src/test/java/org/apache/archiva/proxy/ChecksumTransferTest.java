@@ -26,6 +26,7 @@ import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.easymock.EasyMock;
@@ -56,7 +57,7 @@ public class ChecksumTransferTest
         Path expectedFile = managedDefaultDir.resolve( path );
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         org.apache.archiva.common.utils.FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -79,7 +80,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         org.apache.archiva.common.utils.FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -106,7 +107,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -133,7 +134,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -159,7 +160,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -185,7 +186,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -211,7 +212,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -235,7 +236,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -262,7 +263,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -286,7 +287,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -313,7 +314,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -337,7 +338,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -364,7 +365,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -392,7 +393,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -419,7 +420,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile ) );
@@ -446,7 +447,7 @@ public class ChecksumTransferTest
 
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         FileUtils.deleteDirectory( expectedFile.getParent( ) );
         assertFalse( Files.exists( expectedFile.getParent( ) ) );
@@ -501,7 +502,7 @@ public class ChecksumTransferTest
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
@@ -529,7 +530,7 @@ public class ChecksumTransferTest
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
@@ -558,7 +559,7 @@ public class ChecksumTransferTest
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,

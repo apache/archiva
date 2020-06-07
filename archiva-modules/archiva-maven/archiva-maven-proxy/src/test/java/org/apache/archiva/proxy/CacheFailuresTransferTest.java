@@ -157,7 +157,7 @@ public class CacheFailuresTransferTest
         setupTestableManagedRepository( path );
         Path expectedFile = managedDefaultDir.resolve( path );
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         Files.deleteIfExists( expectedFile );
         assertFalse( Files.exists( expectedFile ) );

@@ -22,6 +22,7 @@ package org.apache.archiva.proxy;
 import org.apache.archiva.policies.*;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
@@ -599,7 +600,7 @@ public class ErrorHandlingTest
         {
             BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
             downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(),
-                managedDefaultRepository.toArtifactReference( path ) );
+                layout.getArtifact( path ) );
             fail( "Proxy should not have succeeded" );
         }
         catch ( ProxyDownloadException e )
@@ -642,7 +643,7 @@ public class ErrorHandlingTest
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(),
-            managedDefaultRepository.toArtifactReference( path ) );
+            layout.getArtifact( path ) );
 
         wagonMockControl.verify();
         return downloadedFile;

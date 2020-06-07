@@ -25,6 +25,7 @@ import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.junit.Test;
 
@@ -53,7 +54,7 @@ public class SnapshotTransferTest
         
         Path expectedFile = managedDefaultDir.resolve(path);
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         Files.deleteIfExists(expectedFile);
         assertFalse( Files.exists(expectedFile) );
@@ -76,7 +77,7 @@ public class SnapshotTransferTest
         Path expectedFile = managedDefaultDir.resolve(path);
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         Files.deleteIfExists(expectedFile);
         assertFalse( Files.exists(expectedFile) );
@@ -101,7 +102,7 @@ public class SnapshotTransferTest
         Path expectedFile = managedDefaultDir.resolve(path);
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         assertTrue( Files.exists(expectedFile) );
         Files.setLastModifiedTime( expectedFile, FileTime.from( getPastDate().getTime(), TimeUnit.MILLISECONDS ));
@@ -130,7 +131,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
@@ -219,7 +220,7 @@ public class SnapshotTransferTest
         
         Path expectedFile = managedDefaultDir.resolve(path);
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         assertTrue( Files.exists(expectedFile) );
 
@@ -250,7 +251,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
@@ -273,7 +274,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         Files.deleteIfExists(expectedFile);
         assertFalse( Files.exists(expectedFile) );
@@ -302,7 +303,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        Artifact artifact = layout.getArtifact( path );
 
         Files.deleteIfExists(expectedFile);
         assertFalse( Files.exists(expectedFile) );
@@ -332,8 +333,7 @@ public class SnapshotTransferTest
 
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
-        artifact.setProjectVersion( "1.0-SNAPSHOT" );
+        Artifact artifact = layout.getArtifact( path );
 
         assertTrue( Files.exists(expectedFile) );
 
