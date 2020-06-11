@@ -18,7 +18,6 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.PathParser;
@@ -39,48 +38,6 @@ public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
     public MavenRepositoryRequestInfo(ManagedRepository repository)
     {
         this.repository = repository;
-    }
-
-    /**
-     * Takes an incoming requested path (in "/" format) and gleans the layout
-     * and ArtifactReference appropriate for that content.
-     *
-     * @param requestedPath the relative path to the content.
-     * @return the ArtifactReference for the requestedPath.
-     * @throws LayoutException if the request path is not layout valid.
-     */
-    public ArtifactReference toArtifactReference( String requestedPath )
-        throws LayoutException
-    {
-        if ( StringUtils.isBlank( requestedPath ) )
-        {
-            throw new LayoutException( "Blank request path is not a valid." );
-        }
-
-        String path = requestedPath;
-        while ( path.startsWith( "/" ) )
-        {
-            path = path.substring( 1 );
-
-            // Only slash? that's bad, mmm-kay?
-            if ( "/".equals( path ) )
-            {
-                throw new LayoutException( "Invalid request path: Slash only." );
-            }
-        }
-
-        if ( isDefault( path ) )
-        {
-            return defaultPathParser.toArtifactReference( path );
-        }
-        else if ( isLegacy( path ) )
-        {
-            throw new LayoutException( "Legacy Maven1 repository not supported anymore." );
-        }
-        else
-        {
-            throw new LayoutException( "Not a valid request path layout, too short." );
-        }
     }
 
     @Override
@@ -176,7 +133,7 @@ public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
      * <p>
      * NOTE: This does a cursory check on the count of path elements only.  A result of
      * true from this method is not a guarantee that the path sections are valid and
-     * can be resolved to an artifact reference.  use {@link #toArtifactReference(String)}
+     * can be resolved to an artifact reference.  use {@link #toItemSelector(String)}
      * if you want a more complete analysis of the validity of the path.
      * </p>
      *
@@ -231,7 +188,7 @@ public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
      * <p>
      * NOTE: This does a cursory check on the count of path elements only.  A result of
      * true from this method is not a guarantee that the path sections are valid and
-     * can be resolved to an artifact reference.  use {@link #toArtifactReference(String)}
+     * can be resolved to an artifact reference.  Use {@link #toItemSelector(String)}
      * if you want a more complete analysis of the validity of the path.
      * </p>
      *

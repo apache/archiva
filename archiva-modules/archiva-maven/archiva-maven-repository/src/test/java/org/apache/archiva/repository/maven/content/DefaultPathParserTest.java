@@ -18,10 +18,9 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.PathParser;
-import org.apache.archiva.repository.maven.content.DefaultPathParser;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -99,11 +98,12 @@ public class DefaultPathParserTest
         String groupId = "org.project";
         String artifactId = "example-presentation";
         String version = "3.2";
+        String artifactVersion = "3.2";
         String classifier = null;
         String type = "xml.zip";
         String path = "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     @Test
@@ -113,11 +113,12 @@ public class DefaultPathParserTest
         String groupId = "org.project";
         String artifactId = "example-presentation";
         String version = "3.2";
+        String artifactVersion = "3.2";
         String classifier = "extras";
         String type = "xml.zip";
         String path = "org/project/example-presentation/3.2/example-presentation-3.2-extras.xml.zip";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     @Test
@@ -127,11 +128,12 @@ public class DefaultPathParserTest
         String groupId = "org.project";
         String artifactId = "example-distribution";
         String version = "1.3";
+        String artifactVersion = "1.3";
         String classifier = null;
         String type = "tar.gz"; // no longer using distribution-tgz / distribution-zip in maven 2
         String path = "org/project/example-distribution/1.3/example-distribution-1.3.tar.gz";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     @Test
@@ -141,11 +143,12 @@ public class DefaultPathParserTest
         String groupId = "org.project";
         String artifactId = "example-distribution";
         String version = "1.3";
+        String artifactVersion = "1.3";
         String classifier = "bin";
         String type = "tar.gz"; // no longer using distribution-tgz / distribution-zip in maven 2
         String path = "org/project/example-distribution/1.3/example-distribution-1.3-bin.tar.gz";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -161,11 +164,12 @@ public class DefaultPathParserTest
         String groupId = "ch.ethz.ganymed";
         String artifactId = "ganymed-ssh2";
         String version = "build210";
+        String artifactVersion = "build210";
         String classifier = null;
         String type = "jar";
         String path = "ch/ethz/ganymed/ganymed-ssh2/build210/ganymed-ssh2-build210.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -181,11 +185,12 @@ public class DefaultPathParserTest
         String groupId = "javax";
         String artifactId = "comm";
         String version = "3.0-u1";
+        String artifactVersion = "3.0-u1";
         String classifier = null;
         String type = "jar";
         String path = "javax/comm/3.0-u1/comm-3.0-u1.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -222,6 +227,7 @@ public class DefaultPathParserTest
         String groupId = "javax.persistence";
         String artifactId = "ejb";
         String version = "3.0-public_review";
+        String artifactVersion = "3.0-public_review";
         String classifier = null;
         String type = "jar";
         String path = "javax/persistence/ejb/3.0-public_review/ejb-3.0-public_review.jar";
@@ -233,7 +239,7 @@ public class DefaultPathParserTest
          * part of the version spec.
          */
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     @Test
@@ -243,11 +249,12 @@ public class DefaultPathParserTest
         String groupId = "com.foo";
         String artifactId = "foo-tool";
         String version = "1.0";
+        String artifactVersion = "1.0";
         String classifier = null;
         String type = "jar";
         String path = "com/foo/foo-tool/1.0/foo-tool-1.0.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     @Test
@@ -257,11 +264,12 @@ public class DefaultPathParserTest
         String groupId = "commons-lang";
         String artifactId = "commons-lang";
         String version = "2.1";
+        String artifactVersion = "2.1";
         String classifier = null;
         String type = "jar";
         String path = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     @Test
@@ -271,11 +279,12 @@ public class DefaultPathParserTest
         String groupId = "commons-lang";
         String artifactId = "commons-lang";
         String version = "2.1";
+        String artifactVersion = "2.1";
         String classifier = null;
         String type = "jar";
         String path = "commons-lang\\commons-lang/2.1\\commons-lang-2.1.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -288,11 +297,12 @@ public class DefaultPathParserTest
         String groupId = "test.maven-arch";
         String artifactId = "test-arch";
         String version = "2.0.3-SNAPSHOT";
+        String artifactVersion = "2.0.3-SNAPSHOT";
         String classifier = null;
         String type = "pom";
         String path = "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.pom";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -305,11 +315,12 @@ public class DefaultPathParserTest
         String groupId = "com.company.department";
         String artifactId = "com.company.department";
         String version = "0.2";
+        String artifactVersion = "0.2";
         String classifier = null;
         String type = "pom";
         String path = "com/company/department/com.company.department/0.2/com.company.department-0.2.pom";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -322,12 +333,13 @@ public class DefaultPathParserTest
         String groupId = "com.company.department";
         String artifactId = "com.company.department.project";
         String version = "0.3";
+        String artifactVersion = "0.3";
         String classifier = null;
         String type = "pom";
         String path =
             "com/company/department/com.company.department.project/0.3/com.company.department.project-0.3.pom";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -342,11 +354,12 @@ public class DefaultPathParserTest
         String groupId = "com.foo.lib";
         String artifactId = "foo-lib";
         String version = "2.1-alpha-1";
+        String artifactVersion = "2.1-alpha-1";
         String classifier = "sources";
         String type = "java-source"; // oddball type-spec (should result in jar extension)
         String path = "com/foo/lib/foo-lib/2.1-alpha-1/foo-lib-2.1-alpha-1-sources.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -360,13 +373,14 @@ public class DefaultPathParserTest
     {
         String groupId = "org.apache.archiva.test";
         String artifactId = "redonkulous";
-        String version = "3.1-beta-1-20050831.101112-42";
+        String version = "3.1-beta-1-SNAPSHOT";
+        String artifactVersion = "3.1-beta-1-20050831.101112-42";
         String classifier = null;
         String type = "jar";
         String path =
             "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -380,12 +394,13 @@ public class DefaultPathParserTest
     {
         String groupId = "a.group.id";
         String artifactId = "artifact-id";
-        String version = "1.0-abc-1.1-20080221.062205-9";
+        String version = "1.0-abc-1.1-SNAPSHOT";
+        String artifactVersion = "1.0-abc-1.1-20080221.062205-9";
         String classifier = null;
         String type = "pom";
         String path = "a/group/id/artifact-id/1.0-abc-1.1-SNAPSHOT/artifact-id-1.0-abc-1.1-20080221.062205-9.pom";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -409,12 +424,13 @@ public class DefaultPathParserTest
     {
         String groupId = "a.group.id";
         String artifactId = "artifact-id";
-        String version = "1.0-20070219.171202-34";
+        String version = "1.0-SNAPSHOT";
+        String artifactVersion = "1.0-20070219.171202-34";
         String classifier = "test-sources";
         String type = "jar";
         String path = "a/group/id/artifact-id/1.0-SNAPSHOT/artifact-id-1.0-20070219.171202-34-test-sources.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -428,11 +444,12 @@ public class DefaultPathParserTest
         String groupId = "maven";
         String artifactId = "maven-test-plugin";
         String version = "1.8.2";
+        String artifactVersion = "1.8.2";
         String classifier = null;
         String type = "pom";
         String path = "maven/maven-test-plugin/1.8.2/maven-test-plugin-1.8.2.pom";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -446,11 +463,12 @@ public class DefaultPathParserTest
         String groupId = "maven";
         String artifactId = "maven-test-plugin";
         String version = "1.8.2";
+        String artifactVersion = "1.8.2";
         String classifier = null;
         String type = "maven-plugin";
         String path = "maven/maven-test-plugin/1.8.2/maven-test-plugin-1.8.2.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     /**
@@ -463,11 +481,12 @@ public class DefaultPathParserTest
         String groupId = "org.codehaus.mojo";
         String artifactId = "cobertura-maven-plugin";
         String version = "2.1";
+        String artifactVersion = "2.1";
         String classifier = null;
         String type = "maven-plugin";
         String path = "org/codehaus/mojo/cobertura-maven-plugin/2.1/cobertura-maven-plugin-2.1.jar";
 
-        assertLayout( path, groupId, artifactId, version, classifier, type );
+        assertLayout( path, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
     @Test
@@ -475,7 +494,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            parser.toArtifactReference( "" );
+            parser.toItemSelector( "" );
             fail( "Should have failed due to empty path." );
         }
         catch ( LayoutException e )
@@ -489,7 +508,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            parser.toArtifactReference( null );
+            parser.toItemSelector( null );
             fail( "Should have failed due to null path." );
         }
         catch ( LayoutException e )
@@ -503,7 +522,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            parser.toArtifactReference( "" );
+            parser.toItemSelector( "" );
             fail( "Should have failed due to empty path." );
         }
         catch ( LayoutException e )
@@ -517,7 +536,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            parser.toArtifactReference( null );
+            parser.toItemSelector( null );
             fail( "Should have failed due to null path." );
         }
         catch ( LayoutException e )
@@ -529,25 +548,26 @@ public class DefaultPathParserTest
     /**
      * Perform a path to artifact reference lookup, and verify the results.
      */
-    private void assertLayout( String path, String groupId, String artifactId, String version, String classifier,
+    private void assertLayout( String path, String groupId, String artifactId, String version, String artifactVersion, String classifier,
                                String type )
         throws LayoutException
     {
         // Path to Artifact Reference.
-        ArtifactReference testReference = parser.toArtifactReference( path );
-        assertArtifactReference( testReference, groupId, artifactId, version, classifier, type );
+        ItemSelector testReference = parser.toItemSelector( path );
+        assertArtifactReference( testReference, groupId, artifactId, version, artifactVersion, classifier, type );
     }
 
-    private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
-                                          String version, String classifier, String type )
+    private void assertArtifactReference( ItemSelector actualReference, String groupId, String artifactId,
+                                          String version, String artifactVersion, String classifier, String type )
     {
         String expectedId =
             "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
 
         assertNotNull( expectedId + " - Should not be null.", actualReference );
 
-        assertEquals( expectedId + " - Group ID", groupId, actualReference.getGroupId() );
+        assertEquals( expectedId + " - Group ID", groupId, actualReference.getNamespace() );
         assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
+        assertEquals( expectedId + " - Artifact Version", artifactVersion, actualReference.getArtifactVersion( ) );
         if ( StringUtils.isNotBlank( classifier ) )
         {
             assertEquals( expectedId + " - Classifier", classifier, actualReference.getClassifier() );
@@ -560,7 +580,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            parser.toArtifactReference( path );
+            parser.toItemSelector( path );
             fail(
                 "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }

@@ -32,17 +32,6 @@ import org.apache.archiva.repository.features.RepositoryFeature;
 public interface RepositoryRequestInfo
 {
 
-    /**
-     * Returns the artifact reference for a given path.
-     * Takes an incoming requested path (in "/" format) and gleans the layout
-     * and ArtifactReference appropriate for that content.
-     *
-     * @param requestPath The path of the web request
-     * @return The artifact reference
-     * @throws LayoutException
-     */
-    ArtifactReference toArtifactReference( String requestPath ) throws LayoutException;
-
 
     /**
      * Returns the item selector that matches the given path.
@@ -115,7 +104,7 @@ public interface RepositoryRequestInfo
     /**
      * Returns the likely layout type for the given request.
      * Implementations may only check the path elements for this.  To make sure, the path is valid,
-     * you should call {@link #toArtifactReference(String)}
+     * you should call {@link #toItemSelector(String)}
      *
      * @return
      */

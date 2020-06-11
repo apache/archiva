@@ -364,7 +364,7 @@ public class ArchivaDavResourceFactoryTest
                 repoRequest.getLayout( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
                 "legacy" );
 
-            expect( repoRequest.toArtifactReference(
+            expect( repoRequest.toItemSelector(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( null );
 
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar"
@@ -444,7 +444,7 @@ public class ArchivaDavResourceFactoryTest
                 repoRequest.getLayout( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
                 "legacy" );
 
-            expect( repoRequest.toArtifactReference(
+            expect( repoRequest.toItemSelector(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( null );
 
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar"
@@ -528,7 +528,7 @@ public class ArchivaDavResourceFactoryTest
                 repoRequest.getLayout( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
                 "legacy" ).times( 2 );
 
-            expect( repoRequest.toArtifactReference(
+            expect( repoRequest.toItemSelector(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( null ).times( 2 );
 
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar"

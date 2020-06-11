@@ -24,6 +24,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
@@ -153,7 +154,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "ch.ethz.ganymed/jars/ganymed-ssh2-build210.jar", "ch.ethz.ganymed", "ganymed-ssh2", "build210",
-                     null, "jar" );
+                     "build210", null, "jar" );
     }
 
     @Test
@@ -161,21 +162,21 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "ch/ethz/ganymed/ganymed-ssh2/build210/ganymed-ssh2-build210.jar", "ch.ethz.ganymed",
-                     "ganymed-ssh2", "build210", null, "jar" );
+                     "ganymed-ssh2", "build210", "build210", null, "jar" );
     }
 
     @Test( expected = LayoutException.class )
     public void testValidLegacyJavaxComm()
         throws Exception
     {
-        assertValid( "javax/jars/comm-3.0-u1.jar", "javax", "comm", "3.0-u1", null, "jar" );
+        assertValid( "javax/jars/comm-3.0-u1.jar", "javax", "comm", "3.0-u1", "3.0-u1", null, "jar" );
     }
 
     @Test
     public void testValidDefaultJavaxComm()
         throws Exception
     {
-        assertValid( "javax/comm/3.0-u1/comm-3.0-u1.jar", "javax", "comm", "3.0-u1", null, "jar" );
+        assertValid( "javax/comm/3.0-u1/comm-3.0-u1.jar", "javax", "comm", "3.0-u1", "3.0-u1", null, "jar" );
     }
 
     @Test( expected = LayoutException.class )
@@ -183,7 +184,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "javax.persistence/jars/ejb-3.0-public_review.jar", "javax.persistence", "ejb",
-                     "3.0-public_review", null, "jar" );
+                     "3.0-public_review", "3.0-public_review", null, "jar" );
     }
 
     @Test
@@ -191,21 +192,21 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "javax/persistence/ejb/3.0-public_review/ejb-3.0-public_review.jar", "javax.persistence", "ejb",
-                     "3.0-public_review", null, "jar" );
+                     "3.0-public_review", "3.0-public_review",null, "jar" );
     }
 
     @Test( expected = LayoutException.class )
     public void testValidLegacyMavenTestPlugin()
         throws Exception
     {
-        assertValid( "maven/jars/maven-test-plugin-1.8.2.jar", "maven", "maven-test-plugin", "1.8.2", null, "jar" );
+        assertValid( "maven/jars/maven-test-plugin-1.8.2.jar", "maven", "maven-test-plugin", "1.8.2", "1.8.2",null, "jar" );
     }
 
     @Test
     public void testValidDefaultMavenTestPlugin()
         throws Exception
     {
-        assertValid( "maven/maven-test-plugin/1.8.2/maven-test-plugin-1.8.2.pom", "maven", "maven-test-plugin", "1.8.2",
+        assertValid( "maven/maven-test-plugin/1.8.2/maven-test-plugin-1.8.2.pom", "maven", "maven-test-plugin", "1.8.2", "1.8.2",
                      null, "pom" );
     }
 
@@ -213,7 +214,7 @@ public class MavenRepositoryRequestInfoTest
     public void testValidLegacyCommonsLangJavadoc()
         throws Exception
     {
-        assertValid( "commons-lang/javadoc.jars/commons-lang-2.1-javadoc.jar", "commons-lang", "commons-lang", "2.1",
+        assertValid( "commons-lang/javadoc.jars/commons-lang-2.1-javadoc.jar", "commons-lang", "commons-lang", "2.1", "2.1",
                      "javadoc", "javadoc" );
     }
 
@@ -222,16 +223,16 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "commons-lang/commons-lang/2.1/commons-lang-2.1-javadoc.jar", "commons-lang", "commons-lang",
-                     "2.1", "javadoc", "javadoc" );
+                     "2.1", "2.1","javadoc", "javadoc" );
     }
 
     @Test( expected = LayoutException.class )
     public void testValidLegacyDerbyPom()
         throws Exception
     {
-        assertValid( "org.apache.derby/poms/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0", null, "pom" );
+        assertValid( "org.apache.derby/poms/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0", "10.2.2.0",null, "pom" );
         // Starting slash should not prevent detection.
-        assertValid( "/org.apache.derby/poms/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0", null,
+        assertValid( "/org.apache.derby/poms/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0", "10.2.2.0",null,
                      "pom" );
     }
 
@@ -239,7 +240,7 @@ public class MavenRepositoryRequestInfoTest
     public void testValidDefaultDerbyPom()
         throws Exception
     {
-        assertValid( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0",
+        assertValid( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0", "10.2.2.0",
                      null, "pom" );
     }
 
@@ -248,7 +249,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "org.apache.geronimo.specs/jars/geronimo-ejb_2.1_spec-1.0.1.jar", "org.apache.geronimo.specs",
-                     "geronimo-ejb_2.1_spec", "1.0.1", null, "jar" );
+                     "geronimo-ejb_2.1_spec", "1.0.1", "1.0.1",null, "jar" );
     }
 
     @Test
@@ -256,7 +257,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "org/apache/geronimo/specs/geronimo-ejb_2.1_spec/1.0.1/geronimo-ejb_2.1_spec-1.0.1.jar",
-                     "org.apache.geronimo.specs", "geronimo-ejb_2.1_spec", "1.0.1", null, "jar" );
+                     "org.apache.geronimo.specs", "geronimo-ejb_2.1_spec", "1.0.1", "1.0.1",null, "jar" );
     }
 
     @Test( expected = LayoutException.class )
@@ -264,7 +265,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom", "directory-clients", "ldap-clients",
-                     "0.9.1-SNAPSHOT", null, "pom" );
+                     "0.9.1-SNAPSHOT", "0.9.1-SNAPSHOT",null, "pom" );
     }
 
     @Test
@@ -272,7 +273,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "directory-clients/ldap-clients/0.9.1-SNAPSHOT/ldap-clients-0.9.1-SNAPSHOT.pom",
-                     "directory-clients", "ldap-clients", "0.9.1-SNAPSHOT", null, "pom" );
+                     "directory-clients", "ldap-clients", "0.9.1-SNAPSHOT", "0.9.1-SNAPSHOT",null, "pom" );
     }
 
     @Test( expected = LayoutException.class )
@@ -280,7 +281,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom", "test.maven-arch", "test-arch",
-                     "2.0.3-SNAPSHOT", null, "pom" );
+                     "2.0.3-SNAPSHOT", "2.0.3-SNAPSHOT",null, "pom" );
     }
 
     @Test
@@ -288,7 +289,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.pom", "test.maven-arch",
-                     "test-arch", "2.0.3-SNAPSHOT", null, "pom" );
+                     "test-arch", "2.0.3-SNAPSHOT", "2.0.3-SNAPSHOT",null, "pom" );
     }
 
     @Test( expected = LayoutException.class )
@@ -296,7 +297,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "com.company.department/poms/com.company.department.project-0.2.pom", "com.company.department",
-                     "com.company.department.project", "0.2", null, "pom" );
+                     "com.company.department.project", "0.2", "0.2",null, "pom" );
     }
 
     @Test
@@ -304,7 +305,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "com/company/department/com.company.department.project/0.2/com.company.department.project-0.2.pom",
-                     "com.company.department", "com.company.department.project", "0.2", null, "pom" );
+                     "com.company.department", "com.company.department.project", "0.2", "0.2",null, "pom" );
     }
 
     @Test( expected = LayoutException.class )
@@ -312,7 +313,7 @@ public class MavenRepositoryRequestInfoTest
         throws Exception
     {
         assertValid( "org.apache.archiva.test/jars/redonkulous-3.1-beta-1-20050831.101112-42.jar",
-                     "org.apache.archiva.test", "redonkulous", "3.1-beta-1-20050831.101112-42", null, "jar" );
+                     "org.apache.archiva.test", "redonkulous", "3.1-beta-1-20050831.101112-42", "3.1-beta-1-20050831.101112-42", null, "jar" );
     }
 
     @Test
@@ -321,7 +322,7 @@ public class MavenRepositoryRequestInfoTest
     {
         assertValid(
             "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar",
-            "org.apache.archiva.test", "redonkulous", "3.1-beta-1-20050831.101112-42", null, "jar" );
+            "org.apache.archiva.test", "redonkulous", "3.1-beta-1-SNAPSHOT", "3.1-beta-1-20050831.101112-42", null, "jar" );
     }
 
     @Test
@@ -525,7 +526,7 @@ public class MavenRepositoryRequestInfoTest
     }
 
 
-    private void assertValid( String path, String groupId, String artifactId, String version, String classifier,
+    private void assertValid( String path, String groupId, String artifactId, String version, String artifactVersion, String classifier,
                               String type )
         throws Exception
     {
@@ -533,12 +534,13 @@ public class MavenRepositoryRequestInfoTest
             "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + ( classifier != null ?
                 classifier + ":" : "" ) + type;
 
-        ArtifactReference reference = repoRequest.toArtifactReference( path );
+        ItemSelector reference = repoRequest.toItemSelector( path );
 
         assertNotNull( expectedId + " - Should not be null.", reference );
 
-        assertEquals( expectedId + " - Group ID", groupId, reference.getGroupId() );
+        assertEquals( expectedId + " - Group ID", groupId, reference.getNamespace() );
         assertEquals( expectedId + " - Artifact ID", artifactId, reference.getArtifactId() );
+        assertEquals( expectedId + " - Artifact Version", artifactVersion, reference.getArtifactVersion( ) );
         if ( StringUtils.isNotBlank( classifier ) )
         {
             assertEquals( expectedId + " - Classifier", classifier, reference.getClassifier() );
@@ -551,7 +553,7 @@ public class MavenRepositoryRequestInfoTest
     {
         try
         {
-            repoRequest.toArtifactReference( path );
+            repoRequest.toItemSelector( path );
             fail( "Expected a LayoutException on an invalid path [" + path + "]" );
         }
         catch ( LayoutException e )

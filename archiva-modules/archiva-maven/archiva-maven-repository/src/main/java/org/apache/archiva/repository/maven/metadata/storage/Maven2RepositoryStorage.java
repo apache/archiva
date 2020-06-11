@@ -40,6 +40,7 @@ import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
@@ -786,15 +787,18 @@ public class Maven2RepositoryStorage
         }
 
         String filePath = getFilePath(requestPath, managedRepositoryContent.getRepository());
-
-        ArtifactReference artifactReference = null;
-        try {
-            artifactReference = pathParser.toArtifactReference(filePath);
-        } catch (LayoutException e) {
+        Artifact artifact;
+        try
+        {
+            ContentItem item = managedRepositoryContent.toItem( filePath );
+            artifact = managedRepositoryContent.getLayout( BaseRepositoryContentLayout.class ).adaptItem( Artifact.class, item );
+        }
+        catch ( LayoutException e )
+        {
             return filePath;
         }
 
-        if (StringUtils.endsWith(artifactReference.getVersion(), VersionUtil.SNAPSHOT)) {
+        if (VersionUtil.isGenericSnapshot(artifact.getArtifactVersion())) {
             // read maven metadata to get last timestamp
             StorageAsset metadataDir = managedRepositoryContent.getRepository().getAsset(filePath).getParent();
             if (!metadataDir.exists()) {
@@ -826,10 +830,10 @@ public class Maven2RepositoryStorage
             // ->  archiva-checksum-1.4-M4-20130425.081822-1.jar
 
             filePath = StringUtils.replace(filePath, //
-                    artifactReference.getArtifactId() //
-                            + "-" + artifactReference.getVersion(), //
-                    artifactReference.getArtifactId() //
-                            + "-" + StringUtils.remove(artifactReference.getVersion(),
+                    artifact.getId() //
+                            + "-" + artifact.getVersion().getId(), //
+                    artifact.getId() //
+                            + "-" + StringUtils.remove(artifact.getArtifactVersion(),
                             "-" + VersionUtil.SNAPSHOT) //
                             + "-" + timestamp //
                             + "-" + buildNumber);
