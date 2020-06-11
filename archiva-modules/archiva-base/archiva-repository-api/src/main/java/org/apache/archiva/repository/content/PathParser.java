@@ -28,16 +28,6 @@ import org.apache.archiva.repository.LayoutException;
 public interface PathParser
 {
 
-    /**
-     * Take a path and get the ArtifactReference associated with it.
-     *
-     * @param path the relative path to parse.
-     * @return the ArtifactReference for the provided path. (never null)
-     * @throws LayoutException if there was a problem parsing the path.
-     */
-    ArtifactReference toArtifactReference( String path )
-        throws LayoutException;
-
 
     /**
      * Return a item selector for the given path.

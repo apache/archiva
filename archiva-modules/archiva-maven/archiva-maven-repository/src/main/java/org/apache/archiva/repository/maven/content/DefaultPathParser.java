@@ -24,7 +24,6 @@ import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.maven.metadata.storage.DefaultArtifactMappingProvider;
 import org.apache.archiva.repository.maven.metadata.storage.Maven2RepositoryPathTranslator;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.PathParser;
@@ -50,45 +49,6 @@ public class DefaultPathParser
 
     private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator(
         Collections.<ArtifactMappingProvider>singletonList( new DefaultArtifactMappingProvider() ) );
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.apache.archiva.repository.content.PathParser#toArtifactReference(String)
-     */
-    @Override
-    public ArtifactReference toArtifactReference( String path )
-        throws LayoutException
-    {
-        if ( StringUtils.isBlank( path ) )
-        {
-            throw new LayoutException( "Unable to convert blank path." );
-        }
-
-        ArtifactMetadata metadata;
-        try
-        {
-            metadata = pathTranslator.getArtifactForPath( null, path );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            throw new LayoutException( e.getMessage(), e );
-        }
-
-        ArtifactReference artifact = new ArtifactReference();
-        artifact.setGroupId( metadata.getNamespace() );
-        artifact.setArtifactId( metadata.getProject() );
-        artifact.setVersion( metadata.getVersion() );
-        artifact.setProjectVersion( metadata.getProjectVersion( ) );
-        MavenArtifactFacet facet = (MavenArtifactFacet) metadata.getFacet( MavenArtifactFacet.FACET_ID );
-        if ( facet != null )
-        {
-            artifact.setClassifier( facet.getClassifier() );
-            artifact.setType( facet.getType() );
-        }
-
-        return artifact;
-    }
 
     @Override
     public ItemSelector toItemSelector( String path ) throws LayoutException

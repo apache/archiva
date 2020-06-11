@@ -30,7 +30,6 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.storage.*;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.ProxyRegistry;
@@ -562,87 +561,6 @@ public class Maven2RepositoryStorage
         populateArtifactMetadataFromFile(metadata, file);
 
         return metadata;
-    }
-
-    @Override
-    public void applyServerSideRelocation(ManagedRepository managedRepository, ArtifactReference artifact)
-            throws ProxyDownloadException {
-        if ("pom".equals(artifact.getType())) {
-            return;
-        }
-
-        // Build the artifact POM reference
-        ArtifactReference pomReference = new ArtifactReference();
-        pomReference.setGroupId(artifact.getGroupId());
-        pomReference.setArtifactId(artifact.getArtifactId());
-        pomReference.setVersion(artifact.getVersion());
-        pomReference.setProjectVersion( artifact.getProjectVersion() );
-        pomReference.setType("pom");
-        BaseRepositoryContentLayout layout;
-        try
-        {
-            layout = managedRepository.getContent( ).getLayout( BaseRepositoryContentLayout.class );
-        }
-        catch ( LayoutException e )
-        {
-            throw new ProxyDownloadException( "Could not set layout " + e.getMessage( ), new HashMap<>(  ) );
-        }
-
-        RepositoryType repositoryType = managedRepository.getType();
-        if (!proxyRegistry.hasHandler(repositoryType)) {
-            throw new ProxyDownloadException("No proxy handler found for repository type " + repositoryType, new HashMap<>());
-        }
-
-        ItemSelector selector = ArchivaItemSelector.builder( )
-            .withNamespace( artifact.getGroupId( ) )
-            .withProjectId( artifact.getArtifactId( ) )
-            .withArtifactId( artifact.getArtifactId( ) )
-            .withVersion( artifact.getVersion( ) )
-            .withArtifactVersion( artifact.getVersion( ) )
-            .withType( "pom" ).build( );
-
-        Artifact pom = layout.getArtifact( selector );
-
-        RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(repositoryType).get(0);
-
-        // Get the artifact POM from proxied repositories if needed
-        proxyHandler.fetchFromProxies(managedRepository, pomReference);
-
-        // Open and read the POM from the managed repo
-
-        if (!pom.exists()) {
-            return;
-        }
-
-        try {
-            // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
-
-            Model model;
-            try (Reader reader = Channels.newReader(pom.getAsset().getReadChannel(), Charset.defaultCharset().name())) {
-                model = MAVEN_XPP_3_READER.read(reader);
-            }
-
-            DistributionManagement dist = model.getDistributionManagement();
-            if (dist != null) {
-                Relocation relocation = dist.getRelocation();
-                if (relocation != null) {
-                    // artifact is relocated : update the repositoryPath
-                    if (relocation.getGroupId() != null) {
-                        artifact.setGroupId(relocation.getGroupId());
-                    }
-                    if (relocation.getArtifactId() != null) {
-                        artifact.setArtifactId(relocation.getArtifactId());
-                    }
-                    if (relocation.getVersion() != null) {
-                        artifact.setVersion(relocation.getVersion());
-                    }
-                }
-            }
-        } catch (IOException e) {
-            // Unable to read POM : ignore.
-        } catch (XmlPullParserException e) {
-            // Invalid POM : ignore
-        }
     }
 
     @Override

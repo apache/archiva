@@ -42,7 +42,6 @@ public interface RepositoryPathTranslator
 
     StorageAsset toFile( StorageAsset basedir, String namespace, String projectId, String projectVersion );
 
-
     ArtifactMetadata getArtifactForPath( String repoId, String relativePath );
 
     ArtifactMetadata getArtifactFromId( String repoId, String namespace, String projectId, String projectVersion,

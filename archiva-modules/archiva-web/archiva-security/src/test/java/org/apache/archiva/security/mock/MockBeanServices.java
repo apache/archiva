@@ -25,7 +25,6 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.*;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -100,13 +99,6 @@ public class MockBeanServices
         throws RepositoryStorageRuntimeException
     {
         return null;
-    }
-
-    @Override
-    public void applyServerSideRelocation( ManagedRepository managedRepository, ArtifactReference artifact )
-        throws ProxyDownloadException
-    {
-
     }
 
     @Override

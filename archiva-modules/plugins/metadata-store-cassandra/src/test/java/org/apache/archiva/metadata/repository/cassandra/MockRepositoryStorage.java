@@ -32,7 +32,6 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataE
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ManagedRepository;
@@ -104,13 +103,6 @@ public class MockRepositoryStorage
         throws RepositoryStorageRuntimeException
     {
         return null;
-    }
-
-    @Override
-    public void applyServerSideRelocation( ManagedRepository managedRepository, ArtifactReference artifact )
-        throws ProxyDownloadException
-    {
-
     }
 
     @Override
