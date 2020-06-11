@@ -25,6 +25,7 @@ import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.util.List;
@@ -87,6 +88,21 @@ public interface RepositoryProxyHandler
      * @throws ProxyDownloadException if there was a problem fetching the content from the target repositories.
      */
     StorageAsset fetchFromProxies( ManagedRepository repository, Artifact artifact )
+        throws ProxyDownloadException;
+
+    /**
+     * Performs the artifact fetch operation against the target repositories
+     * of the provided source repository.
+     * <p>
+     * If the artifact is found, it is downloaded and placed into the source repository
+     * filesystem.
+     *
+     * @param repository the source repository to use. (must be a managed repository)
+     * @param artifactSelector   the artifact to fetch.
+     * @return the file that was obtained, or null if no content was obtained
+     * @throws ProxyDownloadException if there was a problem fetching the content from the target repositories.
+     */
+    StorageAsset fetchFromProxies( ManagedRepository repository, ItemSelector artifactSelector )
         throws ProxyDownloadException;
 
     /**

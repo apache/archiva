@@ -20,6 +20,7 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
@@ -80,6 +81,12 @@ public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
         {
             throw new LayoutException( "Not a valid request path layout, too short." );
         }
+    }
+
+    @Override
+    public ItemSelector toItemSelector( String requestPath ) throws LayoutException
+    {
+        return repository.getContent( ).toItemSelector( requestPath );
     }
 
     /**
@@ -275,12 +282,18 @@ public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
              * Default layout is the only layout that can contain maven-metadata.xml files, and
              * if the managedRepository is layout legacy, this request would never occur.
              */
-            return requestedPath;
+            if (requestedPath.startsWith( "/" )) {
+                return requestedPath;
+            } else
+            {
+                return "/"+requestedPath;
+            }
         }
 
+
+
         // Treat as an artifact reference.
-        ArtifactReference ref = toArtifactReference( referencedResource );
-        String adjustedPath = repository.getContent().toPath( ref );
+        String adjustedPath = repository.getContent( ).toPath( repository.getContent( ).toItem( requestedPath ) );
         return adjustedPath + supportfile;
     }
 

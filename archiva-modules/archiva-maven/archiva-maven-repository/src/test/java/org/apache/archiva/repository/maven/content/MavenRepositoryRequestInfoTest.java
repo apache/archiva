@@ -72,6 +72,9 @@ public class MavenRepositoryRequestInfoTest
     @Inject
     FileLockManager fileLockManager;
 
+    @Inject
+    MavenContentHelper mavenContentHelper;
+
     private MavenRepositoryRequestInfo repoRequest;
 
 
@@ -109,6 +112,8 @@ public class MavenRepositoryRequestInfoTest
         ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
         repository.setContent(repoContent);
+        repoContent.setMavenContentHelper( mavenContentHelper );
+
         repoRequest = new MavenRepositoryRequestInfo(repository);
     }
 
@@ -430,7 +435,7 @@ public class MavenRepositoryRequestInfoTest
         ManagedRepositoryContent repository = createManagedRepo( "default" );
 
         // Test (artifact) default to default - dual extension
-        assertEquals( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip",
+        assertEquals( "/org/project/example-presentation/3.2/example-presentation-3.2.xml.zip",
                       repoRequest.toNativePath( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip") );
     }
 
@@ -442,7 +447,7 @@ public class MavenRepositoryRequestInfoTest
         ManagedRepositoryContent repository = createManagedRepo( "default" );
 
         // Test (metadata) default to default
-        assertEquals( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1",
+        assertEquals( "/org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1",
                       repoRequest.toNativePath( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1") );
     }
 

@@ -21,12 +21,12 @@ package org.apache.archiva.consumers.core.repository;
 
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
-import org.apache.archiva.metadata.audit.RepositoryListener;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
@@ -61,67 +61,65 @@ public class RetentionCountRepositoryPurge
         try
         {
             ContentItem item = repository.toItem( path );
-            if (item instanceof Artifact )
+            BaseRepositoryContentLayout layout = repository.getLayout( BaseRepositoryContentLayout.class );
+            Artifact artifact = layout.adaptItem( Artifact.class, item );
+            if ( !artifact.exists( ) )
             {
-                Artifact artifact = (Artifact) item;
-                if (!artifact.exists()) {
+                return;
+            }
+
+            if ( VersionUtil.isSnapshot( artifact.getVersion( ).getId( ) ) )
+            {
+                ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+                    .withNamespace( artifact.getVersion( ).getProject( ).getNamespace( ).getId( ) )
+                    .withProjectId( artifact.getVersion( ).getProject( ).getId( ) )
+                    .withArtifactId( artifact.getId( ) )
+                    .withVersion( artifact.getVersion( ).getId( ) )
+                    .withClassifier( "*" )
+                    .includeRelatedArtifacts( )
+                    .build( );
+
+
+                List<String> versions;
+                try ( Stream<? extends Artifact> stream = repository.getLayout( BaseRepositoryContentLayout.class ).newArtifactStream( selector ) )
+                {
+                    versions = stream.map( a -> a.getArtifactVersion( ) )
+                        .filter( StringUtils::isNotEmpty )
+                        .distinct( )
+                        .collect( Collectors.toList( ) );
+                }
+
+                Collections.sort( versions, VersionComparator.getInstance( ) );
+
+                if ( retentionCount > versions.size( ) )
+                {
+                    log.trace( "No deletion, because retention count is higher than actual number of artifacts." );
+                    // Done. nothing to do here. skip it.
                     return;
                 }
 
-                if ( VersionUtil.isSnapshot( artifact.getVersion( ).getId() ) )
+                ArchivaItemSelector.Builder selectorBuilder = ArchivaItemSelector.builder( )
+                    .withNamespace( artifact.getVersion( ).getProject( ).getNamespace( ).getId( ) )
+                    .withProjectId( artifact.getVersion( ).getProject( ).getId( ) )
+                    .withArtifactId( artifact.getId( ) )
+                    .withClassifier( "*" )
+                    .includeRelatedArtifacts( )
+                    .withVersion( artifact.getVersion( ).getId( ) );
+                int countToPurge = versions.size( ) - retentionCount;
+                Set<Artifact> artifactsToDelete = new HashSet<>( );
+                for ( String version : versions )
                 {
-                    ArchivaItemSelector selector = ArchivaItemSelector.builder( )
-                        .withNamespace( artifact.getVersion( ).getProject( ).getNamespace( ).getId( ) )
-                        .withProjectId( artifact.getVersion( ).getProject( ).getId( ) )
-                        .withArtifactId( artifact.getId( ) )
-                        .withVersion( artifact.getVersion( ).getId( ) )
-                        .withClassifier( "*" )
-                        .includeRelatedArtifacts()
-                        .build( );
-
-
-                    List<String> versions;
-                    try( Stream<? extends Artifact> stream = repository.getLayout( BaseRepositoryContentLayout.class ).newArtifactStream( selector) ){
-                        versions = stream.map( a -> a.getArtifactVersion( ) )
-                            .filter( StringUtils::isNotEmpty )
-                            .distinct()
-                            .collect( Collectors.toList( ) );
-                    }
-
-                    Collections.sort( versions, VersionComparator.getInstance( ) );
-
-                    if ( retentionCount > versions.size( ) )
+                    if ( countToPurge-- <= 0 )
                     {
-                        log.trace( "No deletion, because retention count is higher than actual number of artifacts." );
-                        // Done. nothing to do here. skip it.
-                        return;
+                        break;
                     }
-
-                    ArchivaItemSelector.Builder selectorBuilder = ArchivaItemSelector.builder( )
-                        .withNamespace( artifact.getVersion( ).getProject( ).getNamespace( ).getId( ) )
-                        .withProjectId( artifact.getVersion( ).getProject( ).getId( ) )
-                        .withArtifactId( artifact.getId( ) )
-                        .withClassifier( "*" )
-                        .includeRelatedArtifacts()
-                        .withVersion( artifact.getVersion( ).getId( ) );
-                    int countToPurge = versions.size( ) - retentionCount;
-                    Set<Artifact> artifactsToDelete = new HashSet<>( );
-                    for ( String version : versions )
+                    List<? extends Artifact> delArtifacts = repository.getLayout( BaseRepositoryContentLayout.class ).getArtifacts( selectorBuilder.withArtifactVersion( version ).build( ) );
+                    if ( delArtifacts != null && delArtifacts.size( ) > 0 )
                     {
-                        if ( countToPurge-- <= 0 )
-                        {
-                            break;
-                        }
-                        List<? extends Artifact> delArtifacts = repository.getLayout( BaseRepositoryContentLayout.class ).getArtifacts( selectorBuilder.withArtifactVersion( version ).build( ) );
-                        if (delArtifacts!=null && delArtifacts.size()>0)
-                        {
-                            artifactsToDelete.addAll( delArtifacts );
-                        }
+                        artifactsToDelete.addAll( delArtifacts );
                     }
-                    purge( artifactsToDelete );
                 }
-            } else {
-                throw new RepositoryPurgeException( "Bad artifact path " + path );
+                purge( artifactsToDelete );
             }
         }
         catch ( LayoutException le )

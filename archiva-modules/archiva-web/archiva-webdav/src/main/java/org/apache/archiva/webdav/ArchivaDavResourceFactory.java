@@ -68,6 +68,7 @@ import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRequestInfo;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.metadata.audit.AuditListener;
@@ -791,22 +792,23 @@ public class ArchivaDavResourceFactory
         try
         {
             // Get the artifact reference in a layout neutral way.
-            ArtifactReference artifact = repositoryRequestInfo.toArtifactReference( path );
+//             ArtifactReference artifact = repositoryRequestInfo.toArtifactReference( path );
+            ItemSelector selector = repositoryRequestInfo.toItemSelector( path );
 
-            if ( artifact != null )
+            if ( selector != null )
             {
                 String repositoryLayout = managedRepository.getLayout();
 
                 RepositoryStorage repositoryStorage =
                     this.applicationContext.getBean( "repositoryStorage#" + repositoryLayout, RepositoryStorage.class );
-                repositoryStorage.applyServerSideRelocation( managedRepository, artifact );
+                selector = repositoryStorage.applyServerSideRelocation( managedRepository, selector );
 
-                StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, artifact );
+                StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, selector );
 
-                resource.setPath( managedRepository.getContent().toPath( artifact ) );
+                resource.setPath( managedRepository.getContent().toPath( selector ) );
 
-                log.debug( "Proxied artifact '{}:{}:{}'", artifact.getGroupId(), artifact.getArtifactId(),
-                           artifact.getVersion() );
+                log.debug( "Proxied artifact '{}:{}:{}:{}'", selector.getNamespace(), selector.getArtifactId(),
+                           selector.getVersion(), selector.getArtifactVersion() );
 
                 return ( proxiedFile != null );
             }

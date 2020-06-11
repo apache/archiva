@@ -20,6 +20,7 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -186,30 +187,42 @@ public class ManagedDefaultRepositoryContent
     @Override
     public <T extends ContentItem> T adaptItem( Class<T> clazz, ContentItem item ) throws LayoutException
     {
-        if (clazz.isAssignableFrom( Version.class ))
+        try
         {
-            if ( !item.hasCharacteristic( Version.class ) )
+            if ( clazz.isAssignableFrom( Version.class ) )
             {
-                item.setCharacteristic( Version.class, createVersionFromPath( item.getAsset() ) );
+                if ( !item.hasCharacteristic( Version.class ) )
+                {
+                    item.setCharacteristic( Version.class, createVersionFromPath( item.getAsset( ) ) );
+                }
+                return (T) item.adapt( Version.class );
             }
-            return (T) item.adapt( Version.class );
-        } else if ( clazz.isAssignableFrom( Project.class )) {
-            if ( !item.hasCharacteristic( Project.class ) )
+            else if ( clazz.isAssignableFrom( Project.class ) )
             {
-                item.setCharacteristic( Project.class, createProjectFromPath( item.getAsset() ) );
+                if ( !item.hasCharacteristic( Project.class ) )
+                {
+                    item.setCharacteristic( Project.class, createProjectFromPath( item.getAsset( ) ) );
+                }
+                return (T) item.adapt( Project.class );
             }
-            return (T) item.adapt( Project.class );
-        } else if ( clazz.isAssignableFrom( Namespace.class )) {
-            if ( !item.hasCharacteristic( Namespace.class ) )
+            else if ( clazz.isAssignableFrom( Namespace.class ) )
             {
-                item.setCharacteristic( Namespace.class, createNamespaceFromPath( item.getAsset() ) );
+                if ( !item.hasCharacteristic( Namespace.class ) )
+                {
+                    item.setCharacteristic( Namespace.class, createNamespaceFromPath( item.getAsset( ) ) );
+                }
+                return (T) item.adapt( Namespace.class );
             }
-            return (T) item.adapt( Namespace.class );
-        } else if ( clazz.isAssignableFrom( Artifact.class )) {
-            if (!item.hasCharacteristic( Artifact.class )) {
-                item.setCharacteristic( Artifact.class, createArtifactFromPath( item.getAsset( ) ) );
+            else if ( clazz.isAssignableFrom( Artifact.class ) )
+            {
+                if ( !item.hasCharacteristic( Artifact.class ) )
+                {
+                    item.setCharacteristic( Artifact.class, createArtifactFromPath( item.getAsset( ) ) );
+                }
+                return (T) item.adapt( Artifact.class );
             }
-            return (T) item.adapt( Artifact.class );
+        } catch (LayoutRuntimeException e) {
+            throw new LayoutException( e.getMessage( ), e );
         }
         throw new LayoutException( "Could not convert item to class " + clazz);
     }
@@ -593,6 +606,7 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
+
     private DataItem getDataItemFromPath( final StorageAsset artifactPath )
     {
         final String contentType = getContentType( artifactPath );
@@ -644,13 +658,13 @@ public class ManagedDefaultRepositoryContent
         private ArtifactType artifactType = BaseArtifactTypes.MAIN;
     }
 
-    private ArtifactInfo getArtifactInfoFromPath( String genericVersion, StorageAsset path )
+    private ArtifactInfo getArtifactInfoFromPath( final String genericVersion, final StorageAsset path )
     {
         final ArtifactInfo info = new ArtifactInfo( );
         info.asset = path;
         info.id = path.getParent( ).getParent( ).getName( );
         final String fileName = path.getName( );
-        if ( genericVersion.endsWith( "-" + SNAPSHOT ) )
+        if ( VersionUtil.isGenericSnapshot( genericVersion ) )
         {
             String baseVersion = StringUtils.substringBeforeLast( genericVersion, "-" + SNAPSHOT );
             String prefix = info.id + "-" + baseVersion + "-";
@@ -722,7 +736,7 @@ public class ManagedDefaultRepositoryContent
         else
         {
             String prefix = info.id + "-" + genericVersion;
-            if ( fileName.startsWith( prefix ) )
+            if ( fileName.startsWith( prefix + "-") )
             {
                 info.version = genericVersion;
                 String classPostfix = StringUtils.removeStart( fileName, prefix );
@@ -737,6 +751,24 @@ public class ManagedDefaultRepositoryContent
                     info.classifier = "";
                     info.remainder = classPostfix;
                 }
+            } else if (fileName.startsWith(prefix + ".")) {
+                info.version = genericVersion;
+                info.remainder = StringUtils.removeStart( fileName, prefix );
+                info.classifier = "";
+            } else if (fileName.startsWith(info.id+"-")) {
+                String postFix = StringUtils.removeStart( fileName, info.id + "-" );
+                String versionPart = StringUtils.substringBefore( postFix, "." );
+                if (VersionUtil.isVersion(versionPart)) {
+                    info.version = versionPart;
+                    info.remainder = StringUtils.removeStart( postFix, versionPart );
+                    info.classifier = "";
+                } else {
+                    info.version = "";
+                    info.classifier = "";
+                    int dotPos = fileName.indexOf( "." );
+                    info.remainder = fileName.substring( dotPos );
+                }
+
             }
             else
             {
@@ -747,10 +779,10 @@ public class ManagedDefaultRepositoryContent
                 else
                 {
                     info.id = fileName;
+                    info.version = "";
                 }
                 log.debug( "Artifact does not match the version pattern {}", path );
                 info.artifactType = BaseArtifactTypes.UNKNOWN;
-                info.version = "";
                 info.classifier = "";
                 info.remainder = StringUtils.substringAfterLast( fileName, "." );
             }
@@ -1454,16 +1486,40 @@ public class ManagedDefaultRepositoryContent
     @Override
     public ContentItem toItem( String path ) throws LayoutException
     {
+
         StorageAsset asset = getRepository( ).getAsset( path );
-        if ( asset.isLeaf( ) )
-        {
-            ItemSelector selector = getPathParser( ).toItemSelector( path );
-            return getItem( selector );
+        ContentItem item = getItemFromPath( asset );
+        if (item instanceof DataItem) {
+            Artifact artifact = adaptItem( Artifact.class, item );
+            if (asset.getParent()==null) {
+                throw new LayoutException( "Path too short for maven artifact "+path );
+            }
+            String version = asset.getParent( ).getName( );
+            if (asset.getParent().getParent()==null) {
+                throw new LayoutException( "Path too short for maven artifact " + path );
+            }
+            String project = item.getAsset( ).getParent( ).getParent( ).getName( );
+            DataItem dataItem = (DataItem) item;
+            if (StringUtils.isEmpty( dataItem.getExtension())) {
+                throw new LayoutException( "Missing type on maven artifact" );
+            }
+            if (!project.equals(artifact.getId())) {
+                throw new LayoutException( "The maven artifact id "+artifact.getId() +" does not match the project id: " + project);
+            }
+            boolean versionIsGenericSnapshot = VersionUtil.isGenericSnapshot( version );
+            boolean artifactVersionIsSnapshot = VersionUtil.isSnapshot( artifact.getArtifactVersion() );
+            if ( versionIsGenericSnapshot && !artifactVersionIsSnapshot ) {
+                throw new LayoutException( "The maven artifact has no snapshot version in snapshot directory " + dataItem );
+            }
+            if ( !versionIsGenericSnapshot && artifactVersionIsSnapshot) {
+                throw new LayoutException( "The maven artifact version " + artifact.getArtifactVersion() + " is a snapshot version but inside a non snapshot directory " + version );
+            }
+            if ( !versionIsGenericSnapshot && !version.equals( artifact.getArtifactVersion() ) )
+            {
+                throw new LayoutException( "The maven artifact version " + artifact.getArtifactVersion() + " does not match the version directory " + version );
+            }
         }
-        else
-        {
-            return getItemFromPath( asset );
-        }
+        return item;
     }
 
     @Override

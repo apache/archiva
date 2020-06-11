@@ -23,9 +23,9 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
@@ -74,94 +74,94 @@ public class DaysOldRepositoryPurge
         {
 
             ContentItem item = repository.toItem( path );
-            if ( item instanceof Artifact )
+            Artifact artifactItem = repository.getLayout( BaseRepositoryContentLayout.class ).adaptItem( Artifact.class, item );
+
+            if ( !artifactItem.exists( ) )
             {
-                Artifact artifactItem = (Artifact) item;
-
-                if ( !artifactItem.exists( ) )
-                {
-                    return;
-                }
-
-                // ArtifactReference artifact = repository.toArtifactReference( path );
-
-                Calendar olderThanThisDate = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
-                olderThanThisDate.add( Calendar.DATE, -retentionPeriod );
-
-                ArchivaItemSelector selector = ArchivaItemSelector.builder( )
-                    .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getId( ) )
-                    .withProjectId( artifactItem.getVersion( ).getProject( ).getId( ) )
-                    .withVersion( artifactItem.getVersion( ).getId( ) )
-                    .withClassifier( "*" )
-                    .includeRelatedArtifacts( )
-                    .build( );
-
-                List<String> artifactVersions;
-                try( Stream<? extends Artifact> stream = repository.getLayout( BaseRepositoryContentLayout.class ).newArtifactStream( selector )){
-                     artifactVersions = stream.map( a -> a.getArtifactVersion( ) )
-                         .filter( StringUtils::isNotEmpty )
-                         .distinct()
-                         .collect( Collectors.toList( ) );
-                }
-
-                Collections.sort( artifactVersions, VersionComparator.getInstance( ) );
-
-                if ( retentionCount > artifactVersions.size( ) )
-                {
-                    // Done. nothing to do here. skip it.
-                    return;
-                }
-
-                int countToPurge = artifactVersions.size( ) - retentionCount;
-
-
-                ArchivaItemSelector.Builder artifactSelectorBuilder = ArchivaItemSelector.builder( )
-                    .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getId( ) )
-                    .withProjectId( artifactItem.getVersion( ).getProject( ).getId( ) )
-                    .withVersion( artifactItem.getVersion( ).getId( ) )
-                    .withArtifactId( artifactItem.getId() )
-                    .withClassifier( "*" )
-                    .includeRelatedArtifacts( );
-
-                Set<Artifact> artifactsToDelete = new HashSet<>( );
-                for ( String version : artifactVersions )
-                {
-                    if ( countToPurge-- <= 0 )
-                    {
-                        break;
-                    }
-
-                    ArchivaItemSelector artifactSelector = artifactSelectorBuilder.withArtifactVersion( version ).build( );
-                    try
-                    {
-
-
-                        // Is this a generic snapshot "1.0-SNAPSHOT" ?
-                        if ( VersionUtil.isGenericSnapshot( version ) )
-                        {
-                            List<? extends Artifact> artifactList = repository.getLayout( BaseRepositoryContentLayout.class ).getArtifacts( artifactSelector );
-                            if ( artifactList.size()>0 && artifactList.get(0).getAsset().getModificationTime( ).toEpochMilli( ) < olderThanThisDate.getTimeInMillis( ) )
-                            {
-                                artifactsToDelete.addAll( artifactList );
-                            }
-                        }
-                        // Is this a timestamp snapshot "1.0-20070822.123456-42" ?
-                        else if ( VersionUtil.isUniqueSnapshot( version ) )
-                        {
-                            Calendar timestampCal = uniqueSnapshotToCalendar( version );
-
-                            if ( timestampCal.getTimeInMillis( ) < olderThanThisDate.getTimeInMillis( ) )
-                            {
-                                artifactsToDelete.addAll( repository.getLayout( BaseRepositoryContentLayout.class ).getArtifacts( artifactSelector ) );
-                            }
-                        }
-                    } catch ( IllegalArgumentException e ) {
-                        log.error( "Bad selector for artifact: {}", e.getMessage( ), e );
-                        // continue
-                    }
-                }
-                purge( artifactsToDelete );
+                return;
             }
+
+            // ArtifactReference artifact = repository.toArtifactReference( path );
+
+            Calendar olderThanThisDate = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+            olderThanThisDate.add( Calendar.DATE, -retentionPeriod );
+
+            ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+                .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getId( ) )
+                .withProjectId( artifactItem.getVersion( ).getProject( ).getId( ) )
+                .withVersion( artifactItem.getVersion( ).getId( ) )
+                .withClassifier( "*" )
+                .includeRelatedArtifacts( )
+                .build( );
+
+            List<String> artifactVersions;
+            try ( Stream<? extends Artifact> stream = repository.getLayout( BaseRepositoryContentLayout.class ).newArtifactStream( selector ) )
+            {
+                artifactVersions = stream.map( a -> a.getArtifactVersion( ) )
+                    .filter( StringUtils::isNotEmpty )
+                    .distinct( )
+                    .collect( Collectors.toList( ) );
+            }
+
+            Collections.sort( artifactVersions, VersionComparator.getInstance( ) );
+
+            if ( retentionCount > artifactVersions.size( ) )
+            {
+                // Done. nothing to do here. skip it.
+                return;
+            }
+
+            int countToPurge = artifactVersions.size( ) - retentionCount;
+
+
+            ArchivaItemSelector.Builder artifactSelectorBuilder = ArchivaItemSelector.builder( )
+                .withNamespace( artifactItem.getVersion( ).getProject( ).getNamespace( ).getId( ) )
+                .withProjectId( artifactItem.getVersion( ).getProject( ).getId( ) )
+                .withVersion( artifactItem.getVersion( ).getId( ) )
+                .withArtifactId( artifactItem.getId( ) )
+                .withClassifier( "*" )
+                .includeRelatedArtifacts( );
+
+            Set<Artifact> artifactsToDelete = new HashSet<>( );
+            for ( String version : artifactVersions )
+            {
+                if ( countToPurge-- <= 0 )
+                {
+                    break;
+                }
+
+                ArchivaItemSelector artifactSelector = artifactSelectorBuilder.withArtifactVersion( version ).build( );
+                try
+                {
+
+
+                    // Is this a generic snapshot "1.0-SNAPSHOT" ?
+                    if ( VersionUtil.isGenericSnapshot( version ) )
+                    {
+                        List<? extends Artifact> artifactList = repository.getLayout( BaseRepositoryContentLayout.class ).getArtifacts( artifactSelector );
+                        if ( artifactList.size( ) > 0 && artifactList.get( 0 ).getAsset( ).getModificationTime( ).toEpochMilli( ) < olderThanThisDate.getTimeInMillis( ) )
+                        {
+                            artifactsToDelete.addAll( artifactList );
+                        }
+                    }
+                    // Is this a timestamp snapshot "1.0-20070822.123456-42" ?
+                    else if ( VersionUtil.isUniqueSnapshot( version ) )
+                    {
+                        Calendar timestampCal = uniqueSnapshotToCalendar( version );
+
+                        if ( timestampCal.getTimeInMillis( ) < olderThanThisDate.getTimeInMillis( ) )
+                        {
+                            artifactsToDelete.addAll( repository.getLayout( BaseRepositoryContentLayout.class ).getArtifacts( artifactSelector ) );
+                        }
+                    }
+                }
+                catch ( IllegalArgumentException e )
+                {
+                    log.error( "Bad selector for artifact: {}", e.getMessage( ), e );
+                    // continue
+                }
+            }
+            purge( artifactsToDelete );
         }
         catch ( LayoutException e )
         {

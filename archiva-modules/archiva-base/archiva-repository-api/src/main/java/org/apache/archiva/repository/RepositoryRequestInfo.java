@@ -20,6 +20,7 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 /**
@@ -41,6 +42,15 @@ public interface RepositoryRequestInfo
      * @throws LayoutException
      */
     ArtifactReference toArtifactReference( String requestPath ) throws LayoutException;
+
+
+    /**
+     * Returns the item selector that matches the given path.
+     * @param requestPath the request path which may be different from the filesystem structure
+     * @return the item selector
+     * @throws LayoutException if the path is not valid for the given repository layout
+     */
+    ItemSelector toItemSelector( String requestPath ) throws LayoutException;
 
     /**
      * <p>

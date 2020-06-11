@@ -644,6 +644,98 @@ public class Maven2RepositoryStorage
         }
     }
 
+    @Override
+    public ItemSelector applyServerSideRelocation(ManagedRepository managedRepository, ItemSelector artifactSelector)
+        throws ProxyDownloadException {
+        if ("pom".equals(artifactSelector.getType())) {
+            return artifactSelector;
+        }
+
+        // Build the artifact POM reference
+        BaseRepositoryContentLayout layout;
+        try
+        {
+            layout = managedRepository.getContent( ).getLayout( BaseRepositoryContentLayout.class );
+        }
+        catch ( LayoutException e )
+        {
+            throw new ProxyDownloadException( "Could not set layout " + e.getMessage( ), new HashMap<>(  ) );
+        }
+
+        RepositoryType repositoryType = managedRepository.getType();
+        if (!proxyRegistry.hasHandler(repositoryType)) {
+            throw new ProxyDownloadException("No proxy handler found for repository type " + repositoryType, new HashMap<>());
+        }
+
+
+
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( artifactSelector.getNamespace( ) )
+            .withProjectId( artifactSelector.getArtifactId( ) )
+            .withArtifactId( artifactSelector.getArtifactId( ) )
+            .withVersion( artifactSelector.getVersion( ) )
+            .withArtifactVersion( artifactSelector.getVersion( ) )
+            .withType( "pom" ).build( );
+
+        Artifact pom = layout.getArtifact( selector );
+
+        RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(repositoryType).get(0);
+
+        // Get the artifact POM from proxied repositories if needed
+        proxyHandler.fetchFromProxies(managedRepository, pom);
+
+        // Open and read the POM from the managed repo
+
+        if (!pom.exists()) {
+            return artifactSelector;
+        }
+
+        try {
+            // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
+
+            Model model;
+            try (Reader reader = Channels.newReader(pom.getAsset().getReadChannel(), Charset.defaultCharset().name())) {
+                model = MAVEN_XPP_3_READER.read(reader);
+            }
+
+            DistributionManagement dist = model.getDistributionManagement();
+            if (dist != null) {
+                Relocation relocation = dist.getRelocation();
+                if (relocation != null) {
+                    ArchivaItemSelector.Builder relocatedBuilder = ArchivaItemSelector.builder( );
+                    // artifact is relocated : update the repositoryPath
+                    if (relocation.getGroupId() != null) {
+                        relocatedBuilder.withNamespace( relocation.getGroupId( ) );
+                    } else {
+                        relocatedBuilder.withNamespace( artifactSelector.getNamespace( ) );
+                    }
+                    if (relocation.getArtifactId() != null) {
+                        relocatedBuilder.withArtifactId( relocation.getArtifactId( ) );
+                    } else {
+                        relocatedBuilder.withArtifactId( artifactSelector.getArtifactId( ) );
+                    }
+                    if (relocation.getVersion() != null)
+                    {
+                        relocatedBuilder.withVersion( relocation.getVersion( ) );
+                    } else {
+                        relocatedBuilder.withVersion( artifactSelector.getVersion( ) );
+                    }
+                    return relocatedBuilder.withArtifactVersion( artifactSelector.getArtifactVersion( ) )
+                        .withClassifier( artifactSelector.getClassifier( ) )
+                        .withType( artifactSelector.getType( ) )
+                        .withProjectId( artifactSelector.getProjectId( ) )
+                        .withExtension( artifactSelector.getExtension( ) )
+                        .build( );
+                }
+            }
+        } catch (IOException e) {
+            // Unable to read POM : ignore.
+        } catch (XmlPullParserException e) {
+            // Invalid POM : ignore
+        }
+        return artifactSelector;
+    }
+
 
     @Override
     public String getFilePath(String requestPath, org.apache.archiva.repository.ManagedRepository managedRepository) {

@@ -1014,7 +1014,7 @@ public class ManagedDefaultRepositoryContentTest
         path = "/org/apache/maven/shared/maven-downloader/1.1/maven-downloader-1.1.jar";
         item = repoContent.toItem( path );
         assertNotNull( item );
-        assertTrue( item instanceof Artifact );
+        assertTrue( item instanceof DataItem );
 
     }
 
