@@ -48,4 +48,5 @@ public interface ManagedRepositoryContentLayout
      * @throws LayoutException if the conversion is not possible
      */
     <T extends ContentItem> T adaptItem( Class<T> clazz, ContentItem item ) throws LayoutException;
+
 }

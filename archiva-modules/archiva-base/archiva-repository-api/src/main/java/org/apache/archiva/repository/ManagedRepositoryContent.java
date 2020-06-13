@@ -193,4 +193,10 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @return <code>true</code>, if the layout is supported, otherwise <code>false</code>
      */
     <T extends ManagedRepositoryContentLayout> boolean supportsLayout(Class<T> clazz);
+
+    /**
+     * Returns a list of supported layout classes
+     * @return
+     */
+    List<Class<? extends ManagedRepositoryContentLayout>> getSupportedLayouts( );
 }

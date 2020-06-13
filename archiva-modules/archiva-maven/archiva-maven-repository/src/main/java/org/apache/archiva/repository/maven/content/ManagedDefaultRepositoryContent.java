@@ -65,6 +65,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -119,6 +120,8 @@ public class ManagedDefaultRepositoryContent
     public static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "^([0-9]{8})\\.([0-9]{6})$" );
 
     public static final Pattern GENERIC_SNAPSHOT_PATTERN = Pattern.compile( "^(.*)-" + SNAPSHOT );
+
+    private static final List<Class<? extends ManagedRepositoryContentLayout>> LAYOUTS = Arrays.asList( BaseRepositoryContentLayout.class );
 
     /**
      * We are caching content items in a weak reference map. To avoid always recreating the
@@ -1459,6 +1462,12 @@ public class ManagedDefaultRepositoryContent
     public <T extends ManagedRepositoryContentLayout> boolean supportsLayout( Class<T> clazz )
     {
         return clazz.isAssignableFrom( this.getClass( ) );
+    }
+
+    @Override
+    public List<Class<? extends ManagedRepositoryContentLayout>> getSupportedLayouts( )
+    {
+        return LAYOUTS;
     }
 
     /**
