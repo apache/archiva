@@ -24,6 +24,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
@@ -96,6 +97,11 @@ public class ManagedDefaultRepositoryContentTest
     @Inject
     FileLockManager fileLockManager;
 
+    @Inject
+    @Named( "repositoryPathTranslator#maven2" )
+    RepositoryPathTranslator pathTranslator;
+
+
     private Path getRepositoryPath(String repoName) {
         try
         {
@@ -121,9 +127,11 @@ public class ManagedDefaultRepositoryContentTest
 
         fileTypes.afterConfigurationChange( null, "fileType", null );
 
-        repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
+        repoContent = new ManagedDefaultRepositoryContent(repository, fileTypes, fileLockManager);
         repoContent.setMavenContentHelper( contentHelper );
         repoContent.setMetadataReader( metadataReader );
+        repoContent.setPathTranslator( pathTranslator );
+        repoContent.setArtifactMappingProviders( artifactMappingProviders );
         
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
     }
@@ -435,7 +443,7 @@ public class ManagedDefaultRepositoryContentTest
 
         fileTypes.afterConfigurationChange( null, "fileType", null );
 
-        repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
+        repoContent = new ManagedDefaultRepositoryContent(repository, fileTypes, fileLockManager);
         return newRepo;
 
     }
@@ -1173,7 +1181,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         Path repoDir = copyRepository( sourceRepoName );
         MavenManagedRepository repo = createRepository( sourceRepoName, sourceRepoName, repoDir );
-        ManagedDefaultRepositoryContent deleteRepoContent = new ManagedDefaultRepositoryContent( repo, artifactMappingProviders, fileTypes, fileLockManager );
+        ManagedDefaultRepositoryContent deleteRepoContent = new ManagedDefaultRepositoryContent( repo, fileTypes, fileLockManager );
         deleteRepoContent.setMavenContentHelper( contentHelper );
         return repo;
     }

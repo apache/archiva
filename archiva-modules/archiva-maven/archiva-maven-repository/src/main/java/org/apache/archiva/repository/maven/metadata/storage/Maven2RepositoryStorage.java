@@ -28,7 +28,13 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
-import org.apache.archiva.metadata.repository.storage.*;
+import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
+import org.apache.archiva.metadata.repository.storage.RelocationException;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.policies.ProxyDownloadException;
@@ -37,19 +43,39 @@ import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemSelector;
-import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.MavenSystemManager;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.maven.model.*;
-import org.apache.maven.model.building.*;
+import org.apache.maven.model.CiManagement;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DistributionManagement;
+import org.apache.maven.model.IssueManagement;
+import org.apache.maven.model.License;
+import org.apache.maven.model.MailingList;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Organization;
+import org.apache.maven.model.Relocation;
+import org.apache.maven.model.Scm;
+import org.apache.maven.model.building.DefaultModelBuilderFactory;
+import org.apache.maven.model.building.DefaultModelBuildingRequest;
+import org.apache.maven.model.building.ModelBuilder;
+import org.apache.maven.model.building.ModelBuildingException;
+import org.apache.maven.model.building.ModelBuildingRequest;
+import org.apache.maven.model.building.ModelProblem;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
@@ -68,7 +94,14 @@ import java.nio.charset.Charset;
 import java.nio.file.NoSuchFileException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -109,10 +142,6 @@ public class Maven2RepositoryStorage
 
     @Inject
     private ApplicationContext applicationContext;
-
-    @Inject
-    @Named("pathParser#default")
-    private PathParser pathParser;
 
     @Inject
     private ProxyRegistry proxyRegistry;
@@ -962,12 +991,4 @@ public class Maven2RepositoryStorage
         }
     }
 
-
-    public PathParser getPathParser() {
-        return pathParser;
-    }
-
-    public void setPathParser(PathParser pathParser) {
-        this.pathParser = pathParser;
-    }
 }

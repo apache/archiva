@@ -268,6 +268,12 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
+    public List<Class<? extends ManagedRepositoryContentLayout>> getSupportedLayouts( )
+    {
+        return null;
+    }
+
+    @Override
     public void addArtifact( Path sourceFile, Artifact destination ) throws IllegalArgumentException
     {
 

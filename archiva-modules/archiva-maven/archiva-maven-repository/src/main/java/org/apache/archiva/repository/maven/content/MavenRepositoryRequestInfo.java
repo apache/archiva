@@ -20,7 +20,6 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.ItemSelector;
-import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.commons.lang3.StringUtils;
@@ -31,8 +30,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
 {
-    private PathParser defaultPathParser = new DefaultPathParser();
-
     ManagedRepository repository;
 
     public MavenRepositoryRequestInfo(ManagedRepository repository)

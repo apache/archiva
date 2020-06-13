@@ -19,9 +19,11 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.repository.maven.metadata.storage.Maven2RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
@@ -29,7 +31,6 @@ import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
-import org.apache.archiva.repository.content.PathParser;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,24 +54,21 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
 
     protected static final char ARTIFACT_SEPARATOR = '-';
 
-    private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator();
+    private RepositoryPathTranslator pathTranslator;
+    private List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
-    private PathParser defaultPathParser = new DefaultPathParser();
 
-
-    PathParser getPathParser() {
-        return defaultPathParser;
+    AbstractDefaultRepositoryContent() {
     }
 
+    public RepositoryPathTranslator getPathTranslator( )
+    {
+        return pathTranslator;
+    }
 
-
-    /**
-     *
-     */
-    protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
-
-    AbstractDefaultRepositoryContent(List<? extends ArtifactMappingProvider> artifactMappingProviders) {
-        this.artifactMappingProviders = artifactMappingProviders;
+    public void setPathTranslator( RepositoryPathTranslator pathTranslator )
+    {
+        this.pathTranslator = pathTranslator;
     }
 
     public void setArtifactMappingProviders(List<? extends ArtifactMappingProvider> artifactMappingProviders) {
@@ -80,7 +78,32 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
     @Override
     public ItemSelector toItemSelector( String path ) throws LayoutException
     {
-        return defaultPathParser.toItemSelector( path );
+        if ( StringUtils.isBlank( path ) )
+        {
+            throw new LayoutException( "Unable to convert blank path." );
+        }
+
+        try
+        {
+            ArtifactMetadata metadata = pathTranslator.getArtifactForPath( null, path );
+            ArchivaItemSelector.Builder builder = ArchivaItemSelector.builder( ).withNamespace( metadata.getNamespace( ) )
+                .withProjectId( metadata.getProject( ) )
+                .withVersion( metadata.getProjectVersion( ) )
+                .withArtifactId( metadata.getProject( ) )
+                .withArtifactVersion( metadata.getVersion( ) );
+            MavenArtifactFacet facet = (MavenArtifactFacet) metadata.getFacet( MavenArtifactFacet.FACET_ID );
+            if ( facet != null )
+            {
+                builder.withClassifier( facet.getClassifier() );
+                builder.withType( facet.getType() );
+            }
+            return builder.build( );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            throw new LayoutException( e.getMessage(), e );
+        }
+
     }
 
     public String toPath ( ProjectReference reference) {

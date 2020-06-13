@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +43,7 @@ public class Maven2RepositoryPathTranslator
     implements RepositoryPathTranslator
 {
 
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryPathTranslator.class );
 
     private static final char GROUP_SEPARATOR = '.';
 
@@ -62,6 +63,18 @@ public class Maven2RepositoryPathTranslator
     {
         // noop
     }
+
+
+    public List<ArtifactMappingProvider> getArtifactMappingProviders( )
+    {
+        return artifactMappingProviders;
+    }
+
+    public void setArtifactMappingProviders( List<ArtifactMappingProvider> artifactMappingProviders )
+    {
+        this.artifactMappingProviders = artifactMappingProviders;
+    }
+
 
     @PostConstruct
     public void initialize()

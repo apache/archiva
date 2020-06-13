@@ -100,10 +100,6 @@ public class ManagedDefaultRepositoryContent
     private FileLockManager lockManager;
 
     @Inject
-    @Named( "repositoryPathTranslator#maven2" )
-    private RepositoryPathTranslator pathTranslator;
-
-    @Inject
     @Named( "metadataReader#maven" )
     MavenMetadataReader metadataReader;
 
@@ -133,24 +129,15 @@ public class ManagedDefaultRepositoryContent
 
     public ManagedDefaultRepositoryContent( )
     {
-        super( Collections.singletonList( new DefaultArtifactMappingProvider( ) ) );
+        super(  );
     }
 
     public ManagedDefaultRepositoryContent( ManagedRepository repository, FileTypes fileTypes, FileLockManager lockManager )
     {
-        super( Collections.singletonList( new DefaultArtifactMappingProvider( ) ) );
+        super(  );
         setFileTypes( fileTypes );
         this.lockManager = lockManager;
         setRepository( repository );
-    }
-
-    public ManagedDefaultRepositoryContent( ManagedRepository repository, List<? extends ArtifactMappingProvider> artifactMappingProviders, FileTypes fileTypes, FileLockManager lockManager )
-    {
-        super( artifactMappingProviders == null ? Collections.singletonList( new DefaultArtifactMappingProvider( ) ) : artifactMappingProviders );
-        setFileTypes( fileTypes );
-        this.lockManager = lockManager;
-        setRepository( repository );
-
     }
 
     private StorageAsset getAssetByPath( String assetPath )

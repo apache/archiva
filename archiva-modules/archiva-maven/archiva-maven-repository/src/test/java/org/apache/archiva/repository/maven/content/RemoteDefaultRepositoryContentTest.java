@@ -18,6 +18,7 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
@@ -31,6 +32,7 @@ import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvi
 import org.junit.Before;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 
 /**
@@ -43,7 +45,11 @@ public class RemoteDefaultRepositoryContentTest
     @Inject
     private List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
-    private RemoteRepositoryContent repoContent;
+    @Inject
+    @Named( "repositoryPathTranslator#maven2" )
+    RepositoryPathTranslator pathTranslator;
+
+    private RemoteDefaultRepositoryContent repoContent;
 
     @Before
     public void setUp()
@@ -52,7 +58,10 @@ public class RemoteDefaultRepositoryContentTest
         RemoteRepository repository =
             createRemoteRepository( "testRemoteRepo", "Unit Test Remote Repo", "http://repo1.maven.org/maven2/" );
 
-        repoContent = new RemoteDefaultRepositoryContent(artifactMappingProviders);
+        repoContent = new RemoteDefaultRepositoryContent();
+        repoContent.setArtifactMappingProviders( artifactMappingProviders );
+        repoContent.setPathTranslator( pathTranslator );
+
         //repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, "default" );
         repoContent.setRepository( repository );
     }

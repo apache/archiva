@@ -34,6 +34,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.maven.content.MavenContentHelper;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
@@ -154,6 +155,10 @@ public class ArchivaDavResourceFactoryTest
     List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
     @Inject
+    @Named( "repositoryPathTranslator#maven2" )
+    RepositoryPathTranslator pathTranslator;
+
+    @Inject
     FileLockManager fileLockManager;
 
     @Inject
@@ -260,12 +265,14 @@ public class ArchivaDavResourceFactoryTest
         throws RepositoryAdminException
     {
         org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repoId );
-        ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repo, artifactMappingProviders, fileTypes, fileLockManager);
+        ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repo, fileTypes, fileLockManager);
         if (repo!=null && repo instanceof EditableManagedRepository)
         {
             ( (EditableManagedRepository) repo ).setContent( repoContent );
         }
         repoContent.setMavenContentHelper( mavenContentHelper );
+        repoContent.setArtifactMappingProviders( artifactMappingProviders );
+        repoContent.setPathTranslator( pathTranslator );
         return repoContent;
     }
 

@@ -37,8 +37,8 @@ public class RemoteDefaultRepositoryContent
     private RemoteRepository repository;
 
 
-    public RemoteDefaultRepositoryContent( List<? extends ArtifactMappingProvider> artifactMappingProviders ) {
-        super(artifactMappingProviders);
+    public RemoteDefaultRepositoryContent(  ) {
+        super();
     }
 
     @Override

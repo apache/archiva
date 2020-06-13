@@ -20,6 +20,7 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.repository.ManagedRepository;
@@ -31,6 +32,7 @@ import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.maven.model.path.PathTranslator;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -60,6 +62,10 @@ public class MavenContentProvider implements RepositoryContentProvider
     @Inject
     @Named("MavenContentHelper")
     MavenContentHelper mavenContentHelper;
+
+    @Inject
+    @Named("repositoryPathTranslator#maven2")
+    RepositoryPathTranslator pathTranslator;
 
     private static final Set<RepositoryType> REPOSITORY_TYPES = new HashSet<>(  );
     static {
@@ -93,8 +99,10 @@ public class MavenContentProvider implements RepositoryContentProvider
         if (!supportsLayout( repository.getLayout() )) {
             throw new RepositoryException( "Repository layout "+repository.getLayout()+" is not supported by this implementation." );
         }
-        RemoteDefaultRepositoryContent content = new RemoteDefaultRepositoryContent(artifactMappingProviders);
+        RemoteDefaultRepositoryContent content = new RemoteDefaultRepositoryContent();
         content.setRepository( repository );
+        content.setPathTranslator( pathTranslator );
+        content.setArtifactMappingProviders( artifactMappingProviders );
         return content;
     }
 
@@ -107,8 +115,10 @@ public class MavenContentProvider implements RepositoryContentProvider
         if (!supportsLayout( repository.getLayout() )) {
             throw new RepositoryException( "Repository layout "+repository.getLayout()+" is not supported by this implementation." );
         }
-        ManagedDefaultRepositoryContent content = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, filetypes ,fileLockManager);
+        ManagedDefaultRepositoryContent content = new ManagedDefaultRepositoryContent(repository, filetypes ,fileLockManager);
         content.setMavenContentHelper( mavenContentHelper );
+        content.setPathTranslator( pathTranslator );
+        content.setArtifactMappingProviders( artifactMappingProviders );
         return content;
     }
 

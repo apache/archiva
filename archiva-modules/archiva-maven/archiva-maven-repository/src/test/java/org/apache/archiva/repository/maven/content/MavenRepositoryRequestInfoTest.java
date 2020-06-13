@@ -23,6 +23,7 @@ import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
@@ -71,6 +72,10 @@ public class MavenRepositoryRequestInfoTest
     List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
     @Inject
+    @Named( "repositoryPathTranslator#maven2" )
+    RepositoryPathTranslator pathTranslator;
+
+    @Inject
     FileLockManager fileLockManager;
 
     @Inject
@@ -110,10 +115,12 @@ public class MavenRepositoryRequestInfoTest
 
         fileTypes.afterConfigurationChange( null, "fileType", null );
 
-        ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
+        ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repository, fileTypes, fileLockManager);
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
         repository.setContent(repoContent);
         repoContent.setMavenContentHelper( mavenContentHelper );
+        repoContent.setArtifactMappingProviders( artifactMappingProviders );
+        repoContent.setPathTranslator( pathTranslator );
 
         repoRequest = new MavenRepositoryRequestInfo(repository);
     }
