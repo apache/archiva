@@ -22,28 +22,28 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksumUtil;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
-import org.apache.archiva.components.taskqueue.TaskQueueException;
+import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.content.base.ArtifactUtil;
+import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.metadata.MetadataReader;
-import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -71,12 +71,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URLDecoder;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -94,12 +106,6 @@ public class DefaultFileUploadService
 
     @Context
     private HttpServletRequest httpServletRequest;
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
-    @Inject
-    private ArtifactUtil artifactUtil;
 
     @Inject
     private ArchivaAdministration archivaAdministration;
@@ -301,24 +307,18 @@ public class DefaultFileUploadService
             return Boolean.FALSE;
         }
 
-        try {
-            ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository(repositoryId);
+        org.apache.archiva.repository.ManagedRepository repository = repositoryRegistry.getManagedRepository(repositoryId);
+        if (repository == null) {
+            // TODO i18n ?
+            throw new ArchivaRestServiceException("Cannot find managed repository with id " + repositoryId,
+                    Response.Status.BAD_REQUEST.getStatusCode(), null);
+        }
 
-            if (managedRepository == null) {
-                // TODO i18n ?
-                throw new ArchivaRestServiceException("Cannot find managed repository with id " + repositoryId,
-                        Response.Status.BAD_REQUEST.getStatusCode(), null);
-            }
-
-            if (VersionUtil.isSnapshot(version) && !managedRepository.isSnapshots()) {
-                // TODO i18n ?
-                throw new ArchivaRestServiceException(
-                        "Managed repository with id " + repositoryId + " do not accept snapshots",
-                        Response.Status.BAD_REQUEST.getStatusCode(), null);
-            }
-        } catch (RepositoryAdminException e) {
-            throw new ArchivaRestServiceException(e.getMessage(),
-                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
+        if (VersionUtil.isSnapshot(version) && !repository.getActiveReleaseSchemes().contains( ReleaseScheme.SNAPSHOT )) {
+            // TODO i18n ?
+            throw new ArchivaRestServiceException(
+                    "Managed repository with id " + repositoryId + " do not accept snapshots",
+                    Response.Status.BAD_REQUEST.getStatusCode(), null);
         }
 
         // get from the session file with groupId/artifactId
@@ -366,12 +366,15 @@ public class DefaultFileUploadService
             boolean fixChecksums =
                     !(archivaAdministration.getKnownContentConsumers().contains("create-missing-checksums"));
 
-            org.apache.archiva.repository.ManagedRepository repoConfig = repositoryRegistry.getManagedRepository(repositoryId);
+            org.apache.archiva.repository.ManagedRepository repository = repositoryRegistry.getManagedRepository(repositoryId);
+            ItemSelector selector = ArchivaItemSelector.builder( )
+                .withNamespace( groupId )
+                .withProjectId( artifactId )
+                .withArtifactId( artifactId )
+                .withArtifactVersion( version )
+                .withExtension( packaging ).build();
 
-            ArtifactReference artifactReference = createArtifactRef(fileMetadata, groupId, artifactId, version);
-            artifactReference.setType(packaging);
-
-            StorageAsset pomPath = artifactUtil.getArtifactAsset(repoConfig, artifactReference);
+            StorageAsset pomPath = repository.getContent( ).getItem( selector ).getAsset();
             StorageAsset targetPath = pomPath.getParent();
 
             String pomFilename = pomPath.getName();
@@ -381,18 +384,15 @@ public class DefaultFileUploadService
             pomFilename = FilenameUtils.removeExtension(pomFilename) + ".pom";
 
             copyFile(Paths.get(fileMetadata.getServerFileName()), targetPath, pomFilename, fixChecksums);
-            triggerAuditEvent(repoConfig.getId(), targetPath.resolve(pomFilename).toString(), AuditEvent.UPLOAD_FILE);
-            queueRepositoryTask(repoConfig.getId(), targetPath.resolve(pomFilename));
+            triggerAuditEvent(repository.getId(), targetPath.resolve(pomFilename).toString(), AuditEvent.UPLOAD_FILE);
+            queueRepositoryTask(repository.getId(), targetPath.resolve(pomFilename));
             log.debug("Finished Saving POM");
         } catch (IOException ie) {
             log.error("IOException for POM {}", ie.getMessage());
             throw new ArchivaRestServiceException("Error encountered while uploading pom file: " + ie.getMessage(),
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ie);
-        } catch (RepositoryException rep) {
-            log.error("RepositoryException for POM {}", rep.getMessage());
-            throw new ArchivaRestServiceException("Repository exception: " + rep.getMessage(),
-                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rep);
-        } catch (RepositoryAdminException e) {
+        }
+        catch (RepositoryAdminException e) {
             log.error("RepositoryAdminException for POM {}", e.getMessage());
             throw new ArchivaRestServiceException("RepositoryAdmin exception: " + e.getMessage(),
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
@@ -405,13 +405,16 @@ public class DefaultFileUploadService
         log.debug("Saving file");
         try {
 
-            org.apache.archiva.repository.ManagedRepository repoConfig = repositoryRegistry.getManagedRepository(repositoryId);
+            org.apache.archiva.repository.ManagedRepository repository = repositoryRegistry.getManagedRepository(repositoryId);
 
-            ArtifactReference artifactReference = createArtifactRef(fileMetadata, groupId, artifactId, version);
-            artifactReference.setType(
-                    StringUtils.isEmpty(fileMetadata.getPackaging()) ? packaging : fileMetadata.getPackaging());
+            ItemSelector selector = ArchivaItemSelector.builder( )
+                .withNamespace( groupId )
+                .withProjectId( artifactId )
+                .withArtifactId( artifactId )
+                .withArtifactVersion( version )
+                .withExtension( packaging ).build();
 
-            StorageAsset artifactPath = artifactUtil.getArtifactAsset(repoConfig, artifactReference);
+            StorageAsset artifactPath = repository.getContent( ).getItem( selector ).getAsset();
             StorageAsset targetPath = artifactPath.getParent();
 
             log.debug("artifactPath: {} found targetPath: {}", artifactPath, targetPath);
@@ -450,19 +453,19 @@ public class DefaultFileUploadService
 
             try {
                 StorageAsset targetFile = targetPath.resolve(filename);
-                if (targetFile.exists() && !VersionUtil.isSnapshot(version) && repoConfig.blocksRedeployments()) {
+                if (targetFile.exists() && !VersionUtil.isSnapshot(version) && repository.blocksRedeployments()) {
                     throw new ArchivaRestServiceException(
-                            "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
+                            "Overwriting released artifacts in repository '" + repository.getId() + "' is not allowed.",
                             Response.Status.BAD_REQUEST.getStatusCode(), null);
                 } else {
                     copyFile(Paths.get(fileMetadata.getServerFileName()), targetPath, filename, fixChecksums);
-                    triggerAuditEvent(repoConfig.getId(), artifactPath.toString(), AuditEvent.UPLOAD_FILE);
-                    queueRepositoryTask(repoConfig.getId(), targetFile);
+                    triggerAuditEvent(repository.getId(), artifactPath.toString(), AuditEvent.UPLOAD_FILE);
+                    queueRepositoryTask(repository.getId(), targetFile);
                 }
             } catch (IOException ie) {
                 log.error("IOException copying file: {}", ie.getMessage(), ie);
                 throw new ArchivaRestServiceException(
-                        "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
+                        "Overwriting released artifacts in repository '" + repository.getId() + "' is not allowed.",
                         Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ie);
             }
 
@@ -476,11 +479,11 @@ public class DefaultFileUploadService
                 try {
                     StorageAsset generatedPomFile =
                             createPom(targetPath, pomFilename, fileMetadata, groupId, artifactId, version, packaging);
-                    triggerAuditEvent(repoConfig.getId(), targetPath.resolve(pomFilename).toString(), AuditEvent.UPLOAD_FILE);
+                    triggerAuditEvent(repository.getId(), targetPath.resolve(pomFilename).toString(), AuditEvent.UPLOAD_FILE);
                     if (fixChecksums) {
                         fixChecksums(generatedPomFile);
                     }
-                    queueRepositoryTask(repoConfig.getId(), generatedPomFile);
+                    queueRepositoryTask(repository.getId(), generatedPomFile);
                 } catch (IOException ie) {
                     throw new ArchivaRestServiceException(
                             "Error encountered while writing pom file: " + ie.getMessage(),
@@ -499,12 +502,8 @@ public class DefaultFileUploadService
                             packaging);
                 }
             }
-        } catch (RepositoryNotFoundException re) {
-            log.error("RepositoryNotFoundException during save {}", re.getMessage());
-            re.printStackTrace();
-            throw new ArchivaRestServiceException("Target repository cannot be found: " + re.getMessage(),
-                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), re);
-        } catch (RepositoryException rep) {
+        }
+        catch (RepositoryException rep) {
             log.error("RepositoryException during save {}", rep.getMessage());
             throw new ArchivaRestServiceException("Repository exception: " + rep.getMessage(),
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rep);

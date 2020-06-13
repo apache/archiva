@@ -23,7 +23,6 @@ import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
-import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ContentAccessException;
@@ -35,7 +34,6 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ManagedRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
-import org.apache.archiva.repository.content.ArtifactType;
 import org.apache.archiva.repository.content.BaseArtifactTypes;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.DataItem;
@@ -50,8 +48,6 @@ import org.apache.archiva.repository.content.base.ArchivaNamespace;
 import org.apache.archiva.repository.content.base.ArchivaProject;
 import org.apache.archiva.repository.content.base.ArchivaVersion;
 import org.apache.archiva.repository.content.base.builder.ArtifactOptBuilder;
-import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.repository.maven.metadata.storage.DefaultArtifactMappingProvider;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
@@ -299,6 +295,11 @@ public class ManagedDefaultRepositoryContent
         if ( selector.hasVersion( ) && selector.hasArtifactId( ) )
         {
             return getArtifact( selector );
+        } else if ( !selector.hasVersion() && selector.hasArtifactVersion() && selector.hasArtifactId() ) {
+            String baseVersion = VersionUtil.getBaseVersion( selector.getArtifactVersion( ) );
+            ItemSelector selector1 = ArchivaItemSelector.builder( ).withSelector( selector )
+                .withVersion(baseVersion).build();
+            return getArtifact( selector1 );
         }
         else if ( selector.hasProjectId( ) && selector.hasVersion( ) )
         {
@@ -632,20 +633,6 @@ public class ManagedDefaultRepositoryContent
     public ManagedRepositoryContent getGenericContent( )
     {
         return this;
-    }
-
-    // Simple object to hold artifact information
-    private static class ArtifactInfo
-    {
-        private String id;
-        private String version;
-        private String extension;
-        private String remainder;
-        private String type;
-        private String classifier;
-        private String contentType;
-        private StorageAsset asset;
-        private ArtifactType artifactType = BaseArtifactTypes.MAIN;
     }
 
     private ArtifactInfo getArtifactInfoFromPath( final String genericVersion, final StorageAsset path )

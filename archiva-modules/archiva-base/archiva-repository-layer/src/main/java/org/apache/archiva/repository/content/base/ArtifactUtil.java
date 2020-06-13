@@ -48,23 +48,6 @@ public class ArtifactUtil
      *
      * @param repository        The repository, where the artifact is stored.
      * @param artifactReference The artifact reference.
-     * @return The absolute path to the artifact.
-     * @throws RepositoryException
-     */
-    public Path getArtifactPath( ManagedRepository repository, ArtifactReference artifactReference ) throws RepositoryException
-    {
-        final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent( repository );
-        final String artifactPath;
-        artifactPath = content.toPath( artifactReference );
-        return Paths.get( repository.getLocation( ) ).resolve( artifactPath );
-    }
-
-    /**
-     * Returns the physical location of a given artifact in the repository. There is no check for the
-     * existence of the returned file.
-     *
-     * @param repository        The repository, where the artifact is stored.
-     * @param artifactReference The artifact reference.
      * @return The asset representation of the artifact.
      * @throws RepositoryException
      */

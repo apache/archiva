@@ -147,26 +147,6 @@ public class ManagedDefaultRepositoryContentTest
                             "1.0-alpha-11-20070314.211405-9", "1.0-alpha-11-20070316.175232-11" } );
     }
 
-    @Test
-    public void testToMetadataPathFromProjectReference()
-    {
-        ProjectReference reference = new ProjectReference();
-        reference.setGroupId( "com.foo" );
-        reference.setArtifactId( "foo-tool" );
-
-        assertEquals( "com/foo/foo-tool/maven-metadata.xml", repoContent.toMetadataPath( reference ) );
-    }
-
-    @Test
-    public void testToMetadataPathFromVersionReference()
-    {
-        VersionedReference reference = new VersionedReference();
-        reference.setGroupId( "com.foo" );
-        reference.setArtifactId( "foo-tool" );
-        reference.setVersion( "1.0" );
-
-        assertEquals( "com/foo/foo-tool/1.0/maven-metadata.xml", repoContent.toMetadataPath( reference ) );
-    }
 
     @Test
     @Override

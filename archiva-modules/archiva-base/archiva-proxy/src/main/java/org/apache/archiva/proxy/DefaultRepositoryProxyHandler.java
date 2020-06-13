@@ -62,7 +62,6 @@ import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
@@ -270,86 +269,6 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
 
         log.debug( "Exhausted all target repositories, artifact {} not found.", item );
-
-        return null;
-    }
-
-    @Override
-    public StorageAsset fetchFromProxies( ManagedRepository repository, ArtifactReference artifact )
-        throws ProxyDownloadException
-    {
-        StorageAsset localFile = null;
-        Map<String, Exception> previousExceptions = new LinkedHashMap<>();
-        try
-        {
-            localFile = toLocalFile( repository, artifact );
-        }
-        catch ( LayoutException e )
-        {
-            previousExceptions.put( "LayoutException", e );
-            throw new ProxyDownloadException( "Could not convert to BasicRepositoryContentLayout " + e.getMessage( ), previousExceptions);
-        }
-
-        Properties requestProperties = new Properties();
-        requestProperties.setProperty( "filetype", "artifact" );
-        requestProperties.setProperty( "version", artifact.getVersion() );
-        requestProperties.setProperty( "managedRepositoryId", repository.getId() );
-
-        List<ProxyConnector> connectors = getProxyConnectors( repository );
-        for ( ProxyConnector connector : connectors )
-        {
-            if ( !connector.isEnabled() )
-            {
-                continue;
-            }
-
-            RemoteRepository targetRepository = connector.getTargetRepository();
-            requestProperties.setProperty( "remoteRepositoryId", targetRepository.getId() );
-
-            String targetPath = targetRepository.getContent().toPath( artifact );
-
-            if ( SystemUtils.IS_OS_WINDOWS )
-            {
-                // toPath use system PATH_SEPARATOR so on windows url are \ which doesn't work very well :-)
-                targetPath = PathUtil.separatorsToUnix( targetPath );
-            }
-
-            try
-            {
-                StorageAsset downloadedFile =
-                    transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
-                                  true );
-
-                if ( fileExists(downloadedFile) )
-                {
-                    log.debug( "Successfully transferred: {}", downloadedFile.getPath() );
-                    return downloadedFile;
-                }
-            }
-            catch ( NotFoundException e )
-            {
-                log.debug( "Artifact {} not found on repository \"{}\".", Keys.toKey( artifact ),
-                           targetRepository.getId() );
-            }
-            catch ( NotModifiedException e )
-            {
-                log.debug( "Artifact {} not updated on repository \"{}\".", Keys.toKey( artifact ),
-                           targetRepository.getId() );
-            }
-            catch ( ProxyException e )
-            {
-                validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
-                                  targetRepository.getContent(), localFile, e, previousExceptions );
-            }
-        }
-
-        if ( !previousExceptions.isEmpty() )
-        {
-            throw new ProxyDownloadException( "Failures occurred downloading from some remote repositories",
-                                              previousExceptions );
-        }
-
-        log.debug( "Exhausted all target repositories, artifact {} not found.", Keys.toKey( artifact ) );
 
         return null;
     }

@@ -92,6 +92,23 @@ public class ArchivaItemSelector implements ItemSelector
             return this;
         }
 
+        public Builder withSelector(ItemSelector givenSelector) {
+            selector.namespace = givenSelector.getNamespace( );
+            selector.projectId = givenSelector.getProjectId( );
+            selector.version = givenSelector.getVersion( );
+            selector.extension = givenSelector.getExtension( );
+            selector.artifactId = givenSelector.getArtifactId( );
+            selector.artifactVersion = givenSelector.getArtifactVersion( );
+            selector.recurse = givenSelector.recurse( );
+            for (Map.Entry<String, String> att : givenSelector.getAttributes().entrySet()) {
+                selector.setAttribute( att.getKey( ), att.getValue( ) );
+            }
+            selector.type = givenSelector.getType( );
+            selector.classifier = givenSelector.getClassifier( );
+            selector.includeRelatedArtifacts = givenSelector.includeRelatedArtifacts( );
+            return this;
+        }
+
         public Builder withNamespace( String namespace )
         {
             if (namespace!=null)

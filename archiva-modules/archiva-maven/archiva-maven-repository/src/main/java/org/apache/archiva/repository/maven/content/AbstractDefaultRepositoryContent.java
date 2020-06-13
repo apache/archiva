@@ -19,15 +19,10 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.ProjectReference;
-import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
@@ -36,6 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * AbstractDefaultRepositoryContent - common methods for working with default (maven 2) layout.
@@ -53,6 +50,9 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
     protected static final char GROUP_SEPARATOR = '.';
 
     protected static final char ARTIFACT_SEPARATOR = '-';
+
+    private static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "([0-9]{8}.[0-9]{6})-([0-9]+).*" );
+    private static final Pattern MAVEN_PLUGIN_PATTERN = Pattern.compile( "^(maven-.*-plugin)|(.*-maven-plugin)$" );
 
     private RepositoryPathTranslator pathTranslator;
     private List<? extends ArtifactMappingProvider> artifactMappingProviders;
@@ -75,6 +75,177 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
         this.artifactMappingProviders = artifactMappingProviders;
     }
 
+    public ArchivaItemSelector.Builder getArtifactFromFilename( String namespace, String projectId, String projectVersion,
+                                                                String artifactFileName )
+    {
+        if ( !artifactFileName.startsWith( projectId + "-" ) )
+        {
+            throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + artifactFileName
+                + "' doesn't start with artifact ID '" + projectId + "'" );
+        }
+
+        int index = projectId.length() + 1;
+        String version;
+        String idSubStrFromVersion = artifactFileName.substring( index );
+        if ( idSubStrFromVersion.startsWith( projectVersion ) && !VersionUtil.isUniqueSnapshot( projectVersion ) )
+        {
+            // non-snapshot versions, or non-timestamped snapshot versions
+            version = projectVersion;
+        }
+        else if ( VersionUtil.isGenericSnapshot( projectVersion ) )
+        {
+            // timestamped snapshots
+            try
+            {
+                int mainVersionLength = projectVersion.length() - 8; // 8 is length of "SNAPSHOT"
+                if ( mainVersionLength == 0 )
+                {
+                    throw new IllegalArgumentException(
+                        "Timestamped snapshots must contain the main version, filename was '" + artifactFileName + "'" );
+                }
+
+                Matcher m = TIMESTAMP_PATTERN.matcher( idSubStrFromVersion.substring( mainVersionLength ) );
+                m.matches();
+                String timestamp = m.group( 1 );
+                String buildNumber = m.group( 2 );
+                version = idSubStrFromVersion.substring( 0, mainVersionLength ) + timestamp + "-" + buildNumber;
+            }
+            catch ( IllegalStateException e )
+            {
+                throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + artifactFileName
+                    + "' doesn't contain a timestamped version matching snapshot '"
+                    + projectVersion + "'", e);
+            }
+        }
+        else
+        {
+            // invalid
+            throw new IllegalArgumentException(
+                "Not a valid artifact path in a Maven 2 repository, filename '" + artifactFileName + "' doesn't contain version '"
+                    + projectVersion + "'" );
+        }
+
+        String classifier;
+        String ext;
+        index += version.length();
+        if ( index == artifactFileName.length() )
+        {
+            // no classifier or extension
+            classifier = null;
+            ext = null;
+        }
+        else
+        {
+            char c = artifactFileName.charAt( index );
+            if ( c == '-' )
+            {
+                // classifier up until '.'
+                int extIndex = artifactFileName.indexOf( '.', index );
+                if ( extIndex >= 0 )
+                {
+                    classifier = artifactFileName.substring( index + 1, extIndex );
+                    ext = artifactFileName.substring( extIndex + 1 );
+                }
+                else
+                {
+                    classifier = artifactFileName.substring( index + 1 );
+                    ext = null;
+                }
+            }
+            else if ( c == '.' )
+            {
+                // rest is the extension
+                classifier = null;
+                ext = artifactFileName.substring( index + 1 );
+            }
+            else
+            {
+                throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + artifactFileName
+                    + "' expected classifier or extension but got '"
+                    + artifactFileName.substring( index ) + "'" );
+            }
+        }
+
+        ArchivaItemSelector.Builder selectorBuilder = ArchivaItemSelector.builder( )
+            .withNamespace( namespace )
+            .withProjectId( projectId )
+            .withArtifactId( projectId )
+            .withVersion( projectVersion )
+            .withArtifactVersion( version )
+            .withClassifier( classifier );
+
+
+        // we use our own provider here instead of directly accessing Maven's artifact handlers as it has no way
+        // to select the correct order to apply multiple extensions mappings to a preferred type
+        // TODO: this won't allow the user to decide order to apply them if there are conflicts or desired changes -
+        //       perhaps the plugins could register missing entries in configuration, then we just use configuration
+        //       here?
+
+        String type = null;
+        for ( ArtifactMappingProvider mapping : artifactMappingProviders )
+        {
+            type = mapping.mapClassifierAndExtensionToType( classifier, ext );
+            if ( type != null )
+            {
+                break;
+            }
+        }
+
+        // TODO: this is cheating! We should check the POM metadata instead
+        if ( type == null && "jar".equals( ext ) && isArtifactIdValidMavenPlugin( projectId ) )
+        {
+            type = "maven-plugin";
+        }
+
+        // use extension as default
+        if ( type == null )
+        {
+            type = ext;
+        }
+
+        // TODO: should we allow this instead?
+        if ( type == null )
+        {
+            throw new IllegalArgumentException(
+                "Not a valid artifact path in a Maven 2 repository, filename '" + artifactFileName + "' does not have a type" );
+        }
+
+        selectorBuilder.withType( type );
+
+
+        return selectorBuilder;
+    }
+
+    public boolean isArtifactIdValidMavenPlugin( String artifactId )
+    {
+        return MAVEN_PLUGIN_PATTERN.matcher( artifactId ).matches();
+    }
+
+    private ArchivaItemSelector getArtifactForPath( String relativePath )
+    {
+        String[] parts = relativePath.replace( '\\', '/' ).split( "/" );
+
+        int len = parts.length;
+        if ( len < 4 )
+        {
+            throw new IllegalArgumentException(
+                "Not a valid artifact path in a Maven 2 repository, not enough directories: " + relativePath );
+        }
+
+        String fileName = parts[--len];
+        String baseVersion = parts[--len];
+        String artifactId = parts[--len];
+        StringBuilder namespaceBuilder = new StringBuilder();
+        for ( int i = 0; i < len - 1; i++ )
+        {
+            namespaceBuilder.append( parts[i] );
+            namespaceBuilder.append( '.' );
+        }
+        namespaceBuilder.append( parts[len - 1] );
+
+        return getArtifactFromFilename( namespaceBuilder.toString(), artifactId, baseVersion, fileName ).build();
+    }
+
     @Override
     public ItemSelector toItemSelector( String path ) throws LayoutException
     {
@@ -82,35 +253,16 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
         {
             throw new LayoutException( "Unable to convert blank path." );
         }
-
         try
         {
-            ArtifactMetadata metadata = pathTranslator.getArtifactForPath( null, path );
-            ArchivaItemSelector.Builder builder = ArchivaItemSelector.builder( ).withNamespace( metadata.getNamespace( ) )
-                .withProjectId( metadata.getProject( ) )
-                .withVersion( metadata.getProjectVersion( ) )
-                .withArtifactId( metadata.getProject( ) )
-                .withArtifactVersion( metadata.getVersion( ) );
-            MavenArtifactFacet facet = (MavenArtifactFacet) metadata.getFacet( MavenArtifactFacet.FACET_ID );
-            if ( facet != null )
-            {
-                builder.withClassifier( facet.getClassifier() );
-                builder.withType( facet.getType() );
-            }
-            return builder.build( );
+
+            return getArtifactForPath( path );
         }
         catch ( IllegalArgumentException e )
         {
             throw new LayoutException( e.getMessage(), e );
         }
 
-    }
-
-    public String toPath ( ProjectReference reference) {
-        final StringBuilder path = new StringBuilder();
-        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( reference.getArtifactId( ) );
-        return path.toString( );
     }
 
     @Override
@@ -153,59 +305,9 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
     }
 
 
-    public String toMetadataPath( ProjectReference reference )
-    {
-        final StringBuilder path = new StringBuilder();
-        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        path.append( MAVEN_METADATA );
-        return path.toString();
-    }
-
     public String toPath( String namespace )
     {
         return formatAsDirectory( namespace );
-    }
-
-    public String toPath( VersionedReference reference )
-    {
-        final StringBuilder path = new StringBuilder();
-        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        if ( reference.getVersion() != null )
-        {
-            // add the version only if it is present
-            path.append( VersionUtil.getBaseVersion( reference.getVersion() ) );
-        }
-        return path.toString();
-    }
-
-    public String toMetadataPath( VersionedReference reference )
-    {
-        StringBuilder path = new StringBuilder();
-
-        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        if ( reference.getVersion() != null )
-        {
-            // add the version only if it is present
-            path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
-        }
-        path.append( MAVEN_METADATA );
-
-        return path.toString();
-    }
-
-    public String toPath( ArchivaArtifact reference )
-    {
-        if ( reference == null )
-        {
-            throw new IllegalArgumentException( "ArchivaArtifact cannot be null" );
-        }
-
-        String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
-        return toPath( reference.getGroupId(), reference.getArtifactId(), baseVersion, reference.getVersion(),
-                       reference.getClassifier(), reference.getType() );
     }
 
     @Override
