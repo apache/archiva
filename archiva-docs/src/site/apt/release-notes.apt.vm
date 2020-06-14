@@ -22,7 +22,7 @@
 Release Notes for Archiva ${project.version}
 
  The Apache Archiva team is pleased to announce the release of Archiva
- ${project.version}.  Archiva is {{{http://archiva.apache.org/download.html}
+ ${project.version}.  Archiva is {{{https://archiva.apache.org/download.html}
  available for download from the web site}}.
 
  Archiva is an application for managing one or more remote repositories,
@@ -30,13 +30,40 @@ Release Notes for Archiva ${project.version}
 
  If you have any questions, please consult:
 
-  * the web site: {{http://archiva.apache.org/}}
+  * the web site: {{https://archiva.apache.org/}}
 
-  * the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
+  * the archiva-user mailing list: {{https://archiva.apache.org/mail-lists.html}}
 
 * New in Archiva ${project.version}
 
  Apache Archiva ${project.version} is a bug fix release:
+
+ Released: <<${releaseDate}>>
+
+** Compatibility Changes
+
+  * No API changes or known side effects.
+
+** New Feature
+
+  * There are no new features in this release.
+
+** Improvements
+
+  * There are no improvements
+
+** Bug Fix
+ 
+  * [MRM-2008] Fix for group names with slashes
+
+  * Better handling of LDAP filter 
+
+
+Previous Release Notes
+
+* Release Notes for Archiva 2.2.4
+
+ Apache Archiva 2.2.4 is a bug fix release:
 
   * Fixes for handling of artifacts
 
@@ -46,9 +73,7 @@ Release Notes for Archiva ${project.version}
 
  No API changes or known side effects.
 
-** List of Changes in Archiva ${project.version}
-
- Released: <<${releaseDate}>>
+ Released: 2019-04-30
 
 ** New Feature
 
@@ -68,8 +93,6 @@ Release Notes for Archiva ${project.version}
 
   * [MRM-1929] Repository purge is not reflected in index
 
-
-Previous Release Notes
 
 * Release Notes for Archiva 2.2.3
 
