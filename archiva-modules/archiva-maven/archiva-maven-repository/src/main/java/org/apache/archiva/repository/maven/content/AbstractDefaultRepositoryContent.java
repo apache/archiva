@@ -22,7 +22,6 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
@@ -309,24 +308,6 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
     {
         return formatAsDirectory( namespace );
     }
-
-    @Override
-    public String toPath( ArtifactReference reference )
-    {
-        if ( reference == null )
-        {
-            throw new IllegalArgumentException( "Artifact reference cannot be null" );
-        }
-        if ( reference.getVersion() != null )
-        {
-            String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
-            return toPath( reference.getGroupId(), reference.getArtifactId(), baseVersion, reference.getVersion(),
-                           reference.getClassifier(), reference.getType() );
-        }
-        return toPath( reference.getGroupId(), reference.getArtifactId(), null, null,
-                       reference.getClassifier(), reference.getType() );
-    }
-
 
 
     protected String formatAsDirectory( String directory )

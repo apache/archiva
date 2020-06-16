@@ -154,7 +154,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         try
         {
-            ArtifactReference reference = null;
+            ItemSelector reference = null;
             repoContent.toPath( reference );
             fail( "Should have failed due to null artifact reference." );
         }
@@ -297,7 +297,6 @@ public class ManagedDefaultRepositoryContentTest
             .withNamespace( "org.apache.maven" )
             .withProjectId( "shared" )
             .withArtifactId( "shared" )
-            .withArtifactVersion("1.0")
             .build();
         try
         {

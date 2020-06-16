@@ -43,7 +43,6 @@ import org.apache.archiva.repository.content.base.ArchivaVersion;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -541,12 +540,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     private String formatAsDirectory( String directory )
     {
         return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
-    }
-
-    @Override
-    public String toPath( ArtifactReference reference )
-    {
-        return null;
     }
 
     @Override

@@ -54,6 +54,7 @@ import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.storage.fs.FsStorageUtil;
@@ -361,13 +362,16 @@ public class DefaultRepositoriesService
 
         // sounds good we can continue !
 
-        ArtifactReference artifactReference = new ArtifactReference();
-        artifactReference.setArtifactId( artifactTransferRequest.getArtifactId() );
-        artifactReference.setGroupId( artifactTransferRequest.getGroupId() );
-        artifactReference.setVersion( artifactTransferRequest.getVersion() );
-        artifactReference.setClassifier( artifactTransferRequest.getClassifier() );
         String packaging = StringUtils.trim( artifactTransferRequest.getPackaging() );
-        artifactReference.setType( StringUtils.isEmpty( packaging ) ? "jar" : packaging );
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withProjectId( artifactTransferRequest.getArtifactId( ) )
+            .withArtifactId( artifactTransferRequest.getArtifactId( ) )
+            .withNamespace( artifactTransferRequest.getGroupId( ) )
+            .withArtifactVersion( artifactTransferRequest.getVersion( ) )
+            .withClassifier( artifactTransferRequest.getClassifier( ) )
+            .withExtension( StringUtils.isEmpty( packaging ) ? "jar" : packaging )
+            .build( );
+
 
         try
         {
@@ -375,28 +379,22 @@ public class DefaultRepositoriesService
             ManagedRepositoryContent sourceRepository =
                 getManagedRepositoryContent( artifactTransferRequest.getRepositoryId() );
             BaseRepositoryContentLayout layout = sourceRepository.getLayout( BaseRepositoryContentLayout.class );
-            String artifactSourcePath = sourceRepository.toPath( artifactReference );
+            // String artifactSourcePath = sourceRepository.toPath( selector );
+            org.apache.archiva.repository.content.Artifact sourceArtifact = layout.getArtifact( selector );
 
-            if ( StringUtils.isEmpty( artifactSourcePath ) )
+            if ( !sourceArtifact.exists() )
             {
                 log.error( "cannot find artifact {}", artifactTransferRequest );
                 throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString(),
                                                        null );
             }
 
-            StorageAsset artifactFile = source.getAsset( artifactSourcePath );
-
-            if ( !artifactFile.exists() )
-            {
-                log.error( "cannot find artifact {}", artifactTransferRequest );
-                throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString(),
-                                                       null );
-            }
+            StorageAsset artifactFile = sourceArtifact.getAsset( );
 
             ManagedRepositoryContent targetRepository =
                 getManagedRepositoryContent( artifactTransferRequest.getTargetRepositoryId() );
 
-            String artifactPath = sourceRepository.toPath( artifactReference );
+            String artifactPath = artifactFile.getPath( );
 
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
@@ -444,7 +442,7 @@ public class DefaultRepositoriesService
             pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
 
             StorageAsset pomFile = source.getAsset(
-                artifactSourcePath.substring( 0, artifactPath.lastIndexOf( '/' ) )+"/"+ pomFilename );
+                artifactPath.substring( 0, artifactPath.lastIndexOf( '/' ) )+"/"+ pomFilename );
 
             if ( pomFile != null && pomFile.exists() )
             {

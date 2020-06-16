@@ -19,7 +19,6 @@ package org.apache.archiva.repository.mock;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
@@ -57,12 +56,6 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
     public void setRepository( RemoteRepository repo )
     {
         this.repository = repo;
-    }
-
-    @Override
-    public String toPath( ArtifactReference reference )
-    {
-        return null;
     }
 
     @Override

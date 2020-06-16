@@ -19,7 +19,6 @@ package org.apache.archiva.repository.mock;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ContentAccessException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ItemDeleteStatus;
@@ -325,12 +324,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     public void setRepository( ManagedRepository repo )
     {
         this.repository = repo;
-    }
-
-    @Override
-    public String toPath( ArtifactReference reference )
-    {
-        return null;
     }
 
     @Override

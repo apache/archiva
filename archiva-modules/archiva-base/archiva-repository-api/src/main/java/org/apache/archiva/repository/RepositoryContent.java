@@ -31,15 +31,6 @@ public interface RepositoryContent
 
 
     /**
-     * Given an {@link ArtifactReference}, return the relative path to the artifact.
-     *
-     * @param reference the artifact reference to use.
-     * @return the relative path to the artifact.
-     */
-    String toPath( ArtifactReference reference );
-
-
-    /**
      * Return the path, that represents the item specified by the selector.
      * @param selector the selector with the artifact coordinates
      * @return the path to the content item

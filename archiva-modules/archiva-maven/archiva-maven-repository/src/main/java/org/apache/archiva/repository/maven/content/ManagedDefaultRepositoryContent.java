@@ -796,17 +796,28 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
-    public Artifact getArtifact( final ItemSelector selector ) throws ContentAccessException
+    public Artifact getArtifact( final ItemSelector selectorArg ) throws ContentAccessException
     {
-        if ( !selector.hasProjectId( ) )
+        ItemSelector selector = selectorArg;
+        if ( !selectorArg.hasProjectId( ) )
         {
             throw new IllegalArgumentException( "Project id must be set" );
         }
-        if ( !selector.hasVersion( ) )
+        if ( !selectorArg.hasVersion( ) )
         {
-            throw new IllegalArgumentException( "Version must be set" );
+            if (selectorArg.hasArtifactVersion() && VersionUtil.isSnapshot( selectorArg.getArtifactVersion() )) {
+                selector = ArchivaItemSelector.builder( ).withSelector( selectorArg )
+                    .withVersion( VersionUtil.getBaseVersion( selectorArg.getArtifactVersion( ) ) ).build();
+            } else if (selectorArg.hasArtifactVersion()) {
+                selector = ArchivaItemSelector.builder( ).withSelector( selectorArg )
+                    .withVersion( selectorArg.getArtifactVersion( ) ).build();
+
+            } else
+            {
+                throw new IllegalArgumentException( "Version must be set" );
+            }
         }
-        if ( !selector.hasArtifactId( ) )
+        if ( !selectorArg.hasArtifactId( ) )
         {
             throw new IllegalArgumentException( "Artifact id must be set" );
         }
