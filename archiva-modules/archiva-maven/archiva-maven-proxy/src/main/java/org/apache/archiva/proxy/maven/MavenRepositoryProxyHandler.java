@@ -19,7 +19,6 @@ package org.apache.archiva.proxy.maven;
  * under the License.
  */
 
-import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.proxy.DefaultRepositoryProxyHandler;
 import org.apache.archiva.proxy.NotFoundException;
 import org.apache.archiva.proxy.NotModifiedException;
@@ -27,7 +26,10 @@ import org.apache.archiva.proxy.ProxyException;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryCredentials;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.PasswordCredentials;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +47,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -116,14 +119,15 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
      * @throws ProxyException
      * @throws NotModifiedException
      */
+    @Override
     protected void transferResources( ProxyConnector connector, RemoteRepository remoteRepository,
                                       StorageAsset tmpResource, StorageAsset[] checksumFiles, String url, String remotePath, StorageAsset resource,
                                       Path workingDirectory, ManagedRepository repository )
             throws ProxyException, NotModifiedException {
         Wagon wagon = null;
         try {
-            RepositoryURL repoUrl = remoteRepository.getContent().getURL();
-            String protocol = repoUrl.getProtocol();
+            URI repoUrl = remoteRepository.getLocation( );
+            String protocol = repoUrl.getScheme( );
             NetworkProxy networkProxy = null;
             String proxyId = connector.getProxyId();
             if (StringUtils.isNotBlank(proxyId)) {

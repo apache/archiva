@@ -18,7 +18,6 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
-import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 
@@ -46,20 +45,6 @@ public class RemoteDefaultRepositoryContent
     public RemoteRepository getRepository( )
     {
         return repository;
-    }
-
-    @Override
-    public RepositoryURL getURL( )
-    {
-        try
-        {
-            return new RepositoryURL( repository.getLocation( ).toString( ) );
-        }
-        catch ( Exception e )
-        {
-            log.error( "Could not convert location url {}", repository.getLocation( ) );
-            return new RepositoryURL( "" );
-        }
     }
 
     @Override

@@ -52,19 +52,6 @@ public interface RemoteRepositoryContent extends RepositoryContent
     RemoteRepository getRepository();
 
     /**
-     * <p>
-     * Convenience method to get the repository url.
-     * </p>
-     * 
-     * <p>
-     * Equivalent to calling <code>new RepositoryURL( this.getRepository().getUrl() )</code>
-     * </p>
-     * 
-     * @return the repository url.
-     */
-    RepositoryURL getURL();
-
-    /**
      * Set the repository configuration to associate with this
      * repository content.
      * 

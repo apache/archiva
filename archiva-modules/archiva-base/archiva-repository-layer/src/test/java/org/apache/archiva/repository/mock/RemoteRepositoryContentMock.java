@@ -19,7 +19,6 @@ package org.apache.archiva.repository.mock;
  * under the License.
  */
 
-import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
@@ -42,12 +41,6 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
 
     @Override
     public RemoteRepository getRepository( )
-    {
-        return null;
-    }
-
-    @Override
-    public RepositoryURL getURL( )
     {
         return null;
     }
