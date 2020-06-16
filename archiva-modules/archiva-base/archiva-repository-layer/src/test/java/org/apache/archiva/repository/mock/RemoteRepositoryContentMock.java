@@ -77,9 +77,4 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
         return null;
     }
 
-    @Override
-    public RepositoryURL toURL( ArtifactReference reference )
-    {
-        return null;
-    }
 }

@@ -36,7 +36,6 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.ItemSelector;

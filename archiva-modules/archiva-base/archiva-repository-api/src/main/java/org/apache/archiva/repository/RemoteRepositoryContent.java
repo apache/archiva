@@ -72,11 +72,4 @@ public interface RemoteRepositoryContent extends RepositoryContent
      */
     void setRepository( RemoteRepository repo );
 
-    /**
-     * Given an ArtifactReference, return the url to the artifact.
-     *
-     * @param reference the artifact reference to use.
-     * @return the relative path to the artifact.
-     */
-    RepositoryURL toURL( ArtifactReference reference );
 }

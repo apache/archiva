@@ -18,14 +18,9 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
-import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.RepositoryURL;
-import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
-
-import java.util.List;
 
 /**
  * RemoteDefaultRepositoryContent
@@ -71,13 +66,6 @@ public class RemoteDefaultRepositoryContent
     public void setRepository( RemoteRepository repository )
     {
         this.repository = repository;
-    }
-
-    @Override
-    public RepositoryURL toURL( ArtifactReference reference )
-    {
-        String url = repository.getLocation( ) + toPath( reference );
-        return new RepositoryURL( url );
     }
 
 }
