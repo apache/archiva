@@ -23,11 +23,10 @@ import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksumUtil;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.PathUtil;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorRuleConfiguration;
-import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.Keys;
 import org.apache.archiva.policies.DownloadErrorPolicy;
 import org.apache.archiva.policies.DownloadPolicy;
 import org.apache.archiva.policies.Policy;
@@ -42,9 +41,6 @@ import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.components.taskqueue.TaskQueueException;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
-import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
@@ -52,12 +48,11 @@ import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemSelector;
-import org.apache.archiva.repository.content.base.ArchivaItemSelector;
-import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.metadata.base.MetadataTools;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.fs.FsStorageUtil;
-import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.collections4.CollectionUtils;
@@ -470,19 +465,6 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
     }
 
-    private StorageAsset toLocalFile(ManagedRepository repository, ArtifactReference artifact ) throws LayoutException
-    {
-        ItemSelector selector = ArchivaItemSelector.builder( )
-            .withNamespace( artifact.getGroupId( ) )
-            .withProjectId( artifact.getArtifactId( ) )
-            .withArtifactId( artifact.getArtifactId( ) )
-            .withArtifactVersion( artifact.getVersion() )
-            .withVersion( artifact.getProjectVersion( ) )
-            .withType( artifact.getType( ) ).build();
-        Artifact repoArtifact = repository.getContent( ).getLayout( BaseRepositoryContentLayout.class ).getArtifact( selector );
-        return repoArtifact.getAsset( );
-    }
-
     /**
      * Simple method to test if the file exists on the local disk.
      *
@@ -772,59 +754,6 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         log.warn(
             "Transfer error from repository {} for artifact {} , continuing to next repository. Error message: {}",
             content.getRepository().getId(), artifact, exception.getMessage() );
-        log.debug( "Full stack trace", exception );
-    }
-
-    private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<Policy, PolicyOption> settings,
-                                   Properties request, ArtifactReference artifact, RemoteRepositoryContent content,
-                                   StorageAsset localFile, Exception exception, Map<String, Exception> previousExceptions )
-        throws ProxyDownloadException
-    {
-        boolean process = true;
-        for ( Map.Entry<String, ? extends DownloadErrorPolicy> entry : policies.entrySet() )
-        {
-
-            // olamy with spring rolehint is now downloadPolicy#hint
-            // so substring after last # to get the hint as with plexus
-            String key = entry.getValue( ).getId( );
-            DownloadErrorPolicy policy = entry.getValue();
-            PolicyOption option = settings.containsKey( policy ) ? settings.get(policy) : policy.getDefaultOption();
-
-            log.debug( "Applying [{}] policy with [{}]", key, option );
-            try
-            {
-                // all policies must approve the exception, any can cancel
-                process = policy.applyPolicy( option, request, localFile, exception, previousExceptions );
-                if ( !process )
-                {
-                    break;
-                }
-            }
-            catch ( PolicyConfigurationException e )
-            {
-                log.error( e.getMessage(), e );
-            }
-        }
-
-        if ( process )
-        {
-            // if the exception was queued, don't throw it
-            if ( !previousExceptions.containsKey( content.getId() ) )
-            {
-                throw new ProxyDownloadException(
-                    "An error occurred in downloading from the remote repository, and the policy is to fail immediately",
-                    content.getId(), exception );
-            }
-        }
-        else
-        {
-            // if the exception was queued, but cancelled, remove it
-            previousExceptions.remove( content.getId() );
-        }
-
-        log.warn(
-            "Transfer error from repository {} for artifact {} , continuing to next repository. Error message: {}",
-            content.getRepository().getId(), Keys.toKey( artifact ), exception.getMessage() );
         log.debug( "Full stack trace", exception );
     }
 

@@ -22,7 +22,6 @@ package org.apache.archiva.scheduler.repository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;

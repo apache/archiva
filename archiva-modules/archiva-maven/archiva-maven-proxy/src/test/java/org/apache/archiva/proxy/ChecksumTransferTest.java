@@ -20,7 +20,6 @@ package org.apache.archiva.proxy;
  */
 
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;

@@ -19,10 +19,6 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.model.ArchivaArtifact;
-import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.ProjectReference;
-import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.DataItem;

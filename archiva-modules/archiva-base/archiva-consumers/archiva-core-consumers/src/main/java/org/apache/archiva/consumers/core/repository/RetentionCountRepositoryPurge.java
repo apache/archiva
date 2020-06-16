@@ -23,7 +23,6 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -133,19 +132,4 @@ public class RetentionCountRepositoryPurge
         }
     }
 
-    /*
-     * Returns a new artifact reference with different version
-     */
-    private ArtifactReference getNewArtifactReference( ArtifactReference reference, String version )
-        throws LayoutException
-    {
-        ArtifactReference artifact = new ArtifactReference( );
-        artifact.setGroupId( reference.getGroupId( ) );
-        artifact.setArtifactId( reference.getArtifactId( ) );
-        artifact.setVersion( version );
-        artifact.setClassifier( reference.getClassifier( ) );
-        artifact.setType( reference.getType( ) );
-        return artifact;
-
-    }
 }

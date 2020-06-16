@@ -31,7 +31,6 @@ import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.Repository;
@@ -515,15 +514,6 @@ public class DefaultFileUploadService
             throw new ArchivaRestServiceException("Repository exception " + e.getMessage(),
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
         }
-    }
-
-    private ArtifactReference createArtifactRef(FileMetadata fileMetadata, String groupId, String artifactId, String version) {
-        ArtifactReference artifactReference = new ArtifactReference();
-        artifactReference.setArtifactId(artifactId);
-        artifactReference.setGroupId(groupId);
-        artifactReference.setVersion(version);
-        artifactReference.setClassifier(fileMetadata.getClassifier());
-        return artifactReference;
     }
 
     private ArchivaRepositoryMetadata getMetadata(StorageAsset metadataFile)

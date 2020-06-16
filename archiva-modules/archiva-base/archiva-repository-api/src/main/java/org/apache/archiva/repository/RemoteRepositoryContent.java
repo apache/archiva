@@ -19,9 +19,6 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.RepositoryURL;
-
 /**
  * RemoteRepositoryContent interface for interacting with a remote repository in an abstract way, 
  * without the need for processing based on URLs, or working with the database. 

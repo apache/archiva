@@ -19,7 +19,6 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.features.RepositoryFeature;
 

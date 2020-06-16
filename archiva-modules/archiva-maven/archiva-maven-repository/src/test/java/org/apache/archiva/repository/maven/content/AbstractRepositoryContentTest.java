@@ -18,19 +18,17 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContent;
-import org.apache.archiva.repository.content.base.ArchivaArtifact;
-import org.apache.archiva.repository.maven.AbstractRepositoryLayerTestCase;
-import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
+import org.apache.archiva.repository.maven.AbstractRepositoryLayerTestCase;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 

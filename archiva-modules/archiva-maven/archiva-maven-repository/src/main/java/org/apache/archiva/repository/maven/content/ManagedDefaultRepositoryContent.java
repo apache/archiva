@@ -23,7 +23,6 @@ import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ContentAccessException;
 import org.apache.archiva.repository.EditableManagedRepository;
@@ -57,10 +56,8 @@ import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -1547,75 +1544,6 @@ public class ManagedDefaultRepositoryContent
     public String getId( )
     {
         return repository.getId( );
-    }
-
-    /*
-     * Create the filter for various combinations of classifier and type
-     */
-    private Predicate<ArtifactReference> getChecker( ArtifactReference referenceObject, String extension )
-    {
-        // TODO: Check, if extension is the correct parameter here
-        // We compare type with extension which works for artifacts like .jar.md5 but may
-        // be not the best way.
-
-        if ( referenceObject.getClassifier( ) != null && referenceObject.getType( ) != null )
-        {
-            return ( ( ArtifactReference a ) ->
-                referenceObject.getGroupId( ).equals( a.getGroupId( ) )
-                    && referenceObject.getArtifactId( ).equals( a.getArtifactId( ) )
-                    && referenceObject.getVersion( ).equals( a.getVersion( ) )
-                    && ( ( a.getType( ) == null )
-                    || referenceObject.getType( ).equals( a.getType( ) )
-                    || a.getType( ).startsWith( extension ) )
-                    && referenceObject.getClassifier( ).equals( a.getClassifier( ) )
-            );
-        }
-        else if ( referenceObject.getClassifier( ) != null && referenceObject.getType( ) == null )
-        {
-            return ( ( ArtifactReference a ) ->
-                referenceObject.getGroupId( ).equals( a.getGroupId( ) )
-                    && referenceObject.getArtifactId( ).equals( a.getArtifactId( ) )
-                    && referenceObject.getVersion( ).equals( a.getVersion( ) )
-                    && referenceObject.getClassifier( ).equals( a.getClassifier( ) )
-            );
-        }
-        else if ( referenceObject.getClassifier( ) == null && referenceObject.getType( ) != null )
-        {
-            return ( ( ArtifactReference a ) ->
-                referenceObject.getGroupId( ).equals( a.getGroupId( ) )
-                    && referenceObject.getArtifactId( ).equals( a.getArtifactId( ) )
-                    && referenceObject.getVersion( ).equals( a.getVersion( ) )
-                    && ( ( a.getType( ) == null )
-                    || referenceObject.getType( ).equals( a.getType( ) )
-                    || a.getType( ).startsWith( extension ) )
-            );
-        }
-        else
-        {
-            return ( ( ArtifactReference a ) ->
-                referenceObject.getGroupId( ).equals( a.getGroupId( ) )
-                    && referenceObject.getArtifactId( ).equals( a.getArtifactId( ) )
-                    && referenceObject.getVersion( ).equals( a.getVersion( ) )
-            );
-        }
-
-
-    }
-
-    private String convertUriToPath( URI uri )
-    {
-        if ( uri.getScheme( ) == null )
-        {
-            return Paths.get( uri.getPath( ) ).toString( );
-        }
-        else if ( "file".equals( uri.getScheme( ) ) )
-        {
-            return Paths.get( uri ).toString( );
-        }
-        else
-        {
-            return uri.toString( );
-        }
     }
 
     @Override

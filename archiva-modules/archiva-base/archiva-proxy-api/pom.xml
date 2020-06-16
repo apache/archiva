@@ -45,10 +45,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-policies</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-model</artifactId>
-    </dependency>
   </dependencies>
 
 </project>

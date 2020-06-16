@@ -73,18 +73,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-test-utils</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-model</artifactId>
-    </dependency>
-    -->
+
     <dependency>
       <groupId>org.apache.archiva.components.registry</groupId>
       <artifactId>archiva-components-spring-registry-api</artifactId>
@@ -117,25 +106,16 @@
 
 
     <!-- Test scope -->
-    <!--
     <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
-    -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <scope>test</scope>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
@@ -146,11 +126,7 @@
       <artifactId>log4j-jcl</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.components.cache</groupId>
-      <artifactId>archiva-components-spring-cache-ehcache</artifactId>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>

@@ -21,10 +21,15 @@ package org.apache.archiva.repository.scanner.mock;
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
-import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.ContentAccessException;
+import org.apache.archiva.repository.ItemDeleteStatus;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ManagedRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseDataItemTypes;
 import org.apache.archiva.repository.content.ContentItem;
@@ -38,15 +43,13 @@ import org.apache.archiva.repository.content.base.ArchivaDataItem;
 import org.apache.archiva.repository.content.base.ArchivaNamespace;
 import org.apache.archiva.repository.content.base.ArchivaProject;
 import org.apache.archiva.repository.content.base.ArchivaVersion;
-import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -338,8 +341,6 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     {
         this.repository = repo;
     }
-
-    private Map<ArtifactReference, String> refs = new HashMap<>();
 
     public ArtifactMetadata getArtifactForPath( String repoId, String relativePath )
     {

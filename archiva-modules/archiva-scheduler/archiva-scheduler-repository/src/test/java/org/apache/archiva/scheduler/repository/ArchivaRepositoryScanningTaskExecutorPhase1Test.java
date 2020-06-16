@@ -19,7 +19,6 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;

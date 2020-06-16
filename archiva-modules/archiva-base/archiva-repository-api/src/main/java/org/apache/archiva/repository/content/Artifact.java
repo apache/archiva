@@ -19,8 +19,6 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
-
 /**
  * Represents a artifact of a repository. This object contains unique coordinates of the
  * artifact. A artifact has exactly one file representation in the repository.

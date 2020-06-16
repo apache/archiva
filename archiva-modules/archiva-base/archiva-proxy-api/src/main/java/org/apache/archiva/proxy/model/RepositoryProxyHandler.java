@@ -19,7 +19,6 @@ package org.apache.archiva.proxy.model;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.Policy;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.repository.ManagedRepository;
