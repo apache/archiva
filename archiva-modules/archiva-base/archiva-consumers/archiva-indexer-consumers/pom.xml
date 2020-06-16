@@ -94,6 +94,21 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-scheduler-repository</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-quartz</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-repository</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
       <scope>test</scope>

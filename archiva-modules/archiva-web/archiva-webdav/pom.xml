@@ -153,6 +153,11 @@
 
     <!-- TEST Scope -->
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-scheduler-repository</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>javax.persistence-api</artifactId>
       <scope>test</scope>

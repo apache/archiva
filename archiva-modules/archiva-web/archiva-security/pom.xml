@@ -112,6 +112,11 @@
 
     <!-- Test Scoped -->
     <dependency>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-repository</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>javax.persistence-api</artifactId>
       <scope>test</scope>
