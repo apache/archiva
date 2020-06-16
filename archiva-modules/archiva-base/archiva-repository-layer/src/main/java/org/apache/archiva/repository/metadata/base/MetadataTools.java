@@ -41,9 +41,11 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
@@ -148,6 +150,81 @@ public class MetadataTools
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* nothing to do */
+    }
+
+    /**
+     * Gather the set of snapshot versions found in a particular versioned reference.
+     *
+     * @return the Set of snapshot artifact versions found.
+     * @throws LayoutException
+     * @throws ContentNotFoundException
+     */
+    public Set<String> gatherSnapshotVersions( ManagedRepositoryContent managedRepository,
+                                               ItemSelector reference )
+        throws LayoutException, IOException, ContentNotFoundException
+    {
+        Set<String> foundVersions = null;
+        try
+        {
+            ArchivaItemSelector selector = ArchivaItemSelector.builder( )
+                .withNamespace( reference.getNamespace() )
+                .withProjectId( reference.getArtifactId( ) )
+                .withArtifactId( reference.getArtifactId( ) )
+                .withVersion( reference.getVersion( ) )
+                .build( );
+            try(Stream<? extends Artifact> stream = managedRepository.getLayout( BaseRepositoryContentLayout.class ).newArtifactStream( selector )) {
+                foundVersions = stream.map( a -> a.getArtifactVersion( ) )
+                    .filter( StringUtils::isNotEmpty )
+                    .collect( Collectors.toSet( ) );
+            }
+        }
+        catch ( org.apache.archiva.repository.ContentAccessException e )
+        {
+            log.error( "Error while accessing content {}", e.getMessage( ) );
+            throw new IOException( "Could not access repository content: " + e.getMessage( ) );
+        }
+
+        // Next gather up the referenced 'latest' versions found in any proxied repositories
+        // maven-metadata-${proxyId}.xml files that may be present.
+
+        // Does this repository have a set of remote proxied repositories?
+        Set<String> proxiedRepoIds = this.proxies.get( managedRepository.getId() );
+
+        if ( CollectionUtils.isNotEmpty( proxiedRepoIds ) )
+        {
+            String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
+            baseVersion = baseVersion.substring( 0, baseVersion.indexOf( VersionUtil.SNAPSHOT ) - 1 );
+
+            // Add in the proxied repo version ids too.
+            Iterator<String> it = proxiedRepoIds.iterator();
+            while ( it.hasNext() )
+            {
+                String proxyId = it.next();
+
+                ArchivaRepositoryMetadata proxyMetadata = readProxyMetadata( managedRepository, reference, proxyId );
+                if ( proxyMetadata == null )
+                {
+                    // There is no proxy metadata, skip it.
+                    continue;
+                }
+
+                // Is there some snapshot info?
+                SnapshotVersion snapshot = proxyMetadata.getSnapshotVersion();
+                if ( snapshot != null )
+                {
+                    String timestamp = snapshot.getTimestamp();
+                    int buildNumber = snapshot.getBuildNumber();
+
+                    // Only interested in the timestamp + buildnumber.
+                    if ( StringUtils.isNotBlank( timestamp ) && ( buildNumber > 0 ) )
+                    {
+                        foundVersions.add( baseVersion + "-" + timestamp + "-" + buildNumber );
+                    }
+                }
+            }
+        }
+
+        return foundVersions;
     }
 
     /**
@@ -314,6 +391,25 @@ public class MetadataTools
         return reference;
     }
 
+    public String toPath( ContentItem reference )
+    {
+
+        return reference.getAsset().resolve( MAVEN_METADATA ).getPath();
+
+    }
+
+    public String toPath( ItemSelector reference )
+    {
+        StringBuilder path = new StringBuilder();
+
+        path.append( formatAsDirectory( reference.getNamespace() ) ).append( PATH_SEPARATOR );
+        path.append( reference.getProjectId() ).append( PATH_SEPARATOR );
+        if (reference.hasVersion()) {
+            path.append( reference.getVersion( ) ).append( PATH_SEPARATOR );
+        }
+        path.append( MAVEN_METADATA );
+        return path.toString( );
+    }
 
 
     public String toPath( ProjectReference reference )
@@ -393,6 +489,15 @@ public class MetadataTools
 
         configuration.addChangeListener( this );
         configuration.addListener( this );
+    }
+
+    public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
+                                                        ItemSelector reference, String proxyId )
+    {
+        String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
+        StorageAsset metadataFile = managedRepository.getRepository().getAsset( metadataPath );
+
+        return readMetadataFile( managedRepository, metadataFile );
     }
 
     public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
@@ -537,7 +642,7 @@ public class MetadataTools
      * @throws ContentNotFoundException
      * @deprecated
      */
-    public void updateMetadata( ManagedRepositoryContent managedRepository, ProjectReference reference )
+    public void updateProjectMetadata( ManagedRepositoryContent managedRepository, ItemSelector reference )
         throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
     {
 
@@ -548,13 +653,13 @@ public class MetadataTools
         long lastUpdated = getExistingLastUpdated( existingMetadata );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-        metadata.setGroupId( reference.getGroupId() );
-        metadata.setArtifactId( reference.getArtifactId() );
+        metadata.setGroupId( reference.getNamespace() );
+        metadata.setArtifactId( reference.getProjectId() );
 
         // Gather up all versions found in the managed repository.
         ItemSelector selector = ArchivaItemSelector.builder( )
-            .withNamespace( reference.getGroupId( ) )
-            .withProjectId( reference.getArtifactId( ) )
+            .withNamespace( reference.getNamespace() )
+            .withProjectId( reference.getProjectId( ) )
             .build();
         Set<String> allVersions = null;
         try
@@ -759,6 +864,135 @@ public class MetadataTools
         }
 
         return getLastUpdated( metadata );
+    }
+
+    /**
+     * Update the metadata based on the following rules.
+     * <p>
+     * 1) If this is a SNAPSHOT reference, then utilize the proxy/repository specific
+     * metadata files to represent the current / latest SNAPSHOT available.
+     * 2) If this is a RELEASE reference, and the metadata file does not exist, then
+     * create the metadata file with contents required of the VersionedReference
+     *
+     * @param managedRepository the managed repository where the metadata is kept.
+     * @param reference         the versioned reference to update
+     * @throws LayoutException
+     * @throws RepositoryMetadataException
+     * @throws IOException
+     * @throws ContentNotFoundException
+     * @deprecated
+     */
+    public void updateVersionMetadata( ManagedRepositoryContent managedRepository, ItemSelector reference )
+        throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
+    {
+        StorageAsset metadataFile = managedRepository.getRepository().getAsset( toPath( reference ) );
+        ArchivaRepositoryMetadata existingMetadata = readMetadataFile(managedRepository, metadataFile );
+
+        long lastUpdated = getExistingLastUpdated( existingMetadata );
+
+        ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
+        metadata.setGroupId( reference.getNamespace() );
+        metadata.setArtifactId( reference.getArtifactId() );
+
+        if ( VersionUtil.isSnapshot( reference.getVersion() ) )
+        {
+            // Do SNAPSHOT handling.
+            metadata.setVersion( VersionUtil.getBaseVersion( reference.getVersion() ) );
+
+            // Gather up all of the versions found in the reference dir, and any
+            // proxied maven-metadata.xml files.
+            Set<String> snapshotVersions = gatherSnapshotVersions( managedRepository, reference );
+
+            if ( snapshotVersions.isEmpty() )
+            {
+                throw new ContentNotFoundException(
+                    "No snapshot versions found on reference [" + reference  + "]." );
+            }
+
+            // sort the list to determine to aide in determining the Latest version.
+            List<String> sortedVersions = new ArrayList<>();
+            sortedVersions.addAll( snapshotVersions );
+            Collections.sort( sortedVersions, new VersionComparator() );
+
+            String latestVersion = sortedVersions.get( sortedVersions.size() - 1 );
+
+            if ( VersionUtil.isUniqueSnapshot( latestVersion ) )
+            {
+                // The latestVersion will contain the full version string "1.0-alpha-5-20070821.213044-8"
+                // This needs to be broken down into ${base}-${timestamp}-${build_number}
+
+                Matcher m = VersionUtil.UNIQUE_SNAPSHOT_PATTERN.matcher( latestVersion );
+                if ( m.matches() )
+                {
+                    metadata.setSnapshotVersion( new SnapshotVersion() );
+                    int buildNumber = NumberUtils.toInt( m.group( 3 ), -1 );
+                    metadata.getSnapshotVersion().setBuildNumber( buildNumber );
+
+                    Matcher mtimestamp = VersionUtil.TIMESTAMP_PATTERN.matcher( m.group( 2 ) );
+                    if ( mtimestamp.matches() )
+                    {
+                        String tsDate = mtimestamp.group( 1 );
+                        String tsTime = mtimestamp.group( 2 );
+
+                        long snapshotLastUpdated = toLastUpdatedLong( tsDate + tsTime );
+
+                        lastUpdated = Math.max( lastUpdated, snapshotLastUpdated );
+
+                        metadata.getSnapshotVersion().setTimestamp( m.group( 2 ) );
+                    }
+                }
+            }
+            else if ( VersionUtil.isGenericSnapshot( latestVersion ) )
+            {
+                // The latestVersion ends with the generic version string.
+                // Example: 1.0-alpha-5-SNAPSHOT
+
+                metadata.setSnapshotVersion( new SnapshotVersion() );
+
+                /* Disabled due to decision in [MRM-535].
+                 * Do not set metadata.lastUpdated to file.lastModified.
+                 *
+                 * Should this be the last updated timestamp of the file, or in the case of an
+                 * archive, the most recent timestamp in the archive?
+                 *
+                ArtifactReference artifact = getFirstArtifact( managedRepository, reference );
+
+                if ( artifact == null )
+                {
+                    throw new IOException( "Not snapshot artifact found to reference in " + reference );
+                }
+
+                File artifactFile = managedRepository.toFile( artifact );
+
+                if ( artifactFile.exists() )
+                {
+                    Date lastModified = new Date( artifactFile.lastModified() );
+                    metadata.setLastUpdatedTimestamp( lastModified );
+                }
+                */
+            }
+            else
+            {
+                throw new RepositoryMetadataException(
+                    "Unable to process snapshot version <" + latestVersion + "> reference <" + reference + ">" );
+            }
+        }
+        else
+        {
+            // Do RELEASE handling.
+            metadata.setVersion( reference.getVersion() );
+        }
+
+        // Set last updated
+        if ( lastUpdated > 0 )
+        {
+            metadata.setLastUpdatedTimestamp( toLastUpdatedDate( lastUpdated ) );
+        }
+
+        // Save the metadata model to disk.
+        RepositoryMetadataWriter.write( metadata, metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile.getFilePath() );
+        checksum.fixChecksums( algorithms );
     }
 
     /**

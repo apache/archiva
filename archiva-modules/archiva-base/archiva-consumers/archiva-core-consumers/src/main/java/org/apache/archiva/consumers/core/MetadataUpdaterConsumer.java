@@ -19,23 +19,23 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.content.Artifact;
-import org.apache.archiva.repository.metadata.base.MetadataTools;
+import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +73,6 @@ public class MetadataUpdaterConsumer
 
     @Inject
     private MetadataTools metadataTools;
-
-    @Inject
-    private ArchivaConfiguration configuration;
 
     @Inject
     private FileTypes filetypes;
@@ -195,24 +192,22 @@ public class MetadataUpdaterConsumer
 
     private void updateProjectMetadata( Artifact artifact, String path )
     {
-        ProjectReference projectRef = new ProjectReference( );
-        projectRef.setGroupId( artifact.getNamespace( ).getId() );
-        projectRef.setArtifactId( artifact.getId( ) );
-
         try
         {
-            String metadataPath = this.metadataTools.toPath( projectRef );
+            Project proj = artifact.getProject( );
+
+            String metadataPath = repository.toPath( proj );
 
             StorageAsset projectMetadata = this.repositoryDir.resolve( metadataPath );
 
             if ( projectMetadata.exists() && ( projectMetadata.getModificationTime().toEpochMilli() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
-                log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( projectRef ) );
+                log.debug( "Skipping uptodate metadata: {}", metadataPath );
                 return;
             }
             metadataTools.updateMetadata( this.repository, metadataPath );
-            log.debug( "Updated metadata: {}", this.metadataTools.toPath( projectRef ) );
+            log.debug( "Updated metadata: {}", metadataPath );
         }
         catch ( RepositoryMetadataException e )
         {
@@ -252,23 +247,6 @@ public class MetadataUpdaterConsumer
                 "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage( ) );
         }
     }
-
-    /*
-    @Override
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
-        {
-            initIncludes();
-        }
-    }
-
-    @Override
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        // do nothing here
-    }
-    */
 
     private void initIncludes( )
     {

@@ -204,18 +204,19 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     @SuppressWarnings( "deprecation" )
     private void updateMetadata( Artifact artifact )
     {
-        VersionedReference versionRef = new VersionedReference( );
-        versionRef.setGroupId( artifact.getNamespace().getId( ) );
-        versionRef.setArtifactId( artifact.getId( ) );
-        versionRef.setVersion( artifact.getVersion().getId( ) );
 
-        ProjectReference projectRef = new ProjectReference( );
-        projectRef.setGroupId( artifact.getNamespace().getId( ) );
-        projectRef.setArtifactId( artifact.getId( ) );
+        ItemSelector versionRef = ArchivaItemSelector.builder( )
+            .withNamespace( artifact.getNamespace( ).getId( ) )
+            .withProjectId( artifact.getId( ) )
+            .withVersion( artifact.getVersion( ).getId( ) ).build( );
+
+        ItemSelector projectRef = ArchivaItemSelector.builder()
+        .withNamespace( artifact.getNamespace().getId( ) )
+        .withProjectId(  artifact.getId( ) ).build();
 
         try
         {
-            metadataTools.updateMetadata( repository, versionRef );
+            metadataTools.updateVersionMetadata( repository, versionRef );
         }
         catch ( ContentNotFoundException e )
         {
@@ -228,7 +229,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 
         try
         {
-            metadataTools.updateMetadata( repository, projectRef );
+            metadataTools.updateProjectMetadata( repository, projectRef );
         }
         catch ( ContentNotFoundException | RepositoryMetadataException | IOException | LayoutException e )
         {
