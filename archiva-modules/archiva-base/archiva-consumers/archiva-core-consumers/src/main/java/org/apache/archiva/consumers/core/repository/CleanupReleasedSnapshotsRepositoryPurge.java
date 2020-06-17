@@ -25,8 +25,6 @@ import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.model.ProjectReference;
-import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
@@ -141,10 +139,6 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 
             // Now clean out any version that is earlier than the highest released version.
             boolean needsMetadataUpdate = false;
-
-            VersionedReference versionRef = new VersionedReference( );
-            versionRef.setGroupId( artifactRef.getNamespace( ).getId() );
-            versionRef.setArtifactId( artifactRef.getId( ) );
 
             ArchivaItemSelector.Builder versionSelectorBuilder = ArchivaItemSelector.builder( )
                 .withNamespace( artifactRef.getNamespace().getId() )
