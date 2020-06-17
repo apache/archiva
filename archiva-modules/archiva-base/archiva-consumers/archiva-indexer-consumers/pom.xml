@@ -95,6 +95,16 @@
     <!-- Test scope -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-proxy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-proxy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduler-repository</artifactId>
       <scope>test</scope>
     </dependency>

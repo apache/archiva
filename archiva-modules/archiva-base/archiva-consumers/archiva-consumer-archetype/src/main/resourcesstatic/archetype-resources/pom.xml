@@ -72,6 +72,18 @@
 
     <!-- Test scope -->
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-proxy</artifactId>
+      <version>${archiva.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-proxy</artifactId>
+      <version>${archiva.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.components</groupId>
       <artifactId>archiva-components-spring-quartz</artifactId>
       <version>${archiva.comp.version}</version>

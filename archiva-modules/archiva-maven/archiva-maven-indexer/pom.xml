@@ -139,6 +139,16 @@
 
     <!-- TEST Scope -->
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-proxy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-proxy</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
       <scope>test</scope>
