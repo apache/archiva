@@ -1295,7 +1295,7 @@ public class ArchivaDavResourceFactory
     {
         try
         {
-            metadataTools.toVersionedReference( requestedResource );
+            metadataTools.toVersionedSelector( requestedResource );
             return false;
         }
         catch ( RepositoryMetadataException re )

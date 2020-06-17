@@ -254,22 +254,24 @@ public class MetadataToolsTest
     @Test
     public void testToPathFromVersionReference()
     {
-        VersionedReference reference = new VersionedReference();
-        reference.setGroupId( "com.foo" );
-        reference.setArtifactId( "foo-tool" );
-        reference.setVersion( "1.0" );
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "com.foo" )
+            .withArtifactId( "foo-tool" )
+            .withProjectId( "foo-tool" )
+            .withVersion( "1.0" ).build( );
 
-        assertEquals( "com/foo/foo-tool/1.0/maven-metadata.xml", tools.toPath( reference ) );
+        assertEquals( "com/foo/foo-tool/1.0/maven-metadata.xml", tools.toPath( selector ) );
     }
 
     @Test
     public void testToPathFromProjectReference()
     {
-        ProjectReference reference = new ProjectReference();
-        reference.setGroupId( "com.foo" );
-        reference.setArtifactId( "foo-tool" );
+        ItemSelector selector = ArchivaItemSelector.builder( )
+            .withNamespace( "com.foo" )
+            .withProjectId( "foo-tool" )
+            .withArtifactId( "foo-tool" ).build( );
 
-        assertEquals( "com/foo/foo-tool/maven-metadata.xml", tools.toPath( reference ) );
+        assertEquals( "com/foo/foo-tool/maven-metadata.xml", tools.toPath( selector ) );
     }
 
     @Test
@@ -304,10 +306,10 @@ public class MetadataToolsTest
     private void assertProjectReference( String groupId, String artifactId, String path )
         throws RepositoryMetadataException
     {
-        ProjectReference reference = tools.toProjectReference( path );
+        ItemSelector reference = tools.toProjectSelector( path );
 
         assertNotNull( "Reference should not be null.", reference );
-        assertEquals( "ProjectReference.groupId", groupId, reference.getGroupId() );
+        assertEquals( "ProjectReference.groupId", groupId, reference.getNamespace() );
         assertEquals( "ProjectReference.artifactId", artifactId, reference.getArtifactId() );
     }
 
@@ -362,10 +364,10 @@ public class MetadataToolsTest
     private void assertVersionedReference( String groupId, String artifactId, String version, String path )
         throws RepositoryMetadataException
     {
-        VersionedReference reference = tools.toVersionedReference( path );
+        ItemSelector reference = tools.toVersionedSelector( path );
         assertNotNull( "Reference should not be null.", reference );
 
-        assertEquals( "VersionedReference.groupId", groupId, reference.getGroupId() );
+        assertEquals( "VersionedReference.groupId", groupId, reference.getNamespace() );
         assertEquals( "VersionedReference.artifactId", artifactId, reference.getArtifactId() );
         assertEquals( "VersionedReference.version", version, reference.getVersion() );
     }
@@ -375,10 +377,11 @@ public class MetadataToolsTest
     {
         Path repoRootDir = getRepositoryPath( "metadata-repository" );
 
-        VersionedReference reference = new VersionedReference();
-        reference.setGroupId( "org.apache.archiva.metadata.tests" );
-        reference.setArtifactId( artifactId );
-        reference.setVersion( version );
+        ItemSelector reference = ArchivaItemSelector.builder( )
+            .withNamespace( "org.apache.archiva.metadata.tests" )
+            .withArtifactId( artifactId )
+            .withProjectId( artifactId )
+            .withVersion( version ).build( );
 
         MavenManagedRepository repo =
             createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRootDir );
@@ -424,25 +427,7 @@ public class MetadataToolsTest
     }
 
     private void assertMetadata( String expectedMetadata, ManagedRepositoryContent repository,
-                                 ProjectReference reference )
-        throws LayoutException, IOException, SAXException, ParserConfigurationException
-    {
-        Path metadataFile = repository.getRepository().getRoot().getFilePath().resolve(tools.toPath( reference ) );
-        String actualMetadata = org.apache.archiva.common.utils.FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
-
-        Diff detailedDiff = DiffBuilder.compare( expectedMetadata ).withTest( actualMetadata ).checkForSimilar().build();
-        if ( detailedDiff.hasDifferences() )
-        {
-            for ( Difference diff : detailedDiff.getDifferences() ) {
-                System.out.println( diff );
-            }
-            // If it isn't similar, dump the difference.
-            assertEquals( expectedMetadata, actualMetadata );
-        }
-    }
-
-    private void assertMetadata( String expectedMetadata, ManagedRepositoryContent repository,
-                                 VersionedReference reference )
+                                 ItemSelector reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
         Path metadataFile = repository.getRepository().getRoot().getFilePath().resolve( tools.toPath( reference ) );
@@ -543,62 +528,30 @@ public class MetadataToolsTest
         assertProjectMetadata( buf.toString(), testRepo, reference );
     }
 
-    private void assertProjectMetadata( ManagedRepositoryContent testRepo, ProjectReference reference,
-                                        String artifactId, String[] expectedVersions, String latestVersion,
-                                        String releaseVersion )
-        throws Exception
-    {
-        StringBuilder buf = new StringBuilder();
-        buf.append( "<metadata>\n" );
-        buf.append( "  <groupId>" ).append( reference.getGroupId() ).append( "</groupId>\n" );
-        buf.append( "  <artifactId>" ).append( reference.getArtifactId() ).append( "</artifactId>\n" );
-
-        if ( expectedVersions != null )
-        {
-            buf.append( "  <versioning>\n" );
-            if ( latestVersion != null )
-            {
-                buf.append( "    <latest>" ).append( latestVersion ).append( "</latest>\n" );
-            }
-            if ( releaseVersion != null )
-            {
-                buf.append( "    <release>" ).append( releaseVersion ).append( "</release>\n" );
-            }
-
-            buf.append( "    <versions>\n" );
-            for ( int i = 0; i < expectedVersions.length; i++ )
-            {
-                buf.append( "      <version>" ).append( expectedVersions[i] ).append( "</version>\n" );
-            }
-            buf.append( "    </versions>\n" );
-            buf.append( "  </versioning>\n" );
-        }
-        buf.append( "</metadata>" );
-
-        assertMetadata( buf.toString(), testRepo, reference );
-    }
 
     private void assertUpdatedReleaseVersionMetadata( String artifactId, String version )
         throws Exception
     {
         ManagedRepositoryContent testRepo = createTestRepoContent();
-        VersionedReference reference = new VersionedReference();
-        reference.setGroupId( "org.apache.archiva.metadata.tests" );
-        reference.setArtifactId( artifactId );
-        reference.setVersion( version );
 
-        prepTestRepo( testRepo, reference );
+        ItemSelector selector = ArchivaItemSelector.builder()
+            .withNamespace(  "org.apache.archiva.metadata.tests" )
+            .withProjectId(  artifactId )
+            .withArtifactId( artifactId )
+            .withVersion(  version ).build();
 
-        tools.updateMetadata( testRepo, reference );
+        prepTestRepo( testRepo, selector );
+
+        tools.updateVersionMetadata( testRepo, selector );
 
         StringBuilder buf = new StringBuilder();
         buf.append( "<metadata>\n" );
-        buf.append( "  <groupId>" ).append( reference.getGroupId() ).append( "</groupId>\n" );
-        buf.append( "  <artifactId>" ).append( reference.getArtifactId() ).append( "</artifactId>\n" );
-        buf.append( "  <version>" ).append( reference.getVersion() ).append( "</version>\n" );
+        buf.append( "  <groupId>" ).append( selector.getNamespace() ).append( "</groupId>\n" );
+        buf.append( "  <artifactId>" ).append( selector.getArtifactId() ).append( "</artifactId>\n" );
+        buf.append( "  <version>" ).append( selector.getVersion() ).append( "</version>\n" );
         buf.append( "</metadata>" );
 
-        assertMetadata( buf.toString(), testRepo, reference );
+        assertMetadata( buf.toString(), testRepo, selector );
     }
 
     private void assertUpdatedSnapshotVersionMetadata( String artifactId, String version, String expectedDate,
@@ -606,18 +559,19 @@ public class MetadataToolsTest
         throws Exception
     {
         ManagedRepositoryContent testRepo = createTestRepoContent();
-        VersionedReference reference = new VersionedReference();
-        reference.setGroupId( "org.apache.archiva.metadata.tests" );
-        reference.setArtifactId( artifactId );
-        reference.setVersion( version );
+        ItemSelector reference = ArchivaItemSelector.builder()
+        .withNamespace( "org.apache.archiva.metadata.tests" )
+        .withArtifactId( artifactId )
+            .withProjectId( artifactId )
+            .withVersion(  version ).build();
 
         prepTestRepo( testRepo, reference );
 
-        tools.updateMetadata( testRepo, reference );
+        tools.updateVersionMetadata( testRepo, reference );
 
         StringBuilder buf = new StringBuilder();
         buf.append( "<metadata>\n" );
-        buf.append( "  <groupId>" ).append( reference.getGroupId() ).append( "</groupId>\n" );
+        buf.append( "  <groupId>" ).append( reference.getNamespace() ).append( "</groupId>\n" );
         buf.append( "  <artifactId>" ).append( reference.getArtifactId() ).append( "</artifactId>\n" );
         buf.append( "  <version>" ).append( reference.getVersion() ).append( "</version>\n" );
         buf.append( "  <versioning>\n" );
@@ -719,10 +673,10 @@ public class MetadataToolsTest
         FileUtils.copyDirectory( srcDir.toFile(), destDir.toFile() );
     }
 
-    private void prepTestRepo( ManagedRepositoryContent repo, ProjectReference reference )
+    private void prepTestRepo( ManagedRepositoryContent repo, ItemSelector reference )
         throws IOException
     {
-        String groupDir = StringUtils.replaceChars( reference.getGroupId(), '.', '/' );
+        String groupDir = StringUtils.replaceChars( reference.getNamespace(), '.', '/' );
         String path = groupDir + "/" + reference.getArtifactId();
 
         Path srcRepoDir = getRepositoryPath( "metadata-repository" );
@@ -733,16 +687,6 @@ public class MetadataToolsTest
         Files.createDirectories(destDir);
 
         FileUtils.copyDirectory( srcDir.toFile(), destDir.toFile() );
-    }
-
-    private void prepTestRepo( ManagedRepositoryContent repo, VersionedReference reference )
-        throws IOException
-    {
-        ProjectReference projectRef = new ProjectReference();
-        projectRef.setGroupId( reference.getGroupId() );
-        projectRef.setArtifactId( reference.getArtifactId() );
-
-        prepTestRepo( repo, projectRef );
     }
 
 

@@ -33,6 +33,7 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
@@ -219,26 +220,22 @@ public class MetadataUpdaterConsumer
 
     private void updateVersionMetadata( Artifact artifact, String path )
     {
-        VersionedReference versionRef = new VersionedReference( );
-        versionRef.setGroupId( artifact.getNamespace( ).getId() );
-        versionRef.setArtifactId( artifact.getId( ) );
-        versionRef.setVersion( artifact.getVersion( ).getId() );
 
         try
         {
-            String metadataPath = this.metadataTools.toPath( versionRef );
+            String metadataPath = this.metadataTools.toPath( artifact.getVersion() );
 
             StorageAsset projectMetadata = this.repositoryDir.resolve( metadataPath );
 
             if ( projectMetadata.exists() && ( projectMetadata.getModificationTime().toEpochMilli() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
-                log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( versionRef ) );
+                log.debug( "Skipping uptodate metadata: {}", metadataPath );
                 return;
             }
 
             metadataTools.updateMetadata( this.repository, metadataPath );
-            log.debug( "Updated metadata: {}", this.metadataTools.toPath( versionRef ) );
+            log.debug( "Updated metadata: {}", metadataPath );
         }
         catch ( RepositoryMetadataException e )
         {

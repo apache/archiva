@@ -24,9 +24,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
-import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.SnapshotVersion;
-import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
@@ -34,14 +32,15 @@ import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.DataItem;
+import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Project;
 import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
-import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
-import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.TransferFailedException;
 import org.easymock.EasyMock;
@@ -1009,11 +1008,6 @@ public class MetadataTransferTest
         assertNoTempFiles( expectedFile );
     }
 
-    private ProjectReference createProjectReference( String path )
-        throws RepositoryMetadataException
-    {
-        return metadataTools.toProjectReference( path );
-    }
 
     /**
      * Transfer the metadata file, not expected to succeed.
@@ -1067,11 +1061,6 @@ public class MetadataTransferTest
         assertNoTempFiles( expectedFile );
     }
 
-    private VersionedReference createVersionedReference( String path )
-        throws RepositoryMetadataException
-    {
-        return metadataTools.toVersionedReference( path );
-    }
 
     /**
      * Transfer the metadata file, not expected to succeed.
@@ -1171,18 +1160,30 @@ public class MetadataTransferTest
         Path actualFile = managedDefaultDir.resolve(requestedResource);
         assertTrue( "Snapshot Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
-        ProjectReference actualMetadata = createGroupReference( requestedResource );
+        ItemSelector actualMetadata = createGroupSelector( requestedResource );
 
         assertGroupMetadata( actualFile, actualMetadata, expectedPlugins );
     }
 
-    private ProjectReference createGroupReference( String requestedResource )
+    private ItemSelector createProjectSelector(String path) throws RepositoryMetadataException
+    {
+        return metadataTools.toProjectSelector( path );
+    }
+
+    private ItemSelector createVersionedSelector(String path) throws RepositoryMetadataException
+    {
+        return metadataTools.toVersionedSelector( path );
+    }
+
+    private ItemSelector createGroupSelector( String requestedResource )
         throws RepositoryMetadataException
     {
-        ProjectReference projectReference = createProjectReference( requestedResource );
-        projectReference.setGroupId( projectReference.getGroupId() + "." + projectReference.getArtifactId() );
-        projectReference.setArtifactId( null );
-        return projectReference;
+        ItemSelector projectSelector = createProjectSelector( requestedResource );
+        ArchivaItemSelector.Builder projectReference = ArchivaItemSelector.builder( ).withSelector( projectSelector );
+        projectReference.withNamespace( projectSelector.getNamespace() + "." + projectSelector.getProjectId() );
+        projectReference.withArtifactId( null );
+        projectReference.withProjectId( null );
+        return projectReference.build();
     }
 
     private void assertRepoGroupMetadataContents( String proxiedRepoId, String requestedResource,
@@ -1194,18 +1195,18 @@ public class MetadataTransferTest
         Path actualFile = managedDefaultDir.resolve(proxiedFile);
         assertTrue( "Repo Specific Group Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
-        ProjectReference actualMetadata = createGroupReference( requestedResource );
+        ItemSelector actualMetadata = createGroupSelector( requestedResource );
 
         assertGroupMetadata( actualFile, actualMetadata, expectedPlugins );
     }
 
-    private void assertGroupMetadata( Path actualFile, ProjectReference actualMetadata, String expectedPlugins[] )
+    private void assertGroupMetadata( Path actualFile, ItemSelector actualMetadata, String expectedPlugins[] )
         throws Exception
     {
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
         ArchivaRepositoryMetadata m = new ArchivaRepositoryMetadata();
-        m.setGroupId( actualMetadata.getGroupId() );
+        m.setGroupId( actualMetadata.getNamespace() );
 
         for ( String pluginId : expectedPlugins )
         {
@@ -1236,12 +1237,12 @@ public class MetadataTransferTest
         Path actualFile = managedDefaultDir.resolve(requestedResource);
         assertTrue( Files.exists(actualFile) );
 
-        ProjectReference metadata = createProjectReference( requestedResource );
+        ItemSelector metadata = createProjectSelector( requestedResource );
 
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
         ArchivaRepositoryMetadata m = new ArchivaRepositoryMetadata();
-        m.setGroupId( metadata.getGroupId() );
+        m.setGroupId( metadata.getNamespace() );
         m.setArtifactId( metadata.getArtifactId() );
         m.setLatestVersion( latestVersion );
         m.setReleasedVersion( releaseVersion );
@@ -1270,12 +1271,12 @@ public class MetadataTransferTest
         Path actualFile = managedDefaultDir.resolve(requestedResource);
         assertTrue( "Release Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
-        VersionedReference metadata = createVersionedReference( requestedResource );
+        ItemSelector metadata = createVersionedSelector( requestedResource );
 
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
         ArchivaRepositoryMetadata m = new ArchivaRepositoryMetadata();
-        m.setGroupId( metadata.getGroupId() );
+        m.setGroupId( metadata.getNamespace() );
         m.setArtifactId( metadata.getArtifactId() );
         m.setVersion( metadata.getVersion() );
         RepositoryMetadataWriter.write( m, expectedMetadataXml );
@@ -1301,7 +1302,7 @@ public class MetadataTransferTest
         Path actualFile = managedDefaultDir.resolve(requestedResource);
         assertTrue( "Snapshot Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
-        VersionedReference actualMetadata = createVersionedReference( requestedResource );
+        ItemSelector actualMetadata = createVersionedSelector( requestedResource );
 
         assertSnapshotMetadata( actualFile, actualMetadata, expectedDate, expectedTime, expectedBuildnumber );
     }
@@ -1326,19 +1327,19 @@ public class MetadataTransferTest
         Path actualFile = managedDefaultDir.resolve(proxiedFile);
         assertTrue( "Repo Specific Snapshot Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
-        VersionedReference actualMetadata = createVersionedReference( requestedResource );
+        ItemSelector actualMetadata = createVersionedSelector( requestedResource );
 
         assertSnapshotMetadata( actualFile, actualMetadata, expectedDate, expectedTime, expectedBuildnumber );
     }
 
-    private void assertSnapshotMetadata( Path actualFile, VersionedReference actualMetadata, String expectedDate,
+    private void assertSnapshotMetadata( Path actualFile, ItemSelector actualMetadata, String expectedDate,
                                          String expectedTime, int expectedBuildnumber )
         throws RepositoryMetadataException, Exception
     {
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
         ArchivaRepositoryMetadata m = new ArchivaRepositoryMetadata();
-        m.setGroupId( actualMetadata.getGroupId() );
+        m.setGroupId( actualMetadata.getNamespace() );
         m.setArtifactId( actualMetadata.getArtifactId() );
         m.setVersion( VersionUtil.getBaseVersion( actualMetadata.getVersion() ) );
 
@@ -1376,12 +1377,12 @@ public class MetadataTransferTest
         Path actualFile = managedDefaultDir.resolve(proxiedFile);
         assertTrue( Files.exists(actualFile) );
 
-        ProjectReference metadata = createProjectReference( requestedResource );
+        ItemSelector metadata = createProjectSelector( requestedResource );
 
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
         ArchivaRepositoryMetadata m = new ArchivaRepositoryMetadata();
-        m.setGroupId( metadata.getGroupId() );
+        m.setGroupId( metadata.getNamespace() );
         m.setArtifactId( metadata.getArtifactId() );
 
         if ( expectedProxyVersions != null )
@@ -1410,12 +1411,12 @@ public class MetadataTransferTest
         Path actualFile = managedDefaultDir.resolve(proxiedFile);
         assertTrue( "Release metadata for repo should exist: " + actualFile, Files.exists(actualFile) );
 
-        VersionedReference metadata = createVersionedReference( requestedResource );
+        ItemSelector metadata = createVersionedSelector( requestedResource );
 
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
         ArchivaRepositoryMetadata m = new ArchivaRepositoryMetadata();
-        m.setGroupId( metadata.getGroupId() );
+        m.setGroupId( metadata.getNamespace() );
         m.setArtifactId( metadata.getArtifactId() );
         m.setVersion( metadata.getVersion() );
         RepositoryMetadataWriter.write( m, expectedMetadataXml );
