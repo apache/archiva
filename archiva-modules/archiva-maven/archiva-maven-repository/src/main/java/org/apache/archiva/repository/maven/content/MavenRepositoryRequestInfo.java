@@ -19,7 +19,9 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.commons.lang3.StringUtils;

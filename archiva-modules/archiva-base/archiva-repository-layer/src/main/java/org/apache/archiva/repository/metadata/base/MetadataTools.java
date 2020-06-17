@@ -34,9 +34,10 @@ import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.model.SnapshotVersion;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
-import org.apache.archiva.repository.ContentNotFoundException;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.ContentNotFoundException;
+import org.apache.archiva.repository.content.ContentAccessException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryRegistry;
@@ -175,7 +176,7 @@ public class MetadataTools
                     .collect( Collectors.toSet( ) );
             }
         }
-        catch ( org.apache.archiva.repository.ContentAccessException e )
+        catch ( ContentAccessException e )
         {
             log.error( "Error while accessing content {}", e.getMessage( ) );
             throw new IOException( "Could not access repository content: " + e.getMessage( ) );
@@ -546,7 +547,7 @@ public class MetadataTools
             allVersions = layout.getVersions( project ).stream()
             .map( v -> v.getId() ).collect( Collectors.toSet());
         }
-        catch ( org.apache.archiva.repository.ContentAccessException e )
+        catch ( ContentAccessException e )
         {
             log.error( "Error while accessing repository: {}", e.getMessage( ), e );
             throw new RepositoryMetadataException( "Error while accessing repository " + e.getMessage( ), e );

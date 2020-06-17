@@ -20,7 +20,7 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.metadata.audit.AuditListener;

@@ -20,16 +20,14 @@ package org.apache.archiva.repository.content.base;
 
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ItemConversionException;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>

@@ -58,8 +58,9 @@ import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.ContentAccessException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -673,7 +674,7 @@ public class ArchivaDavResourceFactory
                     {
                         log.warn( "Artifact path '{}' is invalid.", resourcePath );
                     }
-                    catch ( org.apache.archiva.repository.ContentAccessException e )
+                    catch ( ContentAccessException e )
                     {
                         e.printStackTrace( );
                     }

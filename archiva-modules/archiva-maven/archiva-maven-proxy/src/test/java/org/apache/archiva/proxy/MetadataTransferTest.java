@@ -29,7 +29,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.DataItem;
 import org.apache.archiva.repository.content.ItemSelector;

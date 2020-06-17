@@ -20,6 +20,7 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.LayoutException;
 
 
 /**

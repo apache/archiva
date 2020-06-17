@@ -22,7 +22,7 @@ package org.apache.archiva.scheduler.repository;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;

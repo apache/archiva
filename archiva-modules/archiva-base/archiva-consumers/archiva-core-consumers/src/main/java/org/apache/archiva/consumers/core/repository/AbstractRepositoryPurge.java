@@ -27,6 +27,7 @@ import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.ContentAccessException;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.StorageUtil;
@@ -223,7 +224,7 @@ public abstract class AbstractRepositoryPurge
                     {
                         repository.deleteItem( reference );
                     }
-                    catch ( org.apache.archiva.repository.ContentAccessException e )
+                    catch ( ContentAccessException e )
                     {
                         log.error( "Error while trying to delete artifact {}: {}", reference.toString( ), e.getMessage( ), e );
                     }

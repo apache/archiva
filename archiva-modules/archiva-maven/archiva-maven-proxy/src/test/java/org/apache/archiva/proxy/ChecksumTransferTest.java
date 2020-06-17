@@ -24,7 +24,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;

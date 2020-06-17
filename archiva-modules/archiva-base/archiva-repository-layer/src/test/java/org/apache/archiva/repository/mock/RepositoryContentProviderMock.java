@@ -20,7 +20,6 @@ package org.apache.archiva.repository.mock;
  */
 
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;

@@ -22,7 +22,7 @@ package org.apache.archiva.webdav;
 import junit.framework.TestCase;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.storage.fs.FilesystemAsset;
 import org.apache.archiva.metadata.audit.AuditListener;

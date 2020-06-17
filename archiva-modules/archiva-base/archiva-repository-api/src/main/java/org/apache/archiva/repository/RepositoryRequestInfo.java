@@ -19,7 +19,9 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 /**

@@ -30,7 +30,7 @@ import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryRegistry;

@@ -20,9 +20,8 @@ package org.apache.archiva.proxy;
  */
 
 import org.apache.archiva.policies.*;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
-import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.content.Artifact;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;

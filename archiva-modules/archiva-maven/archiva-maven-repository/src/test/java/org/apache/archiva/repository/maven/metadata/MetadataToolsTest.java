@@ -24,7 +24,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentProvider;

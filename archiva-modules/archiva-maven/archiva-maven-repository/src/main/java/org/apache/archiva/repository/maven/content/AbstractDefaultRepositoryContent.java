@@ -22,7 +22,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.commons.lang3.StringUtils;

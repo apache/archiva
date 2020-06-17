@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.content;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,8 +9,7 @@ package org.apache.archiva.repository;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,14 +18,6 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.repository.content.Artifact;
-import org.apache.archiva.repository.content.ContentItem;
-import org.apache.archiva.repository.content.DataItem;
-import org.apache.archiva.repository.content.ItemNotFoundException;
-import org.apache.archiva.repository.content.ItemSelector;
-import org.apache.archiva.repository.content.Namespace;
-import org.apache.archiva.repository.content.Project;
-import org.apache.archiva.repository.content.Version;
 import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.nio.file.Path;

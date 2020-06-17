@@ -40,7 +40,6 @@ import org.apache.archiva.repository.maven.content.MavenContentHelper;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.repository.EditableManagedRepository;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.Repository;

@@ -24,7 +24,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.content.ItemSelector;

@@ -18,9 +18,12 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.content.ContentAccessException;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.LayoutException;
+import org.apache.archiva.repository.content.ManagedRepositoryContentLayout;
 import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.util.List;
@@ -185,7 +188,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @return the specific layout
      * @throws LayoutException if the repository does not support this layout type
      */
-    <T extends ManagedRepositoryContentLayout> T getLayout(Class<T> clazz) throws LayoutException;
+    <T extends ManagedRepositoryContentLayout> T getLayout( Class<T> clazz) throws LayoutException;
 
     /**
      * Returns <code>true</code>, if the specific layout is supported by this content.

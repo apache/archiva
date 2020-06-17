@@ -23,8 +23,9 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.ContentAccessException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
@@ -167,7 +168,7 @@ public class DaysOldRepositoryPurge
         {
             log.debug( "Not processing file that is not an artifact: {}", e.getMessage( ) );
         }
-        catch ( org.apache.archiva.repository.ContentAccessException e )
+        catch ( ContentAccessException e )
         {
             e.printStackTrace( );
         }

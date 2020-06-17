@@ -19,7 +19,7 @@ package org.apache.archiva.repository.mock;
  * under the License.
  */
 
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;

@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.content;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,8 +9,7 @@ package org.apache.archiva.repository;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,22 +18,34 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.common.ArchivaException;
+import org.apache.archiva.repository.RepositoryException;
 
 /**
- * LayoutException 
  *
+ * ContentNotFoundException is thrown in response for requests for content that is not in the repository.
  *
  */
-public class LayoutException extends ArchivaException
+public class ContentNotFoundException
+    extends RepositoryException
 {
-    public LayoutException( String message, Throwable cause )
+
+    public ContentNotFoundException()
+    {
+        super();
+    }
+
+    public ContentNotFoundException( String message, Throwable cause )
     {
         super( message, cause );
     }
 
-    public LayoutException( String message )
+    public ContentNotFoundException( String message )
     {
         super( message );
+    }
+
+    public ContentNotFoundException( Throwable cause )
+    {
+        super( cause );
     }
 }

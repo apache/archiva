@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.content;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,8 +18,7 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.repository.content.ContentItem;
-import org.apache.archiva.repository.content.DataItem;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 
 /**
  *

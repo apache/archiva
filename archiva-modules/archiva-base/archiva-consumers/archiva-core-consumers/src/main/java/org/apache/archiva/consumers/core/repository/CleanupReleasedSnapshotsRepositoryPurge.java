@@ -25,9 +25,10 @@ import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
-import org.apache.archiva.repository.ContentNotFoundException;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.ContentNotFoundException;
+import org.apache.archiva.repository.content.ContentAccessException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryRegistry;
@@ -180,7 +181,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         {
             log.error( "Could not remove metadata during cleanup of released snapshots of {}", path, e );
         }
-        catch ( org.apache.archiva.repository.ContentAccessException e )
+        catch ( ContentAccessException e )
         {
             e.printStackTrace( );
         }

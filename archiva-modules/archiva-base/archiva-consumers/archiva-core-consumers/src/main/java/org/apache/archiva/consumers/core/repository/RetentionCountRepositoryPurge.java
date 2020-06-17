@@ -23,8 +23,9 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.repository.BaseRepositoryContentLayout;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
+import org.apache.archiva.repository.content.ContentAccessException;
+import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.ContentItem;
@@ -125,7 +126,7 @@ public class RetentionCountRepositoryPurge
         {
             throw new RepositoryPurgeException( le.getMessage( ), le );
         }
-        catch ( org.apache.archiva.repository.ContentAccessException e )
+        catch ( ContentAccessException e )
         {
             log.error( "Error while accessing the repository data: {}", e.getMessage( ), e );
             throw new RepositoryPurgeException( e.getMessage( ), e );
