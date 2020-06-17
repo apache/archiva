@@ -21,8 +21,8 @@ package org.apache.archiva.repository.maven.mock;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.maven.index.context.IndexingContext;
 
 import java.io.IOException;

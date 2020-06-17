@@ -19,8 +19,8 @@ package org.apache.archiva.repository.maven.metadata.storage;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

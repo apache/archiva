@@ -26,7 +26,6 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.maven.dependency.tree.Maven3DependencyTreeBuilder;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;

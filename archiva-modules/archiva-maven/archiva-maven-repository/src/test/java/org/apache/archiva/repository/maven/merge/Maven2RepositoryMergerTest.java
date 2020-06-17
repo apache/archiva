@@ -28,7 +28,6 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.repository.maven.merge.Maven2RepositoryMerger;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;

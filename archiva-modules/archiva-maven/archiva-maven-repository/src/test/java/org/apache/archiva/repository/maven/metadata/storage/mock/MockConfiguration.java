@@ -19,13 +19,13 @@ package org.apache.archiva.repository.maven.metadata.storage.mock;
  * under the License.
  */
 
+import org.apache.archiva.components.registry.Registry;
+import org.apache.archiva.components.registry.RegistryException;
+import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.components.registry.Registry;
-import org.apache.archiva.components.registry.RegistryException;
-import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.commons.lang3.StringUtils;

@@ -20,11 +20,11 @@ package org.apache.archiva.repository.maven.content;
 
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.repository.content.base.ArchivaItemSelector;
-import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
-import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.ItemSelector;
+import org.apache.archiva.repository.content.LayoutException;
+import org.apache.archiva.repository.content.base.ArchivaItemSelector;
+import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

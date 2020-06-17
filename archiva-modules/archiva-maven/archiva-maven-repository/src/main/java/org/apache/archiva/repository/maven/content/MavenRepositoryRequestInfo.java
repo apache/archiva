@@ -18,7 +18,9 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RepositoryRequestInfo;
+import org.apache.archiva.repository.UnsupportedFeatureException;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.LayoutException;

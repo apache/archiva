@@ -17,19 +17,19 @@ package org.apache.archiva.repository.maven.dependency.tree;
  * under the License.
  */
 
+import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.internal.impl.DefaultRepositoryLayoutProvider;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.spi.connector.ArtifactDownload;
 import org.eclipse.aether.spi.connector.ArtifactUpload;
 import org.eclipse.aether.spi.connector.MetadataDownload;
 import org.eclipse.aether.spi.connector.MetadataUpload;
 import org.eclipse.aether.spi.connector.RepositoryConnector;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.transfer.NoRepositoryConnectorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 

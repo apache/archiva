@@ -21,10 +21,14 @@ package org.apache.archiva.repository.maven;
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.EditableRepositoryGroup;
+import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.RepositoryCapabilities;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.StandardCapabilities;
 import org.apache.archiva.repository.base.AbstractRepositoryGroup;
-import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

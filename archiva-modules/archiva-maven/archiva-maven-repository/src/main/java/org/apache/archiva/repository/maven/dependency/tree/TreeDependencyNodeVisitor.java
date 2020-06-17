@@ -19,11 +19,10 @@ package org.apache.archiva.repository.maven.dependency.tree;
 
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
+import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.graph.DependencyVisitor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.eclipse.aether.graph.DependencyNode;
-import org.eclipse.aether.graph.DependencyVisitor;
 
 import java.util.List;
 

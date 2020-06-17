@@ -19,7 +19,6 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.repository.maven.content.FilenameParser;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;

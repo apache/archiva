@@ -24,14 +24,13 @@ import org.apache.archiva.repository.metadata.base.RepositoryMetadataWriter;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.xmlunit.assertj.XmlAssert;
 
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import org.xmlunit.assertj.XmlAssert;
 
 /**
  * RepositoryMetadataWriterTest

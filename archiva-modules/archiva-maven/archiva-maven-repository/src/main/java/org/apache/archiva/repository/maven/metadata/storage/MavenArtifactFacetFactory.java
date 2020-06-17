@@ -18,8 +18,8 @@ package org.apache.archiva.repository.maven.metadata.storage;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.facets.AbstractMetadataFacetFactory;
 import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
+import org.apache.archiva.metadata.model.facets.AbstractMetadataFacetFactory;
 import org.springframework.stereotype.Service;
 
 /**
