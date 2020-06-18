@@ -29,7 +29,7 @@
 
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.repository.maven.dependency.tree,org.apache.archiva.repository.maven.metadata.storage,
-                                        org.apache.archiva.repository.maven.content"/>
+                                        org.apache.archiva.repository.maven.content,org.apache.maven.index"/>
 
 
 

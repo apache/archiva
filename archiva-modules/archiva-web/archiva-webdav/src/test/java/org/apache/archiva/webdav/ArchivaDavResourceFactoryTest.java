@@ -28,8 +28,6 @@ import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.FileTypes;
@@ -127,9 +125,6 @@ public class ArchivaDavResourceFactoryTest
 
     @Inject
     ApplicationContext applicationContext;
-
-    @Inject
-    PlexusSisuBridge plexusSisuBridge;
 
     @Inject
     DefaultManagedRepositoryAdmin defaultManagedRepositoryAdmin;
@@ -239,7 +234,7 @@ public class ArchivaDavResourceFactoryTest
         repoRequest = repoRequestControl.createMock( MavenRepositoryRequestInfo.class );
 
         resourceFactory =
-            new OverridingArchivaDavResourceFactory( applicationContext, plexusSisuBridge, archivaConfiguration );
+            new OverridingArchivaDavResourceFactory( applicationContext, archivaConfiguration );
         resourceFactory.setArchivaConfiguration( archivaConfiguration );
         proxyRegistry.getAllHandler().get(RepositoryType.MAVEN).clear();
         proxyRegistry.getAllHandler().get(RepositoryType.MAVEN).add(new OverridingRepositoryProxyHandler(this));
@@ -728,9 +723,8 @@ public class ArchivaDavResourceFactoryTest
         extends ArchivaDavResourceFactory
     {
 
-        OverridingArchivaDavResourceFactory( ApplicationContext applicationContext, PlexusSisuBridge plexusSisuBridge,
+        OverridingArchivaDavResourceFactory( ApplicationContext applicationContext,
                                              ArchivaConfiguration archivaConfiguration )
-            throws PlexusSisuBridgeException
         {
             super( applicationContext, archivaConfiguration );
         }

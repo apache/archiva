@@ -19,8 +19,6 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
@@ -39,9 +37,8 @@ public class UnauthenticatedDavResourceFactory
 {
 
     @Inject
-    public UnauthenticatedDavResourceFactory( ApplicationContext applicationContext, PlexusSisuBridge plexusSisuBridge,
+    public UnauthenticatedDavResourceFactory( ApplicationContext applicationContext,
                                               ArchivaConfiguration archivaConfiguration )
-        throws PlexusSisuBridgeException
     {
         super( applicationContext, archivaConfiguration );
     }

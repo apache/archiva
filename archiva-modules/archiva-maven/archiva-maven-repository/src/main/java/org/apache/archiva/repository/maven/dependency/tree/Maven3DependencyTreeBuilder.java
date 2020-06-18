@@ -23,8 +23,6 @@ import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.maven.MavenMetadataReader;
@@ -38,7 +36,11 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.manager.DefaultArtifactHandlerManager;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.bridge.MavenRepositorySystem;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
@@ -70,9 +72,6 @@ public class Maven3DependencyTreeBuilder
 {
     private Logger log = LoggerFactory.getLogger( Maven3DependencyTreeBuilder.class );
 
-    @Inject
-    private PlexusSisuBridge plexusSisuBridge;
-
     private MavenRepositorySystem mavenRepositorySystem;
 
     @Inject
@@ -98,9 +97,28 @@ public class Maven3DependencyTreeBuilder
 
     @PostConstruct
     public void initialize()
-        throws PlexusSisuBridgeException
+        throws RuntimeException
     {
-        mavenRepositorySystem = plexusSisuBridge.lookup(MavenRepositorySystem.class);
+        try
+        {
+            mavenRepositorySystem = initMaven( );
+        }
+        catch ( IllegalAccessException e )
+        {
+            throw new RuntimeException( "Could not initialize maven" );
+        }
+    }
+
+    MavenRepositorySystem initMaven() throws IllegalAccessException
+    {
+        MavenRepositorySystem system = new MavenRepositorySystem( );
+        DefaultArtifactHandlerManager afm = new DefaultArtifactHandlerManager( );
+        DefaultRepositoryLayout layout = new DefaultRepositoryLayout( );
+        FieldUtils.writeField( system, "artifactHandlerManager",  afm, true);
+        Map<String, ArtifactRepositoryLayout> map = new HashMap<>( );
+        map.put( "defaultRepositoryLayout", layout );
+        FieldUtils.writeField( system, "layouts",  map, true);
+        return system;
     }
 
 

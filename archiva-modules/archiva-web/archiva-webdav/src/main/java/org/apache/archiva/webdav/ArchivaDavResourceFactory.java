@@ -27,7 +27,6 @@ import org.apache.archiva.checksum.ChecksumUtil;
 import org.apache.archiva.checksum.StreamingChecksum;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -189,7 +188,6 @@ public class ArchivaDavResourceFactory
 
     @Inject
     public ArchivaDavResourceFactory( ApplicationContext applicationContext, ArchivaConfiguration archivaConfiguration )
-        throws PlexusSisuBridgeException
     {
         this.archivaConfiguration = archivaConfiguration;
         this.applicationContext = applicationContext;

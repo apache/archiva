@@ -19,7 +19,6 @@ package org.apache.archiva.repository.maven.dependency.tree;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
@@ -48,9 +47,6 @@ public class DependencyTreeBuilderTestMaven3
     @Inject
     @Named( "dependencyTreeBuilder#maven3" )
     private Maven3DependencyTreeBuilder builder;
-
-    @Inject
-    private PlexusSisuBridge plexusSisuBridge;
 
     private static final String TEST_REPO_ID = "test";
 
