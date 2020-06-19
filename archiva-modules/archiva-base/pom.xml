@@ -40,7 +40,6 @@
     <module>archiva-model</module>
     <module>archiva-configuration</module>
     <module>archiva-checksum</module>
-    <module>archiva-plexus-bridge</module>
     <module>archiva-policies</module>
     <module>archiva-repository-api</module>
     <module>archiva-consumers</module>

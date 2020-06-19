@@ -45,10 +45,6 @@
       <artifactId>archiva-consumer-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-plexus-bridge</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.google.code.cli-parser</groupId>
       <artifactId>cli</artifactId>
       <version>7</version>

@@ -350,11 +350,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-plexus-bridge</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-model</artifactId>
         <version>${project.version}</version>
       </dependency>
