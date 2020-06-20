@@ -177,9 +177,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Runtime scope, because it's needed by maven classes -->
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
