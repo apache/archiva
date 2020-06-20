@@ -53,6 +53,7 @@ archiva-modules
     repository-statistics
     stage-repository-merge
     metadata-store-file
+    audit
     
 
 
