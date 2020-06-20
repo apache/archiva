@@ -19,8 +19,6 @@ package org.apache.archiva.metadata.repository.jcr;
  * under the License.
  */
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.jackrabbit.oak.api.Type;
 import org.apache.jackrabbit.oak.jcr.Jcr;
@@ -71,7 +69,6 @@ import org.apache.jackrabbit.oak.spi.state.Clusterable;
 import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
 import org.apache.jackrabbit.oak.stats.StatisticsProvider;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +78,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -88,7 +90,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.apache.archiva.metadata.repository.jcr.JcrConstants.*;
 import static org.apache.archiva.metadata.repository.jcr.OakRepositoryFactory.StoreType.IN_MEMORY_TYPE;
 import static org.apache.archiva.metadata.repository.jcr.OakRepositoryFactory.StoreType.SEGMENT_FILE_TYPE;
@@ -241,7 +242,7 @@ public class OakRepositoryFactory
                 }
             };
             @Override
-            public Thread newThread(@NotNull Runnable r) {
+            public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r, createName());
                 thread.setDaemon(true);
                 thread.setPriority(Thread.MIN_PRIORITY);
@@ -305,7 +306,10 @@ public class OakRepositoryFactory
     }
 
     private Path getIndexCheckDir() {
-        return checkNotNull(indexDir).resolve("indexCheckDir");
+        if (indexDir==null) {
+            throw new NullPointerException( "Null value for indexDir encountered." );
+        }
+        return indexDir.resolve("indexCheckDir");
     }
 
     private LuceneIndexImporter registerIndexImporterProvider() {
@@ -343,7 +347,10 @@ public class OakRepositoryFactory
         editorProvider.setBlobStore(blobStore);
 
         if (hybridIndex){
-            editorProvider.setIndexingQueue(checkNotNull(documentQueue));
+            if (documentQueue==null) {
+                throw new NullPointerException( "Null value for documentQueue encountered" );
+            }
+            editorProvider.setIndexingQueue(documentQueue);
         }
 
 
@@ -456,14 +463,15 @@ public class OakRepositoryFactory
                     // lucene.setProperty("refresh",true);
                     NodeBuilder rules = lucene.child( "indexRules" ).
                         setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME );
-                    rules.setProperty( ":childOrder", ImmutableSet.of(
-                        REPOSITORY_NODE_TYPE,
-                            NAMESPACE_MIXIN_TYPE, //
-                            PROJECT_MIXIN_TYPE,
+                    Set<String> parameterSet = new HashSet<>( Arrays.asList(REPOSITORY_NODE_TYPE,
+                        NAMESPACE_MIXIN_TYPE, //
+                        PROJECT_MIXIN_TYPE,
                         PROJECT_VERSION_NODE_TYPE, //
                         ARTIFACT_NODE_TYPE, //
                         FACET_NODE_TYPE //
-                    ), Type.STRINGS );
+                        ));
+                    parameterSet = Collections.unmodifiableSet(parameterSet);
+                    rules.setProperty( ":childOrder", parameterSet, Type.STRINGS );
                     IndexDefinitionBuilder idxBuilder = new IndexDefinitionBuilder( lucene );
                     idxBuilder.async( "async", "nrt", "sync" ).includedPaths( "/repositories" ).evaluatePathRestrictions();
 
@@ -526,7 +534,9 @@ public class OakRepositoryFactory
 
                     idxBuilder.build( );
 
-                    IndexUtils.createIndexDefinition( oakIdx, "baseIndexes", true, false, ImmutableList.of( "jcr:uuid", "rep:principalName" ), null );
+                    List<String> parameterList = Arrays.asList("jcr:uuid", "rep:principalName");
+                    parameterList = Collections.unmodifiableList(parameterList);
+                    IndexUtils.createIndexDefinition( oakIdx, "baseIndexes", true, false, parameterList, null );
 
                     log.info( "Index: {} repo-lucene: {}", lucene, lucene.getChildNode( "repo-lucene" ) );
                     log.info( "repo-lucene Properties: {}", lucene.getChildNode( "repo-lucene" ).getProperties( ) );

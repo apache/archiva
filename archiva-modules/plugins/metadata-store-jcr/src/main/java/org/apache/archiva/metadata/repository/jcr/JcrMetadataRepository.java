@@ -19,12 +19,31 @@ package org.apache.archiva.metadata.repository.jcr;
  * under the License.
  */
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.metadata.QueryParameter;
-import org.apache.archiva.metadata.model.*;
 import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
-import org.apache.archiva.metadata.repository.*;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.CiManagement;
+import org.apache.archiva.metadata.model.Dependency;
+import org.apache.archiva.metadata.model.FacetedMetadata;
+import org.apache.archiva.metadata.model.IssueManagement;
+import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.MailingList;
+import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.ModelInfo;
+import org.apache.archiva.metadata.model.Organization;
+import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.MetadataService;
+import org.apache.archiva.metadata.repository.MetadataSessionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -34,14 +53,43 @@ import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.*;
-import javax.jcr.query.*;
+import javax.jcr.NamespaceRegistry;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+import javax.jcr.Value;
+import javax.jcr.ValueFactory;
+import javax.jcr.Workspace;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -845,7 +893,10 @@ public class JcrMetadataRepository
             throws MetadataRepositoryException {
         final Session jcrSession = getSession(session);
         final String q = new StringBuilder(QUERY_ARTIFACTS_BY_PROJECT_VERSION_1).append(key).append(QUERY_ARTIFACTS_BY_PROJECT_VERSION_2).toString();
-        return runJcrQuery(jcrSession, repositoryId, q, ImmutableMap.of("value", value));
+        Map<String, String> parameterMap = new HashMap<>();
+        parameterMap.put("value", value);
+        parameterMap = Collections.unmodifiableMap(parameterMap);
+        return runJcrQuery(jcrSession, repositoryId, q, parameterMap);
     }
 
 
@@ -854,7 +905,10 @@ public class JcrMetadataRepository
             throws MetadataRepositoryException {
         final Session jcrSession = getSession(session);
         final String q = new StringBuilder(QUERY_ARTIFACTS_BY_METADATA_1).append(key).append(QUERY_ARTIFACTS_BY_METADATA_2).toString();
-        return runJcrQuery(jcrSession, repositoryId, q, ImmutableMap.of("value", value));
+        Map<String, String> parameterMap = new HashMap<>();
+        parameterMap.put("value", value);
+        parameterMap = Collections.unmodifiableMap(parameterMap);
+        return runJcrQuery(jcrSession, repositoryId, q, parameterMap);
     }
 
 
@@ -863,7 +917,10 @@ public class JcrMetadataRepository
             throws MetadataRepositoryException {
         final Session jcrSession = getSession(session);
         final String q = new StringBuilder(QUERY_ARTIFACTS_BY_PROPERTY_1).append(key).append(QUERY_ARTIFACTS_BY_PROPERTY_2).toString();
-        return runJcrQuery(jcrSession, repositoryId, q, ImmutableMap.of("value", value));
+        Map<String, String> parameterMap = new HashMap<>();
+        parameterMap.put("value", value);
+        parameterMap = Collections.unmodifiableMap(parameterMap);
+        return runJcrQuery(jcrSession, repositoryId, q, parameterMap);
     }
 
 
@@ -1400,14 +1457,20 @@ public class JcrMetadataRepository
                     "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE
                             + "] AS projectVersion LEFT OUTER JOIN [" + ARTIFACT_NODE_TYPE
                             + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) WHERE " + projectVersionCondition + descendantCondition;
-            result.addAll(runJcrQuery(jcrSession, repositoryId, q1, ImmutableMap.of("value", text), false));
+            Map<String, String> parameterMap = new HashMap<>();
+            parameterMap.put("value", text);
+            parameterMap = Collections.unmodifiableMap(parameterMap);
+            result.addAll(runJcrQuery(jcrSession, repositoryId, q1, parameterMap, false));
         }
         String q2 =
                 "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE
                         + "] AS projectVersion LEFT OUTER JOIN [" + ARTIFACT_NODE_TYPE
                         + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) LEFT OUTER JOIN [" + FACET_NODE_TYPE
                         + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE " + facetCondition + descendantCondition;
-        result.addAll(runJcrQuery(jcrSession, repositoryId, q2, ImmutableMap.of("value", text), false));
+        Map<String, String> parameterMap = new HashMap<>();
+        parameterMap.put("value", text);
+        parameterMap = Collections.unmodifiableMap(parameterMap);
+        result.addAll(runJcrQuery(jcrSession, repositoryId, q2, parameterMap, false));
         return result;
     }
 
