@@ -18,10 +18,19 @@ package org.apache.archiva.scheduler.indexing.maven;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.indexer.ArchivaIndexManager;
+import org.apache.archiva.indexer.IndexCreationFailedException;
+import org.apache.archiva.repository.EditableRemoteRepository;
+import org.apache.archiva.repository.EditableRepository;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.UnsupportedURIException;
+import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
@@ -49,14 +58,13 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -74,9 +82,6 @@ public class DownloadRemoteIndexTaskTest
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    RemoteRepositoryAdmin remoteRepositoryAdmin;
-
-    @Inject
     DefaultDownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     @Inject
@@ -84,6 +89,9 @@ public class DownloadRemoteIndexTaskTest
 
     @Inject
     RepositoryRegistry repositoryRegistry;
+
+    @Inject
+    RepositoryProvider repositoryProvider;
 
     @Before
     public void initialize()
@@ -94,7 +102,7 @@ public class DownloadRemoteIndexTaskTest
             Files.delete(cfgFile);
         }
         try {
-            remoteRepositoryAdmin.deleteRemoteRepository("test-repo-re", null);
+            repositoryRegistry.removeRepository( "test-repo-re" );
         } catch (Exception e) {
             // Ignore
         }
@@ -136,9 +144,12 @@ public class DownloadRemoteIndexTaskTest
     public void downloadAndMergeRemoteIndexInEmptyIndex()
         throws Exception
     {
-        RemoteRepository remoteRepository = getRemoteRepository();
+        Path repoDirectory = Paths.get( FileUtils.getBasedir( ), "target/repo-" + Long.toString( System.currentTimeMillis( ) ) );
 
-        remoteRepositoryAdmin.addRemoteRepository( remoteRepository, null );
+        RemoteRepository remoteRepository = getRemoteRepository(repoDirectory);
+
+        repositoryRegistry.putRepository( remoteRepository);
+        repositoryRegistry.reload();
 
         downloadRemoteIndexScheduler.startup();
 
@@ -147,17 +158,17 @@ public class DownloadRemoteIndexTaskTest
         ( (ThreadPoolTaskScheduler) downloadRemoteIndexScheduler.getTaskScheduler() ).getScheduledExecutor().awaitTermination(
             10, TimeUnit.SECONDS );
 
-        remoteRepositoryAdmin.deleteRemoteRepository( "test-repo-re", null );
+        repositoryRegistry.removeRepository( "test-repo-re" );
 
         // search
         BooleanQuery.Builder iQuery = new BooleanQuery.Builder();
         iQuery.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-logging" ) ),
                     BooleanClause.Occur.SHOULD );
 
-        remoteRepositoryAdmin.addRemoteRepository(remoteRepository,  null);
+        remoteRepository = getRemoteRepository( repoDirectory );
         FlatSearchRequest rq = new FlatSearchRequest( iQuery.build() );
         rq.setContexts(
-            Arrays.asList( repositoryRegistry.getRemoteRepository(remoteRepository.getId()).getIndexingContext().getBaseContext(IndexingContext.class) ) );
+            Arrays.asList( remoteRepository.getIndexingContext().getBaseContext(IndexingContext.class) ) );
 
         FlatSearchResponse response = indexer.searchFlat(rq);
 
@@ -166,22 +177,38 @@ public class DownloadRemoteIndexTaskTest
     }
 
 
-    protected RemoteRepository getRemoteRepository() throws IOException
+    protected RemoteRepository getRemoteRepository(Path repoDirectory) throws IOException, URISyntaxException, UnsupportedURIException, RepositoryException
     {
-        RemoteRepository remoteRepository = new RemoteRepository( Locale.getDefault());
-        Path indexDirectory =
-            Paths.get( FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
+
+        EditableRemoteRepository remoteRepository = repositoryProvider.createRemoteInstance( "test-repo-re", "foo" );
+        Path indexDirectory = repoDirectory.resolve( "index" );
         Files.createDirectories( indexDirectory );
-        indexDirectory.toFile().deleteOnExit();
+        remoteRepository.setLocation( new URI( "http://localhost:" + port ) );
+        repoDirectory.toFile().deleteOnExit();
+        createIndexingContext( remoteRepository );
 
-        remoteRepository.setName( "foo" );
-        remoteRepository.setIndexDirectory( indexDirectory.toAbsolutePath().toString() );
-        remoteRepository.setDownloadRemoteIndex( true );
-        remoteRepository.setId( "test-repo-re" );
-        remoteRepository.setUrl( "http://localhost:" + port );
-        remoteRepository.setRemoteIndexUrl( "http://localhost:" + port + "/index-updates/" );
-
+        RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get();
+        rif.setDownloadRemoteIndex( true );
+        rif.setIndexUri( new URI("http://localhost:" + port + "/index-updates/" ) );
+        IndexCreationFeature icf = remoteRepository.getFeature( IndexCreationFeature.class ).get( );
+        icf.setLocalIndexPath( remoteRepository.getAsset(  "index" ) );
         return remoteRepository;
     }
 
+    private void createIndexingContext( EditableRepository editableRepo) throws RepositoryException
+    {
+        if (editableRepo.supportsFeature(IndexCreationFeature.class)) {
+            ArchivaIndexManager idxManager = getIndexManager(editableRepo.getType());
+            try {
+                editableRepo.setIndexingContext(idxManager.createContext(editableRepo));
+                idxManager.updateLocalIndexPath(editableRepo);
+            } catch ( IndexCreationFailedException e) {
+                throw new RepositoryException("Could not create index for repository " + editableRepo.getId() + ": " + e.getMessage(), e);
+            }
+        }
+    }
+
+    public ArchivaIndexManager getIndexManager( RepositoryType type ) {
+        return repositoryRegistry.getIndexManager( type );
+    }
 }

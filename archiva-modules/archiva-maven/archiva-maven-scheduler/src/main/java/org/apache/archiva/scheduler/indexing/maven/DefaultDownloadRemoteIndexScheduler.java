@@ -22,7 +22,6 @@ import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexException;
 import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
-import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationEvent;
 import org.apache.archiva.configuration.ConfigurationListener;

@@ -46,6 +46,14 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-storage-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
     </dependency>
     <dependency>
@@ -58,11 +66,28 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.maven</groupId>
-      <artifactId>archiva-maven-proxy</artifactId>
+      <artifactId>archiva-maven-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-api</artifactId>
+      <artifactId>archiva-repository-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-proxy-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-taskqueue</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
     </dependency>
 
     <dependency>
@@ -72,51 +97,44 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http</artifactId>
+      <artifactId>wagon-http-shared</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http-lightweight</artifactId>
-      <scope>provided</scope>
+      <artifactId>wagon-provider-api</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+
 
     <!-- Test dependencies -->
     <dependency>
-      <groupId>javax.persistence</groupId>
-      <artifactId>javax.persistence-api</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>repository-statistics</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-keys-jpa</artifactId>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-keys-cached</artifactId>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http-lightweight</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>javax.transaction-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-common-jpa</artifactId>
-      <version>${redback.version}</version>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-proxy</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
-      <version>${spring.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-default</artifactId>
+      <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -137,6 +155,12 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>${jetty.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
       <version>${jetty.version}</version>
       <scope>test</scope>
@@ -152,19 +176,6 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-mock</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-rbac-cached</artifactId>
-      <scope>test</scope>
-      <version>${redback.version}</version>
-    </dependency>
-
 
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -173,21 +184,11 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-common-test-resources</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>

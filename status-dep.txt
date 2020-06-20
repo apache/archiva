@@ -46,6 +46,7 @@ archiva-modules
     archiva-maven-proxy
     archiva-maven-indexer
     archiva-maven-repository
+    archiva-maven-scheduler
     
 
 
