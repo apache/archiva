@@ -21,8 +21,6 @@ package org.apache.archiva.reports.consumers;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
@@ -34,8 +32,6 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.components.registry.Registry;
-import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -64,16 +60,13 @@ import java.util.List;
 @Scope ( "prototype" )
 public class DuplicateArtifactsConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener
+    implements KnownRepositoryContentConsumer
 {
     private Logger log = LoggerFactory.getLogger( DuplicateArtifactsConsumer.class );
 
     private String id = "duplicate-artifacts";
 
     private String description = "Check for Duplicate Artifacts via SHA1 Checksums";
-
-    @Inject
-    private ArchivaConfiguration configuration;
 
     @Inject
     private FileTypes filetypes;
@@ -115,7 +108,7 @@ public class DuplicateArtifactsConsumer
     @Override
     public List<String> getIncludes()
     {
-        return includes;
+        return filetypes.getFileTypePatterns( FileTypes.ARTIFACTS );
     }
 
     @Override
@@ -254,33 +247,11 @@ public class DuplicateArtifactsConsumer
         completeScan();
     }
 
-    @Override
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
-        {
-            initIncludes();
-        }
-    }
 
-    @Override
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        /* do nothing */
-    }
-
-    private void initIncludes()
-    {
-        includes.clear();
-
-        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
-    }
 
     @PostConstruct
     public void initialize()
     {
-        initIncludes();
-        configuration.addChangeListener( this );
     }
 
     public RepositorySessionFactory getRepositorySessionFactory( )

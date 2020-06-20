@@ -54,6 +54,7 @@ archiva-modules
     stage-repository-merge
     metadata-store-file
     audit
+    problem-reports
     
 
 
