@@ -47,6 +47,10 @@ archiva-modules
     archiva-maven-indexer
     archiva-maven-repository
     archiva-maven-scheduler
+  plugins
+    generic-metadata-support
+    metadata-store-jcr
+    repository-statistics
     
 
 
