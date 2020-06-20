@@ -20,21 +20,17 @@ package org.apache.archiva.metadata.repository.cassandra;
  */
 
 import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -75,7 +71,7 @@ public class CassandraRepositorySessionFactory extends AbstractRepositorySession
     public RepositorySession createSession() throws MetadataRepositoryException
     {
         CassandraMetadataRepository metadataRepository =
-            new CassandraMetadataRepository( metadataService, configuration, cassandraArchivaManager );
+            new CassandraMetadataRepository( metadataService, cassandraArchivaManager );
         return new RepositorySession( metadataRepository, metadataResolver );
     }
 

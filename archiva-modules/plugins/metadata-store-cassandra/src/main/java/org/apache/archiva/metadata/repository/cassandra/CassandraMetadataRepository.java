@@ -19,8 +19,6 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.template.ColumnFamilyResult;
@@ -38,7 +36,6 @@ import me.prettyprint.hector.api.mutation.Mutator;
 import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
-import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
@@ -73,7 +70,18 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -94,8 +102,6 @@ public class CassandraMetadataRepository
 
     private static final String ARTIFACT_METADATA_MODEL_KEY = "artifactMetadataModel.key";
     private Logger logger = LoggerFactory.getLogger( getClass() );
-
-    private ArchivaConfiguration configuration;
 
     private final CassandraArchivaManager cassandraArchivaManager;
 
@@ -120,11 +126,9 @@ public class CassandraMetadataRepository
     private final StringSerializer ss = StringSerializer.get();
 
     public CassandraMetadataRepository( MetadataService metadataService,
-                                        ArchivaConfiguration configuration,
                                         CassandraArchivaManager cassandraArchivaManager )
     {
         super( metadataService );
-        this.configuration = configuration;
         this.cassandraArchivaManager = cassandraArchivaManager;
         this.keyspace = cassandraArchivaManager.getKeyspace();
 
@@ -468,7 +472,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
             .execute();
 
-        Set<String> namespaces = new HashSet<String>( result.get().getCount() );
+        Set<String> namespaces = new HashSet<>( result.get( ).getCount( ) );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -553,11 +557,7 @@ public class CassandraMetadataRepository
             .execute();
 
         // project exists ? if yes return nothing to update here
-        if ( result.get().getCount() > 0 )
-        {
-            return;
-        }
-        else
+        if ( result.get( ).getCount( ) <= 0 )
         {
             Namespace namespace = updateOrAddNamespace( repositoryId, projectMetadata.getNamespace() );
 
@@ -587,7 +587,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
             .execute();
 
-        final Set<String> projects = new HashSet<String>( result.get().getCount() );
+        final Set<String> projects = new HashSet<>( result.get( ).getCount( ) );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -660,7 +660,7 @@ public class CassandraMetadataRepository
             return Collections.emptyList();
         }
 
-        Set<String> versions = new HashSet<String>( count );
+        Set<String> versions = new HashSet<>( count );
 
         for ( Row<String, String, String> orderedRows : result.get() )
         {
@@ -757,7 +757,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( PROJECT_VERSION.toString(), versionMetadata.getId() ) //
             .execute();
 
-        ProjectVersionMetadataModel projectVersionMetadataModel = null;
+        ProjectVersionMetadataModel projectVersionMetadataModel;
         boolean creation = true;
         if ( result.get().getCount() > 0 )
         {
@@ -853,7 +853,7 @@ public class CassandraMetadataRepository
 
             recordDependencies( key, versionMetadata.getDependencies(), repositoryId );
 
-            MutationResult mutationResult = mutator.execute();
+            mutator.execute();
         }
         else
         {
@@ -1021,12 +1021,7 @@ public class CassandraMetadataRepository
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
             String facetId = getStringValue( columnSlice, FACET_ID.toString() );
-            Map<String, String> metaValues = metadataFacetsPerFacetIds.get( facetId );
-            if ( metaValues == null )
-            {
-                metaValues = new HashMap<>();
-                metadataFacetsPerFacetIds.put( facetId, metaValues );
-            }
+            Map<String, String> metaValues = metadataFacetsPerFacetIds.computeIfAbsent( facetId, k -> new HashMap<>( ) );
             metaValues.put( getStringValue( columnSlice, KEY.toString() ), getStringValue( columnSlice, VALUE.toString() ) );
         }
 
@@ -1034,7 +1029,7 @@ public class CassandraMetadataRepository
         {
             for ( Map.Entry<String, Map<String, String>> entry : metadataFacetsPerFacetIds.entrySet() )
             {
-                MetadataFacetFactory metadataFacetFactory = getFacetFactory( entry.getKey() );
+                MetadataFacetFactory<?> metadataFacetFactory = getFacetFactory( entry.getKey() );
                 if ( metadataFacetFactory != null )
                 {
                     MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet();
@@ -1381,13 +1376,13 @@ public class CassandraMetadataRepository
 
     private Map<String, String> mapChecksums(Map<ChecksumAlgorithm,String> checksums) {
         return checksums.entrySet().stream().collect(Collectors.toMap(
-                e -> e.getKey().name(), e -> e.getValue()
+                e -> e.getKey().name(), Map.Entry::getValue
         ));
     }
 
     private Map<ChecksumAlgorithm, String> mapChecksumsReverse(Map<String,String> checksums) {
         return checksums.entrySet().stream().collect(Collectors.toMap(
-                e -> ChecksumAlgorithm.valueOf(e.getKey()), e -> e.getValue()
+                e -> ChecksumAlgorithm.valueOf(e.getKey()), Map.Entry::getValue
         ));
     }
 
@@ -1736,10 +1731,6 @@ public class CassandraMetadataRepository
             return null;
         }
         final String facetId = metadataFacetFactory.getFacetId( );
-        if ( metadataFacetFactory == null )
-        {
-            return null;
-        }
 
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
@@ -2025,7 +2016,7 @@ public class CassandraMetadataRepository
             }
         }
 
-        return new ArrayList(artifactMetadataMap.values());
+        return new ArrayList<>(artifactMetadataMap.values());
     }
 
     /**
@@ -2064,7 +2055,7 @@ public class CassandraMetadataRepository
             return Collections.emptyList();
         }
 
-        List<ArtifactMetadata> artifactMetadatas = new LinkedList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifactMetadatas = new LinkedList<>( );
 
         // TODO doing multiple queries, there should be a way to get all the artifactMetadatas for any number of
         // projects
@@ -2117,7 +2108,7 @@ public class CassandraMetadataRepository
             return Collections.emptyList();
         }
 
-        List<ArtifactMetadata> artifacts = new LinkedList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new LinkedList<>( );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -2384,21 +2375,15 @@ public class CassandraMetadataRepository
 
         for ( final ArtifactMetadata artifactMetadata : artifactMetadatas )
         {
-            Iterable<MetadataFacetModel> metadataFacetModelIterable =
-                Iterables.filter( metadataFacetModels, new Predicate<MetadataFacetModel>()
+            Iterator<MetadataFacetModel> iterator = metadataFacetModels.stream( ).filter( metadataFacetModel -> {
+                if ( metadataFacetModel != null )
                 {
-                    @Override
-                    public boolean apply( MetadataFacetModel metadataFacetModel )
-                    {
-                        if ( metadataFacetModel != null )
-                        {
-                            return StringUtils.equals( artifactMetadata.getVersion(),
-                                                       metadataFacetModel.getProjectVersion() );
-                        }
-                        return false;
-                    }
-                } );
-            Iterator<MetadataFacetModel> iterator = metadataFacetModelIterable.iterator();
+                    return StringUtils.equals( artifactMetadata.getVersion( ),
+                        metadataFacetModel.getProjectVersion( ) );
+                }
+                return false;
+
+            } ).iterator( );
             Map<String, List<MetadataFacetModel>> metadataFacetValuesPerFacetId = new HashMap<>();
             while ( iterator.hasNext() )
             {
@@ -2415,7 +2400,7 @@ public class CassandraMetadataRepository
 
             for ( Map.Entry<String, List<MetadataFacetModel>> entry : metadataFacetValuesPerFacetId.entrySet() )
             {
-                MetadataFacetFactory metadataFacetFactory = getFacetFactory( entry.getKey() );
+                MetadataFacetFactory<?> metadataFacetFactory = getFacetFactory( entry.getKey() );
                 if ( metadataFacetFactory != null )
                 {
                     List<MetadataFacetModel> facetModels = entry.getValue();
@@ -2476,7 +2461,7 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
         // TODO optimize
-        List<ArtifactMetadata> artifacts = new LinkedList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new LinkedList<>( );
         artifacts.addAll( this.getArtifactsByAttribute( session, key, text, repositoryId ) );
         artifacts.addAll( this.getArtifactsByProjectVersionAttribute( session, key, text, repositoryId ) );
         return artifacts;

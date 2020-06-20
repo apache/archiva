@@ -57,7 +57,7 @@ public class RepositoriesNamespaceTest
     public void setup()
         throws Exception
     {
-        cmr = new CassandraMetadataRepository( null, null, cassandraArchivaManager );
+        cmr = new CassandraMetadataRepository( null, cassandraArchivaManager );
         if ( !cassandraArchivaManager.started() )
         {
             cassandraArchivaManager.start();

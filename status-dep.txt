@@ -55,6 +55,7 @@ archiva-modules
     metadata-store-file
     audit
     problem-reports
+    metadata-store-cassandra
     
 
 

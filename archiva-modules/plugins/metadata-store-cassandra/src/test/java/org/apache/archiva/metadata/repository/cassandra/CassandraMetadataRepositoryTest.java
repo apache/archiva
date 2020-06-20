@@ -93,7 +93,7 @@ public class CassandraMetadataRepositoryTest
         MetadataService metadataService = new MetadataService( );
         metadataService.setMetadataFacetFactories( factories );
 
-        this.cmr = new CassandraMetadataRepository( metadataService, null, cassandraArchivaManager );
+        this.cmr = new CassandraMetadataRepository( metadataService, cassandraArchivaManager );
 
         sessionFactoryControl = EasyMock.createControl( );
         sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
