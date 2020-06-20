@@ -52,6 +52,7 @@ archiva-modules
     metadata-store-jcr
     repository-statistics
     stage-repository-merge
+    metadata-store-file
     
 
 
