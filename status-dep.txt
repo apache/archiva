@@ -57,6 +57,10 @@ archiva-modules
     problem-reports
     repository-statistics
     stage-repository-merge
+
+  archiva-web
+    archiva-rest
+      archiva-rest-api
     
 
 

@@ -60,10 +60,7 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-scanner</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>repository-statistics</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-statistics-api</artifactId>
@@ -116,18 +113,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-
-    <!-- normally not needed but here for wadl feature currently in cxf -->
     <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-    </dependency>
+
 
   </dependencies>
 
