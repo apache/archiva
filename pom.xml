@@ -1389,6 +1389,17 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-common-ldap</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-policy</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+
 
 
       <dependency>
@@ -1866,6 +1877,25 @@
         <version>2.3.3</version>
         <scope>provided</scope>
       </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-core</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+
+
     </dependencies>
   </dependencyManagement>
 
