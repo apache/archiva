@@ -23,6 +23,8 @@
   <title>Apache Archiva REST API</title>
   <modules>
 
+    <obj-c-xml-client disabled="true" />
+    <csharp-xml-client disabled="true" />
     <cxf disabled="false"/>
     <jersey disabled="true" />
     <c disabled="true"/>

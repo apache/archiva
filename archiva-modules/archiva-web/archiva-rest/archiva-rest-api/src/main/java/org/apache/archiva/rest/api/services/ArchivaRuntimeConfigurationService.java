@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -34,6 +35,7 @@ import javax.ws.rs.core.MediaType;
  * @since 1.4-M4
  */
 @Path( "/archivaRuntimeConfigurationService/" )
+@Tag( name="Configuration" )
 public interface ArchivaRuntimeConfigurationService
 {
     @Path( "archivaRuntimeConfiguration" )

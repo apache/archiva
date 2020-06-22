@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
@@ -46,6 +47,7 @@ import java.util.List;
  * @since 1.4-M3
  */
 @Path("/browseService/")
+@Tag( name = "Browse", description = "Repository Browse Service")
 public interface BrowseService
 {
     @Path("rootGroups")

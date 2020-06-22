@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
@@ -39,6 +40,7 @@ import java.util.List;
  * @since 1.4-M3
  */
 @Path( "/reportServices/" )
+@Tag( name="Statistics", description = "Statistics and Health reports")
 public interface ReportRepositoriesService
 {
 

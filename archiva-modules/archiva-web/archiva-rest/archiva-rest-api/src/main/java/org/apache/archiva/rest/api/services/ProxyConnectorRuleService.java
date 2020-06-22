@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRule;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -37,6 +38,7 @@ import java.util.List;
  * @since 1.4-M3
  */
 @Path ( "/proxyConnectorRuleService/" )
+@Tag(name="Proxy-Repository", description="Handling of proxy repositories that delegate to remote repositories")
 public interface ProxyConnectorRuleService
 {
     @Path ( "proxyConnectorRules" )

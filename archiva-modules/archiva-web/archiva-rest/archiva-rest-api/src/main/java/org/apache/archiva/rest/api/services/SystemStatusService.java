@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.CacheEntry;
 import org.apache.archiva.rest.api.model.QueueEntry;
@@ -36,6 +37,7 @@ import java.util.List;
  * @since 1.4-M3
  */
 @Path( "/systemStatusService/" )
+@Tag( name="System", description = "System information")
 public interface SystemStatusService
 {
     @Path( "memoryStatus" )

@@ -19,6 +19,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
@@ -41,6 +42,7 @@ import javax.ws.rs.core.MediaType;
  * @since 1.4-M1
  */
 @Path ("/repositoriesService/")
+@Tag( name="Repositories", description = "Managing repositories")
 public interface RepositoriesService
 {
 

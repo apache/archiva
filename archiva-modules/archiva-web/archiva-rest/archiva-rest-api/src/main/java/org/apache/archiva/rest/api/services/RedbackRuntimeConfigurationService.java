@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
@@ -40,6 +41,7 @@ import java.util.List;
  * @since 1.4-M4
  */
 @Path("/redbackRuntimeConfigurationService/")
+@Tag( name="Redback",description = "Configuration of Redback Backend")
 public interface RedbackRuntimeConfigurationService
 {
     @Path("redbackRuntimeConfiguration")

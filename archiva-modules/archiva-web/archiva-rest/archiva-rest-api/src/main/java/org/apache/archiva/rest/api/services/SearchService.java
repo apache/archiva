@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.services;
  */
 
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.ChecksumSearch;
@@ -37,6 +38,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path( "/searchService/" )
+@Tag( name="Search", description = "Searching repositories")
 public interface SearchService
 {
     /*

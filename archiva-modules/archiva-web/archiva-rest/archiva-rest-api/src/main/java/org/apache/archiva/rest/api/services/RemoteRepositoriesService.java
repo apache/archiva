@@ -19,6 +19,8 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -37,6 +39,10 @@ import java.util.List;
  * @since 1.4-M1
  */
 @Path("/remoteRepositoriesService/")
+@Tags( {
+    @Tag( name = "RemoteRepositories", description = "Administration of remote repositories" ),
+    @Tag( name = "Repositories", description = "Administration of remote repositories" )
+})
 public interface RemoteRepositoriesService
 {
     @Path("getRemoteRepositories")

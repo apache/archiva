@@ -4,40 +4,31 @@
 
 archiva-modules
   archiva-base
-    archiva-common
-    archiva-storage-api
-    archiva-storage-fs
-    archiva-filelock
-    archiva-model
     archiva-checksum
-    archiva-policies
+    archiva-common
     archiva-configuration
-    archiva-repository-api
-    archiva-xml-tools
-    archiva-repository-layer
-    archiva-proxy-api
-    archiva-proxy
-    archiva-repository-scanner
-    archiva-security-common
     archiva-consumers
       archiva-consumers-api
+      archiva-consumer-archetype
       archiva-core-consumers
+      archiva-lucene-consumer
       archiva-metadata-consumer
       archiva-signature-consumer
-      archiva-lucene-consumer
-      archiva-consumer-archetype
+    archiva-filelock
+    archiva-model
+    archiva-policies
+    archiva-proxy
+    archiva-proxy-api
+    archiva-repository-api
     archiva-repository-admin
       archiva-repository-admin-api
       archiva-repository-admin-default
-  archiva-scheduler
-    archiva-scheduler-api
-    archiva-scheduler-repository-api
-    archiva-scheduler-repository
-    archiva-scheduler-indexer
-  metadata
-    metadata-statistics-api
-    metadata-repository-api
-    metadata-model
+    archiva-repository-layer
+    archiva-repository-scanner
+    archiva-security-common
+    archiva-storage-api
+    archiva-storage-fs
+    archiva-xml-tools
   archiva-maven
     archiva-maven-common
     archiva-maven-model
@@ -47,15 +38,25 @@ archiva-modules
     archiva-maven-indexer
     archiva-maven-repository
     archiva-maven-scheduler
+  archiva-scheduler
+    archiva-scheduler-api
+    archiva-scheduler-indexer
+    archiva-scheduler-repository-api
+    archiva-scheduler-repository
+  metadata
+    metadata-model
+    metadata-repository-api
+    metadata-statistics-api
+    test-repository
   plugins
+    audit
     generic-metadata-support
+    metadata-store-cassandra
+    metadata-store-file
     metadata-store-jcr
+    problem-reports
     repository-statistics
     stage-repository-merge
-    metadata-store-file
-    audit
-    problem-reports
-    metadata-store-cassandra
     
 
 

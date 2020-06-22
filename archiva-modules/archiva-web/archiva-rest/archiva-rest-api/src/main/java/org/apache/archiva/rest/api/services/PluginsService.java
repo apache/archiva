@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
@@ -32,6 +33,7 @@ import javax.ws.rs.core.MediaType;
  * @since 1.4.0
  */
 @Path("/pluginsService/")
+@Tag( name="Plugins" )
 public interface PluginsService
 {
 

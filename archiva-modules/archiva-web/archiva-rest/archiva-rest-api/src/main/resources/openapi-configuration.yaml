@@ -1,0 +1,16 @@
+resourcePackages:
+  - org.apache.archiva.rest.api
+prettyPrint: true
+cacheTTL: 0
+openAPI:
+  info:
+    version: '3.0'
+    title: Apache Archiva REST API
+    description: 'This is the Apache Archiva REST API documentation'
+    termsOfService: https://archiva.apache.org
+    contact:
+      email: dev@archiva.apache.org
+      url: https://archiva.apache.org/index.html
+    license:
+      name: Apache 2.0
+      url: http://www.apache.org/licenses/LICENSE-2.0.html
