@@ -334,6 +334,12 @@
 
     <!-- TEST Scope -->
     <dependency>
+       <groupId>org.hsqldb</groupId>
+       <artifactId>hsqldb</artifactId>
+       <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>javax.persistence-api</artifactId>
       <scope>test</scope>
