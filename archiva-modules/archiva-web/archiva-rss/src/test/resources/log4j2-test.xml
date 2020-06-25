@@ -19,7 +19,7 @@
   -->
 
 
-<configuration status="debug">
+<configuration status="info">
 
   <properties>
     <property name="logsDirectory">${sys:appserver.base:-target}/logs</property>
@@ -74,19 +74,8 @@
 
     <logger name="org.apache.archiva.indexer.merger" level="info"/>
 
-    <logger name="org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager" level="debug" />
-
-    <logger name="org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler" level="debug"/>
-
-    <logger name="org.apache.archiva.web.security.ArchivaAuthorizer" level="debug"/>
-
-    <logger name="org.apache.archiva.redback.rest.services.DefaultRoleManagementService" level="debug"/>
-
-    <logger name="org.apache.archiva.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
-
     <logger name="org.apache.archiva.components.taskqueue.DefaultTaskQueue" level="info" />
 
-    <logger name="org.apache.archiva" level="debug" />
     <!--
     <logger name="org.apache.archiva.scheduler.indexing" level="debug"/>
     -->

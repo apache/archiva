@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>archiva-web</artifactId>
     <groupId>org.apache.archiva</groupId>
@@ -42,12 +43,17 @@
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
     </dependency>
     <dependency>
       <groupId>com.rometools</groupId>
@@ -91,24 +97,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.xmlunit</groupId>
-      <artifactId>xmlunit-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>
       <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency> 
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-jcl</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -116,10 +107,51 @@
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.components.cache</groupId>
-      <artifactId>archiva-components-spring-cache-ehcache</artifactId>
-      <scope>test</scope>
-    </dependency>
+
   </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>src/test/repositories/test-repo/**</exclude>
+              <exclude>src/test/repositories/snapshot-repo/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <reuseForks>false</reuseForks>
+          <!--
+                    <argLine>-Xms1024m -Xmx2048m -server -XX:MaxPermSize=256m @{jacocoproperty}</argLine>
+          -->
+          <argLine>-Xms512m -Xmx1024m -server -XX:MaxPermSize=256m</argLine>
+          <systemPropertyVariables>
+            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+            <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <archiva.user.configFileName>${basedir}/target/archiva.xml</archiva.user.configFileName>
+            <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
+            <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
+            <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
+            <basedir>${basedir}</basedir>
+            <expectedVersion>${project.version}</expectedVersion>
+            <archiva.logMissingI18n>true</archiva.logMissingI18n>
+            <java.awt.headless>true</java.awt.headless>
+            <archiva.repositorySessionFactory.id>test</archiva.repositorySessionFactory.id>
+            <openjpa.Log>${openjpa.Log}</openjpa.Log>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
