@@ -18,8 +18,6 @@ package org.apache.archiva.web.api;
  * under the License.
  */
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
@@ -321,12 +319,9 @@ public class DefaultFileUploadService
 
         // get from the session file with groupId/artifactId
 
-        Iterable<FileMetadata> filesToAdd = Iterables.filter(fileMetadatas, new Predicate<FileMetadata>() {
-            public boolean apply(FileMetadata fileMetadata) {
-                return fileMetadata != null && !fileMetadata.isPomFile();
-            }
-        });
-        Iterator<FileMetadata> iterator = filesToAdd.iterator();
+        Iterator<FileMetadata> iterator = fileMetadatas.stream( )
+            .filter( fileMetadata -> fileMetadata != null && !fileMetadata.isPomFile( ) )
+            .iterator( );
         boolean pomGenerated = false;
         while (iterator.hasNext()) {
             FileMetadata fileMetadata = iterator.next();
@@ -337,14 +332,8 @@ public class DefaultFileUploadService
             deleteFile(fileMetadata.getServerFileName());
         }
 
-        filesToAdd = Iterables.filter(fileMetadatas, new Predicate<FileMetadata>() {
-            @Override
-            public boolean apply(FileMetadata fileMetadata) {
-                return fileMetadata != null && fileMetadata.isPomFile();
-            }
-        });
-
-        iterator = filesToAdd.iterator();
+        iterator = fileMetadatas.stream( ).filter( fileMetadata -> fileMetadata != null && fileMetadata.isPomFile( ) )
+            .iterator( );
         while (iterator.hasNext()) {
             FileMetadata fileMetadata = iterator.next();
             log.debug("fileToAdd: {}", fileMetadata);

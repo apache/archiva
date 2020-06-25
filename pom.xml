@@ -73,7 +73,7 @@
 
     <!-- dependencies of maven modules -->
     <jsoup.version>1.12.1</jsoup.version>
-    <rome.version>1.12.2</rome.version>
+    <rome.version>1.13.1</rome.version>
     <cronutils.version>9.0.2</cronutils.version>
 
     <lucene.version>4.10.4</lucene.version>
@@ -1399,6 +1399,16 @@
         <artifactId>redback-policy</artifactId>
         <version>${redback.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-users-jpa</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-keys-api</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
 
 
 
@@ -1622,6 +1632,11 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-plus</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
         <version>${jetty.version}</version>
       </dependency>
 
