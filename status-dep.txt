@@ -65,6 +65,8 @@ archiva-modules
     archiva-web-common
     archiva-rss
     archiva-security
+    archiva-webdav
+    archiva-test-mocks
     
 
 
