@@ -67,6 +67,7 @@ archiva-modules
     archiva-security
     archiva-webdav
     archiva-test-mocks
+    archiva-webapp
     
 
 
