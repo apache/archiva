@@ -64,6 +64,7 @@ archiva-modules
       archiva-rest-services
     archiva-web-common
     archiva-rss
+    archiva-security
     
 
 

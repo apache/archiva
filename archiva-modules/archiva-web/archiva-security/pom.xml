@@ -62,32 +62,8 @@
       <artifactId>redback-system</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.archiva.redback</groupId>
-          <artifactId>plexus-spring</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.plexus.registry</groupId>
-          <artifactId>plexus-registry-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.plexus.registry</groupId>
-          <artifactId>plexus-registry-commons</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>net.sf.ehcache</groupId>
           <artifactId>ehcache</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.plexus.cache</groupId>
-          <artifactId>plexus-cache-ehcache</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.plexus.cache</groupId>            
-          <artifactId>plexus-cache-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-component-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -106,16 +82,66 @@
       <artifactId>redback-rbac-role-manager</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-xml-tools</artifactId>
     </dependency>
-
-    <!-- Test Scoped -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-proxy</artifactId>
-      <scope>test</scope>
+      <artifactId>metadata-model</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-policies</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-scheduler-repository-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-policy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-authentication-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-authorization-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-users-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-taskqueue</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+
+
+    <!-- Test Scoped -->
     <dependency>
       <groupId>org.apache.archiva.maven</groupId>
       <artifactId>archiva-maven-proxy</artifactId>
@@ -142,11 +168,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-keys-cached</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.transaction</groupId>
       <artifactId>javax.transaction-api</artifactId>
       <scope>test</scope>
@@ -164,14 +185,6 @@
         <exclusion>
           <groupId>net.sf.ehcache</groupId>
           <artifactId>ehcache</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.plexus.cache</groupId>
-          <artifactId>plexus-cache-ehcache</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.plexus.cache</groupId>
-          <artifactId>plexus-cache-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -191,34 +204,24 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>  
     <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-common-test-resources</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-default</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-default</artifactId>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -244,12 +247,6 @@
     <dependency>
       <groupId>org.apache.archiva.maven</groupId>
       <artifactId>archiva-maven-indexer</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.ow2.asm</groupId>
-      <artifactId>asm</artifactId>
       <scope>test</scope>
     </dependency>
 

@@ -19,7 +19,6 @@ package org.apache.archiva.security;
  * under the License.
  */
 
-import com.google.common.collect.Lists;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -47,6 +46,8 @@ import javax.inject.Named;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * AbstractSecurityTest
@@ -169,7 +170,7 @@ public abstract class AbstractSecurityTest
             log.info( "ignore RbacObjectNotFoundException for id {} during restoreGuestInitialValues", userId );
             return;
         }
-        userAssignment.setRoleNames( Lists.newArrayList( "Guest" ) );
+        userAssignment.setRoleNames( new ArrayList( Arrays.asList( "Guest" ) ) );
         rbacManager.saveUserAssignment( userAssignment );
         CacheManager.getInstance().clearAll();
     }
