@@ -69,6 +69,7 @@ archiva-modules
     archiva-test-mocks
     archiva-webapp
     
+  archiva-cli
 
 
 

@@ -45,6 +45,14 @@
       <artifactId>archiva-consumer-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.code.cli-parser</groupId>
       <artifactId>cli</artifactId>
       <version>7</version>
@@ -60,10 +68,6 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.maven</groupId>
-      <artifactId>archiva-maven-converter</artifactId>
     </dependency>
     <!-- Consumers to include -->
     <!--
