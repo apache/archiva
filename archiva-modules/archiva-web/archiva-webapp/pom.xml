@@ -743,7 +743,7 @@
           <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>${javaxMailVersion}</version>
+            <version>${javax.mail.version}</version>
           </dependency>
           <dependency>
             <groupId>org.apache.openjpa</groupId>

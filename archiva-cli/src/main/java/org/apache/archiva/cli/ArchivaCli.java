@@ -25,8 +25,6 @@ import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
-import org.apache.archiva.converter.RepositoryConversionException;
-import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
@@ -139,7 +137,7 @@ public class ArchivaCli
         }
         else if ( command.convert )
         {
-            doConversion( command.properties );
+            LOGGER.error( "Conversion is not available anymore" );
         }
         else if ( command.scan )
         {
@@ -245,38 +243,6 @@ public class ArchivaCli
         }
 
         return smallNames;
-    }
-
-    private void doConversion( String properties )
-        throws IOException, RepositoryConversionException
-    {
-        LegacyRepositoryConverter legacyRepositoryConverter =
-            applicationContext.getBean( LegacyRepositoryConverter.class );
-
-        Properties p = new Properties();
-
-        try (InputStream fis = Files.newInputStream( Paths.get( properties ) ))
-        {
-            p.load( fis );
-        }
-
-        Path oldRepositoryPath = Paths.get( p.getProperty( SOURCE_REPO_PATH ) );
-
-        Path newRepositoryPath = Paths.get( p.getProperty( TARGET_REPO_PATH ) );
-
-        LOGGER.info( "Converting {} to {}", oldRepositoryPath, newRepositoryPath );
-
-        List<String> fileExclusionPatterns = null;
-
-        String s = p.getProperty( BLACKLISTED_PATTERNS );
-
-        if ( s != null )
-        {
-            fileExclusionPatterns = Arrays.asList( StringUtils.split( s, "," ) );
-        }
-
-        legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
-                                                           fileExclusionPatterns );
     }
 
     private static class Commands
