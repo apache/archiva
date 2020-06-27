@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
@@ -416,6 +417,18 @@ public abstract class AbstractRepositoryServletTestCase
         }
 
         @Override
+        public <T> ObjectProvider<T> getBeanProvider( Class<T> aClass )
+        {
+            return null;
+        }
+
+        @Override
+        public <T> ObjectProvider<T> getBeanProvider( ResolvableType resolvableType )
+        {
+            return null;
+        }
+
+        @Override
         public Object getBean( String s )
             throws BeansException
         {
@@ -478,6 +491,12 @@ public abstract class AbstractRepositoryServletTestCase
         }
 
         @Override
+        public Class<?> getType( String s, boolean b ) throws NoSuchBeanDefinitionException
+        {
+            return null;
+        }
+
+        @Override
         public String[] getAliases( String s )
         {
             return applicationContext.getAliases( s );
@@ -518,6 +537,12 @@ public abstract class AbstractRepositoryServletTestCase
 
         @Override
         public String[] getBeanNamesForType( ResolvableType resolvableType )
+        {
+            return new String[0];
+        }
+
+        @Override
+        public String[] getBeanNamesForType( ResolvableType resolvableType, boolean b, boolean b1 )
         {
             return new String[0];
         }
