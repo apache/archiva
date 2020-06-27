@@ -72,7 +72,7 @@
 
     <!-- JCR modules -->
     <javax.jcr.version>2.0</javax.jcr.version>
-    <jcr-oak.version>1.14.0</jcr-oak.version>
+    <jcr-oak.version>1.22.3</jcr-oak.version>
     <!-- Jackrabbit classes are still used for webdav -->
     <jackrabbit.version>2.15.4</jackrabbit.version>
     <metrics-core.version>3.1.0</metrics-core.version>
@@ -85,6 +85,19 @@
 
     <modelmapper.version>2.3.5</modelmapper.version>
 
+    <sisu-inject-plexus.version>0.3.3</sisu-inject-plexus.version>
+    <plexus-utils.version>3.1.0</plexus-utils.version>
+    <html.unit.version>2.27</html.unit.version>
+
+    <springockito.version>1.0.9</springockito.version>
+    <mockito.version>1.9.5</mockito.version>
+
+    <easymock.version>4.1</easymock.version>
+
+    <jacoco.plugin.version>0.7.9</jacoco.plugin.version>
+
+    <joda.time.version>1.5.2</joda.time.version>
+
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
@@ -93,25 +106,11 @@
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
 
 
-    <sisu-inject-plexus.version>0.3.3</sisu-inject-plexus.version>
-    <plexus-digest.version>1.1</plexus-digest.version>
-    <plexus-expression-evaluator.version>2.1</plexus-expression-evaluator.version>
-    <plexus-utils.version>3.1.0</plexus-utils.version>
-    <plexus-slf4j-version>1.1</plexus-slf4j-version>
-    <htmlUnitVersion>2.27</htmlUnitVersion>
-
     <release.preparationGoals>clean install</release.preparationGoals>
-    <springockito.version>1.0.9</springockito.version>
-    <mockito.version>1.9.5</mockito.version>
 
-    <easymock.version>4.1</easymock.version>
-    
     <openjpa.Log>DefaultLevel=INFO,Runtime=ERROR,Tool=ERROR,SQL=ERROR,Schema=ERROR,MetaData=ERROR</openjpa.Log>
 
     <jacocoproperty/>
-    <jacoco.plugin.version>0.7.9</jacoco.plugin.version>
-
-    <joda.time.version>1.5.2</joda.time.version>
 
 
   </properties>
@@ -518,6 +517,7 @@
         <version>${jcr-oak.version}</version>
       </dependency>
 
+
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>oak-lucene</artifactId>
@@ -543,6 +543,23 @@
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-jcr-commons</artifactId>
         <version>${jackrabbit.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>oak-jcr-lucene</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-store-document</artifactId>
+        <version>${jcr-oak.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-search</artifactId>
+        <version>${jcr-oak.version}</version>
       </dependency>
 
 

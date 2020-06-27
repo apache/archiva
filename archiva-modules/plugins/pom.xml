@@ -41,6 +41,7 @@
     <module>generic-metadata-support</module>
     <module>metadata-store-jcr</module>
     <module>metadata-store-cassandra</module>
+    <module>oak-jcr-lucene</module>
   </modules>
 
 </project>
