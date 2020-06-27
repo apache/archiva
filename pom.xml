@@ -51,17 +51,8 @@
     <redback.version>3.0.0-SNAPSHOT</redback.version>
 
     <!-- Java Enterprise APIs -->
-    <javax.servlet.version>4.0.1</javax.servlet.version>
-    <javax.activation.version>1.1.1</javax.activation.version>
-    <javax.mail.version>1.4</javax.mail.version>
-    <jaxrs.version>2.0</jaxrs.version>
 
-    <commons-codec.version>1.13</commons-codec.version>
-    <commons-collections.version>4.4</commons-collections.version>
-    <commons-fileupload.version>1.4</commons-fileupload.version>
-    <commons-lang.version>3.9</commons-lang.version>
 
-    <xmlunit.version>2.6.3</xmlunit.version>
 
     <maven3x.version>3.5.4</maven3x.version>
     <maven.resolver.version>1.4.1</maven.resolver.version>
@@ -86,7 +77,6 @@
     <jackrabbit.version>2.15.4</jackrabbit.version>
     <metrics-core.version>3.1.0</metrics-core.version>
 
-    <cxf.version>3.0.3</cxf.version>
     <derbyVersion>10.13.1.1</derbyVersion>
     <httpclient.version>4.5.2</httpclient.version>
     <httpclient.core.version>4.4.4</httpclient.core.version>
@@ -123,7 +113,7 @@
 
     <joda.time.version>1.5.2</joda.time.version>
 
-    <cglib.version>2.2.2</cglib.version>
+
   </properties>
 
   <dependencyManagement>
@@ -168,7 +158,7 @@
       <dependency>
         <groupId>javax.ws.rs</groupId>
         <artifactId>javax.ws.rs-api</artifactId>
-        <version>${jaxrs.version}</version>
+        <version>${javax.jaxrs.version}</version>
       </dependency>
 
 
@@ -728,7 +718,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
+        <version>${commons.codec.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -783,12 +773,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>${commons-collections.version}</version>
+        <version>${commons.collections.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-fileupload</groupId>
         <artifactId>commons-fileupload</artifactId>
-        <version>${commons-fileupload.version}</version>
+        <version>${commons.fileupload.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
