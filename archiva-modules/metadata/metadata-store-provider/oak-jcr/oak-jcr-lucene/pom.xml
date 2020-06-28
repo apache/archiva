@@ -31,12 +31,23 @@
   <name>Archiva Metadata :: Store Provider :: JCR :: Shaded OAK Lucene</name>
   <description>This module shades the lucene dependencies of jcr oak to avoid version conflicts</description>
 
+  <!--
+    You may have to update this file, if the JCR OAK dependency version changes in archiva:
+    - Check, if the lucene classes are still part of the JAR file
+    - Check the resulting jar file for any unshaded lucene packages
+    - Check the dependency by mvn dependency:tree for added / removed transitive dependencies
+    - Check the resulting LICENSE/LICENSE.txt and NOTICE/NOTICE.txt for changes.
+    -->
+
   <dependencies>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-lucene</artifactId>
       <version>${jcr-oak.version}</version>
-      <!-- Lucene classes are included already in the oak-lucene.jar, so we exclude this dependency -->
+      <!-- Lucene classes are included already in the oak-lucene.jar, so we exclude this dependencies
+           Not sure, if it is the intention of JCR OAK team to provide some kind of uber jar with oak-lucene,
+           but that's what it is. We use the classes in the JAR file for shading, not the dependencies.
+           Must be checked after each version upgrade of OAK JCR -->
       <exclusions>
         <exclusion>
           <groupId>org.apache.lucene</groupId>
@@ -119,7 +130,24 @@
             </excludes>
           </configuration>
         </plugin>
+
+        <!-- We don't have code in this package, only do some repackaging so we skip the LICENSE -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <executions>
+            <execution>
+              <goals>
+                <goal>process</goal>
+              </goals>
+              <configuration>
+                <skip>true</skip>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
+
     </pluginManagement>
 
     <plugins>
@@ -162,11 +190,7 @@
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
-                    <exclude>META-INF/NOTICE</exclude>
-                    <exclude>META-INF/NOTICE.TXT</exclude>
-                    <exclude>META-INF/NOTICE.txt</exclude>
                     <exclude>META-INF/MANIFEST.MF</exclude>
-                    <exclude>LICENSE.TXT</exclude>
                   </excludes>
                 </filter>
               </filters>
@@ -210,6 +234,9 @@
               </relocations>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                  <addHeader>false</addHeader>
+                </transformer>
               </transformers>
             </configuration>
           </execution>
