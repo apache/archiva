@@ -102,6 +102,8 @@
 
     <joda.time.version>1.5.2</joda.time.version>
 
+    <glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
+
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
@@ -1493,6 +1495,8 @@
         <version>${jsoup.version}</version>
       </dependency>
 
+
+      <!-- Used by Apache Cassandra as transitive dependency -->
       <dependency>
         <groupId>org.jboss.logging</groupId>
         <artifactId>jboss-logging</artifactId>
@@ -1500,6 +1504,12 @@
       </dependency>
 
       <!-- Dependencies for JDK >=9 update -->
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>${glassfish.jaxb.version}</version>
+      </dependency>
+      <!-- END - Dependencies for JDK >=9 update -->
 
       <dependency>
         <groupId>com.rometools</groupId>

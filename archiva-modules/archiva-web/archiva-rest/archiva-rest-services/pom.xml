@@ -436,6 +436,11 @@
       <artifactId>javax.annotation-api</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
 
