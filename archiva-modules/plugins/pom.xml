@@ -33,15 +33,11 @@
   </properties>
 
   <modules>
-    <module>metadata-store-file</module>
     <module>repository-statistics</module>
     <module>problem-reports</module>
     <module>audit</module>
     <module>stage-repository-merge</module>
     <module>generic-metadata-support</module>
-    <module>metadata-store-jcr</module>
-    <module>metadata-store-cassandra</module>
-    <module>oak-jcr-lucene</module>
   </modules>
 
 </project>

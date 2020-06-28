@@ -21,19 +21,22 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>plugins</artifactId>
+    <artifactId>oak-jcr</artifactId>
     <groupId>org.apache.archiva</groupId>
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>oak-jcr-lucene</artifactId>
+  <name>Archiva Metadata :: Store Provider :: JCR :: Shaded OAK Lucene</name>
+  <description>This module shades the lucene dependencies of jcr oak to avoid version conflicts</description>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-lucene</artifactId>
       <version>${jcr-oak.version}</version>
+      <!-- Lucene classes are included already in the oak-lucene.jar, so we exclude this dependency -->
       <exclusions>
         <exclusion>
           <groupId>org.apache.lucene</groupId>
@@ -69,6 +72,8 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- We reapply the original transitive dependencies -->
+    <!-- If you change the version of jcr-oak you may have to check the dependencies -->
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-api</artifactId>
@@ -110,6 +115,7 @@
           <configuration>
             <excludes>
               <exclude>dependency-reduced-pom.xml</exclude>
+              <exclude>README.md</exclude>
             </excludes>
           </configuration>
         </plugin>
