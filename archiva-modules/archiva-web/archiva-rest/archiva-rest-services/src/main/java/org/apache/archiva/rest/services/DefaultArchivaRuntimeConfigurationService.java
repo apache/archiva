@@ -25,6 +25,7 @@ import org.apache.archiva.admin.model.beans.FileLockConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.components.cache.Cache;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class DefaultArchivaRuntimeConfigurationService
     }
 
     @Override
-    public Boolean updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
+    public ActionStatus updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
         throws ArchivaRestServiceException
     {
         try
@@ -95,6 +96,6 @@ public class DefaultArchivaRuntimeConfigurationService
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
-        return Boolean.TRUE;
+        return ActionStatus.SUCCESS;
     }
 }

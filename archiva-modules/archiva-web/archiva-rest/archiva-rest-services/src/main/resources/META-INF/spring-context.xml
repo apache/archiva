@@ -40,10 +40,16 @@
       base-package="org.apache.archiva.rest.services,org.apache.archiva.redback.rest.services"/>
 
 
+  <bean id="eventSender" class="org.apache.cxf.ext.logging.slf4j.Slf4jVerboseEventSender">
+    <property name="loggingLevel" value="DEBUG" />
+  </bean>
+
+
   <jaxrs:server id="archivaServices" address="/archivaServices" >
 
     <jaxrs:providers>
       <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider"/>
+      <bean class="com.fasterxml.jackson.jaxrs.xml.JacksonJaxbXMLProvider"/>
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
       <ref bean="requestValidationInterceptor#rest" />
@@ -71,6 +77,13 @@
       <ref bean="archivaRuntimeConfigurationService#rest"/>
       <ref bean="redbackRuntimeConfigurationService#rest"/>
     </jaxrs:serviceBeans>
+
+    <jaxrs:features>
+      <bean class="org.apache.cxf.ext.logging.LoggingFeature">
+        <property name="sender" ref="eventSender"/>
+      </bean>
+    </jaxrs:features>
+
 
   </jaxrs:server>
 

@@ -56,7 +56,7 @@ public class CopyArtifactTest
             // retrieve the service
             RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
             // copy the artifact
-            Boolean res = repositoriesService.copyArtifact( artifactTransferRequest );
+            Boolean res = repositoriesService.copyArtifact( artifactTransferRequest ).isSuccess();
             // END SNIPPET: copy-artifact
             assertTrue( res );
 

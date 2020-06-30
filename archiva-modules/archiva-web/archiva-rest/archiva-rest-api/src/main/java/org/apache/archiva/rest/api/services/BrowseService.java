@@ -24,8 +24,10 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.ArtifactContent;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
+import org.apache.archiva.rest.api.model.AvailabilityStatus;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.MetadataAddRequest;
@@ -148,24 +150,24 @@ public interface BrowseService
     @PUT
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(noPermission = false, noRestriction = false, permissions = "archiva-add-metadata")
-    Boolean addMetadata( @PathParam("g") String groupId, @PathParam("a") String artifactId,
-                         @PathParam("v") String version, @PathParam("key") String key, @PathParam("value") String value,
-                         @QueryParam("repositoryId") String repositoryId )
+    ActionStatus addMetadata( @PathParam("g") String groupId, @PathParam("a") String artifactId,
+                              @PathParam("v") String version, @PathParam("key") String key, @PathParam("value") String value,
+                              @QueryParam("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path("metadata/{g}/{a}/{v}/{key}")
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(noPermission = false, noRestriction = false, permissions = "archiva-add-metadata")
-    Boolean deleteMetadata( @PathParam("g") String groupId, @PathParam("a") String artifactId,
-                            @PathParam("v") String version, @PathParam("key") String key,
-                            @QueryParam("repositoryId") String repositoryId )
+    ActionStatus deleteMetadata( @PathParam("g") String groupId, @PathParam("a") String artifactId,
+                                 @PathParam("v") String version, @PathParam("key") String key,
+                                 @QueryParam("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path("importMetadata")
     @POST
     @RedbackAuthorization(noPermission = false, noRestriction = false, permissions = "archiva-add-metadata")
-    Boolean importMetadata( MetadataAddRequest metadataAddRequest, @QueryParam("repository") String repository )
+    ActionStatus importMetadata( MetadataAddRequest metadataAddRequest, @QueryParam("repository") String repository )
         throws ArchivaRestServiceException;
 
     @Path("artifactContentEntries/{g}/{a}/{v}")
@@ -211,8 +213,8 @@ public interface BrowseService
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(noPermission = true, noRestriction = true)
-    Boolean artifactAvailable( @PathParam("g") String groupId, @PathParam("a") String artifactId,
-                               @PathParam("v") String version, @QueryParam("repositoryId") String repositoryId )
+    AvailabilityStatus artifactAvailable( @PathParam("g") String groupId, @PathParam("a") String artifactId,
+                                          @PathParam("v") String version, @QueryParam("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
     /**
@@ -224,9 +226,9 @@ public interface BrowseService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    Boolean artifactAvailable( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
-                               @PathParam( "v" ) String version, @PathParam( "c" ) String classifier,
-                               @QueryParam( "repositoryId" ) String repositoryId )
+    AvailabilityStatus artifactAvailable( @PathParam( "g" ) String groupId, @PathParam( "a" ) String artifactId,
+                                          @PathParam( "v" ) String version, @PathParam( "c" ) String classifier,
+                                          @QueryParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
     /**

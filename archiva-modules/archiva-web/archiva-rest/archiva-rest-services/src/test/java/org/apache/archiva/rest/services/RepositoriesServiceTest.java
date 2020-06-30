@@ -21,7 +21,6 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.maven2.model.Artifact;
-import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.api.services.UserService;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
@@ -37,7 +36,6 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.core.Response;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 
@@ -77,13 +75,13 @@ public class RepositoriesServiceTest
         String repoId = managedRepositoriesService.getManagedRepositories().get( 0 ).getId();
 
         int timeout = 20000;
-        while ( timeout > 0 && service.alreadyScanning( repoId ) )
+        while ( timeout > 0 && service.getScanStatus( repoId ).isAlreadyScanning() )
         {
             Thread.sleep( 500 );
             timeout -= 500;
         }
 
-        assertTrue( service.scanRepository( repoId, true ) );
+        assertTrue( service.scanRepository( repoId, true ).isSuccess() );
     }
 
     @Test( expected = ForbiddenException.class )
@@ -393,7 +391,7 @@ public class RepositoriesServiceTest
         {
             getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
             RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
-            assertTrue( repositoriesService.isAuthorizedToDeleteArtifacts( managedRepository.getId() ) );
+            assertTrue( repositoriesService.getPermissionStatus( managedRepository.getId() ).isAuthorizedToDeleteArtifacts() );
         }
         finally
         {
@@ -413,7 +411,7 @@ public class RepositoriesServiceTest
         {
             getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
             RepositoriesService repositoriesService = getRepositoriesService(  );
-            assertFalse( repositoriesService.isAuthorizedToDeleteArtifacts( managedRepository.getId() ) );
+            assertFalse( repositoriesService.getPermissionStatus( managedRepository.getId() ).isAuthorizedToDeleteArtifacts() );
         }
         finally
         {

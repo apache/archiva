@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.commons.lang3.StringUtils;
@@ -79,16 +80,16 @@ public class DefaultRepositoryGroupService
     }
 
     @Override
-    public Boolean addRepositoryGroup( RepositoryGroup repoGroup )
+    public ActionStatus addRepositoryGroup( RepositoryGroup repoGroup )
         throws ArchivaRestServiceException
     {
         try
         {
-            return repositoryGroupAdmin.addRepositoryGroup(
-                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<>(
-                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
-                    repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ),
-                getAuditInformation() );
+            return new ActionStatus( repositoryGroupAdmin.addRepositoryGroup(
+                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId( ), new ArrayList<>(
+                    repoGroup.getRepositories( ) ) ).mergedIndexPath( repoGroup.getMergedIndexPath( ) ).mergedIndexTtl(
+                    repoGroup.getMergedIndexTtl( ) ).cronExpression( repoGroup.getCronExpression( ) ),
+                getAuditInformation( ) ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -97,16 +98,16 @@ public class DefaultRepositoryGroupService
     }
 
     @Override
-    public Boolean updateRepositoryGroup( RepositoryGroup repoGroup )
+    public ActionStatus updateRepositoryGroup( RepositoryGroup repoGroup )
         throws ArchivaRestServiceException
     {
         try
         {
-            return repositoryGroupAdmin.updateRepositoryGroup(
-                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<>(
-                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
-                    repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ),
-                getAuditInformation() );
+            return new ActionStatus( repositoryGroupAdmin.updateRepositoryGroup(
+                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId( ), new ArrayList<>(
+                    repoGroup.getRepositories( ) ) ).mergedIndexPath( repoGroup.getMergedIndexPath( ) ).mergedIndexTtl(
+                    repoGroup.getMergedIndexTtl( ) ).cronExpression( repoGroup.getCronExpression( ) ),
+                getAuditInformation( ) ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -115,12 +116,12 @@ public class DefaultRepositoryGroupService
     }
 
     @Override
-    public Boolean deleteRepositoryGroup( String repositoryGroupId )
+    public ActionStatus deleteRepositoryGroup( String repositoryGroupId )
         throws ArchivaRestServiceException
     {
         try
         {
-            return repositoryGroupAdmin.deleteRepositoryGroup( repositoryGroupId, getAuditInformation() );
+            return new ActionStatus( repositoryGroupAdmin.deleteRepositoryGroup( repositoryGroupId, getAuditInformation( ) ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -129,12 +130,12 @@ public class DefaultRepositoryGroupService
     }
 
     @Override
-    public Boolean addRepositoryToGroup( String repositoryGroupId, String repositoryId )
+    public ActionStatus addRepositoryToGroup( String repositoryGroupId, String repositoryId )
         throws ArchivaRestServiceException
     {
         try
         {
-            return repositoryGroupAdmin.addRepositoryToGroup( repositoryGroupId, repositoryId, getAuditInformation() );
+            return new ActionStatus( repositoryGroupAdmin.addRepositoryToGroup( repositoryGroupId, repositoryId, getAuditInformation( ) ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -143,13 +144,13 @@ public class DefaultRepositoryGroupService
     }
 
     @Override
-    public Boolean deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId )
+    public ActionStatus deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId )
         throws ArchivaRestServiceException
     {
         try
         {
-            return repositoryGroupAdmin.deleteRepositoryFromGroup( repositoryGroupId, repositoryId,
-                                                                   getAuditInformation() );
+            return new ActionStatus( repositoryGroupAdmin.deleteRepositoryFromGroup( repositoryGroupId, repositoryId,
+                getAuditInformation( ) ) );
         }
         catch ( RepositoryAdminException e )
         {

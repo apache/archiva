@@ -37,7 +37,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -110,7 +109,7 @@ public class RemoteRepositoryConnectivityCheckTest
 
             service.addRemoteRepository( repo );
 
-            assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isTrue();
+            assertThat( service.checkRemoteConnectivity( repo.getId() ).isSuccess() ).isTrue();
         }
         finally
         {
@@ -145,7 +144,7 @@ public class RemoteRepositoryConnectivityCheckTest
 
             service.addRemoteRepository( repo );
 
-            assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isTrue();
+            assertThat( service.checkRemoteConnectivity( repo.getId() ).isSuccess() ).isTrue();
         }
         finally
         {
@@ -173,7 +172,7 @@ public class RemoteRepositoryConnectivityCheckTest
 
             service.addRemoteRepository( repo );
 
-            assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isFalse();
+            assertThat( service.checkRemoteConnectivity( repo.getId() ).isSuccess() ).isFalse();
         }
         finally
         {

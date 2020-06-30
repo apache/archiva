@@ -34,6 +34,7 @@ import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.RedbackImplementationsInformations;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
@@ -112,7 +113,7 @@ public class DefaultRedbackRuntimeConfigurationService
     }
 
     @Override
-    public Boolean updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    public ActionStatus updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws ArchivaRestServiceException
     {
         try
@@ -221,9 +222,7 @@ public class DefaultRedbackRuntimeConfigurationService
             }
 
 
-
-
-            return Boolean.TRUE;
+            return ActionStatus.SUCCESS;
         }
         catch (ArchivaRestServiceException e) {
             log.error(e.getMessage(), e);
@@ -303,7 +302,7 @@ public class DefaultRedbackRuntimeConfigurationService
     }
 
     @Override
-    public Boolean checkLdapConnection()
+    public ActionStatus checkLdapConnection()
         throws ArchivaRestServiceException
     {
         LdapConnection ldapConnection = null;
@@ -325,11 +324,11 @@ public class DefaultRedbackRuntimeConfigurationService
             }
         }
 
-        return Boolean.TRUE;
+        return ActionStatus.SUCCESS;
     }
 
     @Override
-    public Boolean checkLdapConnection( LdapConfiguration ldapConfiguration )
+    public ActionStatus checkLdapConnection( LdapConfiguration ldapConfiguration )
         throws ArchivaRestServiceException
     {
         LdapConnection ldapConnection = null;
@@ -380,7 +379,7 @@ public class DefaultRedbackRuntimeConfigurationService
             }
         }
 
-        return Boolean.TRUE;
+        return ActionStatus.SUCCESS;
     }
 
     private Properties toProperties( Map<String, String> map )

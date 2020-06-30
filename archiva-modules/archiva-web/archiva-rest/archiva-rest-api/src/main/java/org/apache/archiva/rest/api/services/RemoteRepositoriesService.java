@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
@@ -63,7 +64,7 @@ public interface RemoteRepositoriesService
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    Boolean deleteRemoteRepository( @PathParam("repositoryId") String repositoryId )
+    ActionStatus deleteRemoteRepository( @PathParam("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
 
@@ -72,7 +73,7 @@ public interface RemoteRepositoriesService
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    Boolean addRemoteRepository( RemoteRepository remoteRepository )
+    ActionStatus addRemoteRepository( RemoteRepository remoteRepository )
         throws ArchivaRestServiceException;
 
 
@@ -81,13 +82,13 @@ public interface RemoteRepositoriesService
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    Boolean updateRemoteRepository( RemoteRepository remoteRepository )
+    ActionStatus updateRemoteRepository( RemoteRepository remoteRepository )
         throws ArchivaRestServiceException;
 
     @Path("checkRemoteConnectivity/{repositoryId}")
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    Boolean checkRemoteConnectivity( @PathParam( "repositoryId" ) String repositoryId )
+    ActionStatus checkRemoteConnectivity( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 }

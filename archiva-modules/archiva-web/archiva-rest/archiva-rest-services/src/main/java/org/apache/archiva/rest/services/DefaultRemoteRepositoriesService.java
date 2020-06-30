@@ -26,6 +26,7 @@ import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryRequest;
 import org.apache.archiva.proxy.model.NetworkProxy;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.lang3.StringUtils;
@@ -91,10 +92,10 @@ public class DefaultRemoteRepositoriesService
     }
 
     @Override
-    public Boolean deleteRemoteRepository(String repositoryId)
+    public ActionStatus deleteRemoteRepository( String repositoryId)
             throws ArchivaRestServiceException {
         try {
-            return remoteRepositoryAdmin.deleteRemoteRepository(repositoryId, getAuditInformation());
+            return new ActionStatus( remoteRepositoryAdmin.deleteRemoteRepository( repositoryId, getAuditInformation( ) ) );
         } catch (RepositoryAdminException e) {
             log.error(e.getMessage(), e);
             throw new ArchivaRestServiceException(e.getMessage(), e.getFieldName(), e);
@@ -102,10 +103,10 @@ public class DefaultRemoteRepositoriesService
     }
 
     @Override
-    public Boolean addRemoteRepository(RemoteRepository remoteRepository)
+    public ActionStatus addRemoteRepository(RemoteRepository remoteRepository)
             throws ArchivaRestServiceException {
         try {
-            return remoteRepositoryAdmin.addRemoteRepository(remoteRepository, getAuditInformation());
+            return new ActionStatus( remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getAuditInformation( ) ) );
         } catch (RepositoryAdminException e) {
             log.error(e.getMessage(), e);
             throw new ArchivaRestServiceException(e.getMessage(), e.getFieldName(), e);
@@ -113,10 +114,10 @@ public class DefaultRemoteRepositoriesService
     }
 
     @Override
-    public Boolean updateRemoteRepository(RemoteRepository remoteRepository)
+    public ActionStatus updateRemoteRepository(RemoteRepository remoteRepository)
             throws ArchivaRestServiceException {
         try {
-            return remoteRepositoryAdmin.updateRemoteRepository(remoteRepository, getAuditInformation());
+            return new ActionStatus( remoteRepositoryAdmin.updateRemoteRepository( remoteRepository, getAuditInformation( ) ) );
         } catch (RepositoryAdminException e) {
             log.error(e.getMessage(), e);
             throw new ArchivaRestServiceException(e.getMessage(), e.getFieldName(), e);
@@ -124,13 +125,13 @@ public class DefaultRemoteRepositoriesService
     }
 
     @Override
-    public Boolean checkRemoteConnectivity(String repositoryId)
+    public ActionStatus checkRemoteConnectivity( String repositoryId)
             throws ArchivaRestServiceException {
         try {
             RemoteRepository remoteRepository = remoteRepositoryAdmin.getRemoteRepository(repositoryId);
             if (remoteRepository == null) {
                 log.warn("Remote repository {} does not exist. Connectivity check returns false.", repositoryId);
-                return Boolean.FALSE;
+                return ActionStatus.FAIL;
             }
             NetworkProxy networkProxy = null;
             if (StringUtils.isNotBlank(remoteRepository.getRemoteDownloadNetworkProxyId())) {
@@ -175,22 +176,22 @@ public class DefaultRemoteRepositoriesService
             // MRM-1933, there are certain servers that do not allow browsing
             if (!(StringUtils.isEmpty(remoteRepository.getCheckPath()) ||
                     "/".equals(remoteRepository.getCheckPath()))) {
-                return wagon.resourceExists(remoteRepository.getCheckPath());
+                return new ActionStatus( wagon.resourceExists( remoteRepository.getCheckPath( ) ) );
             } else {
                 // we only check connectivity as remote repo can be empty
                 // MRM-1909: Wagon implementation appends a slash already
                 wagon.getFileList("");
             }
 
-            return Boolean.TRUE;
+            return ActionStatus.SUCCESS;
         } catch (TransferFailedException e) {
             log.info("TransferFailedException :{}", e.getMessage());
-            return Boolean.FALSE;
+            return ActionStatus.FAIL;
         } catch (Exception e) {
             // This service returns either true or false, Exception cannot be handled by the clients
             log.debug("Exception occured on connectivity test.", e);
             log.info("Connection exception: {}", e.getMessage());
-            return Boolean.FALSE;
+            return ActionStatus.FAIL;
         }
 
     }

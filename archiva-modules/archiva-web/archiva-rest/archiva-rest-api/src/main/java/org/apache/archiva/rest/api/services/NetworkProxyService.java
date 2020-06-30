@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.services;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
@@ -74,6 +75,6 @@ public interface NetworkProxyService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean deleteNetworkProxy( @PathParam( "networkProxyId" ) String networkProxyId )
+    ActionStatus deleteNetworkProxy( @PathParam( "networkProxyId" ) String networkProxyId )
         throws ArchivaRestServiceException;
 }

@@ -1,4 +1,5 @@
-package org.apache.archiva.rest.services;
+package org.apache.archiva.rest.api.model;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -8,8 +9,7 @@ package org.apache.archiva.rest.services;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,28 +18,34 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.services.CommonServices;
-import org.junit.Test;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Olivier Lamy
+ * The availability status of some service.
+ *
+ * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class CommonServicesTest
-    extends AbstractArchivaRestTest
+@XmlRootElement(name = "availabilityStatus")
+public class AvailabilityStatus
 {
-    @Test
-    public void validCronExpression()
-        throws Exception
-    {
-        CommonServices commonServices = getCommonServices( null );
-        assertTrue( commonServices.validateCronExpression( "0 0,30 * * * ?" ).isValid() );
+
+    boolean available = false;
+
+    public AvailabilityStatus() {
+
     }
 
-    @Test
-    public void nonValidCronExpression()
-        throws Exception
+    public AvailabilityStatus( boolean available) {
+        this.available = available;
+    }
+
+    public boolean isAvailable( )
     {
-        CommonServices commonServices = getCommonServices( null );
-        assertFalse( commonServices.validateCronExpression( "0,30 * * * ?" ).isValid() );
+        return available;
+    }
+
+    public void setAvailable( boolean available )
+    {
+        this.available = available;
     }
 }

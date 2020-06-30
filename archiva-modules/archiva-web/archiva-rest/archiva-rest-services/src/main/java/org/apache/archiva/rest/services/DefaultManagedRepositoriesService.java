@@ -27,7 +27,9 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
+import org.apache.archiva.rest.api.model.FileStatus;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -95,13 +97,13 @@ public class DefaultManagedRepositoriesService
 
 
     @Override
-    public Boolean deleteManagedRepository( String repoId, boolean deleteContent )
+    public ActionStatus deleteManagedRepository( String repoId, boolean deleteContent )
         throws ArchivaRestServiceException
     {
 
         try
         {
-            return managedRepositoryAdmin.deleteManagedRepository( repoId, getAuditInformation(), deleteContent );
+            return new ActionStatus( managedRepositoryAdmin.deleteManagedRepository( repoId, getAuditInformation( ), deleteContent ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -134,16 +136,16 @@ public class DefaultManagedRepositoriesService
 
 
     @Override
-    public Boolean updateManagedRepository( ManagedRepository managedRepository )
+    public ActionStatus updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
 
         try
         {
-            return managedRepositoryAdmin.updateManagedRepository( managedRepository,
-                                                                   managedRepository.isStageRepoNeeded(),
-                                                                   getAuditInformation(),
-                                                                   managedRepository.isResetStats() );
+            return new ActionStatus( managedRepositoryAdmin.updateManagedRepository( managedRepository,
+                managedRepository.isStageRepoNeeded( ),
+                getAuditInformation( ),
+                managedRepository.isResetStats( ) ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -152,11 +154,11 @@ public class DefaultManagedRepositoriesService
     }
 
     @Override
-    public Boolean fileLocationExists( String fileLocation )
+    public FileStatus getFileStatus( String fileLocation )
         throws ArchivaRestServiceException
     {
         String location = repositoryCommonValidator.removeExpressions( fileLocation );
-        return Files.exists( Paths.get( location ));
+        return new FileStatus( Files.exists( Paths.get( location ) ) );
     }
 
     @Override

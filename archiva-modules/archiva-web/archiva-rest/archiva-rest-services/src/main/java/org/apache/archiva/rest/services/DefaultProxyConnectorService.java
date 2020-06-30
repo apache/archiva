@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.policies.Policy;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.PolicyInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
@@ -80,16 +81,16 @@ public class DefaultProxyConnectorService
     }
 
     @Override
-    public Boolean addProxyConnector( ProxyConnector proxyConnector )
+    public ActionStatus addProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
         if ( proxyConnector == null )
         {
-            return Boolean.FALSE;
+            return ActionStatus.FAIL;
         }
         try
         {
-            return proxyConnectorAdmin.addProxyConnector( proxyConnector, getAuditInformation() );
+            return new ActionStatus( proxyConnectorAdmin.addProxyConnector( proxyConnector, getAuditInformation( ) ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -98,16 +99,16 @@ public class DefaultProxyConnectorService
     }
 
     @Override
-    public Boolean deleteProxyConnector( ProxyConnector proxyConnector )
+    public ActionStatus deleteProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
         if ( proxyConnector == null )
         {
-            return Boolean.FALSE;
+            return ActionStatus.FAIL;
         }
         try
         {
-            return proxyConnectorAdmin.deleteProxyConnector( proxyConnector, getAuditInformation() );
+            return new ActionStatus( proxyConnectorAdmin.deleteProxyConnector( proxyConnector, getAuditInformation( ) ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -116,7 +117,7 @@ public class DefaultProxyConnectorService
     }
 
     @Override
-    public Boolean removeProxyConnector( String sourceRepoId, String targetRepoId )
+    public ActionStatus removeProxyConnector( String sourceRepoId, String targetRepoId )
         throws ArchivaRestServiceException
     {
         ProxyConnector proxyConnector = getProxyConnector( sourceRepoId, targetRepoId );
@@ -130,16 +131,16 @@ public class DefaultProxyConnectorService
     }
 
     @Override
-    public Boolean updateProxyConnector( ProxyConnector proxyConnector )
+    public ActionStatus updateProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
         if ( proxyConnector == null )
         {
-            return Boolean.FALSE;
+            return ActionStatus.FAIL;
         }
         try
         {
-            return proxyConnectorAdmin.updateProxyConnector( proxyConnector, getAuditInformation() );
+            return new ActionStatus( proxyConnectorAdmin.updateProxyConnector( proxyConnector, getAuditInformation( ) ) );
         }
         catch ( RepositoryAdminException e )
         {

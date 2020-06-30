@@ -71,7 +71,10 @@ import org.apache.archiva.repository.scanner.RepositoryScannerInstance;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.fs.FsStorageUtil;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
+import org.apache.archiva.rest.api.model.PermissionStatus;
+import org.apache.archiva.rest.api.model.ScanStatus;
 import org.apache.archiva.rest.api.model.StringList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoriesService;
@@ -156,42 +159,42 @@ public class DefaultRepositoriesService
     private List<ChecksumAlgorithm> algorithms = Arrays.asList(ChecksumAlgorithm.SHA256, ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 );
 
     @Override
-    public Boolean scanRepository( String repositoryId, boolean fullScan )
+    public ActionStatus scanRepository( String repositoryId, boolean fullScan )
     {
-        return doScanRepository( repositoryId, fullScan );
+        return new ActionStatus( doScanRepository( repositoryId, fullScan ) );
     }
 
     @Override
-    public Boolean alreadyScanning( String repositoryId )
+    public ScanStatus getScanStatus( String repositoryId )
     {
         // check queue first to make sure it doesn't get dequeued between calls
         if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
         {
-            return true;
+            return new ScanStatus( true );
         }
         for ( RepositoryScannerInstance scan : repoScanner.getInProgressScans() )
         {
             if ( scan.getRepository().getId().equals( repositoryId ) )
             {
-                return true;
+                return new ScanStatus( true );
             }
         }
-        return false;
+        return new ScanStatus( false );
     }
 
     @Override
-    public Boolean removeScanningTaskFromQueue( String repositoryId )
+    public ActionStatus removeScanningTaskFromQueue( String repositoryId )
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
         try
         {
-            return repositoryTaskScheduler.unQueueTask( task );
+            return new ActionStatus( repositoryTaskScheduler.unQueueTask( task ) );
         }
         catch ( TaskQueueException e )
         {
             log.error( "failed to unschedule scanning of repo with id {}", repositoryId, e );
-            return false;
+            return ActionStatus.FAIL;
         }
     }
 
@@ -205,7 +208,7 @@ public class DefaultRepositoriesService
     }
 
     @Override
-    public Boolean scanRepositoryNow( String repositoryId, boolean fullScan )
+    public ActionStatus scanRepositoryNow( String repositoryId, boolean fullScan )
         throws ArchivaRestServiceException
     {
 
@@ -225,7 +228,7 @@ public class DefaultRepositoriesService
 
             scheduler.queueTask( new RepositoryTask( repositoryId, fullScan ) );
 
-            return Boolean.TRUE;
+            return ActionStatus.SUCCESS;
         }
         catch ( Exception e )
         {
@@ -235,7 +238,7 @@ public class DefaultRepositoriesService
     }
 
     @Override
-    public Boolean scheduleDownloadRemoteIndex( String repositoryId, boolean now, boolean fullDownload )
+    public ActionStatus scheduleDownloadRemoteIndex( String repositoryId, boolean now, boolean fullDownload )
         throws ArchivaRestServiceException
     {
         try
@@ -247,11 +250,11 @@ public class DefaultRepositoriesService
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
-        return Boolean.TRUE;
+        return ActionStatus.SUCCESS;
     }
 
     @Override
-    public Boolean copyArtifact( ArtifactTransferRequest artifactTransferRequest )
+    public ActionStatus copyArtifact( ArtifactTransferRequest artifactTransferRequest )
         throws ArchivaRestServiceException
     {
         // check parameters
@@ -487,7 +490,7 @@ public class DefaultRepositoriesService
             log.error( "IOException: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
-        return true;
+        return ActionStatus.SUCCESS;
     }
 
     private void queueRepositoryTask( String repositoryId, StorageAsset localFile )
@@ -616,7 +619,7 @@ public class DefaultRepositoriesService
     }
 
     @Override
-    public Boolean removeProjectVersion( String repositoryId, String namespace, String projectId, String version )
+    public ActionStatus removeProjectVersion( String repositoryId, String namespace, String projectId, String version )
         throws ArchivaRestServiceException
     {
         // if not a generic we can use the standard way to delete artifact
@@ -633,7 +636,7 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
         }
 
-        if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
+        if ( !getPermissionStatus( repositoryId ).isAuthorizedToDeleteArtifacts() )
         {
             throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403, null );
         }
@@ -707,11 +710,11 @@ public class DefaultRepositoriesService
         }
 
 
-        return Boolean.TRUE;
+        return ActionStatus.SUCCESS;
     }
 
     @Override
-    public Boolean deleteArtifact( Artifact artifact )
+    public ActionStatus deleteArtifact( Artifact artifact )
         throws ArchivaRestServiceException
     {
 
@@ -727,7 +730,7 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
         }
 
-        if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
+        if ( !getPermissionStatus( repositoryId ).isAuthorizedToDeleteArtifacts() )
         {
             throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403, null );
         }
@@ -825,7 +828,7 @@ public class DefaultRepositoriesService
                     //throw new ContentNotFoundException(
                     //    artifact.getNamespace() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
                     log.warn( "targetPath {} not found skip file deletion", targetPath );
-                    return false;
+                    return ActionStatus.FAIL;
                 }
 
                 // TODO: this should be in the storage mechanism so that it is all tied together
@@ -981,11 +984,11 @@ public class DefaultRepositoriesService
 
             repositorySession.close();
         }
-        return Boolean.TRUE;
+        return ActionStatus.SUCCESS;
     }
 
     @Override
-    public Boolean deleteGroupId( String groupId, String repositoryId )
+    public ActionStatus deleteGroupId( String groupId, String repositoryId )
         throws ArchivaRestServiceException
     {
         if ( StringUtils.isEmpty( repositoryId ) )
@@ -993,7 +996,7 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
         }
 
-        if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
+        if ( !getPermissionStatus( repositoryId ).isAuthorizedToDeleteArtifacts() )
         {
             throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403, null );
         }
@@ -1051,11 +1054,11 @@ public class DefaultRepositoriesService
 
             repositorySession.close();
         }
-        return true;
+        return ActionStatus.SUCCESS;
     }
 
     @Override
-    public Boolean deleteProject( String groupId, String projectId, String repositoryId )
+    public ActionStatus deleteProject( String groupId, String projectId, String repositoryId )
         throws ArchivaRestServiceException
     {
         if ( StringUtils.isEmpty( repositoryId ) )
@@ -1063,7 +1066,7 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
         }
 
-        if ( !isAuthorizedToDeleteArtifacts( repositoryId ) )
+        if ( !getPermissionStatus( repositoryId ).isAuthorizedToDeleteArtifacts() )
         {
             throw new ArchivaRestServiceException( "not authorized to delete artifacts", 403, null );
         }
@@ -1131,12 +1134,12 @@ public class DefaultRepositoriesService
 
             repositorySession.close();
         }
-        return true;
+        return ActionStatus.SUCCESS;
 
     }
 
     @Override
-    public Boolean isAuthorizedToDeleteArtifacts( String repoId )
+    public PermissionStatus getPermissionStatus( String repoId )
         throws ArchivaRestServiceException
     {
         String userName =
@@ -1144,7 +1147,7 @@ public class DefaultRepositoriesService
 
         try
         {
-            return userRepositories.isAuthorizedToDeleteArtifacts( userName, repoId );
+            return new PermissionStatus( userRepositories.isAuthorizedToDeleteArtifacts( userName, repoId ) );
         }
         catch ( ArchivaSecurityException e )
         {

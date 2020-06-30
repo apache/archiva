@@ -20,6 +20,7 @@ package org.apache.archiva.rest.services;
 
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jaxrs.xml.JacksonJaxbXMLProvider;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
@@ -50,7 +51,6 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
@@ -58,11 +58,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalTime;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 /**
  * @author Olivier Lamy
@@ -238,7 +237,7 @@ public abstract class AbstractArchivaRestTest
     protected <T> T getService( Class<T> clazz, String authzHeader )
     {
         T service = JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/", clazz,
-                                               Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                               Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
 
         if ( authzHeader != null )
         {
@@ -296,7 +295,7 @@ public abstract class AbstractArchivaRestTest
     {
         return JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                           RepositoryGroupService.class,
-                                          Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                          Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
     }
 
     protected ProxyConnectorService getProxyConnectorService()
@@ -304,7 +303,7 @@ public abstract class AbstractArchivaRestTest
         ProxyConnectorService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        ProxyConnectorService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                       Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
@@ -319,7 +318,7 @@ public abstract class AbstractArchivaRestTest
         NetworkProxyService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        NetworkProxyService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                       Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
         WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
@@ -334,7 +333,7 @@ public abstract class AbstractArchivaRestTest
         ArchivaAdministrationService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        ArchivaAdministrationService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                       Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
 
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -351,7 +350,7 @@ public abstract class AbstractArchivaRestTest
         RedbackRuntimeConfigurationService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        RedbackRuntimeConfigurationService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                       Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
 
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -368,7 +367,7 @@ public abstract class AbstractArchivaRestTest
         BrowseService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        BrowseService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                       Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
         // to add authentification
         if ( authzHeader != null )
         {
@@ -399,7 +398,7 @@ public abstract class AbstractArchivaRestTest
         SearchService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        SearchService.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                       Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
         // to add authentification
         if ( authzHeader != null )
         {
@@ -422,7 +421,7 @@ public abstract class AbstractArchivaRestTest
         CommonServices service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        CommonServices.class,
-                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+                                       Arrays.asList( new JacksonJaxbJsonProvider( ), new JacksonJaxbXMLProvider( ) )  );
 
         if ( authzHeader != null )
         {
@@ -664,7 +663,7 @@ public abstract class AbstractArchivaRestTest
     protected void waitForScanToComplete( String repoId )
         throws ArchivaRestServiceException, InterruptedException
     {
-        while ( getRepositoriesService( authorizationHeader ).alreadyScanning( repoId ) ) {
+        while ( getRepositoriesService( authorizationHeader ).getScanStatus( repoId ).isAlreadyScanning() ) {
             // Would be better to cancel, if we had that capacity
             Thread.sleep( 100 );
         }

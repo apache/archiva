@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.services;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.CacheEntry;
 import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.rest.api.model.RepositoryScannerStatistics;
@@ -72,14 +73,14 @@ public interface SystemStatusService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean clearCache( @PathParam( "key" ) String cacheKey )
+    ActionStatus clearCache( @PathParam( "key" ) String cacheKey )
         throws ArchivaRestServiceException;
 
     @Path( "clearAllCaches" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean clearAllCaches()
+    ActionStatus clearAllCaches()
         throws ArchivaRestServiceException;
 
 

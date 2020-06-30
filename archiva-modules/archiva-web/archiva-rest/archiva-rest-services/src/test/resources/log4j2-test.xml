@@ -49,7 +49,8 @@
     <logger name="org.apache.archiva.rest.services" level="info"/>
     <logger name="org.springframework" level="error"/>
     <logger name="org.apache.commons.configuration" level="info"/>
-    <logger name="org.apache.archiva.metadata.repository.storage.maven2" level="error" />
+    <logger name="org.apache.archiva.metadata" level="error" />
+    <logger name="org.apache.cxf" level="debug" />
 
     <root level="info">
       <appender-ref ref="console"/>

@@ -613,8 +613,8 @@ public class DefaultBrowseService
     }
 
     @Override
-    public Boolean addMetadata( String groupId, String artifactId, String version, String key, String value,
-                                String repositoryId )
+    public ActionStatus addMetadata( String groupId, String artifactId, String version, String key, String value,
+                                     String repositoryId )
         throws ArchivaRestServiceException
     {
         ProjectVersionMetadata projectVersionMetadata =
@@ -622,7 +622,7 @@ public class DefaultBrowseService
 
         if ( projectVersionMetadata == null )
         {
-            return Boolean.FALSE;
+            return new ActionStatus( false );
         }
 
         Map<String, String> properties = new HashMap<>();
@@ -672,11 +672,11 @@ public class DefaultBrowseService
         {
             repositorySession.close();
         }
-        return Boolean.TRUE;
+        return new ActionStatus( true );
     }
 
     @Override
-    public Boolean deleteMetadata( String groupId, String artifactId, String version, String key, String repositoryId )
+    public ActionStatus deleteMetadata( String groupId, String artifactId, String version, String key, String repositoryId )
         throws ArchivaRestServiceException
     {
         ProjectVersionMetadata projectVersionMetadata =
@@ -684,7 +684,7 @@ public class DefaultBrowseService
 
         if ( projectVersionMetadata == null )
         {
-            return Boolean.FALSE;
+            return new ActionStatus( false );
         }
 
         GenericMetadataFacet metadataFacet =
@@ -698,7 +698,7 @@ public class DefaultBrowseService
         }
         else
         {
-            return Boolean.TRUE;
+            return new ActionStatus( true );
         }
 
         RepositorySession repositorySession = null;
@@ -729,7 +729,7 @@ public class DefaultBrowseService
         {
             repositorySession.close();
         }
-        return Boolean.TRUE;
+        return new ActionStatus( true );
     }
 
     @Override
@@ -883,8 +883,8 @@ public class DefaultBrowseService
     }
 
     @Override
-    public Boolean artifactAvailable( String groupId, String artifactId, String version, String classifier,
-                                      String repositoryId )
+    public AvailabilityStatus artifactAvailable( String groupId, String artifactId, String version, String classifier,
+                                                 String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
@@ -920,7 +920,7 @@ public class DefaultBrowseService
 
                 if ( file != null && file.exists() )
                 {
-                    return true;
+                    return new AvailabilityStatus( true );
                 }
 
                 // in case of SNAPSHOT we can have timestamped version locally !
@@ -946,7 +946,7 @@ public class DefaultBrowseService
                         log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
                         if ( timeStampFile.exists() )
                         {
-                            return true;
+                            return new AvailabilityStatus( true );
                         }
                     }
                 }
@@ -960,7 +960,7 @@ public class DefaultBrowseService
                     // download pom now
                     String pomPath = StringUtils.substringBeforeLast( path, ".jar" ) + ".pom";
                     proxyHandler.fetchFromProxies( managedRepositoryContent.getRepository(), pomPath );
-                    return true;
+                    return new AvailabilityStatus( true );
                 }
             }
         } catch ( RepositoryException e )
@@ -970,11 +970,11 @@ public class DefaultBrowseService
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
 
-        return false;
+        return new AvailabilityStatus( false );
     }
 
     @Override
-    public Boolean artifactAvailable( String groupId, String artifactId, String version, String repositoryId )
+    public AvailabilityStatus artifactAvailable( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
         return artifactAvailable( groupId, artifactId, version, null, repositoryId );
@@ -1093,16 +1093,16 @@ public class DefaultBrowseService
     }
 
     @Override
-    public Boolean importMetadata( MetadataAddRequest metadataAddRequest, String repositoryId )
+    public ActionStatus importMetadata( MetadataAddRequest metadataAddRequest, String repositoryId )
         throws ArchivaRestServiceException
     {
-        boolean result = true;
+        ActionStatus result = new ActionStatus( true );
         for ( Map.Entry<String, String> metadata : metadataAddRequest.getMetadatas().entrySet() )
         {
             result = addMetadata( metadataAddRequest.getGroupId(), metadataAddRequest.getArtifactId(),
                                   metadataAddRequest.getVersion(), metadata.getKey(), metadata.getValue(),
                                   repositoryId );
-            if ( !result )
+            if ( !result.isSuccess() )
             {
                 break;
             }

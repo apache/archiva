@@ -23,7 +23,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
+import org.apache.archiva.rest.api.model.FileStatus;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
@@ -65,8 +67,8 @@ public interface ManagedRepositoriesService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean deleteManagedRepository( @QueryParam( "repositoryId" ) String repositoryId,
-                                     @QueryParam( "deleteContent" ) boolean deleteContent )
+    ActionStatus deleteManagedRepository( @QueryParam( "repositoryId" ) String repositoryId,
+                                          @QueryParam( "deleteContent" ) boolean deleteContent )
         throws ArchivaRestServiceException;
 
 
@@ -84,17 +86,17 @@ public interface ManagedRepositoriesService
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean updateManagedRepository( ManagedRepository managedRepository )
+    ActionStatus updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException;
 
     /**
-     * @since 1.4-M3
+     * @since 3.0
      */
     @Path( "fileLocationExists" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean fileLocationExists( @QueryParam( "fileLocation" ) String fileLocation )
+    FileStatus getFileStatus( @QueryParam( "fileLocation" ) String fileLocation )
         throws ArchivaRestServiceException;
 
     /**

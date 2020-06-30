@@ -20,6 +20,8 @@ package org.apache.archiva.rest.api.services;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.ActionStatus;
+import org.apache.archiva.rest.api.model.ValidationStatus;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -68,7 +70,7 @@ public interface CommonServices
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noRestriction = true )
-    Boolean validateCronExpression( @QueryParam( "cronExpression" ) String cronExpression )
+    ValidationStatus validateCronExpression( @QueryParam( "cronExpression" ) String cronExpression )
         throws ArchivaRestServiceException;
 
 }

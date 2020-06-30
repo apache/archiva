@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.*;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -68,13 +69,13 @@ public class DefaultArchivaAdministrationService
 
 
     @Override
-    public Boolean deleteLegacyArtifactPath( String path )
+    public ActionStatus deleteLegacyArtifactPath( String path )
         throws ArchivaRestServiceException
     {
         try
         {
             archivaAdministration.deleteLegacyArtifactPath( path, getAuditInformation() );
-            return Boolean.TRUE;
+            return new ActionStatus( true );
         }
         catch ( RepositoryAdminException e )
         {
@@ -84,13 +85,13 @@ public class DefaultArchivaAdministrationService
 
 
     @Override
-    public Boolean addFileTypePattern( String fileTypeId, String pattern )
+    public ActionStatus addFileTypePattern( String fileTypeId, String pattern )
         throws ArchivaRestServiceException
     {
         try
         {
             archivaAdministration.addFileTypePattern( fileTypeId, pattern, getAuditInformation() );
-            return Boolean.TRUE;
+            return new ActionStatus(true);
         }
         catch ( RepositoryAdminException e )
         {
@@ -99,13 +100,13 @@ public class DefaultArchivaAdministrationService
     }
 
     @Override
-    public Boolean removeFileTypePattern( String fileTypeId, String pattern )
+    public ActionStatus removeFileTypePattern( String fileTypeId, String pattern )
         throws ArchivaRestServiceException
     {
         try
         {
             archivaAdministration.removeFileTypePattern( fileTypeId, pattern, getAuditInformation() );
-            return Boolean.TRUE;
+            return new ActionStatus(true);
         }
         catch ( RepositoryAdminException e )
         {
@@ -142,13 +143,13 @@ public class DefaultArchivaAdministrationService
     }
 
     @Override
-    public Boolean removeFileType( String fileTypeId )
+    public ActionStatus removeFileType( String fileTypeId )
         throws ArchivaRestServiceException
     {
         try
         {
             archivaAdministration.removeFileType( fileTypeId, getAuditInformation() );
-            return Boolean.TRUE;
+            return new ActionStatus(true);
         }
         catch ( RepositoryAdminException e )
         {
@@ -157,13 +158,13 @@ public class DefaultArchivaAdministrationService
     }
 
     @Override
-    public Boolean enabledKnownContentConsumer( String knownContentConsumer )
+    public ActionStatus enabledKnownContentConsumer( String knownContentConsumer )
         throws ArchivaRestServiceException
     {
         try
         {
             archivaAdministration.addKnownContentConsumer( knownContentConsumer, getAuditInformation() );
-            return Boolean.TRUE;
+            return new ActionStatus(true);
         }
         catch ( RepositoryAdminException e )
         {
@@ -186,13 +187,13 @@ public class DefaultArchivaAdministrationService
     }
 
     @Override
-    public Boolean disabledKnownContentConsumer( String knownContentConsumer )
+    public ActionStatus disabledKnownContentConsumer( String knownContentConsumer )
         throws ArchivaRestServiceException
     {
         try
         {
             archivaAdministration.removeKnownContentConsumer( knownContentConsumer, getAuditInformation() );
-            return Boolean.TRUE;
+            return new ActionStatus(true);
         }
         catch ( RepositoryAdminException e )
         {
@@ -201,13 +202,13 @@ public class DefaultArchivaAdministrationService
     }
 
     @Override
-    public Boolean enabledInvalidContentConsumer( String invalidContentConsumer )
+    public ActionStatus enabledInvalidContentConsumer( String invalidContentConsumer )
         throws ArchivaRestServiceException
     {
         try
         {
             archivaAdministration.addInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
-            return Boolean.TRUE;
+            return new ActionStatus(true);
         }
         catch ( RepositoryAdminException e )
         {
@@ -230,13 +231,13 @@ public class DefaultArchivaAdministrationService
     }
 
     @Override
-    public Boolean disabledInvalidContentConsumer( String invalidContentConsumer )
+    public ActionStatus disabledInvalidContentConsumer( String invalidContentConsumer )
         throws ArchivaRestServiceException
     {
         try
         {
             archivaAdministration.removeInvalidContentConsumer( invalidContentConsumer, getAuditInformation() );
-            return Boolean.TRUE;
+            return new ActionStatus(true);
         }
         catch ( RepositoryAdminException e )
         {
@@ -319,12 +320,6 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    @Override
-    public Boolean registrationDisabled()
-        throws ArchivaRestServiceException
-    {
-        return getUiConfiguration().isDisableRegistration();
-    }
 
     @Override
     public UiConfiguration getUiConfiguration()

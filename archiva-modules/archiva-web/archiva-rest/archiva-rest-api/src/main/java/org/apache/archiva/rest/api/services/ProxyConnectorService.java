@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.services;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.PolicyInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
@@ -63,7 +64,7 @@ public interface ProxyConnectorService
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean addProxyConnector( ProxyConnector proxyConnector )
+    ActionStatus addProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException;
 
     @Path( "deleteProxyConnector" )
@@ -71,7 +72,7 @@ public interface ProxyConnectorService
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean deleteProxyConnector( ProxyConnector proxyConnector )
+    ActionStatus deleteProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException;
 
     /**
@@ -81,7 +82,7 @@ public interface ProxyConnectorService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean removeProxyConnector( @QueryParam( "sourceRepoId" ) String sourceRepoId,
+    ActionStatus removeProxyConnector( @QueryParam( "sourceRepoId" ) String sourceRepoId,
                                   @QueryParam( "targetRepoId" ) String targetRepoId )
         throws ArchivaRestServiceException;
 
@@ -96,7 +97,7 @@ public interface ProxyConnectorService
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean updateProxyConnector( ProxyConnector proxyConnector )
+    ActionStatus updateProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException;
 
     @Path( "allPolicies" )

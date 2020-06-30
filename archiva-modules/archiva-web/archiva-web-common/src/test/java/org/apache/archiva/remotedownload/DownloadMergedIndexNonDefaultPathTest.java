@@ -43,10 +43,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -145,7 +141,7 @@ public class DownloadMergedIndexNonDefaultPathTest
 
         // wait a bit to ensure index is finished
         int timeout = 20000;
-        while ( timeout > 0 && repositoriesService.alreadyScanning( id ) )
+        while ( timeout > 0 && repositoriesService.getScanStatus( id ).isAlreadyScanning() )
         {
             Thread.sleep( 500 );
             timeout -= 500;

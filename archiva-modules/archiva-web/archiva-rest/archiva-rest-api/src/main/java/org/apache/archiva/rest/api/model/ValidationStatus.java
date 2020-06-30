@@ -1,4 +1,5 @@
-package org.apache.archiva.rest.services;
+package org.apache.archiva.rest.api.model;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -8,8 +9,7 @@ package org.apache.archiva.rest.services;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,28 +18,34 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.services.CommonServices;
-import org.junit.Test;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Olivier Lamy
+ * Returns true, if a test is valid.
+ *
+ * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class CommonServicesTest
-    extends AbstractArchivaRestTest
+@XmlRootElement(name="validationStatus")
+public class ValidationStatus
 {
-    @Test
-    public void validCronExpression()
-        throws Exception
-    {
-        CommonServices commonServices = getCommonServices( null );
-        assertTrue( commonServices.validateCronExpression( "0 0,30 * * * ?" ).isValid() );
+    boolean valid;
+
+    public ValidationStatus() {
+
     }
 
-    @Test
-    public void nonValidCronExpression()
-        throws Exception
+    public ValidationStatus( boolean valid )
     {
-        CommonServices commonServices = getCommonServices( null );
-        assertFalse( commonServices.validateCronExpression( "0,30 * * * ?" ).isValid() );
+        this.valid = valid;
+    }
+
+    public boolean isValid( )
+    {
+        return valid;
+    }
+
+    public void setValid( boolean valid )
+    {
+        this.valid = valid;
     }
 }

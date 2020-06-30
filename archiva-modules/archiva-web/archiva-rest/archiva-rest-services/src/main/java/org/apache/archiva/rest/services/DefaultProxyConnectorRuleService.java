@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRule;
 import org.apache.archiva.admin.model.proxyconnectorrule.ProxyConnectorRuleAdmin;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ProxyConnectorRuleService;
 import org.apache.commons.lang3.StringUtils;
@@ -87,7 +88,7 @@ public class DefaultProxyConnectorRuleService
     }
 
     @Override
-    public Boolean addProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
+    public ActionStatus addProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
         throws ArchivaRestServiceException
     {
 
@@ -96,7 +97,7 @@ public class DefaultProxyConnectorRuleService
         try
         {
             proxyConnectorRuleAdmin.addProxyConnectorRule( proxyConnectorRule, getAuditInformation() );
-            return Boolean.TRUE;
+            return ActionStatus.SUCCESS;
         }
         catch ( RepositoryAdminException e )
         {
@@ -105,13 +106,13 @@ public class DefaultProxyConnectorRuleService
     }
 
     @Override
-    public Boolean deleteProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
+    public ActionStatus deleteProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
         throws ArchivaRestServiceException
     {
         try
         {
             proxyConnectorRuleAdmin.deleteProxyConnectorRule( proxyConnectorRule, getAuditInformation() );
-            return Boolean.TRUE;
+            return ActionStatus.SUCCESS;
         }
         catch ( RepositoryAdminException e )
         {
@@ -120,13 +121,13 @@ public class DefaultProxyConnectorRuleService
     }
 
     @Override
-    public Boolean updateProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
+    public ActionStatus updateProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
         throws ArchivaRestServiceException
     {
         try
         {
             proxyConnectorRuleAdmin.updateProxyConnectorRule( proxyConnectorRule, getAuditInformation() );
-            return Boolean.TRUE;
+            return ActionStatus.SUCCESS;
         }
         catch ( RepositoryAdminException e )
         {

@@ -26,7 +26,6 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.junit.Test;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 
 /**
@@ -58,7 +57,7 @@ public class ManagedRepositoriesServiceTest
         RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
 
         int timeout = 20000;
-        while ( timeout > 0 && repositoriesService.alreadyScanning( repo.getId() ) )
+        while ( timeout > 0 && repositoriesService.getScanStatus( repo.getId() ).isAlreadyScanning() )
         {
             Thread.sleep( 500 );
             timeout -= 500;
@@ -85,7 +84,7 @@ public class ManagedRepositoriesServiceTest
         RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
 
         int timeout = 20000;
-        while ( timeout > 0 && repositoriesService.alreadyScanning( repo.getId() ) )
+        while ( timeout > 0 && repositoriesService.getScanStatus( repo.getId() ).isAlreadyScanning() )
         {
             Thread.sleep( 500 );
             timeout -= 500;
@@ -104,7 +103,7 @@ public class ManagedRepositoriesServiceTest
         assertEquals( "toto", repo.getName() );
 
         timeout = 20000;
-        while ( timeout > 0 && repositoriesService.alreadyScanning( repo.getId() ) )
+        while ( timeout > 0 && repositoriesService.getScanStatus( repo.getId() ).isAlreadyScanning() )
         {
             Thread.sleep( 500 );
             timeout -= 500;
@@ -122,10 +121,10 @@ public class ManagedRepositoriesServiceTest
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         Path target = getProjectDirectory().resolve( "target" );
 
-        assertTrue( service.fileLocationExists( target.toAbsolutePath().toString() ) );
+        assertTrue( service.getFileStatus( target.toAbsolutePath().toString() ).isExists() );
 
         // normally should not exists :-)
-        assertFalse( service.fileLocationExists( "/fooofofof/foddfdofd/dedede/kdeo" ) );
+        assertFalse( service.getFileStatus( "/fooofofof/foddfdofd/dedede/kdeo" ).isExists() );
 
     }
 
@@ -151,7 +150,7 @@ public class ManagedRepositoriesServiceTest
         repositoriesService.scanRepositoryDirectoriesNow( testRepoId );
 
         int timeout = 20000;
-        while ( timeout > 0 && repositoriesService.alreadyScanning( testRepoId ) )
+        while ( timeout > 0 && repositoriesService.getScanStatus( testRepoId ).isAlreadyScanning() )
         {
             Thread.sleep( 500 );
             timeout -= 500;

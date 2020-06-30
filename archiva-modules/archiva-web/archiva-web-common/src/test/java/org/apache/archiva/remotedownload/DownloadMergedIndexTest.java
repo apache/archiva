@@ -43,7 +43,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -136,7 +135,7 @@ public class DownloadMergedIndexTest
 
         // wait a bit to ensure index is finished
         int timeout = 20000;
-        while ( timeout > 0 && repositoriesService.alreadyScanning( id ) )
+        while ( timeout > 0 && repositoriesService.getScanStatus( id ).isAlreadyScanning() )
         {
             Thread.sleep( 500 );
             timeout -= 500;

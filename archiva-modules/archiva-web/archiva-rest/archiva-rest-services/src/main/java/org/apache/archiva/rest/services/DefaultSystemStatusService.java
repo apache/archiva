@@ -26,6 +26,7 @@ import org.apache.archiva.components.taskqueue.TaskQueue;
 import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerInstance;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.CacheEntry;
 import org.apache.archiva.rest.api.model.ConsumerScanningStatistics;
 import org.apache.archiva.rest.api.model.QueueEntry;
@@ -165,7 +166,7 @@ public class DefaultSystemStatusService
     }
 
     @Override
-    public Boolean clearCache( String cacheKey )
+    public ActionStatus clearCache( String cacheKey )
         throws ArchivaRestServiceException
     {
         Cache cache = caches.get( cacheKey );
@@ -176,18 +177,18 @@ public class DefaultSystemStatusService
         }
 
         cache.clear();
-        return Boolean.TRUE;
+        return ActionStatus.SUCCESS;
     }
 
     @Override
-    public Boolean clearAllCaches()
+    public ActionStatus clearAllCaches()
         throws ArchivaRestServiceException
     {
         for ( Cache cache : caches.values() )
         {
             cache.clear();
         }
-        return Boolean.TRUE;
+        return ActionStatus.SUCCESS;
     }
 
     @Override

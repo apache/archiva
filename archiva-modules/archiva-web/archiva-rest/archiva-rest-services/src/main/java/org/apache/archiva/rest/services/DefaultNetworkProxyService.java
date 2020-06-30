@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
+import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.NetworkProxyService;
 import org.springframework.stereotype.Service;
@@ -106,13 +107,13 @@ public class DefaultNetworkProxyService
     }
 
     @Override
-    public Boolean deleteNetworkProxy( String networkProxyId )
+    public ActionStatus deleteNetworkProxy( String networkProxyId )
         throws ArchivaRestServiceException
     {
         try
         {
             getNetworkProxyAdmin().deleteNetworkProxy( networkProxyId, getAuditInformation() );
-            return Boolean.TRUE;
+            return ActionStatus.SUCCESS;
         }
         catch ( RepositoryAdminException e )
         {

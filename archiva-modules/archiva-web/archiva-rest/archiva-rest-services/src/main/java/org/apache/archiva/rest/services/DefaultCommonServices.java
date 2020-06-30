@@ -21,6 +21,8 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.components.scheduler.CronExpressionValidator;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.api.services.UtilServices;
+import org.apache.archiva.rest.api.model.ActionStatus;
+import org.apache.archiva.rest.api.model.ValidationStatus;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -187,9 +190,9 @@ public class DefaultCommonServices
 
 
     @Override
-    public Boolean validateCronExpression( String cronExpression )
+    public ValidationStatus validateCronExpression( String cronExpression )
         throws ArchivaRestServiceException
     {
-        return cronExpressionValidator.validate( cronExpression );
+        return new ValidationStatus(cronExpressionValidator.validate( cronExpression ));
     }
 }
