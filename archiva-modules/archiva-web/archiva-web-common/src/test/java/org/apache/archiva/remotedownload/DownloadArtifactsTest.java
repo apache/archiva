@@ -168,7 +168,7 @@ public class DownloadArtifactsTest
         RoleManagementService roleManagementService = getRoleManagementService( authorizationHeader );
 
         if ( !roleManagementService.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
-                                                         "internal" ) )
+                                                         "internal" ).isExists() )
         {
             roleManagementService.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, "internal" );
         }

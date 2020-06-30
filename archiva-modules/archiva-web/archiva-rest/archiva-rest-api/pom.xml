@@ -31,8 +31,6 @@
   <properties>
     <enunciate.docsDir>${project.build.outputDirectory}/rest-docs-archiva-rest-api</enunciate.docsDir>
     <site.staging.base>${project.parent.parent.parent.basedir}</site.staging.base>
-    <swagger-maven-plugin-version>2.1.2</swagger-maven-plugin-version>
-    <io.swagger.version>2.1.2</io.swagger.version>
   </properties>
 
   <dependencies>
@@ -79,46 +77,6 @@
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-core</artifactId>
-      <scope>compile</scope>
-      <version>${io.swagger.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.ws.rs</groupId>
-          <artifactId>jsr311-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-jaxrs2</artifactId>
-      <version>${io.swagger.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.ws.rs</groupId>
-          <artifactId>jsr311-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>io.swagger.core.v3</groupId>
-      <artifactId>swagger-annotations</artifactId>
-      <version>${io.swagger.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.ws.rs</groupId>
-          <artifactId>jsr311-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
-    </dependency>
-
-
 
   </dependencies>
 
@@ -134,95 +92,6 @@
             <exclude>src/main/resources/openapi-codegen-ignore</exclude>
           </excludes>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>bind-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-maven-plugin</artifactId>
-        <version>${swagger-maven-plugin-version}</version>
-        <configuration>
-          <outputFileName>openapi</outputFileName>
-          <outputPath>${project.build.directory}/generated</outputPath>
-          <outputFormat>JSONANDYAML</outputFormat>
-          <resourcePackages>
-            <package>org.apache.archiva.rest.api</package>
-          </resourcePackages>
-          <prettyPrint>TRUE</prettyPrint>
-          <configurationFilePath>${project.basedir}/src/main/resources/openapi-configuration.yaml</configurationFilePath>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>resolve</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>io.swagger.codegen.v3</groupId>
-        <artifactId>swagger-codegen-maven-plugin</artifactId>
-        <version>3.0.20</version>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>${project.build.directory}/generated/openapi.yaml</inputSpec>
-              <language>html</language>
-              <output>${project.build.directory}/generated-sources</output>
-              <ignoreFileOverride>${project.basedir}/src/main/resources/openapi-codegen-ignore</ignoreFileOverride>
-              <templateDirectory>${project.basedir}/src/main/resources/templates</templateDirectory>
-              <supportingFilesToGenerate>index.html,index2.html</supportingFilesToGenerate>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>site</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/site/openapi/</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/generated</directory>         <!-- source directory -->
-                  <filtering>false</filtering>
-                  <include>openapi.json</include>
-                  <include>openapi.yaml</include>
-                </resource>
-                <resource>
-                  <directory>${project.build.directory}/generated-sources/</directory>
-                  <filtering>false</filtering>
-                  <include>**/*</include>
-                  <exclude>.swagger-codegen/**</exclude>
-                  <exclude>.swagger-codegen-ignore</exclude>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

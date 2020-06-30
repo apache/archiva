@@ -18,7 +18,6 @@ package org.apache.archiva.rest.api.model;
  * under the License.
  */
 
-import javax.swing.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -32,6 +31,9 @@ public class ActionStatus
 
     public static final ActionStatus SUCCESS = new ActionStatus( true );
     public static final ActionStatus FAIL = new ActionStatus( false );
+    public static ActionStatus FROM(boolean status) {
+        return status ? SUCCESS : FAIL;
+    }
 
     public ActionStatus() {
 
@@ -51,5 +53,9 @@ public class ActionStatus
         this.success = success;
     }
 
-
+    @Override
+    public String toString( )
+    {
+        return Boolean.toString( success );
+    }
 }
