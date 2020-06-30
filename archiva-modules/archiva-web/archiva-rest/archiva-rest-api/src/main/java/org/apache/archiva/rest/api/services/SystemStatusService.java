@@ -22,6 +22,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.CacheEntry;
+import org.apache.archiva.rest.api.model.Timestamp;
+import org.apache.archiva.rest.api.model.MemoryStatus;
 import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.rest.api.model.RepositoryScannerStatistics;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -43,16 +45,16 @@ public interface SystemStatusService
 {
     @Path( "memoryStatus" )
     @GET
-    @Produces( MediaType.TEXT_PLAIN )
+    @Produces( {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    String getMemoryStatus()
+    MemoryStatus getMemoryStatus()
         throws ArchivaRestServiceException;
 
     @Path( "currentServerTime/{locale}" )
     @GET
-    @Produces( MediaType.TEXT_PLAIN )
+    @Produces( {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    String getCurrentServerTime( @PathParam( "locale" ) String locale )
+    Timestamp getCurrentServerTime( @PathParam( "locale" ) String locale )
         throws ArchivaRestServiceException;
 
     @Path( "queueEntries" )

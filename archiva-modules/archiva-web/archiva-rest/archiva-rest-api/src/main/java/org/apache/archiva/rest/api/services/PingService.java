@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.services;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.PingResult;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -45,7 +46,7 @@ public interface PingService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = true )
-    String ping();
+    PingResult ping();
 
     /**
      * same as #ping but check authz
@@ -56,6 +57,6 @@ public interface PingService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = false, noPermission = true )
-    String pingWithAuthz();
+    PingResult pingWithAuthz();
 
 }

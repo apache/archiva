@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.rest.api.model.PingResult;
 import org.apache.archiva.rest.api.services.PingService;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Ignore;
@@ -42,8 +43,8 @@ public class PingServiceTest
         // 1000000L
         //WebClient.getConfig( userService ).getHttpConduit().getClient().setReceiveTimeout(3000);
 
-        String res = getPingService().ping();
-        assertEquals( "Yeah Baby It rocks!", res );
+        PingResult res = getPingService().ping();
+        assertEquals( "Yeah Baby It rocks!", res.getOutput() );
     }
 
     @Test( expected = ForbiddenException.class )
@@ -53,7 +54,7 @@ public class PingServiceTest
 
         try
         {
-            String res = getPingService().pingWithAuthz();
+            PingResult res = getPingService().pingWithAuthz();
             fail( "not in exception" );
         }
         catch ( ForbiddenException e )
@@ -71,8 +72,8 @@ public class PingServiceTest
         PingService service = getPingService();
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        String res = service.pingWithAuthz();
-        assertEquals( "Yeah Baby It rocks!", res );
+        PingResult res = service.pingWithAuthz();
+        assertEquals( "Yeah Baby It rocks!", res.getOutput() );
     }
 
     @Ignore( "FIXME guest failed ???" )
@@ -83,7 +84,7 @@ public class PingServiceTest
         PingService service = getPingService();
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         WebClient.client( service ).header( "Authorization", guestAuthzHeader );
-        String res = service.pingWithAuthz();
-        assertEquals( "Yeah Baby It rocks!", res );
+        PingResult res = service.pingWithAuthz();
+        assertEquals( "Yeah Baby It rocks!", res.getOutput() );
     }
 }

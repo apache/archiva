@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.services;
+package org.apache.archiva.rest.api.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,8 +9,7 @@ package org.apache.archiva.rest.services;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,27 +18,31 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.model.PingResult;
-import org.apache.archiva.rest.api.services.PingService;
-import org.springframework.stereotype.Service;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Olivier Lamy
- * @since 1.4-M1
+ * @author Martin Stockhammer <martin_s@apache.org>
  */
-@Service( "pingService#rest" )
-public class DefaultPingService
-    implements PingService
+@XmlRootElement(name="memoryStatus")
+public class MemoryStatus
 {
-    @Override
-    public PingResult ping()
-    {
-        return new PingResult( "Yeah Baby It rocks!" );
+    String statusText;
+
+    public MemoryStatus() {
+
     }
 
-    @Override
-    public PingResult pingWithAuthz()
+    public MemoryStatus(String statusText) {
+        this.statusText = statusText;
+    }
+
+    public String getStatusText( )
     {
-        return ping();
+        return statusText;
+    }
+
+    public void setStatusText( String statusText )
+    {
+        this.statusText = statusText;
     }
 }
