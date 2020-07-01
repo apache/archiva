@@ -44,8 +44,6 @@ import org.apache.jackrabbit.oak.plugins.index.lucene.hybrid.LocalIndexObserver;
 import org.apache.jackrabbit.oak.plugins.index.lucene.hybrid.NRTIndexFactory;
 import org.apache.jackrabbit.oak.plugins.index.lucene.property.PropertyIndexCleaner;
 import org.apache.jackrabbit.oak.plugins.index.lucene.reader.DefaultIndexReaderFactory;
-import org.apache.jackrabbit.oak.plugins.index.lucene.score.ScorerProviderFactory;
-import org.apache.jackrabbit.oak.plugins.index.lucene.score.impl.ScorerProviderFactoryImpl;
 import org.apache.jackrabbit.oak.plugins.index.lucene.util.IndexDefinitionBuilder;
 import org.apache.jackrabbit.oak.plugins.index.search.ExtractedTextCache;
 import org.apache.jackrabbit.oak.plugins.index.search.FulltextIndexConstants;
@@ -142,7 +140,6 @@ public class OakRepositoryFactory
 
     private LuceneIndexProvider indexProvider;
 
-    private ScorerProviderFactory scorerFactory = new ScorerProviderFactoryImpl( );
     private IndexAugmentorFactory augmentorFactory = new IndexAugmentorFactory( );
 
     private ActiveDeletedBlobCollectorFactory.ActiveDeletedBlobCollector activeDeletedBlobCollector = ActiveDeletedBlobCollectorFactory.NOOP;
@@ -396,7 +393,7 @@ public class OakRepositoryFactory
 
         tracker = createTracker();
 
-        indexProvider = new LuceneIndexProvider(tracker, scorerFactory, augmentorFactory);
+        indexProvider = new LuceneIndexProvider(tracker, augmentorFactory);
 
         initialize();
         registerObserver();

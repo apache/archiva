@@ -171,9 +171,6 @@
                   <systemProperty>archiva.cassandra.configuration.file=%ARCHIVA_BASE%/conf/archiva-cassandra.properties</systemProperty>
                   <systemProperty>org.apache.jackrabbit.core.state.validatehierarchy=true</systemProperty>
                 </systemProperties>
-                <extraArguments>
-                  <extraArgument>-XX:MaxPermSize=128m</extraArgument>
-                </extraArguments>
                 <initialMemorySize>512</initialMemorySize>
                 <maxMemorySize>512</maxMemorySize>
               </jvmSettings>
@@ -253,6 +250,8 @@
           <finalName>apache-archiva-${project.version}</finalName>
         </configuration>
       </plugin>
+
+
     </plugins>
     <pluginManagement>
       <plugins>

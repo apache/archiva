@@ -554,6 +554,7 @@
               <exclude>src/test/repositories/test-repo/**</exclude>
               <exclude>src/main/resources/META-INF/services/*</exclude>
               <exclude>src/main/resources/META-INF/cxf/*</exclude>
+              <exclude>src/main/resources/META-INF/owasp/cve-suppressions.xml</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -828,6 +829,24 @@
         </configuration>
       </plugin>
 
+
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>5.3.2</version>
+        <configuration>
+          <skipProvidedScope>true</skipProvidedScope>
+          <failBuildOnCVSS>8</failBuildOnCVSS>
+          <suppressionFile>${project.basedir}/src/main/resources/META-INF/owasp/cve-suppressions.xml</suppressionFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 

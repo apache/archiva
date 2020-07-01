@@ -31,7 +31,7 @@
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
-    <cassandraVersion>3.11.2</cassandraVersion>
+    <cassandraVersion>3.11.6</cassandraVersion>
   </properties>
 
   <dependencies>
@@ -143,6 +143,7 @@
           <groupId>org.jboss.logging</groupId>
           <artifactId>jboss-logging</artifactId>
         </exclusion>
+
       </exclusions>
     </dependency>
 
@@ -169,23 +170,56 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.apache.cassandra</groupId>
       <artifactId>cassandra-thrift</artifactId>
-      <version>3.11.2</version>
+      <version>${cassandraVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
           <artifactId>servlet-api</artifactId>
         </exclusion>
+          <exclusion>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+          </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.thrift</groupId>
+      <artifactId>libthrift</artifactId>
+      <version>0.13.0</version>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+      <version>1.9.13</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>1.9.13</version>
+    </dependency>
+    -->
+
+    <!-- Transitive dependency. Declared here to increase the version. -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>${netty.version}</version>
     </dependency>
 
     <!-- Is a dependency of cassandra -> hibernate-validator and replaced by new version -->
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
+    </dependency>
+    <!-- Dependency of cassandra -> replacing by new version -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>4.3.2.Final</version>
     </dependency>
 
 
@@ -236,6 +270,7 @@
 
 
   </dependencies>
+
   <build>
     <testResources>
       <testResource>

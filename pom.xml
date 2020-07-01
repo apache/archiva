@@ -74,7 +74,8 @@
     <javax.jcr.version>2.0</javax.jcr.version>
     <!-- If you change the JCR OAK version, you may have to update the pom.xml in the module oak-jcr-lucene
          to adapt to dependency changes -->
-    <jcr-oak.version>1.22.3</jcr-oak.version>
+    <jcr-oak.version>1.30.0</jcr-oak.version>
+    <netty.version>4.1.50.Final</netty.version>
 
 
     <!-- Jackrabbit classes are still used for webdav -->
@@ -502,6 +503,64 @@
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>oak-segment-tar</artifactId>
         <version>${jcr-oak.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- netty is a transitive dependencies of oak-segment-tar
+           increasing version -->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-handler</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-common</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec</artifactId>
+        <version>${netty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-buffer</artifactId>
+        <version>${netty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
@@ -1351,6 +1410,14 @@
       </dependency>
 
 
+      <!-- Transitive dependency - fixing version -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>29.0-jre</version>
+      </dependency>
+
+
       <dependency>
         <groupId>org.xmlunit</groupId>
         <artifactId>xmlunit-core</artifactId>
@@ -1818,6 +1885,10 @@
           </execution>
         </executions>
       </plugin>
+
+
+
+
    </plugins>
     <pluginManagement>
       <plugins>
