@@ -1,1 +1,1 @@
-mvn jetty:run -pl :archiva-webapp -am
+mvn jetty:run -pl :archiva-webapp -am "$@"

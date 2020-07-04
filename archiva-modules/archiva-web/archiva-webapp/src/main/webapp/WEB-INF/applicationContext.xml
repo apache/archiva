@@ -51,9 +51,6 @@
   <alias name="ldapRoleMapperConfiguration#archiva" alias="ldapRoleMapperConfiguration#default"/>
 
 
-  <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
-        init-method="initialize"/>
-
   <!-- only here to cleanup temp indexes for groups increase number if use for something else -->
   <task:executor id="springExecutor" pool-size="2"/>
   <task:scheduler id="springScheduler" pool-size="2"/>

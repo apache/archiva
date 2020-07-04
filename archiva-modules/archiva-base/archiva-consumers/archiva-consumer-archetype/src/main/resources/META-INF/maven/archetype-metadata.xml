@@ -64,6 +64,12 @@
     <requiredProperty key="mavenWagonVersion">
       <defaultValue>${wagon.version}</defaultValue>
     </requiredProperty>
+    <requiredProperty key="jakartaInjectVersion">
+      <defaultValue>${jakarta.inject.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="jakartaAnnotationVersion">
+      <defaultValue>${jakarta.annotation.version}</defaultValue>
+    </requiredProperty>
 
 
   </requiredProperties>

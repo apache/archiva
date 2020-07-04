@@ -42,6 +42,8 @@
     <commons.beanutils.version>${beanUtilsVersion}</commons.beanutils.version>
     <maven.wagon.version>${mavenWagonVersion}</maven.wagon.version>
     <archiva.comp.version>${archivaCompVersion}</archiva.comp.version>
+    <jakarta.inject.version>${jakartaInjectVersion}</jakarta.inject.version>
+    <jakarta.annotation.version>${jakartaAnnotationVersion}</jakarta.annotation.version>
   </properties>
   <dependencies>
     <dependency>
@@ -147,14 +149,14 @@
       <version>${slf4j.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-      <version>1</version>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+      <version>${jakarta.inject.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-      <version>1.3.2</version>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>${jakarta.annotation.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
