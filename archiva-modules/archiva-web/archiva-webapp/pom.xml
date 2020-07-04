@@ -43,6 +43,19 @@
     <cassandra.host>localhost</cassandra.host>
     <cassandra.port>9160</cassandra.port>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+
+
+    <webjars.bootstrap.version>4.5.0</webjars.bootstrap.version>
+    <webjars.jquery.version>3.5.1</webjars.jquery.version>
+    <webjars.jquery-ui.version>1.12.1</webjars.jquery-ui.version>
+    <webjars.requirejs.version>2.3.6</webjars.requirejs.version>
+    <webjars.font-awesome.version>5.13.0</webjars.font-awesome.version>
+    <webjars.d3js.version>5.16.0</webjars.d3js.version>
+    <webjars.locator.version>0.40</webjars.locator.version>
+    <webjars.sammy.version>0.7.4</webjars.sammy.version>
+    <webjars.jquery.typeahead.version>2.10.4</webjars.jquery.typeahead.version>
+    <webjars.jquery.fileupload.version>9.10.1</webjars.jquery.fileupload.version>
+    <webjars.jquery.i18nproperties.version>1.2.7</webjars.jquery.i18nproperties.version>
   </properties>
 
   <dependencies>
@@ -581,28 +594,66 @@
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>bootstrap</artifactId>
-      <version>4.5.0</version>
+      <version>${webjars.bootstrap.version}</version>
       <scope>runtime</scope>
     </dependency>
 
     <dependency>
       <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>${webjars.jquery.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery-ui</artifactId>
+      <version>${webjars.jquery-ui.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>requirejs</artifactId>
+      <version>${webjars.requirejs.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
       <artifactId>font-awesome</artifactId>
-      <version>5.13.0</version>
+      <version>${webjars.font-awesome.version}</version>
       <scope>runtime</scope>
     </dependency>
 
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>d3js</artifactId>
-      <version>5.16.0</version>
+      <version>${webjars.d3js.version}</version>
       <scope>runtime</scope>
     </dependency>
 
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>webjars-locator</artifactId>
-      <version>0.40</version>
+      <version>${webjars.locator.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>sammy</artifactId>
+      <version>${webjars.sammy.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery-file-upload</artifactId>
+      <version>${webjars.jquery.fileupload.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery-i18n-properties</artifactId>
+      <version>${webjars.jquery.i18nproperties.version}</version>
       <scope>runtime</scope>
     </dependency>
 
@@ -640,79 +691,35 @@
 
     <plugins>
 
-      <!-- commented as not needed now
+
       <plugin>
-        <groupId>com.samaxes.maven</groupId>
-        <artifactId>maven-minify-plugin</artifactId>
-        <version>1.3.5</version>
-        <executions>
-          <execution>
-            <id>startup-minify</id>
-            <phase>generate-resources</phase>
-            <configuration>
-              <webappSourceDir>${basedir}/src/main/webapp</webappSourceDir>
-              <cssSourceDir>css</cssSourceDir>
-              <cssSourceFiles>
-                <cssSourceFile>jquery-ui-1.8.16.custom.css</cssSourceFile>
-                <cssSourceFile>jquery.ui.1.8.16.ie.css</cssSourceFile>
-                <cssSourceFile>bootstrap.2.0.2.css</cssSourceFile>
-                <cssSourceFile>archiva.css</cssSourceFile>
-              </cssSourceFiles>
-              <cssFinalFile>apache-archiva-${project.version}.css</cssFinalFile>
-              <jsSourceDir>js</jsSourceDir>
-              <jsSourceFiles>
-                <jsSourceFile>jquery-1.7.2.js</jsSourceFile>
-                <jsSourceFile>lab.js</jsSourceFile>
-                <jsSourceFile>require.1.0.1.js</jsSourceFile>
-              </jsSourceFiles>
-              <jsFinalFile>apache-archiva-startup-${project.version}.js</jsFinalFile>
-            </configuration>
-            <goals>
-              <goal>minify</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>main-minify</id>
-            <phase>generate-resources</phase>
-            <configuration>
-              <webappSourceDir>${basedir}/src/main/webapp</webappSourceDir>
-              <jsSourceDir>js</jsSourceDir>
-              <jsSourceFiles>
-                <jsSourceFile>jquery.tmpl.js</jsSourceFile>
-                <jsSourceFile>archiva/utils.js</jsSourceFile>
-                <jsSourceFile>jquery.i18n.properties-1.0.9.js</jsSourceFile>
-                <jsSourceFile>archiva/i18nload.js</jsSourceFile>
-                <jsSourceFile>jquery.cookie.1.0.0.js</jsSourceFile>
-                <jsSourceFile>knockout-debug.js</jsSourceFile>
-                <jsSourceFile>jquery-ui-1.8.16.custom.min.js</jsSourceFile>
-                <jsSourceFile>jquery.validate.js</jsSourceFile>
-                <jsSourceFile>jquery.json-2.3.min.js</jsSourceFile>
-                <jsSourceFile>archiva/main-tmpl.js</jsSourceFile>
-                <jsSourceFile>archiva/repositories.js</jsSourceFile>
-                <jsSourceFile>archiva/network-proxies.js</jsSourceFile>
-                <jsSourceFile>archiva/proxy-connectors.js</jsSourceFile>
-                <jsSourceFile>redback/operation.js</jsSourceFile>
-                <jsSourceFile>redback/redback-tmpl.js</jsSourceFile>
-                <jsSourceFile>bootstrap.2.0.2.js</jsSourceFile>
-                <jsSourceFile>knockout.simpleGrid.js</jsSourceFile>
-                <jsSourceFile>redback/user.js</jsSourceFile>
-                <jsSourceFile>redback/users.js</jsSourceFile>
-                <jsSourceFile>redback/redback.js</jsSourceFile>
-                <jsSourceFile>redback/register.js</jsSourceFile>
-                <jsSourceFile>redback/permission.js</jsSourceFile>
-                <jsSourceFile>redback/resource.js</jsSourceFile>
-                <jsSourceFile>redback/roles.js</jsSourceFile>
-                <jsSourceFile>archiva/main.js</jsSourceFile>
-              </jsSourceFiles>
-              <jsFinalFile>apache-archiva-main-${project.version}.js</jsFinalFile>
-            </configuration>
-            <goals>
-              <goal>minify</goal>
-            </goals>
-          </execution>
-        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+          <webResources>
+            <webResource>
+              <directory>.</directory>
+              <includes>
+                <include>LICENSE</include>
+              </includes>
+            </webResource>
+            <webResource>
+              <directory>${project.build.directory}/maven-shared-archive-resources/META-INF/</directory>
+              <includes>
+                <include>NOTICE</include>
+              </includes>
+            </webResource>
+          </webResources>
+
+        </configuration>
       </plugin>
-      -->
+
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
@@ -911,32 +918,7 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-          </archive>
-          <webResources>
-            <webResource>
-              <directory>.</directory>
-              <includes>
-                <include>LICENSE</include>
-              </includes>
-            </webResource>
-            <webResource>
-              <directory>${project.build.directory}/maven-shared-archive-resources/META-INF/</directory>
-              <includes>
-                <include>NOTICE</include>
-              </includes>
-            </webResource>
-          </webResources>
-        </configuration>
-      </plugin>
+
 
 
       <plugin>
