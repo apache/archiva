@@ -147,6 +147,8 @@ pipeline {
                                           options: publishers
                                 )
                                         {
+                                            sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                                            sh "./src/ci/scripts/prepareWorkspace.sh"
                                             sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
                                         }
                             }
