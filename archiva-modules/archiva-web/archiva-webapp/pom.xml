@@ -683,7 +683,12 @@
               <exclude>src/main/resources/META-INF/services/*</exclude>
               <exclude>src/main/resources/META-INF/cxf/*</exclude>
               <exclude>src/main/resources/META-INF/owasp/cve-suppressions.xml</exclude>
-              <exclude>src/main/frontend/**</exclude>
+              <exclude>src/main/archiva-web/*</exclude>
+              <exclude>src/main/archiva-web/node_modules/**</exclude>
+              <exclude>src/main/archiva-web/dist/**</exclude>
+              <exclude>src/main/archiva-web/src/polyfills.ts</exclude>
+              <exclude>src/main/archiva-web/e2e/protractor.conf.js</exclude>
+              <exclude>src/main/archiva-web/e2e/tsconfig.json</exclude>
             </excludes>
           </configuration>
         </plugin>
