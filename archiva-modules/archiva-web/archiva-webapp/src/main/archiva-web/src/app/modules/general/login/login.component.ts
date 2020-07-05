@@ -17,6 +17,9 @@
  * under the License.
  */
 import { Component, OnInit } from '@angular/core';
+// noinspection ES6UnusedImports
+import { FormsModule } from "@angular/forms";
+import { Logindata } from "../../../logindata";
 
 @Component({
   selector: 'app-login',
@@ -25,7 +28,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-  constructor() { }
+  model = new Logindata('', '');
+
+  submitted = false;
+
+  onSubmit() { this.submitted = true; }
+
+  get diagnostic() { return JSON.stringify(this.submitted); }
+
+  constructor() {  }
 
   ngOnInit(): void {
   }

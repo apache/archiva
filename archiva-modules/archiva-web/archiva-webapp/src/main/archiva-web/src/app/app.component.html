@@ -16,8 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<div class="app">
-
+<div class="app d-flex flex-column" >
   <header>
     <nav class="navbar navbar-expand-md fixed-top navbar-light " style="background-color: #c6cbd2;">
       <a class="navbar-brand" routerLink="/">
@@ -59,14 +58,14 @@
     </nav>
   </header>
 
-  <main>
-    <div class="container-fluid">
+  <main class="container-fluid flex-fill">
+    <div >
         <router-outlet></router-outlet>
     </div>
   </main>
 
-  <hr>
-  <div class="footer">
+  <hr />
+  <footer class="container-fluid">
     <div class="container">
       <div class="row">
         <div class="col-12">
@@ -74,6 +73,6 @@
         </div>
       </div>
     </div>
-  </div>
+  </footer>
 
 </div>

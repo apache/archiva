@@ -7,8 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -16,33 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/* You can add global styles to this file, and also import other style files */
 
-$archiva-orange: #f46e1b;
-$primary: $archiva-orange;
+export class Logindata {
 
+    constructor(
+        public username: string,
+        public password: string
+    ) {  }
 
-html {
-  height: 100%;
 }
-.app {
-  height: 100%;
-}
-
-
-body {
-  color: black;
-  font-weight: 400;
-  padding-top: 5rem;
-  min-height:100%;
-  height: 100%;
-}
-
-.flex-fill {
-  flex:1 1 auto;
-}
-
-@import "~bootstrap/scss/bootstrap";
-
-
-

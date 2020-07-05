@@ -27,6 +27,7 @@ import { AboutComponent } from './modules/general/about/about.component';
 import { LoginComponent } from './modules/general/login/login.component';
 import { NotFoundComponent } from './modules/general/not-found/not-found.component';
 import { SidemenuComponent } from './modules/general/sidemenu/sidemenu.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { SidemenuComponent } from './modules/general/sidemenu/sidemenu.component
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

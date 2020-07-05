@@ -16,4 +16,36 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<p>Login</p>
+<div class="container-md" >
+<div class="row">
+    <div class="col-6">
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+            <div class="form-group">
+                <label for="username" i18n="loginform|">Username</label>
+                <input type="text" class="form-control" id="username" aria-describedby="usernameHelp"
+                       required name="username"
+                       [(ngModel)]="model.username" #username="ngModel"
+                >
+                <small id="usernameHelp" class="form-text text-muted" i18n="inputhelp|">Enter your username.</small>
+
+                <div [hidden]="username.valid || username.pristine"
+                     class="alert alert-danger" i18n>
+                    Username is required
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password" i18n="loginform|">Password</label>
+                <input type="password" class="form-control" id="password" name="password"
+                    required="required"  [(ngModel)]="model.password" #password="ngModel"
+                >
+                <small id="passwordHelp" class="form-text text-muted" i18n="inputhelp|">Enter your password.</small>
+                <div [hidden]="password.valid || password.pristine"
+                     class="alert alert-danger" i18n>
+                    Password is required
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+</div>
