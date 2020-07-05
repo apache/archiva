@@ -35,6 +35,10 @@ ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer\
  archiva-modules/archiva-base/archiva-converter\
  archiva-modules/archiva-base/archiva-consumers/archiva-lucene-consumer\
  archiva-modules/maven/archiva-converter\
+ archiva-modules/plugins/oak-jcr-lucene\
+ archiva-modules/plugins/metadata-store-file\
+ archiva-modules/plugins/metadata-store-jcr\
+ archiva-modules/plugins/metadata-store-cassandra\
 "
 REMOVE_DIRS=".indexer"
 TMP_DIRECTORY=".tmp"
