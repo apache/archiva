@@ -683,6 +683,7 @@
               <exclude>src/main/resources/META-INF/services/*</exclude>
               <exclude>src/main/resources/META-INF/cxf/*</exclude>
               <exclude>src/main/resources/META-INF/owasp/cve-suppressions.xml</exclude>
+              <exclude>src/main/frontend/**</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -931,6 +932,7 @@
           <suppressionFile>${project.basedir}/src/main/resources/META-INF/owasp/cve-suppressions.xml</suppressionFile>
           <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
           <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+          <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
         </configuration>
         <executions>
           <execution>
