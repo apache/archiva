@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Olivier Lamy
@@ -144,6 +145,34 @@ public class ArchivaLdapRoleMapperConfiguration
             }
 
             return res;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+    }
+
+    @Override
+    public Collection<String> getLdapGroupMapping( final String groupName ) throws MappingException
+    {
+        try
+        {
+            RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+                redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
+
+            List<LdapGroupMapping> ldapGroupMappings = redbackRuntimeConfiguration.getLdapGroupMappings();
+
+            if ( ldapGroupMappings == null )
+            {
+                return Collections.EMPTY_LIST;
+            }
+
+            Optional<LdapGroupMapping> result = ldapGroupMappings.stream( ).filter( mapping -> mapping.getGroup( ).equals( groupName ) ).findFirst( );
+            if (result.isPresent()) {
+                return result.get( ).getRoleNames( );
+            } else {
+                throw new MappingException( "Group " + groupName + " not found" );
+            }
         }
         catch ( RepositoryAdminException e )
         {
