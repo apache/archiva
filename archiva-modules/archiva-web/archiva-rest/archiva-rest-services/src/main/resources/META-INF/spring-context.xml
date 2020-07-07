@@ -51,7 +51,7 @@
   <bean id="redbackJacksonXMLMapper" class="com.fasterxml.jackson.dataformat.xml.XmlMapper" />
 
 
-  <jaxrs:server id="archivaServices" address="/archivaServices" >
+  <jaxrs:server name="archivaServices" address="/archivaServices" >
 
     <jaxrs:providers>
       <ref bean="jsonProvider" />
