@@ -90,7 +90,8 @@ public class StorageUtil
      */
     public static Stream<StorageAsset> newAssetStream( StorageAsset start, boolean parallel )
     {
-        return StreamSupport.stream( new AssetSpliterator( start ), parallel );
+        final AssetSpliterator spliterator = new AssetSpliterator( start );
+        return StreamSupport.stream( spliterator, parallel ).onClose( ( ) -> spliterator.close( ) );
     }
 
 
