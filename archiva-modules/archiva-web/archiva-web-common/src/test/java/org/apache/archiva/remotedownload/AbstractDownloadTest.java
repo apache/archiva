@@ -24,6 +24,7 @@ import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.redback.rest.api.services.UserService;
+import org.apache.archiva.redback.rest.services.BaseSetup;
 import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
@@ -130,7 +131,7 @@ public abstract class AbstractDownloadTest
         String adminPwdSysProps = System.getProperty( "rest.admin.pwd" );
         if ( StringUtils.isBlank( adminPwdSysProps ) )
         {
-            return encode( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME, FakeCreateAdminService.ADMIN_TEST_PWD );
+            return encode( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME, BaseSetup.getAdminPwd() );
         }
         return encode( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME, adminPwdSysProps );
     }
@@ -176,7 +177,7 @@ public abstract class AbstractDownloadTest
         user.setEmail( "toto@toto.fr" );
         user.setFullName( "the root user" );
         user.setUsername( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME );
-        user.setPassword( FakeCreateAdminService.ADMIN_TEST_PWD );
+        user.setPassword( BaseSetup.getAdminPwd() );
 
         getUserService( null ).createAdminUser( user );
 

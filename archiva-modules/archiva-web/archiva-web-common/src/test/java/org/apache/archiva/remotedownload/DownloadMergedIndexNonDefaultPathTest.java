@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.rest.services.BaseSetup;
 import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
@@ -196,7 +197,7 @@ public class DownloadMergedIndexNonDefaultPathTest
         remoteRepository.setUrl( "http://localhost:" + port + "/repository/test-group" );
         remoteRepository.setRemoteIndexUrl( "http://localhost:" + port + "/repository/test-group/" + path );
         remoteRepository.setUserName( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME );
-        remoteRepository.setPassword( FakeCreateAdminService.ADMIN_TEST_PWD );
+        remoteRepository.setPassword( BaseSetup.getAdminPwd() );
 
         getRemoteRepositoriesService().addRemoteRepository( remoteRepository );
 
