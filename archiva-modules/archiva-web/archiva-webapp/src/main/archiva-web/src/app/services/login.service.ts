@@ -16,34 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component, OnInit } from '@angular/core';
-// noinspection ES6UnusedImports
-import { FormsModule } from "@angular/forms";
-import { Logindata } from "../../../logindata";
-import { LoginService } from "../../../services/login.service";
+import { Injectable } from '@angular/core';
+import { ArchivaRequestService } from "./archiva-request.service";
 
-@Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+
+@Injectable({
+  providedIn: 'root'
 })
-export class LoginComponent implements OnInit {
+export class LoginService {
 
-  model = new Logindata('', '');
+  login(username: string, password: string) {
 
-  submitted = false;
-
-  onSubmit() { this.submitted = true; }
-
-  get diagnostic() { return JSON.stringify(this.submitted); }
-
-  login(): void {
-    this.loginService.login(username, password);
+      throw new Error("Method not implemented.");
   }
 
-  constructor(private loginService: LoginService) {  }
-
-  ngOnInit(): void {
-  }
-
+  constructor(private archiva : ArchivaRequestService) { }
 }

@@ -16,34 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component, OnInit } from '@angular/core';
-// noinspection ES6UnusedImports
-import { FormsModule } from "@angular/forms";
-import { Logindata } from "../../../logindata";
-import { LoginService } from "../../../services/login.service";
+import { Injectable } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { environment } from "../../environments/environment";
 
-@Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+@Injectable({
+  providedIn: 'root'
 })
-export class LoginComponent implements OnInit {
+export class ArchivaRequestService {
 
-  model = new Logindata('', '');
 
-  submitted = false;
-
-  onSubmit() { this.submitted = true; }
-
-  get diagnostic() { return JSON.stringify(this.submitted); }
-
-  login(): void {
-    this.loginService.login(username, password);
+  executeRestCall(type: string, module: string, service: string, input: object, callback: (result: object) => void ) : void {
+    let modulePath = environment.application.servicePaths[module];
+    let url = environment.application.baseUrl + environment.application.restPath + "/"+modulePath+"/" + service + "Service";
+    if (type == "get") {
+      this.http.get(url,)
+    } else if ( type == "post") {
+      this.http.post(url);
+    }
   }
 
-  constructor(private loginService: LoginService) {  }
-
-  ngOnInit(): void {
-  }
-
+  constructor(private http : HttpClient) { }
 }

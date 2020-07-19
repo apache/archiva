@@ -16,34 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component, OnInit } from '@angular/core';
-// noinspection ES6UnusedImports
-import { FormsModule } from "@angular/forms";
-import { Logindata } from "../../../logindata";
-import { LoginService } from "../../../services/login.service";
+import { TestBed } from '@angular/core/testing';
 
-@Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
-})
-export class LoginComponent implements OnInit {
+import { ArchivaRequestService } from './archiva-request.service';
 
-  model = new Logindata('', '');
+describe('ArchivaRequestService', () => {
+  let service: ArchivaRequestService;
 
-  submitted = false;
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(ArchivaRequestService);
+  });
 
-  onSubmit() { this.submitted = true; }
-
-  get diagnostic() { return JSON.stringify(this.submitted); }
-
-  login(): void {
-    this.loginService.login(username, password);
-  }
-
-  constructor(private loginService: LoginService) {  }
-
-  ngOnInit(): void {
-  }
-
-}
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
