@@ -43,7 +43,7 @@ publishers = [artifactsPublisher(disabled: false),
 cmdLine = (env.NONAPACHEORG_RUN != 'y' && env.BRANCH_NAME == 'master') ? "clean deploy" : "clean install"
 
 
-        INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
+        INTEGRATION_PIPELINE = "/Archiva/Archiva-IntegrationTests-Gitbox"
 
 pipeline {
     agent {
