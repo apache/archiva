@@ -131,7 +131,7 @@ public class DownloadSnapshotTest
         RoleManagementService roleManagementService = getRoleManagementService( authorizationHeader );
 
         if ( !roleManagementService.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER,
-                                                         id ).isExists() )
+                                                         id ) )
         {
             roleManagementService.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, id );
         }
