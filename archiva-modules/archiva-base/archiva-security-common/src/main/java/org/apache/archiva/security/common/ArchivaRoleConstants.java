@@ -64,6 +64,8 @@ public class ArchivaRoleConstants
 
     public static final String OPERATION_REPOSITORY_UPLOAD = "archiva-upload-repository";
 
+    public static final String OPERATION_FILE_UPLOAD = "archiva-upload-file";
+
     public static final String OPERATION_REPOSITORY_DELETE = "archiva-delete-artifact";
 
     public static final String OPERATION_MERGE_REPOSITORY = "archiva-merge-repository";

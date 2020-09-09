@@ -149,7 +149,7 @@ public interface BrowseService
     @Path("metadata/{g}/{a}/{v}/{key}/{value}")
     @PUT
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @RedbackAuthorization(noPermission = false, noRestriction = false, permissions = "archiva-add-metadata")
+    @RedbackAuthorization( permissions = "archiva-add-metadata", resource = "{repositoryId}")
     ActionStatus addMetadata( @PathParam("g") String groupId, @PathParam("a") String artifactId,
                               @PathParam("v") String version, @PathParam("key") String key, @PathParam("value") String value,
                               @QueryParam("repositoryId") String repositoryId )
@@ -158,7 +158,7 @@ public interface BrowseService
     @Path("metadata/{g}/{a}/{v}/{key}")
     @DELETE
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @RedbackAuthorization(noPermission = false, noRestriction = false, permissions = "archiva-add-metadata")
+    @RedbackAuthorization( permissions = "archiva-add-metadata", resource = "{repositoryId}")
     ActionStatus deleteMetadata( @PathParam("g") String groupId, @PathParam("a") String artifactId,
                                  @PathParam("v") String version, @PathParam("key") String key,
                                  @QueryParam("repositoryId") String repositoryId )
@@ -166,7 +166,7 @@ public interface BrowseService
 
     @Path("importMetadata")
     @POST
-    @RedbackAuthorization(noPermission = false, noRestriction = false, permissions = "archiva-add-metadata")
+    @RedbackAuthorization( permissions = "archiva-add-metadata", resource = "{repository}")
     ActionStatus importMetadata( MetadataAddRequest metadataAddRequest, @QueryParam("repository") String repository )
         throws ArchivaRestServiceException;
 

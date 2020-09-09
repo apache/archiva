@@ -48,7 +48,7 @@ public interface MergeRepositoriesService
     @Path ("mergeConflictedArtifacts/{sourceRepositoryId}/{targetRepositoryId}")
     @GET
     @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY)
+    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY, resource = "{sourceRepositoryId}")
     List<Artifact> getMergeConflictedArtifacts( @PathParam ("sourceRepositoryId") String sourceRepositoryId,
                                                 @PathParam ("targetRepositoryId") String targetRepositoryId )
         throws ArchivaRestServiceException;
@@ -59,7 +59,7 @@ public interface MergeRepositoriesService
      */
     @Path ("mergeRepositories/{sourceRepositoryId}/{targetRepositoryId}/{skipConflicts}")
     @GET
-    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY)
+    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_MERGE_REPOSITORY, resource = "{sourceRepositoryId}")
     void mergeRepositories( @PathParam ("sourceRepositoryId") String sourceRepositoryId,
                             @PathParam ("targetRepositoryId") String targetRepositoryId,
                             @PathParam ("skipConflicts") boolean skipConflicts )

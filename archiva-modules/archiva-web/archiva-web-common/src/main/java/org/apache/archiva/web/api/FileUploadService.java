@@ -48,14 +48,14 @@ public interface FileUploadService
     @POST
     @Consumes( MediaType.MULTIPART_FORM_DATA )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_FILE_UPLOAD )
     FileMetadata post( MultipartBody multipartBody )
         throws ArchivaRestServiceException;
 
     @Path( "{fileName}" )
     @DELETE
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_FILE_UPLOAD )
     Boolean deleteFile( @PathParam( "fileName" ) String fileName )
         throws ArchivaRestServiceException;
 
@@ -63,7 +63,7 @@ public interface FileUploadService
     @Path( "sessionFileMetadatas" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_FILE_UPLOAD )
     List<FileMetadata> getSessionFileMetadatas()
         throws ArchivaRestServiceException;
 
@@ -80,7 +80,7 @@ public interface FileUploadService
     @Path( "clearUploadedFiles" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_FILE_UPLOAD )
     Boolean clearUploadedFiles()
         throws ArchivaRestServiceException;
 
