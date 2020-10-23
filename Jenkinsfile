@@ -28,11 +28,11 @@
  * Only the war and zip artifacts are archived in the jenkins build archive.
  */
 LABEL = 'ubuntu && !H23'
-buildJdk = 'JDK 1.8 (latest)'
-buildJdk9 = 'JDK 1.9 (latest)'
-buildJdk10 = 'JDK 10 (latest)'
-buildJdk11 = 'JDK 11 (latest)'
-buildMvn = 'Maven 3.5.4'
+buildJdk = 'jdk_1.8_latest'
+buildJdk9 = 'jdk_1.9_latest'
+buildJdk10 = 'jdk_10_latest'
+buildJdk11 = 'jdk_11_latest'
+buildMvn = 'maven_3.5.4'
 //localRepository = ".repository"
 //localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
 mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'

@@ -25,8 +25,8 @@
  */
 
 LABEL = 'ubuntu'
-buildJdk = 'JDK 1.8 (latest)'
-buildMvn = 'Maven 3.5.4'
+buildJdk = 'jdk_1.8_latest'
+buildMvn = 'maven_3.5.4'
 deploySettings = 'archiva-uid-jenkins'
 DOCKERHUB_CREDS = 'c725478f-9125-460a-900f-1da562e51026'
 //localRepository = ".repository"
