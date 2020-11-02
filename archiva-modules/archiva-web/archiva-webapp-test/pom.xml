@@ -53,20 +53,6 @@
       <artifactId>archiva-webapp</artifactId>
       <type>war</type>
     </dependency>
-    <!--    <dependency>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-utils</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-slf4j-logging</artifactId>
-          <exclusions>
-            <exclusion>
-              <artifactId>plexus-component-api</artifactId>
-              <groupId>org.codehaus.plexus</groupId>
-            </exclusion>
-          </exclusions>
-        </dependency>-->
 
     <!--
       jcr-oak currently needs guava 15.0 and selenium webdriver needs 22.0
@@ -250,12 +236,6 @@
 
     <!-- End of Selenium dependencies -->
 
-    <!-- Dependency for MavenConnectionTest -->
-    <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-    </dependency>
-
     <!-- Dependencies below are provided by the appserver -->
     <dependency>
       <groupId>org.apache.derby</groupId>
@@ -334,10 +314,6 @@
     </dependency>
 
 
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-slf4j-logging</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
