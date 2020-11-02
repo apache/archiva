@@ -74,4 +74,7 @@ export class LoginComponent implements OnInit {
     this.loginForm.reset();
     this.authenticationService.login(customerData.userid, customerData.password, resultHandler);
   }
+
+
+  
 }

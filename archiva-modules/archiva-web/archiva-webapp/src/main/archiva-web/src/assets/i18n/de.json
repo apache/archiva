@@ -11,6 +11,7 @@
   "menu": {
     "home": "Home",
     "login": "Anmelden",
+    "logout": "Abmelden",
     "about": "Über",
     "contact": "Kontakt"
   },

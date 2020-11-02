@@ -16,49 +16,81 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Injectable } from '@angular/core';
-import {HttpClient, HttpEvent, HttpResponse} from "@angular/common/http";
-import { environment } from "../../environments/environment";
+import {Injectable} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
+import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {ErrorMessage} from "../model/error-message";
 import {TranslateService} from "@ngx-translate/core";
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ArchivaRequestService {
 
-  constructor(private http : HttpClient, private translator : TranslateService) { }
+    // Stores the access token locally
+    accessToken: string;
 
-  executeRestCall<R>(type: string, module: string, service: string, input: object ) : Observable<R> {
-    let modulePath = environment.application.servicePaths[module];
-    let url = environment.application.baseUrl + environment.application.restPath + "/" + modulePath + "/" + service;
-    let token = localStorage.getItem("access_token")
-    let headers = null;
-    if (token != null) {
-      headers = {
-        "Authorization": "Bearer " + localStorage.getItem("access_token")
-      }
-    } else {
-      headers = {};
+    constructor(private http: HttpClient, private translator: TranslateService) {
     }
-    if (type == "get") {
-      return this.http.get<R>(url, {"headers":headers});
-    } else if ( type == "post") {
-      return this.http.post<R>(url, input, {"headers":headers});
-    }
-  }
 
-
-  translateError(errorMsg : ErrorMessage) : string {
-    if (errorMsg.errorKey!=null && errorMsg.errorKey!='') {
-      let parms = {};
-      if (errorMsg.args!=null && errorMsg.args.length>0) {
-        for ( let i=0; i<errorMsg.args.length; i++) {
-          parms['arg' + i] = errorMsg.args[i];
+    /**
+     * Executes a rest call to the archiva / redback REST services.
+     * @param type the type of the call (get, post, update)
+     * @param module the module (archiva, redback)
+     * @param service the REST service to call
+     * @param input the input data, if this is a POST or UPDATE request
+     */
+    executeRestCall<R>(type: string, module: string, service: string, input: object): Observable<R> {
+        let modulePath = environment.application.servicePaths[module];
+        let url = environment.application.baseUrl + environment.application.restPath + "/" + modulePath + "/" + service;
+        let token = this.getToken();
+        let headers = null;
+        if (token != null) {
+            headers = {
+                "Authorization": "Bearer " + token
+            }
+        } else {
+            headers = {};
         }
-      }
-      return this.translator.instant('api.'+errorMsg.errorKey, parms);
+        if (type == "get") {
+            return this.http.get<R>(url, {"headers": headers});
+        } else if (type == "post") {
+            return this.http.post<R>(url, input, {"headers": headers});
+        }
     }
-  }
+
+    public resetToken() {
+        this.accessToken = null;
+    }
+
+    private getToken(): string {
+        if (this.accessToken != null) {
+            return this.accessToken;
+        } else {
+            let token = localStorage.getItem("access_token");
+            if (token != null && token != "") {
+                this.accessToken = token;
+                return token;
+            } else {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Translates a given error message to the current set language.
+     * @param errorMsg the errorMsg as returned by a REST call
+     */
+    public translateError(errorMsg: ErrorMessage): string {
+        if (errorMsg.errorKey != null && errorMsg.errorKey != '') {
+            let parms = {};
+            if (errorMsg.args != null && errorMsg.args.length > 0) {
+                for (let i = 0; i < errorMsg.args.length; i++) {
+                    parms['arg' + i] = errorMsg.args[i];
+                }
+            }
+            return this.translator.instant('api.' + errorMsg.errorKey, parms);
+        }
+    }
 }

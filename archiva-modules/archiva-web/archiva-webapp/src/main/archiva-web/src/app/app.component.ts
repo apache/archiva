@@ -16,28 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthenticationService } from "./services/authentication.service";
+import {UserService} from "./services/user.service";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy{
   title = 'archiva-web';
   version = 'Angular version 10.0.2';
 
   constructor(
-      public translate: TranslateService
+      public translate: TranslateService,
+      public auth: AuthenticationService,
+      public user: UserService
   ) {
     translate.addLangs(['en', 'de']);
     translate.setDefaultLang('en');
-    translate.use('en');
   }
 
   switchLang(lang: string) {
     this.translate.use(lang);
+    this.user.userInfo.language = lang;
+    this.user.persistUserInfo();
   }
 
   langIcon() : string {
@@ -49,5 +54,26 @@ export class AppComponent {
       default:
         return "flag-icon-" + this.translate.currentLang;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.auth.LoginEvent.unsubscribe();
+  }
+
+
+  ngOnInit(): void {
+    let lang = this.user.userInfo.language;
+    if (lang==null) {
+      this.translate.use('en');
+    } else {
+      this.translate.use(lang);
+    }
+    // Subscribe to login event in authenticator to switch the language
+    this.auth.LoginEvent.subscribe(userInfo => {
+      if (userInfo.language != null) {
+        this.switchLang(userInfo.language);
+      }
+    })
+
   }
 }

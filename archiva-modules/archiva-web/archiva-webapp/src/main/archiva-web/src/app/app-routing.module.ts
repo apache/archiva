@@ -30,6 +30,7 @@ const routes: Routes = [
   { path: 'contact', component: ContactComponent },
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'logout', component: HomeComponent },
   { path: '**', component: NotFoundComponent }
 ];
 

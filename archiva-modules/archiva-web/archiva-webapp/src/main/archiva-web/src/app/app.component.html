@@ -16,70 +16,84 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<div class="app d-flex flex-column" >
-  <header>
-    <nav class="navbar navbar-expand-md fixed-top navbar-light " style="background-color: #c6cbd2;">
-      <a class="navbar-brand" routerLink="/">
-        <img src="../assets/params/images/archiva_logo_40h.png" alt="ARCHIVA">
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsDefault"
-        aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle Navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarsDefault">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <a  class="nav-link" routerLink="/">
-              <i class="fas fa-home mr-1"></i>{{ 'menu.home' |translate }}
+<div class="app d-flex flex-column">
+    <header>
+        <nav class="navbar navbar-expand-md fixed-top navbar-light " style="background-color: #c6cbd2;">
+            <a class="navbar-brand" routerLink="/">
+                <img src="../assets/params/images/archiva_logo_40h.png" alt="ARCHIVA">
             </a>
-          </li>
-          <li class="nav-item active">
-            <a  class="nav-link" routerLink="/login" data-toggle="modal" data-target="#loginModal">
-              <i class="fas fa-user mr-1"></i>{{'menu.login' | translate}}
-            </a>
-          </li>
-          <li class="nav-item active dropdown">
-            <a class="nav-link dropdown-toggle" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="flag-icon {{langIcon()}}"></span></a>
-            <div class="dropdown-menu" aria-labelledby="dropdown09">
-              <a class="dropdown-item" href="#en" (click)="switchLang('en')"><span class="flag-icon flag-icon-gb"> </span>  English</a>
-              <a class="dropdown-item" href="#de" (click)="switchLang('de')"><span class="flag-icon flag-icon-de"> </span>  German</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsDefault"
+                    aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle Navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarsDefault">
+                <div class="navbar-nav ml-auto">
+                    <span *ngIf="auth.loggedIn" class="navbar-text border-right pr-2 mr-2">
+                      {{user.userInfo.fullName}}
+                    </span>
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" routerLink="/">
+                                <i class="fas fa-home mr-1"></i>{{ 'menu.home' |translate }}
+                            </a>
+                        </li>
+                        <li *ngIf="!auth.loggedIn" class="nav-item active">
+                            <a class="nav-link" routerLink="/login" data-toggle="modal" data-target="#loginModal">
+                                <i class="fas fa-user mr-1"></i>{{'menu.login' | translate}}
+                            </a>
+                        </li>
+                        <li *ngIf="auth.loggedIn" class="nav-item active">
+                            <a class="nav-link" routerLink="/logout" (click)="auth.logout()">
+                                <i class="fas fa-user mr-1"></i>{{'menu.logout' | translate}}
+                            </a>
+                        </li>
+                        <li class="nav-item active dropdown">
+                            <a class="nav-link dropdown-toggle" id="dropdown09" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false"><span class="flag-icon {{langIcon()}}"></span></a>
+                            <div class="dropdown-menu" aria-labelledby="dropdown09">
+                                <a class="dropdown-item" href="#en" (click)="switchLang('en')"><span
+                                        class="flag-icon flag-icon-gb"> </span> English</a>
+                                <a class="dropdown-item" href="#de" (click)="switchLang('de')"><span
+                                        class="flag-icon flag-icon-de"> </span> German</a>
+                            </div>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" routerLink="/about">
+                                <i class="far fa-question-circle mr-1"></i>{{'menu.about' | translate}}
+                            </a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" routerLink="/contact">
+                                <i class="fas fa-envelope mr-1"></i>{{ 'menu.contact' | translate }}
+                            </a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="https://github.com/apache/archiva">
+                                <i class="fab fa-github mr-1"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-          </li>
-          <li class="nav-item active">
-            <a  class="nav-link" routerLink="/about">
-              <i class="far fa-question-circle mr-1"></i>{{'menu.about' | translate}}
-            </a>
-          </li>
-          <li class="nav-item active">
-            <a  class="nav-link" routerLink="/contact">
-              <i class="fas fa-envelope mr-1"></i>{{ 'menu.contact' | translate }}
-            </a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="https://github.com/apache/archiva">
-              <i class="fab fa-github mr-1"></i>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </header>
+        </nav>
+    </header>
 
-  <main class="container-fluid flex-fill">
-    <div >
-        <router-outlet></router-outlet>
-    </div>
-  </main>
-
-  <hr />
-  <footer class="container-fluid">
-    <div class="container">
-      <div class="row">
-        <div class="col-12">
-          <p class="text-center text-black-50">&copy; 2020 - archiva.apache.org</p>
+    <main class="container-fluid flex-fill">
+        <div>
+            <router-outlet></router-outlet>
         </div>
-      </div>
-    </div>
-  </footer>
+    </main>
+
+    <hr/>
+    <footer class="container-fluid">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <p class="text-center text-black-50">&copy; 2020 - archiva.apache.org</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
 </div>
