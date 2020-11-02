@@ -18,17 +18,19 @@
  */
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './modules/general/home/home.component';
 import { ContactComponent } from './modules/general/contact/contact.component';
 import { AboutComponent } from './modules/general/about/about.component';
-import { LoginComponent } from './modules/general/login/login.component';
 import { NotFoundComponent } from './modules/general/not-found/not-found.component';
 import { SidemenuComponent } from './modules/general/sidemenu/sidemenu.component';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { LoginComponent } from './modules/general/login/login.component';
 
 @NgModule({
   declarations: [
@@ -36,17 +38,29 @@ import {FormsModule} from "@angular/forms";
     HomeComponent,
     ContactComponent,
     AboutComponent,
-    LoginComponent,
     NotFoundComponent,
     SidemenuComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: httpTranslateLoader,
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function httpTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}

@@ -16,11 +16,12 @@
  * under the License.
  */
 
-export class Logindata {
+import { ErrorResult } from './error-result';
+import { ErrorMessage } from './error-message';
 
-    constructor(
-        public username: string,
-        public password: string
-    ) {  }
-
-}
+describe('ErrorResult', () => {
+  it('should create an instance', () => {
+    const resultArray = new ErrorMessage[0]();
+    expect(resultArray).toBeTruthy();
+  });
+});

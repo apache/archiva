@@ -29,28 +29,35 @@
       <div class="collapse navbar-collapse" id="navbarsDefault">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item active">
-            <a i18n="navbar|" class="nav-link" routerLink="/">
-              <i class="fas fa-home mr-1"></i>Home
+            <a  class="nav-link" routerLink="/">
+              <i class="fas fa-home mr-1"></i>{{ 'menu.home' |translate }}
             </a>
           </li>
           <li class="nav-item active">
-            <a i18n="navbar|" class="nav-link" routerLink="/about">
-              <i class="far fa-question-circle mr-1"></i>About
+            <a  class="nav-link" routerLink="/login" data-toggle="modal" data-target="#loginModal">
+              <i class="fas fa-user mr-1"></i>{{'menu.login' | translate}}
+            </a>
+          </li>
+          <li class="nav-item active dropdown">
+            <a class="nav-link dropdown-toggle" id="dropdown09" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="flag-icon {{langIcon()}}"></span></a>
+            <div class="dropdown-menu" aria-labelledby="dropdown09">
+              <a class="dropdown-item" href="#en" (click)="switchLang('en')"><span class="flag-icon flag-icon-gb"> </span>  English</a>
+              <a class="dropdown-item" href="#de" (click)="switchLang('de')"><span class="flag-icon flag-icon-de"> </span>  German</a>
+            </div>
+          </li>
+          <li class="nav-item active">
+            <a  class="nav-link" routerLink="/about">
+              <i class="far fa-question-circle mr-1"></i>{{'menu.about' | translate}}
             </a>
           </li>
           <li class="nav-item active">
-            <a i18n="navbar|" class="nav-link" routerLink="/contact">
-              <i class="fas fa-envelope mr-1"></i>Contact
-            </a>
-          </li>
-          <li class="nav-item active">
-            <a i18n="navbar|" class="nav-link" routerLink="/login">
-              <i class="fas fa-user mr-1"></i>Login
+            <a  class="nav-link" routerLink="/contact">
+              <i class="fas fa-envelope mr-1"></i>{{ 'menu.contact' | translate }}
             </a>
           </li>
           <li class="nav-item active">
             <a class="nav-link" href="https://github.com/apache/archiva">
-              <i class="fab fa-github mr-1"></i>Github
+              <i class="fab fa-github mr-1"></i>
             </a>
           </li>
         </ul>

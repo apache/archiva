@@ -689,6 +689,7 @@
               <exclude>src/main/archiva-web/src/polyfills.ts</exclude>
               <exclude>src/main/archiva-web/e2e/protractor.conf.js</exclude>
               <exclude>src/main/archiva-web/e2e/tsconfig.json</exclude>
+              <exclude>src/main/archiva-web/src/assets/i18n/*.json</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -735,7 +736,7 @@
           <webApp>
             <contextPath>/archiva</contextPath>
           </webApp>
-          <jettyXml>${basedir}/src/test/jetty-env.xml</jettyXml>
+          <jettyXml>${basedir}/src/test/resources/jetty-env.xml</jettyXml>
           <systemProperties>
             <systemProperty>
               <name>plexus.home</name>
@@ -787,7 +788,7 @@
             </systemProperty>
             <systemProperty>
               <name>log4j.configurationFile</name>
-              <value>${basedir}/src/test/log4j2-test.xml</value>
+              <value>${basedir}/src/test/resources/log4j2-test.xml</value>
             </systemProperty>
             <systemProperty>
               <name>AsyncLoggerConfig.WaitStrategy</name>
@@ -801,8 +802,12 @@
               <name>openjpa.Log</name>
               <value>${openjpa.Log}</value>
             </systemProperty>
+            <systemProperty>
+              <name>redback.admin.creation.file</name>
+              <value>${basedir}/src/test/resources/auto-admin-creation.properties</value>
+            </systemProperty>
           </systemProperties>
-          <useTestScope>false</useTestScope>
+          <useTestScope>true</useTestScope>
         </configuration>
         <dependencies>
           <dependency>

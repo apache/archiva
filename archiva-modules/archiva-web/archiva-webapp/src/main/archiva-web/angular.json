@@ -13,10 +13,14 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+          "sourceLocale": "en-US"
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "localize": false,
             "outputPath": "dist/archiva-web",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -77,12 +81,6 @@
             "production": {
               "browserTarget": "archiva-web:build:production"
             }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "archiva-web:build"
           }
         },
         "test": {

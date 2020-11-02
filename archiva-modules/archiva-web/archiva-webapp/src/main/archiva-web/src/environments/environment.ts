@@ -25,15 +25,16 @@ export const environment = {
   production: false,
   application:
   {
+    client_id:'archiva_web_client',
     baseUrl: 'http://localhost:8080',
-    restPath: '/restServices',
+    restPath: '/archiva/api/v2',
     servicePaths: {
-      archiva:"archivaServices",
-      redback:"redbackServices",
-      ui:"archivaUiServices"
+      archiva:"archiva",
+      redback:"redback",
+      ui:"archivaUi"
     },
     name: 'archiva-starter',
-    angular: 'Angular 10.0.2',
+    angular: 'Angular 10.2.0',
     bootstrap: 'Bootstrap 4.5.0',
     fontawesome: 'Font Awesome 5.13.1'
   }

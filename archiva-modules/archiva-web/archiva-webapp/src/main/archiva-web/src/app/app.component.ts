@@ -17,6 +17,7 @@
  * under the License.
  */
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -26,4 +27,27 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'archiva-web';
   version = 'Angular version 10.0.2';
+
+  constructor(
+      public translate: TranslateService
+  ) {
+    translate.addLangs(['en', 'de']);
+    translate.setDefaultLang('en');
+    translate.use('en');
+  }
+
+  switchLang(lang: string) {
+    this.translate.use(lang);
+  }
+
+  langIcon() : string {
+    switch (this.translate.currentLang) {
+      case "de":
+        return "flag-icon-de";
+      case "en":
+        return "flag-icon-gb";
+      default:
+        return "flag-icon-" + this.translate.currentLang;
+    }
+  }
 }

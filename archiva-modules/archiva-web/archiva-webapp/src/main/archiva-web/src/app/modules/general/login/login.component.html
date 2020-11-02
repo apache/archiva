@@ -16,36 +16,38 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<div class="container-md" >
-<div class="row">
-    <div class="col-6">
-        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-            <div class="form-group">
-                <label for="username" i18n="loginform|">Username</label>
-                <input type="text" class="form-control" id="username" aria-describedby="usernameHelp"
-                       required name="username"
-                       [(ngModel)]="model.username" #username="ngModel"
-                >
-                <small id="usernameHelp" class="form-text text-muted" i18n="inputhelp|">Enter your username.</small>
 
-                <div [hidden]="username.valid || username.pristine"
-                     class="alert alert-danger" i18n>
-                    Username is required
+<!-- Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form [formGroup]="loginForm" (ngSubmit)="login(loginForm.value)" >
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5  class="modal-title" id="loginModalLabel">{{'login.title'|translate}}</h5>
+                <button type="button" #closebutton class="close" data-dismiss="modal" aria-label="Close" >
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="userid" id="userid-label" >{{'login.userid' | translate}}</label>
+                    <input id="userid" aria-labelledby="userid-label" class="form-control" placeholder="userid" formControlName="userid" />
+                </div>
+                <div class="form-group">
+                    <label for="password" id="password-label" >{{'login.password' | translate}}</label>
+                    <input id="password" aria-labelledby="password-label" class="form-control" type="password" formControlName="password" />
                 </div>
             </div>
-            <div class="form-group">
-                <label for="password" i18n="loginform|">Password</label>
-                <input type="password" class="form-control" id="password" name="password"
-                    required="required"  [(ngModel)]="model.password" #password="ngModel"
-                >
-                <small id="passwordHelp" class="form-text text-muted" i18n="inputhelp|">Enter your password.</small>
-                <div [hidden]="password.valid || password.pristine"
-                     class="alert alert-danger" i18n>
-                    Password is required
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" >{{'modal.close'|translate}}</button>
+                <button type="button" class="btn btn-primary" type="submit" >{{'login.submit'|translate}}</button>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
         </form>
+        <div *ngFor="let msg of errorMessages" class="alert alert-danger" >
+            {{msg}}
+        </div>
     </div>
 </div>
-</div>
+
+

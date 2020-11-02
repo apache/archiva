@@ -1,0 +1,20 @@
+{
+  "login": {
+    "title": "Login to Archiva",
+    "password": "Password",
+    "userid": "User Id",
+    "submit": "Login"
+  },
+  "modal" : {
+    "close": "Close"
+  },
+  "menu": {
+    "home": "Home",
+    "login": "Login",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "api" : {
+    "rb.auth.invalid_credentials": "Invalid credentials given"
+  }
+}

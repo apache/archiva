@@ -17,24 +17,48 @@
  * under the License.
  */
 import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
+import {HttpClient, HttpEvent, HttpResponse} from "@angular/common/http";
 import { environment } from "../../environments/environment";
+import {Observable} from "rxjs";
+import {ErrorMessage} from "../model/error-message";
+import {TranslateService} from "@ngx-translate/core";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArchivaRequestService {
 
+  constructor(private http : HttpClient, private translator : TranslateService) { }
 
-  executeRestCall(type: string, module: string, service: string, input: object, callback: (result: object) => void ) : void {
+  executeRestCall<R>(type: string, module: string, service: string, input: object ) : Observable<R> {
     let modulePath = environment.application.servicePaths[module];
-    let url = environment.application.baseUrl + environment.application.restPath + "/"+modulePath+"/" + service + "Service";
+    let url = environment.application.baseUrl + environment.application.restPath + "/" + modulePath + "/" + service;
+    let token = localStorage.getItem("access_token")
+    let headers = null;
+    if (token != null) {
+      headers = {
+        "Authorization": "Bearer " + localStorage.getItem("access_token")
+      }
+    } else {
+      headers = {};
+    }
     if (type == "get") {
-      this.http.get(url,)
+      return this.http.get<R>(url, {"headers":headers});
     } else if ( type == "post") {
-      this.http.post(url);
+      return this.http.post<R>(url, input, {"headers":headers});
     }
   }
 
-  constructor(private http : HttpClient) { }
+
+  translateError(errorMsg : ErrorMessage) : string {
+    if (errorMsg.errorKey!=null && errorMsg.errorKey!='') {
+      let parms = {};
+      if (errorMsg.args!=null && errorMsg.args.length>0) {
+        for ( let i=0; i<errorMsg.args.length; i++) {
+          parms['arg' + i] = errorMsg.args[i];
+        }
+      }
+      return this.translator.instant('api.'+errorMsg.errorKey, parms);
+    }
+  }
 }

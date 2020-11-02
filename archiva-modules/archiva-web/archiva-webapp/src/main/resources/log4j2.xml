@@ -91,12 +91,6 @@
     <logger name="net.sf.ehcache" level="warn"/>
 
     <!-- retained for Redback -->
-    <logger name="JPOX" level="warn"/>
-
-    <logger name="JPOX.MetaData" level="error"/>
-
-    <logger name="JPOX.RDBMS.SQL" level="error"/>
-
     <logger name="SQL" level="error"/>
 
     <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
@@ -117,7 +111,9 @@
 
     -->
 
-    <root level="info" includeLocation="true">
+    <logger name="com.fasterxml" level="trace"/>
+
+    <root level="debug" includeLocation="true">
       <appender-ref ref="rolling"/>
     </root>
   </loggers>

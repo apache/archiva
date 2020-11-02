@@ -22,8 +22,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { AboutComponent } from './modules/general/about/about.component';
 import { ContactComponent } from './modules/general/contact/contact.component';
 import { HomeComponent } from './modules/general/home/home.component';
-import { LoginComponent } from './modules/general/login/login.component';
 import { NotFoundComponent } from './modules/general/not-found/not-found.component';
+import { LoginComponent } from "./modules/general/login/login.component";
 
 const routes: Routes = [
   { path: '', component: HomeComponent, },

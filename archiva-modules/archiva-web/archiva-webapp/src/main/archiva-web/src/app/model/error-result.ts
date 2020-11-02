@@ -7,8 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -16,19 +15,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { TestBed } from '@angular/core/testing';
 
-import { LoginService } from './login.service';
+import {ErrorMessage} from "./error-message";
 
-describe('LoginService', () => {
-  let service: LoginService;
+export class ErrorResult {
+    errorMessages: Array<ErrorMessage>
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(LoginService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
+    constructor(errorMessages: Array<ErrorMessage>) {
+        this.errorMessages = errorMessages;
+    }
+}

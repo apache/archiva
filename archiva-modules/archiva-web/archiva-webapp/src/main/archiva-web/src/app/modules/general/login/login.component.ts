@@ -16,11 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { Component, OnInit } from '@angular/core';
-// noinspection ES6UnusedImports
-import { FormsModule } from "@angular/forms";
-import { Logindata } from "../../../logindata";
-import { LoginService } from "../../../services/login.service";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { AuthenticationService } from "../../../services/authentication.service";
+import {AccessToken} from "../../../model/access-token";
+import {ErrorMessage} from "../../../model/error-message";
+import {Router} from "@angular/router";
+import {ArchivaRequestService} from "../../../services/archiva-request.service";
 
 @Component({
   selector: 'app-login',
@@ -29,21 +31,47 @@ import { LoginService } from "../../../services/login.service";
 })
 export class LoginComponent implements OnInit {
 
-  model = new Logindata('', '');
+  @ViewChild("closebutton") closebutton;
 
-  submitted = false;
+  loginForm;
+  userid;
+  password;
+  errorMessages : string[];
 
-  onSubmit() { this.submitted = true; }
+  constructor(    private authenticationService: AuthenticationService,
+                  private formBuilder: FormBuilder,
+                  private router: Router,
+                  private archivaRequest : ArchivaRequestService ) {
+    this.loginForm = this.formBuilder.group({
+      userid: '',
+      password: '',
+    });
+    this.errorMessages = [];
 
-  get diagnostic() { return JSON.stringify(this.submitted); }
-
-  login(): void {
-    this.loginService.login(username, password);
   }
-
-  constructor(private loginService: LoginService) {  }
 
   ngOnInit(): void {
   }
 
+
+  login(customerData) {
+    this.errorMessages = [];
+    let resultHandler = (result: string, err?: ErrorMessage[] ) =>  {
+      if (result=="OK") {
+        this.closebutton.nativeElement.click();
+        this.router.navigate(["/"]);
+      } else if (result=="ERROR") {
+        if (err != null) {
+          this.errorMessages = [];
+          for (let msg of err) {
+            console.log("Error "+msg.errorKey);
+            this.errorMessages.push(this.archivaRequest.translateError(msg));
+          }
+        }
+      }
+    }
+    // Process checkout data here
+    this.loginForm.reset();
+    this.authenticationService.login(customerData.userid, customerData.password, resultHandler);
+  }
 }
