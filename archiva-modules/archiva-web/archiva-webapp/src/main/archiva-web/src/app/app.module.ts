@@ -31,6 +31,7 @@ import { NotFoundComponent } from './modules/general/not-found/not-found.compone
 import { SidemenuComponent } from './modules/general/sidemenu/sidemenu.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { LoginComponent } from './modules/general/login/login.component';
+import { ViewPermissionDirective } from './directives/view-permission.directive';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { LoginComponent } from './modules/general/login/login.component';
     NotFoundComponent,
     SidemenuComponent,
     LoginComponent,
+    ViewPermissionDirective,
   ],
   imports: [
     BrowserModule,

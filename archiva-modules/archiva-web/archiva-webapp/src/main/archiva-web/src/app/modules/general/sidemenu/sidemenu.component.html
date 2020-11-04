@@ -18,19 +18,22 @@
 -->
 <nav class="nav flex-column nav-pills " role="tablist" aria-orientation="vertical">
 
-  <a  class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Artifacts</a>
+  <div [appViewPermission]="perms.menu.repo.section">
+  <a  class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true" >Artifacts</a>
 
   <a  class="nav-link active my-0 py-0" href="#" data-toggle="pill"
-     role="tab" aria-controls="v-pills-search" aria-selected="true">Search</a>
+     role="tab" aria-controls="v-pills-search" aria-selected="true" >Search</a>
 
   <a  class="nav-link my-0 py-0"  href="#" data-toggle="pill"
      role="tab" aria-controls="v-pills-browse" aria-selected="false">Browse</a>
 
   <a  class="nav-link my-0 py-0" href="#" data-toggle="pill"
-     role="tab" aria-controls="v-pills-browse" aria-selected="false">Upload Artifact</a>
-
+     role="tab" aria-controls="v-pills-browse" aria-selected="false"
+    [appViewPermission]="perms.menu.repo.upload">Upload Artifact</a>
+  </div>
+  <div [appViewPermission]="perms.menu.admin.section">
   <a  class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true" data-toggle="pill"
-     role="tab" aria-controls="v-pills-home" aria-selected="false">Administration</a>
+     role="tab" aria-controls="v-pills-home" aria-selected="false" >Administration</a>
   <a  class="nav-link my-0 py-0" href="#" data-toggle="pill"
      role="tab" aria-controls="v-pills-browse" aria-selected="false">Repository Groups</a>
   <a  class="nav-link my-0 py-0" href="#" data-toggle="pill"
@@ -51,6 +54,8 @@
      role="tab" aria-controls="v-pills-browse" aria-selected="false">UI Configuration</a>
   <a   class="nav-link my-0 py-0" href="#" data-toggle="pill"
      role="tab" aria-controls="v-pills-browse" aria-selected="false">Reports</a>
+  </div>
+  <div [appViewPermission]="perms.menu.user.section">
   <a  class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true" data-toggle="pill"
      role="tab" aria-controls="v-pills-home" aria-selected="false">Users</a>
   <a   class="nav-link my-0 py-0" href="#" data-toggle="pill"
@@ -59,6 +64,7 @@
      role="tab" aria-controls="v-pills-browse" aria-selected="false">Roles</a>
   <a   class="nav-link my-0 py-0" href="#" data-toggle="pill"
      role="tab" aria-controls="v-pills-browse" aria-selected="false">Users Runtime Configuration</a>
+  </div>
   <a  class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true" data-toggle="pill"
      role="tab" aria-controls="v-pills-home" aria-selected="false">Documentation</a>
   <a   class="nav-link my-0 py-0" href="#" data-toggle="pill"

@@ -16,20 +16,14 @@
  * under the License.
  */
 
-export class UserInfo {
-    user_id:string;
-    id:string;
-    fullName:string;
-    email:string;
-    validated:boolean;
-    locked:boolean;
-    passwordChangeRequired:boolean;
-    permanent:boolean;
-    timestampAccountCreation:Date;
-    timestampLastLogin:Date;
-    timestampLastPasswordChange:Date;
-    readOnly:boolean;
-    userManagerId:string;
-    validationToken:string;
-    language:string;
+import {Operation} from "./operation";
+import {Resource} from "./resource";
+
+export class Permission {
+    name: string;
+    description: string;
+    permanent: boolean;
+    descriptionKey: string;
+    operation: Operation;
+    resource: Resource;
 }

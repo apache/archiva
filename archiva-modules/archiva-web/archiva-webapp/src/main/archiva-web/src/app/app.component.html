@@ -29,7 +29,7 @@
 
             <div class="collapse navbar-collapse" id="navbarsDefault">
                 <div class="navbar-nav ml-auto">
-                    <span *ngIf="auth.loggedIn" class="navbar-text border-right pr-2 mr-2">
+                    <span *ngIf="auth.authenticated" class="navbar-text border-right pr-2 mr-2">
                       {{user.userInfo.fullName}}
                     </span>
                     <ul class="navbar-nav">
@@ -38,12 +38,12 @@
                                 <i class="fas fa-home mr-1"></i>{{ 'menu.home' |translate }}
                             </a>
                         </li>
-                        <li *ngIf="!auth.loggedIn" class="nav-item active">
+                        <li *ngIf="!auth.authenticated" class="nav-item active">
                             <a class="nav-link" routerLink="/login" data-toggle="modal" data-target="#loginModal">
                                 <i class="fas fa-user mr-1"></i>{{'menu.login' | translate}}
                             </a>
                         </li>
-                        <li *ngIf="auth.loggedIn" class="nav-item active">
+                        <li *ngIf="auth.authenticated" class="nav-item active">
                             <a class="nav-link" routerLink="/logout" (click)="auth.logout()">
                                 <i class="fas fa-user mr-1"></i>{{'menu.logout' | translate}}
                             </a>

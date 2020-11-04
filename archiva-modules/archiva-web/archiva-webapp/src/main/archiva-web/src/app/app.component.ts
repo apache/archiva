@@ -62,17 +62,17 @@ export class AppComponent implements OnInit, OnDestroy{
 
 
   ngOnInit(): void {
-    let lang = this.user.userInfo.language;
-    if (lang==null) {
-      this.translate.use('en');
+    if (this.user.userInfo!=null && this.user.userInfo.language!=null ) {
+      this.translate.use(this.user.userInfo.language);
     } else {
-      this.translate.use(lang);
+      this.translate.use('en');
     }
     // Subscribe to login event in authenticator to switch the language
     this.auth.LoginEvent.subscribe(userInfo => {
       if (userInfo.language != null) {
         this.switchLang(userInfo.language);
       }
+      // console.log("Permissions: " + JSON.stringify(this.user.permissions));
     })
 
   }

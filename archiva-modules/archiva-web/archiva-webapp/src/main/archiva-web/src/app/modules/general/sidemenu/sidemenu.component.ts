@@ -17,6 +17,7 @@
  * under the License.
  */
 import { Component, OnInit } from '@angular/core';
+import {UserService} from "../../../services/user.service";
 
 @Component({
   selector: 'app-sidemenu',
@@ -25,7 +26,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidemenuComponent implements OnInit {
 
-  constructor() { }
+  perms;
+
+  constructor(private user: UserService) {
+    this.perms = user.uiPermissions;
+  }
 
   ngOnInit(): void {
   }

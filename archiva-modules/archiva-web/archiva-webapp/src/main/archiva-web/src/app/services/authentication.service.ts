@@ -33,17 +33,22 @@ import {UserInfo} from "../model/user-info";
     providedIn: 'root'
 })
 export class AuthenticationService {
-    loggedIn: boolean;
+    authenticated: boolean;
 
     /**
      * The LoginEvent is emitted, when a successful login happened. And the corresponding user info was retrieved.
      */
     public LoginEvent: EventEmitter<UserInfo> = new EventEmitter<UserInfo>();
 
+    /**
+     * The LogoutEvent is emitted, when the user has been logged out.
+     */
+    public LogoutEvent: EventEmitter<any> = new EventEmitter<any>();
+
 
     constructor(private rest: ArchivaRequestService,
                 private userService: UserService) {
-        this.loggedIn = false;
+        this.authenticated = false;
         this.restoreLoginData();
     }
 
@@ -55,12 +60,34 @@ export class AuthenticationService {
                 let expDate = new Date(expirationDate);
                 let currentDate = new Date();
                 if (currentDate < expDate) {
-                    this.loggedIn = true
                     let observer = this.userService.retrieveUserInfo();
-                    observer.subscribe(userInfo =>
-                        this.LoginEvent.emit(userInfo)
+                    observer.subscribe({
+                            next: (userInfo: UserInfo) => {
+                                if (userInfo != null) {
+                                    let permObserver = this.userService.retrievePermissionInfo();
+                                    permObserver.subscribe({
+                                            next: () => {
+                                                this.authenticated = true;
+                                                this.LoginEvent.emit(userInfo)
+                                            },
+                                            error: (err) => {
+                                                console.debug("Error retrieving perms: " + JSON.stringify(err));
+                                            }
+                                        }
+                                    )
+                                }
+                            },
+                            error: (err: HttpErrorResponse) => {
+                                console.debug("Error retrieving user info: " + JSON.stringify(err));
+                                this.logout();
+                            }
+                        }
                     );
+                } else {
+                    this.logout();
                 }
+            } else {
+                this.logout();
             }
         }
 
@@ -94,9 +121,16 @@ export class AuthenticationService {
                     localStorage.setItem("token_expire", dt.toISOString());
                 }
                 let userObserver = this.userService.retrieveUserInfo();
-                this.loggedIn = true;
-                userObserver.subscribe(userInfo =>
-                    this.LoginEvent.emit(userInfo));
+                this.authenticated = true;
+                userObserver.subscribe(userInfo => {
+                    if (userInfo != null) {
+                        let permObserver = this.userService.retrievePermissionInfo();
+                        permObserver.subscribe((perms) => {
+                                this.LoginEvent.emit(userInfo);
+                            }
+                        )
+                    }
+                });
                 resultHandler("OK");
             },
             error: (err: HttpErrorResponse) => {
@@ -104,7 +138,7 @@ export class AuthenticationService {
                 let result = err.error as ErrorResult
                 if (result.errorMessages != null) {
                     for (let msg of result.errorMessages) {
-                        console.error('Observer got an error: ' + msg.errorKey)
+                        console.debug('Observer got an error: ' + msg.errorKey)
                     }
                     resultHandler("ERROR", result.errorMessages);
                 } else {
@@ -125,8 +159,9 @@ export class AuthenticationService {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("token_expire");
-        this.loggedIn = false;
+        this.authenticated = false;
         this.userService.resetUser();
         this.rest.resetToken();
+        this.LogoutEvent.emit();
     }
 }
