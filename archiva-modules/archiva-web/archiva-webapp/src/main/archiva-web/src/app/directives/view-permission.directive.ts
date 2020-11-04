@@ -19,7 +19,8 @@
 import {Directive, ElementRef, Input, OnChanges, OnInit, Renderer2, SimpleChanges} from '@angular/core';
 
 /**
- * This directive can be used to render based on permissions
+ * This directive can be used to render a element based on permissions. Sets the 'd-none' class for the
+ * element, if the permission returns 'false'.
  */
 @Directive({
     selector: '[appViewPermission]'

@@ -32,6 +32,7 @@ import { SidemenuComponent } from './modules/general/sidemenu/sidemenu.component
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { LoginComponent } from './modules/general/login/login.component';
 import { ViewPermissionDirective } from './directives/view-permission.directive';
+import { NavSubgroupDirective } from './directives/nav-subgroup.directive';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { ViewPermissionDirective } from './directives/view-permission.directive'
     SidemenuComponent,
     LoginComponent,
     ViewPermissionDirective,
+    NavSubgroupDirective,
   ],
   imports: [
     BrowserModule,
