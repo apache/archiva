@@ -20,60 +20,55 @@
 
     <div class="nav flex-column nav-pills" appNavSubgroup role="tablist" aria-orientation="vertical"
          [appViewPermission]="perms.menu.repo.section">
-        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Artifacts</a>
+        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">{{'sidemenu.repo.section'|translate}}</a>
 
-        <a class="nav-link active my-0 py-0" id="repo-search" href="#repo-search" data-toggle="pill"
-           [appViewPermission]="perms.menu.repo.search" role="tab" aria-controls="v-pills-search" aria-selected="true">Search</a>
+        <a class="nav-link my-0 py-0" id="repo-search" routerLink="/repo/search" routerLinkActive="active" data-toggle="pill"
+           [appViewPermission]="perms.menu.repo.search" role="tab" aria-controls="v-pills-search" aria-selected="true">{{'sidemenu.repo.search'|translate}}</a>
 
-        <a class="nav-link my-0 py-0" id="repo-browse" href="#repo-browse" data-toggle="pill"
-           [appViewPermission]="perms.menu.repo.browse" role="tab" aria-controls="v-pills-browse" aria-selected="false">Browse</a>
+        <a class="nav-link my-0 py-0" id="repo-browse" routerLink="/repo/browse" routerLinkActive="active" data-toggle="pill"
+           [appViewPermission]="perms.menu.repo.browse" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.repo.browse'|translate}}</a>
 
-        <a class="nav-link my-0 py-0" id="repo-upload" href="#repo-upload" data-toggle="pill"
+        <a class="nav-link my-0 py-0" id="repo-upload" routerLink="/repo/upload" routerLinkActive="active" data-toggle="pill"
            role="tab" aria-controls="v-pills-browse" aria-selected="false"
-           [appViewPermission]="perms.menu.repo.upload">Upload Artifact</a>
+           [appViewPermission]="perms.menu.repo.upload">{{'sidemenu.repo.upload'|translate}}</a>
     </div>
     <div class="nav flex-column nav-pills" appNavSubgroup aria-orientation="vertical" role="tablist"
          [appViewPermission]="perms.menu.admin.section">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true"
-           role="tab" aria-controls="v-pills-home" aria-selected="false">Administration</a>
-        <a class="nav-link my-0 py-0" id="admin-groups" href="#admin-groups" data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">Repository Groups</a>
-        <a class="nav-link my-0 py-0" id="admin-repos" href="#admin-repos" data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">Repositories</a>
-        <a class="nav-link my-0 py-0" id="admin-proxy-conn" href="#admin-proxy-conn" data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">Proxy Connectors</a>
-        <a class="nav-link my-0 py-0" id="admin-proxy-conn-rules" href="#admin-proxy-conn-rules" data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">ProxyConnector Rules</a>
-        <a class="nav-link my-0 py-0" id="admin-network-proxy" href="#admin-network-proxy" data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">Network Proxies</a>
-        <a class="nav-link my-0 py-0" id="admin-repo-scan" href="#admin-repo-scan" data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">Repository Scanning</a>
-        <a class="nav-link my-0 py-0" id="admin-runtime-configuration" href="#admin-runtime-configuration"
-           data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">Runtime Configuration</a>
-        <a class="nav-link my-0 py-0" id="admin-ui-configuration" href="#admin-ui-configuration" data-toggle="pill"
-         [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">UI Configuration</a>
-        <a class="nav-link my-0 py-0" id="admin-status" href="#admin-status" data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.status" role="tab" aria-controls="v-pills-browse" aria-selected="false">System Status</a>
-        <a class="nav-link my-0 py-0" id="admin-reports" href="#admin-reports" data-toggle="pill"
-           [appViewPermission]="perms.menu.admin.reports" role="tab" aria-controls="v-pills-browse" aria-selected="false">Reports</a>
+           role="tab" aria-controls="v-pills-home" aria-selected="false">{{'sidemenu.admin.section'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="admin-repos" routerLink="/admin/repositories" data-toggle="pill"
+           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.admin.repositories'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="admin-groups" routerLink="/admin/repositorygroups" data-toggle="pill"
+           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.admin.repositorygroups'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="admin-proxy-conn" routerLink="/admin/proxy" data-toggle="pill"
+           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.admin.proxy'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="admin-network-proxy" routerLink="/admin/network" data-toggle="pill"
+           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.admin.network'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="admin-repo-scan" routerLink="/admin/scanning" data-toggle="pill"
+           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.admin.scanning'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="admin-runtime-configuration" routerLink="/admin/runtimeconfig" data-toggle="pill"
+           [appViewPermission]="perms.menu.admin.config" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.admin.runtimeconfig'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="admin-status" routerLink="/admin/status" data-toggle="pill"
+           [appViewPermission]="perms.menu.admin.status" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.admin.status'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="admin-reports" routerLink="/admin/reports" data-toggle="pill"
+           [appViewPermission]="perms.menu.admin.reports" role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.admin.reports'|translate}}</a>
     </div>
     <div class="nav flex-column nav-pills" appNavSubgroup [appViewPermission]="perms.menu.user.section">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true" data-toggle="pill"
-           role="tab" aria-controls="v-pills-home" aria-selected="false">Users</a>
-        <a class="nav-link my-0 py-0" id="users-manage" href="#users-manage" data-toggle="pill"
-           role="tab" aria-controls="v-pills-browse" aria-selected="false">Manage</a>
-        <a class="nav-link my-0 py-0" id="users-roles" href="#users-roles" data-toggle="pill"
-           role="tab" aria-controls="v-pills-browse" aria-selected="false">Roles</a>
-        <a class="nav-link my-0 py-0" id="users-configuration" href="#users-configuration" data-toggle="pill"
-           role="tab" aria-controls="v-pills-browse" aria-selected="false">Users Runtime Configuration</a>
+           role="tab" aria-controls="v-pills-home" aria-selected="false">{{'sidemenu.user.section'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="users-manage" routerLink="/user/users" data-toggle="pill"
+           role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.user.users'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="users-roles" routerLink="/user/roles" data-toggle="pill"
+           role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.user.roles'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="users-configuration" routerLink="/user/config" data-toggle="pill"
+           role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.user.config'|translate}}</a>
     </div>
     <div class="nav flex-column nav-pills" appNavSubgroup>
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true" data-toggle="pill"
-           role="tab" aria-controls="v-pills-home" aria-selected="false">Documentation</a>
-        <a class="nav-link my-0 py-0" id="doc-rest-api" href="#doc-rest-api" data-toggle="pill"
-           role="tab" aria-controls="v-pills-browse" aria-selected="false">REST Api</a>
-        <a class="nav-link my-0 py-0" id="doc-userdoc" href="#doc-userdoc" data-toggle="pill"
-           role="tab" aria-controls="v-pills-browse" aria-selected="false">User Documentation</a>
+           role="tab" aria-controls="v-pills-home" aria-selected="false">{{'sidemenu.doc.section'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="doc-userdoc" routerLink="/doc/userguide" data-toggle="pill"
+           role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.doc.userguide'|translate}}</a>
+        <a class="nav-link my-0 py-0" id="doc-rest-api" routerLink="/user/restapi" data-toggle="pill"
+           role="tab" aria-controls="v-pills-browse" aria-selected="false">{{'sidemenu.doc.restapi'|translate}}</a>
     </div>
 </nav>

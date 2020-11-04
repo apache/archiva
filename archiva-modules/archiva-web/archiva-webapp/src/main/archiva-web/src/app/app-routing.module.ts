@@ -24,9 +24,20 @@ import { ContactComponent } from './modules/general/contact/contact.component';
 import { HomeComponent } from './modules/general/home/home.component';
 import { NotFoundComponent } from './modules/general/not-found/not-found.component';
 import { LoginComponent } from "./modules/general/login/login.component";
+import { SearchComponent } from './modules/repo/search/search.component';
+import {BrowseComponent} from "./modules/repo/browse/browse.component";
+import {UploadComponent} from "./modules/repo/upload/upload.component";
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, },
+  { path: '', component: HomeComponent,
+  children: [
+    {path:'repo/search', component: SearchComponent},
+    {path:'repo/browse', component: BrowseComponent},
+    {path:'repo/upload', component: UploadComponent},
+    {path:'', redirectTo:'repo/search', pathMatch:'full'},
+    {path:'**', component: NotFoundComponent}
+
+  ]},
   { path: 'contact', component: ContactComponent },
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },

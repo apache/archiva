@@ -15,6 +15,36 @@
     "about": "About",
     "contact": "Contact"
   },
+  "sidemenu": {
+    "repo": {
+      "section": "Artifacts",
+      "search": "Search Artifacts",
+      "browse": "Browse Repositories",
+      "upload": "Upload Artifacts"
+    },
+    "admin": {
+      "section": "Administration",
+      "repositories": "Repositories",
+      "repositorygroups": "Repository Groups",
+      "proxy": "Proxy",
+      "network": "Network",
+      "scanning": "Repository Scanning",
+      "runtimeconfig": "Runtime Configuration",
+      "status": "System Status",
+      "reports": "Reports"
+    },
+    "user": {
+      "section": "User",
+      "users": "Manage Users",
+      "roles":"Manage Roles",
+      "config": "Security Configuration"
+    },
+    "doc": {
+      "section": "Documentation",
+      "userguide": "User Guide",
+      "restapi": "REST API"
+    }
+  },
   "api" : {
     "rb.auth.invalid_credentials": "Invalid credentials given"
   }

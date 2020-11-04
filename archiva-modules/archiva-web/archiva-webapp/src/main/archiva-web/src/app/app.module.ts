@@ -33,6 +33,10 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { LoginComponent } from './modules/general/login/login.component';
 import { ViewPermissionDirective } from './directives/view-permission.directive';
 import { NavSubgroupDirective } from './directives/nav-subgroup.directive';
+import { SearchComponent } from './modules/repo/search/search.component';
+import { BrowseComponent } from './modules/repo/browse/browse.component';
+import { UploadComponent } from './modules/repo/upload/upload.component';
+
 
 @NgModule({
   declarations: [
@@ -45,6 +49,9 @@ import { NavSubgroupDirective } from './directives/nav-subgroup.directive';
     LoginComponent,
     ViewPermissionDirective,
     NavSubgroupDirective,
+    SearchComponent,
+    BrowseComponent,
+    UploadComponent,
   ],
   imports: [
     BrowserModule,
