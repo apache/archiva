@@ -35,8 +35,6 @@ const routes: Routes = [
     {path:'repo/browse', component: BrowseComponent},
     {path:'repo/upload', component: UploadComponent},
     {path:'', redirectTo:'repo/search', pathMatch:'full'},
-    {path:'**', component: NotFoundComponent}
-
   ]},
   { path: 'contact', component: ContactComponent },
   { path: 'about', component: AboutComponent },
