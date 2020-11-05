@@ -29,10 +29,8 @@ import org.apache.archiva.repository.scanner.RepositoryScannerInstance;
 import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.CacheEntry;
 import org.apache.archiva.rest.api.model.ConsumerScanningStatistics;
-import org.apache.archiva.rest.api.model.MemoryStatus;
 import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.rest.api.model.RepositoryScannerStatistics;
-import org.apache.archiva.rest.api.model.Timestamp;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.SystemStatusService;
 import org.apache.archiva.rest.services.utils.ConsumerScanningStatisticsComparator;
@@ -88,7 +86,7 @@ public class DefaultSystemStatusService
     }
 
     @Override
-    public MemoryStatus getMemoryStatus()
+    public String getMemoryStatus()
         throws ArchivaRestServiceException
     {
         Runtime runtime = Runtime.getRuntime();
@@ -96,7 +94,7 @@ public class DefaultSystemStatusService
         long total = runtime.totalMemory();
         long used = total - runtime.freeMemory();
         long max = runtime.maxMemory();
-        return new MemoryStatus( formatMemory( used ) + "/" + formatMemory( total ) + " (Max: " + formatMemory( max ) + ")" );
+        return formatMemory( used ) + "/" + formatMemory( total ) + " (Max: " + formatMemory( max ) + ")";
     }
 
     private static String formatMemory( long l )
@@ -105,11 +103,11 @@ public class DefaultSystemStatusService
     }
 
     @Override
-    public Timestamp getCurrentServerTime( String locale )
+    public String getCurrentServerTime( String locale )
         throws ArchivaRestServiceException
     {
         SimpleDateFormat sdf = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z", new Locale( locale ) );
-        return new Timestamp( sdf.format( new Date( ) ) );
+        return sdf.format( new Date() );
     }
 
     @Override

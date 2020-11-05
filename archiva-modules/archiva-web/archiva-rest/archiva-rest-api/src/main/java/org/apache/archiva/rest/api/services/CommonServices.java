@@ -28,7 +28,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import java.util.Map;
 
 /**
  * contains some "free" services (i18n)
@@ -48,9 +47,9 @@ public interface CommonServices
      */
     @Path( "getI18nResources" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = true )
-    Map<String,String> getI18nResources( @QueryParam( "locale" ) String locale )
+    String getI18nResources( @QueryParam( "locale" ) String locale )
         throws ArchivaRestServiceException;
 
     /**
@@ -61,9 +60,9 @@ public interface CommonServices
      */
     @Path( "getAllI18nResources" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( noRestriction = true )
-    Map<String,String> getAllI18nResources( @QueryParam( "locale" ) String locale )
+    String getAllI18nResources( @QueryParam( "locale" ) String locale )
         throws ArchivaRestServiceException;
 
 

@@ -26,7 +26,6 @@ import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
 import org.apache.archiva.rest.api.model.FileStatus;
-import org.apache.archiva.rest.api.model.PomSnippet;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
@@ -117,9 +116,9 @@ public interface ManagedRepositoriesService
      */
     @Path( "getPomSnippet/{repositoryId}" )
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.TEXT_PLAIN } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    PomSnippet getPomSnippet( @PathParam( "repositoryId" ) String repositoryId )
+    String getPomSnippet( @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
 

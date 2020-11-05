@@ -30,7 +30,6 @@ import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsMa
 import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
 import org.apache.archiva.rest.api.model.FileStatus;
-import org.apache.archiva.rest.api.model.PomSnippet;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -212,10 +211,10 @@ public class DefaultManagedRepositoriesService
     }
 
     @Override
-    public PomSnippet getPomSnippet( String repositoryId )
+    public String getPomSnippet( String repositoryId )
         throws ArchivaRestServiceException
     {
-        return new PomSnippet( createSnippet( getManagedRepository( repositoryId ) ) );
+        return createSnippet( getManagedRepository( repositoryId ) );
     }
 
     private String createSnippet( ManagedRepository repo )
