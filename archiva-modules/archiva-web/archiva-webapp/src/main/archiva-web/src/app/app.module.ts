@@ -41,6 +41,7 @@ import { ManageRolesComponent } from './modules/user/manage-roles/manage-roles.c
 import { SecurityConfigurationComponent } from './modules/user/security-configuration/security-configuration.component';
 import { ManageUsersListComponent } from './modules/user/users/manage-users-list/manage-users-list.component';
 import { ManageUsersAddComponent } from './modules/user/users/manage-users-add/manage-users-add.component';
+import { EnableTooltipDirective } from './directives/enable-tooltip.directive';
 
 
 @NgModule({
@@ -62,6 +63,7 @@ import { ManageUsersAddComponent } from './modules/user/users/manage-users-add/m
     SecurityConfigurationComponent,
     ManageUsersListComponent,
     ManageUsersAddComponent,
+    EnableTooltipDirective,
 
 
   ],

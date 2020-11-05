@@ -46,12 +46,12 @@ const routes: Routes = [
       { path: 'users', component: ManageUsersComponent,
         children: [
           {path: 'list', component: ManageUsersListComponent},
-          {path: 'add', component: ManageUsersAddComponent}
+          {path: 'add', component: ManageUsersAddComponent},
+          {path: '', redirectTo:'list', pathMatch:'full'}
         ]
       },
       { path: 'roles', component: ManageRolesComponent },
       { path: 'config', component: SecurityConfigurationComponent},
-      { path: '', component: ManageUsersComponent }
     ]
   },
   { path: 'contact', component: ContactComponent },

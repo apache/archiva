@@ -17,7 +17,10 @@
  * under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import {TranslateService} from "@ngx-translate/core";
+import {AppComponent} from "../../../../app.component";
+import {UserService} from "../../../../services/user.service";
 
 @Component({
   selector: 'app-manage-users-list',
@@ -25,10 +28,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./manage-users-list.component.scss']
 })
 export class ManageUsersListComponent implements OnInit {
+  @Input() heads: any;
 
-  constructor() { }
+  constructor(private translator: TranslateService, private userService : UserService) { }
 
   ngOnInit(): void {
+    this.heads={};
+    // We need to wait for the translator initialization and use the init key as step in.
+    this.translator.get('init').subscribe( () => {
+      // Only table headings for small columns that use icons
+      for (let suffix of ['validated', 'locked', 'pwchange']) {
+        this.heads[suffix] = this.translator.instant('users.list.table.head.' + suffix);
+      }
+    });
   }
 
 }

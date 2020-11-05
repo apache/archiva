@@ -17,4 +17,40 @@
   ~ under the License.
   -->
 
-<p>manage-users-list works!</p>
+<form class="mt-3 mb-3">
+    <div class="form-row align-items-center">
+        <div class="col-lg-4 col-md-2 col-sm-1">
+            <label class="sr-only" for="searchQuery">{{'users.list.search' |translate}}</label>
+            <input type="text" class="form-control" id="searchQuery" placeholder="Search" data-toggle="tooltip"
+                   data-placement="top" title="SEARCHHH">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">{{'search.button'|translate}}</button>
+        </div>
+    </div>
+
+
+</form>
+
+<table class="table" appEnableTooltip>
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">{{'users.list.table.head.id' | translate}}</th>
+        <th scope="col">{{'users.list.table.head.user_id' | translate}}</th>
+        <th scope="col">{{'users.list.table.head.fullName' | translate}}</th>
+        <th scope="col">{{'users.list.table.head.email' | translate}}</th>
+        <th scope="col"><span class="fas fa-check" data-toggle="tooltip" data-placement="top"
+                              [attr.data-original-title]="heads.validated" [attr.aria-label]="heads.validated"></span>
+        </th>
+        <th scope="col"><span class="fas fa-lock" data-toggle="tooltip" data-placement="top"
+                              [attr.data-original-title]="heads.locked" [attr.aria-label]="heads.locked"></span></th>
+        <th scope="col"><span class="fa fa-chevron-circle-right" data-toggle="tooltip" data-placement="top"
+                              [attr.data-original-title]="heads.pwchange" [attr.aria-label]="heads.pwchange"></span>
+        </th>
+        <th scope="col">{{'users.list.table.head.lastLogin' | translate}}</th>
+        <th scope="col">{{'users.list.table.head.created' | translate}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
