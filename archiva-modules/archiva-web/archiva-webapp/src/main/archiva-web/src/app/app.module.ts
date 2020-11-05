@@ -36,6 +36,11 @@ import { NavSubgroupDirective } from './directives/nav-subgroup.directive';
 import { SearchComponent } from './modules/repo/search/search.component';
 import { BrowseComponent } from './modules/repo/browse/browse.component';
 import { UploadComponent } from './modules/repo/upload/upload.component';
+import { ManageUsersComponent } from './modules/user/manage-users/manage-users.component';
+import { ManageRolesComponent } from './modules/user/manage-roles/manage-roles.component';
+import { SecurityConfigurationComponent } from './modules/user/security-configuration/security-configuration.component';
+import { ManageUsersListComponent } from './modules/user/users/manage-users-list/manage-users-list.component';
+import { ManageUsersAddComponent } from './modules/user/users/manage-users-add/manage-users-add.component';
 
 
 @NgModule({
@@ -52,6 +57,13 @@ import { UploadComponent } from './modules/repo/upload/upload.component';
     SearchComponent,
     BrowseComponent,
     UploadComponent,
+    ManageUsersComponent,
+    ManageRolesComponent,
+    SecurityConfigurationComponent,
+    ManageUsersListComponent,
+    ManageUsersAddComponent,
+
+
   ],
   imports: [
     BrowserModule,

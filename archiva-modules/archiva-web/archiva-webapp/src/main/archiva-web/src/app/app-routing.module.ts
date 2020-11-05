@@ -27,6 +27,11 @@ import { LoginComponent } from "./modules/general/login/login.component";
 import { SearchComponent } from './modules/repo/search/search.component';
 import {BrowseComponent} from "./modules/repo/browse/browse.component";
 import {UploadComponent} from "./modules/repo/upload/upload.component";
+import {ManageUsersComponent} from "./modules/user/manage-users/manage-users.component";
+import {ManageRolesComponent} from "./modules/user/manage-roles/manage-roles.component";
+import {SecurityConfigurationComponent} from "./modules/user/security-configuration/security-configuration.component";
+import {ManageUsersListComponent} from "./modules/user/users/manage-users-list/manage-users-list.component";
+import {ManageUsersAddComponent} from "./modules/user/users/manage-users-add/manage-users-add.component";
 
 const routes: Routes = [
   { path: '', component: HomeComponent,
@@ -36,6 +41,19 @@ const routes: Routes = [
     {path:'repo/upload', component: UploadComponent},
     {path:'', redirectTo:'repo/search', pathMatch:'full'},
   ]},
+  { path: 'user', component: HomeComponent,
+    children: [
+      { path: 'users', component: ManageUsersComponent,
+        children: [
+          {path: 'list', component: ManageUsersListComponent},
+          {path: 'add', component: ManageUsersAddComponent}
+        ]
+      },
+      { path: 'roles', component: ManageRolesComponent },
+      { path: 'config', component: SecurityConfigurationComponent},
+      { path: '', component: ManageUsersComponent }
+    ]
+  },
   { path: 'contact', component: ContactComponent },
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },
