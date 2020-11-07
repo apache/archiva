@@ -23,6 +23,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {ErrorResult} from "../model/error-result";
 import {Observable} from "rxjs";
 import {Permission} from '../model/permission';
+import {PagedResult} from "../model/paged-result";
 
 @Injectable({
     providedIn: 'root'
@@ -255,6 +256,10 @@ export class UserService implements OnInit, OnDestroy {
         this.userInfo.user_id = "guest";
         this.resetPermissions();
         this.authenticated = false;
+    }
+
+    public getUserList(searchTerm : string, offset : number = 0, limit : number = 10) : Observable<PagedResult<UserInfo>>  {
+        return this.rest.executeRestCall<PagedResult<UserInfo>>("get", "redback", "users", {'offset':offset,'limit':limit});
     }
 
 }

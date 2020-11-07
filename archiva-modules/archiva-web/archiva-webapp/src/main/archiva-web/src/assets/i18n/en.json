@@ -55,14 +55,15 @@
       "table":{
         "head": {
           "id": "ID",
-          "user_id": "User Identifier",
+          "user_id": "Login Name",
           "email": "Email",
           "fullName": "Name",
           "validated": "User Validated",
           "locked": "User Locked",
           "pwchange": "Password Change Required",
           "lastLogin": "Last Login",
-          "created": "Created"
+          "created": "Created",
+          "lastPwChange": "Last Password Change"
         }
       }
     },

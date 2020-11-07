@@ -42,6 +42,7 @@ import { SecurityConfigurationComponent } from './modules/user/security-configur
 import { ManageUsersListComponent } from './modules/user/users/manage-users-list/manage-users-list.component';
 import { ManageUsersAddComponent } from './modules/user/users/manage-users-add/manage-users-add.component';
 import { EnableTooltipDirective } from './directives/enable-tooltip.directive';
+import {NgbPagination, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 
 
 @NgModule({
@@ -79,7 +80,8 @@ import { EnableTooltipDirective } from './directives/enable-tooltip.directive';
         useFactory: httpTranslateLoader,
         deps: [HttpClient]
       }
-    })
+    }),
+      NgbPaginationModule
   ],
   providers: [],
   bootstrap: [AppComponent]
