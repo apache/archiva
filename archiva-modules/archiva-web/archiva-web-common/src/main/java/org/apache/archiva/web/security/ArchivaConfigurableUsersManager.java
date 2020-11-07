@@ -149,6 +149,10 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
+    /*
+     * TODO: This must be refactored. This does not work for multiple user managers.
+     *  We need a combined user query that merges results
+     */
     @Override
     public UserQuery createUserQuery()
     {
