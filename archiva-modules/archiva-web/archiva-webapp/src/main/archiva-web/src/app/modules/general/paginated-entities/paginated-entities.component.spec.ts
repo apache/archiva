@@ -16,18 +16,28 @@
  * under the License.
  */
 
-import {AfterViewChecked, AfterViewInit, Directive, ElementRef, OnInit} from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-declare var jQuery:any;
-@Directive({
-  selector: '[appEnableTooltip]'
-})
-export class EnableTooltipDirective implements AfterViewInit {
+import { PaginatedEntitiesComponent } from './paginated-entities.component';
 
+describe('PaginatedEntitiesComponent', () => {
+  let component: PaginatedEntitiesComponent;
+  let fixture: ComponentFixture<PaginatedEntitiesComponent>;
 
-  constructor() { }
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ PaginatedEntitiesComponent ]
+    })
+    .compileComponents();
+  });
 
-  ngAfterViewInit(): void {
-     jQuery('[data-toggle="tooltip"]').tooltip({container: 'body', html: true});
-  }
-}
+  beforeEach(() => {
+    fixture = TestBed.createComponent(PaginatedEntitiesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

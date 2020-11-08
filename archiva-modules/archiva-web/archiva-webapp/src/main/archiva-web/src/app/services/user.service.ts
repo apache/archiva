@@ -24,6 +24,7 @@ import {ErrorResult} from "../model/error-result";
 import {Observable} from "rxjs";
 import {Permission} from '../model/permission';
 import {PagedResult} from "../model/paged-result";
+import {EntityService} from "../model/entity-service";
 
 @Injectable({
     providedIn: 'root'
@@ -202,7 +203,6 @@ export class UserService implements OnInit, OnDestroy {
                 }
             }
         }
-        console.log("New permissions: " + JSON.stringify(this.uiPermissions));
     }
 
     private deepCopy(src: Object, dst: Object) {
@@ -258,8 +258,12 @@ export class UserService implements OnInit, OnDestroy {
         this.authenticated = false;
     }
 
-    public getUserList(searchTerm : string, offset : number = 0, limit : number = 10) : Observable<PagedResult<UserInfo>>  {
-        return this.rest.executeRestCall<PagedResult<UserInfo>>("get", "redback", "users", {'offset':offset,'limit':limit});
+    public query(searchTerm : string, offset : number = 0, limit : number = 10, orderBy : string = 'user_id', order: string = 'asc') : Observable<PagedResult<UserInfo>>  {
+        console.log("getUserList " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
+        if (searchTerm==null) {
+            searchTerm=""
+        }
+        return this.rest.executeRestCall<PagedResult<UserInfo>>("get", "redback", "users", {'q':searchTerm, 'offset':offset,'limit':limit});
     }
 
 }

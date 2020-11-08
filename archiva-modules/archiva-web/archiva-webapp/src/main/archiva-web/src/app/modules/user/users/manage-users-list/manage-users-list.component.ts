@@ -17,12 +17,13 @@
  * under the License.
  */
 
-import { Component, OnInit, Input } from '@angular/core';
+import {Component, OnInit, Input, OnDestroy} from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";
 import {UserService} from "../../../../services/user.service";
-import {Observable, Subject, merge} from 'rxjs';
-import { map, pluck, debounceTime, distinctUntilChanged, startWith, mergeMap} from "rxjs/operators";
 import {UserInfo} from "../../../../model/user-info";
+import {EntityService} from "../../../../model/entity-service";
+import {Observable, of} from "rxjs";
+import {PagedResult} from "../../../../model/paged-result";
 
 
 @Component({
@@ -31,16 +32,17 @@ import {UserInfo} from "../../../../model/user-info";
   styleUrls: ['./manage-users-list.component.scss']
 })
 export class ManageUsersListComponent implements OnInit {
-  @Input() heads: any;
-  page = 1;
-  pageSize = 10;
-  total$: Observable<number>;
-  items$: Observable<UserInfo[]>;
-  searchTerm: string;
-  private pageStream: Subject<number> = new Subject<number>();
-  private searchTermStream: Subject<string> = new Subject<string>();
 
-  constructor(private translator: TranslateService, private userService : UserService) { }
+  @Input() heads: any;
+  service : EntityService<UserInfo>;
+
+
+  constructor(private translator: TranslateService, private userService : UserService) {
+    this.service = function (searchTerm: string, offset: number, limit: number, orderBy: string, order: string) : Observable<PagedResult<UserInfo>> {
+      return userService.query(searchTerm, offset, limit, orderBy, order);
+    }
+
+  }
 
   ngOnInit(): void {
     this.heads = {};
@@ -51,42 +53,17 @@ export class ManageUsersListComponent implements OnInit {
         this.heads[suffix] = this.translator.instant('users.list.table.head.' + suffix);
       }
     });
-    const pageSource = this.pageStream.pipe(map(pageNumber => {
-      return {search: this.searchTerm, page: pageNumber}
-    }));
-    const searchSource = this.searchTermStream.pipe(
-        debounceTime(1000),
-        distinctUntilChanged(),
-        map(searchTerm => {
-          this.searchTerm = searchTerm;
-          console.log("Search term " + searchTerm);
-          return {search: searchTerm, page: 1}
-        }));
-    const source = merge(pageSource, searchSource).pipe(
-    startWith({search: this.searchTerm, page: this.page}),
-        mergeMap((params: { search: string, page: number }) => {
-          console.log("Executing user list " + params.search);
-          return this.userService.getUserList(params.search, params.page*this.pageSize, this.pageSize)
-        }));
-
-    this.total$ = source.pipe(pluck('pagination.total'));
-    this.items$ = source.pipe(pluck('data'));
 
 
 
-    // const pageSource = map(pageNumber => {
-    //   this.page = pageNumber
-    //   return {search: this.searchTerm, page: pageNumber}
-    // })
-  }
-  search(terms: string) {
-    console.log("Keystroke " + terms);
-    this.searchTermStream.next(terms)
   }
 
-  changePage(pageNumber : number) {
-    console.log("Page change " +typeof(pageNumber) +":" + JSON.stringify(pageNumber));
-    this.pageStream.next(pageNumber);
-  }
+
+
+
+
+
+
+
 
 }

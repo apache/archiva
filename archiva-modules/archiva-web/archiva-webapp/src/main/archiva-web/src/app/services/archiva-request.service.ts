@@ -54,7 +54,11 @@ export class ArchivaRequestService {
             headers = {};
         }
         if (type == "get") {
-            return this.http.get<R>(url, {"headers": headers});
+            let params = {}
+            if (input!=null) {
+                params = input;
+            }
+            return this.http.get<R>(url, {"headers": headers,"params":params});
         } else if (type == "post") {
             return this.http.post<R>(url, input, {"headers": headers});
         }

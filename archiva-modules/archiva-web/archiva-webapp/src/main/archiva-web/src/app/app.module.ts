@@ -41,8 +41,8 @@ import { ManageRolesComponent } from './modules/user/manage-roles/manage-roles.c
 import { SecurityConfigurationComponent } from './modules/user/security-configuration/security-configuration.component';
 import { ManageUsersListComponent } from './modules/user/users/manage-users-list/manage-users-list.component';
 import { ManageUsersAddComponent } from './modules/user/users/manage-users-add/manage-users-add.component';
-import { EnableTooltipDirective } from './directives/enable-tooltip.directive';
-import {NgbPagination, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import { NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import { PaginatedEntitiesComponent } from './modules/general/paginated-entities/paginated-entities.component';
 
 
 @NgModule({
@@ -64,9 +64,7 @@ import {NgbPagination, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
     SecurityConfigurationComponent,
     ManageUsersListComponent,
     ManageUsersAddComponent,
-    EnableTooltipDirective,
-
-
+    PaginatedEntitiesComponent,
   ],
   imports: [
     BrowserModule,
@@ -81,7 +79,8 @@ import {NgbPagination, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
         deps: [HttpClient]
       }
     }),
-      NgbPaginationModule
+      NgbPaginationModule,
+      NgbTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]
