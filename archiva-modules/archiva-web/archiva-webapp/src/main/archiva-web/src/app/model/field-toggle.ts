@@ -16,13 +16,6 @@
  * under the License.
  */
 
-import {PagedResult} from "./paged-result";
-import {Observable} from "rxjs";
-
-/**
- * This is a functional interface that is used to retrieve entity data.
- * @typeparam T The type of the entity that is returned from the service
- */
-export interface EntityService<T> {
-    (searchTerm:string,offset:number,limit:number,orderBy:string[],order:string):Observable<PagedResult<T>>
+export interface FieldToggle {
+    toggleField(fieldName: string[]);
 }

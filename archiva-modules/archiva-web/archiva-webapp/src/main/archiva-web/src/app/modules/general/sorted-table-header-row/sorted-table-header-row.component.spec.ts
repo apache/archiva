@@ -16,13 +16,28 @@
  * under the License.
  */
 
-import {PagedResult} from "./paged-result";
-import {Observable} from "rxjs";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-/**
- * This is a functional interface that is used to retrieve entity data.
- * @typeparam T The type of the entity that is returned from the service
- */
-export interface EntityService<T> {
-    (searchTerm:string,offset:number,limit:number,orderBy:string[],order:string):Observable<PagedResult<T>>
-}
+import { SortedTableHeaderRowComponent } from './sorted-table-header-row.component';
+
+describe('SortedTableHeaderRowComponent', () => {
+  let component: SortedTableHeaderRowComponent;
+  let fixture: ComponentFixture<SortedTableHeaderRowComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ SortedTableHeaderRowComponent ]
+    })
+    .compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SortedTableHeaderRowComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

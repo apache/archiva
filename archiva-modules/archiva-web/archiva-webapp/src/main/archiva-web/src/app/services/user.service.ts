@@ -258,12 +258,15 @@ export class UserService implements OnInit, OnDestroy {
         this.authenticated = false;
     }
 
-    public query(searchTerm : string, offset : number = 0, limit : number = 10, orderBy : string = 'user_id', order: string = 'asc') : Observable<PagedResult<UserInfo>>  {
+    public query(searchTerm : string, offset : number = 0, limit : number = 10, orderBy : string[] = ['user_id'], order: string = 'asc') : Observable<PagedResult<UserInfo>>  {
         console.log("getUserList " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
         if (searchTerm==null) {
             searchTerm=""
         }
-        return this.rest.executeRestCall<PagedResult<UserInfo>>("get", "redback", "users", {'q':searchTerm, 'offset':offset,'limit':limit});
+        if (orderBy==null || orderBy.length==0) {
+            orderBy = ['user_id'];
+        }
+        return this.rest.executeRestCall<PagedResult<UserInfo>>("get", "redback", "users", {'q':searchTerm, 'offset':offset,'limit':limit,'orderBy':orderBy,'order':order});
     }
 
 }

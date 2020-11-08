@@ -43,6 +43,8 @@ import { ManageUsersListComponent } from './modules/user/users/manage-users-list
 import { ManageUsersAddComponent } from './modules/user/users/manage-users-add/manage-users-add.component';
 import { NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import { PaginatedEntitiesComponent } from './modules/general/paginated-entities/paginated-entities.component';
+import { SortedTableHeaderComponent } from './modules/general/sorted-table-header/sorted-table-header.component';
+import { SortedTableHeaderRowComponent } from './modules/general/sorted-table-header-row/sorted-table-header-row.component';
 
 
 @NgModule({
@@ -65,6 +67,8 @@ import { PaginatedEntitiesComponent } from './modules/general/paginated-entities
     ManageUsersListComponent,
     ManageUsersAddComponent,
     PaginatedEntitiesComponent,
+    SortedTableHeaderComponent,
+    SortedTableHeaderRowComponent,
   ],
   imports: [
     BrowserModule,

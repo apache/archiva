@@ -16,12 +16,11 @@
  * under the License.
  */
 
-import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {merge, Observable, Subject} from "rxjs";
-import {UserInfo} from "../../../model/user-info";
-import {TranslateService} from "@ngx-translate/core";
 import {debounceTime, distinctUntilChanged, map, mergeMap, pluck, share, startWith} from "rxjs/operators";
 import {EntityService} from "../../../model/entity-service";
+import {FieldToggle} from "../../../model/field-toggle";
 
 
 /**
@@ -44,95 +43,154 @@ import {EntityService} from "../../../model/entity-service";
  * @typeparam T The type of the retrieved entity elements.
  */
 @Component({
-  selector: 'app-paginated-entities',
-  templateUrl: './paginated-entities.component.html',
-  styleUrls: ['./paginated-entities.component.scss']
+    selector: 'app-paginated-entities',
+    templateUrl: './paginated-entities.component.html',
+    styleUrls: ['./paginated-entities.component.scss']
 })
-export class PaginatedEntitiesComponent<T> implements OnInit {
+export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle {
 
-  /**
-   * This must be set, if you use the component. This service retrieves the entity data.
-   */
-  @Input() service : EntityService<T>;
+    /**
+     * This must be set, if you use the component. This service retrieves the entity data.
+     */
+    @Input() service: EntityService<T>;
 
-  /**
-   * The number of elements per page retrieved
-   */
-  @Input() pageSize = 10;
+    /**
+     * The number of elements per page retrieved
+     */
+    @Input() pageSize = 10;
 
-  /**
-   * Pagination controls
-   */
-  @Input() pagination = {
-    maxSize:5,
-    rotate:true,
-    boundaryLinks:true,
-    ellipses:false
-  }
+    /**
+     * Two-Way-Binding attribute for sorting field
+     */
+    @Input() sortField = [];
+    /**
+     * Two-Way Binding attribute for sort order
+     */
+    @Input() sortOrder = "asc";
 
-  /**
-   * The current page that is selected
-   */
-  page = 1;
-  /**
-   * The current search term entered in the search field
-   */
-  searchTerm: string;
+    /**
+     * Pagination controls
+     */
+    @Input() pagination = {
+        maxSize: 5,
+        rotate: true,
+        boundaryLinks: true,
+        ellipses: false
+    }
 
-  /**
-   * Event thrown, if the page value changes
-   */
-  @Output() pageEvent : EventEmitter<number> = new EventEmitter<number>();
-  /**
-   * Event thrown, if the search term changes
-   */
-  @Output() searchTermEvent: EventEmitter<string> = new EventEmitter<string>();
+    /**
+     * The current page that is selected
+     */
+    page = 1;
+    /**
+     * The current search term entered in the search field
+     */
+    searchTerm: string;
 
-  /**
-   * The total number of elements available for the given search term
-   */
-  total$: Observable<number>;
-  /**
-   * The entity items retrieved from the service
-   */
-  items$: Observable<T[]>;
+    /**
+     * Event thrown, if the page value changes
+     */
+    @Output() pageChange: EventEmitter<number> = new EventEmitter<number>();
+    /**
+     * Event thrown, if the search term changes
+     */
+    @Output() searchTermChange: EventEmitter<string> = new EventEmitter<string>();
 
-  private pageStream: Subject<number> = new Subject<number>();
-  private searchTermStream: Subject<string> = new Subject<string>();
+    @Output() sortFieldChange: EventEmitter<string[]> = new EventEmitter<string[]>();
 
-  constructor() { }
+    @Output() sortOrderChange: EventEmitter<string> = new EventEmitter<string>();
 
-  ngOnInit(): void {
-    // We combine the sources for the page and the search input field to a observable 'source'
-    const pageSource = this.pageStream.pipe(map(pageNumber => {
-      return {search: this.searchTerm, page: pageNumber}
-    }));
-    const searchSource = this.searchTermStream.pipe(
-        debounceTime(1000),
-        distinctUntilChanged(),
-        map(searchTerm => {
-          this.searchTerm = searchTerm;
-          return {search: searchTerm, page: 1}
+    /**
+     * The total number of elements available for the given search term
+     */
+    total$: Observable<number>;
+    /**
+     * The entity items retrieved from the service
+     */
+    items$: Observable<T[]>;
+
+    private pageStream: Subject<number> = new Subject<number>();
+    private searchTermStream: Subject<string> = new Subject<string>();
+
+    constructor() {
+    }
+
+    ngOnInit(): void {
+        // We combine the sources for the page and the search input field to a observable 'source'
+        const pageSource = this.pageStream.pipe(map(pageNumber => {
+            return {search: this.searchTerm, page: pageNumber}
         }));
-    const source = merge(pageSource, searchSource).pipe(
-        startWith({search: this.searchTerm, page: this.page}),
-        mergeMap((params: { search: string, page: number }) => {
-          return this.service(params.search, (params.page - 1) * this.pageSize, this.pageSize, "", "asc");
-        }),share());
-    this.total$ = source.pipe(pluck('pagination','totalCount'));
-    this.items$ = source.pipe(pluck('data'));
-  }
+        const searchSource = this.searchTermStream.pipe(
+            debounceTime(1000),
+            distinctUntilChanged(),
+            map(searchTerm => {
+                this.searchTerm = searchTerm;
+                return {search: searchTerm, page: 1}
+            }));
+        const source = merge(pageSource, searchSource).pipe(
+            startWith({search: this.searchTerm, page: this.page}),
+            mergeMap((params: { search: string, page: number }) => {
+                return this.service(params.search, (params.page - 1) * this.pageSize, this.pageSize, this.sortField, this.sortOrder);
+            }), share());
+        this.total$ = source.pipe(pluck('pagination', 'totalCount'));
+        this.items$ = source.pipe(pluck('data'));
+    }
 
-  search(terms: string) {
-    // console.log("Keystroke " + terms);
-    this.searchTermEvent.emit(terms);
-    this.searchTermStream.next(terms)
-  }
+    search(terms: string) {
+        // console.log("Keystroke " + terms);
+        this.searchTermChange.emit(terms);
+        this.searchTermStream.next(terms)
+    }
 
-  changePage(pageNumber : number) {
-    // console.log("Page change " +pageNumber);
-    this.pageEvent.emit(pageNumber);
-    this.pageStream.next(pageNumber);
-  }
+    changePage(pageNumber: number) {
+        // console.log("Page change " +pageNumber);
+        this.pageChange.emit(pageNumber);
+        this.pageStream.next(pageNumber);
+    }
+
+    private compareArrays(a1: string[], a2: string[]) {
+        let i = a1.length;
+        while (i--) {
+            if (a1[i] !== a2[i]) return false;
+        }
+        return true
+    }
+
+    toggleSortField(fieldName: string) {
+        this.toggleField([fieldName]);
+    }
+
+    toggleField(fieldArray: string[]) {
+        console.log("Changing sort field " + fieldArray);
+        let sortOrderChanged: boolean = false;
+        let sortFieldChanged: boolean = false;
+        if (!this.compareArrays(this.sortField, fieldArray)) {
+          console.log("Fields differ: " + this.sortField + " - " + fieldArray);
+            this.sortField = fieldArray;
+            if (this.sortOrder != 'asc') {
+                this.sortOrder = 'asc';
+                sortOrderChanged = true;
+            }
+            sortFieldChanged = true;
+        } else {
+            if (this.sortOrder == "asc") {
+                this.sortOrder = "desc";
+            } else {
+                this.sortOrder = "asc";
+            }
+          console.log("Toggled sort order: " + this.sortOrder);
+            sortOrderChanged = true;
+        }
+        if (sortOrderChanged) {
+          console.log("Sort order changed: "+this.sortOrder)
+            this.sortOrderChange.emit(this.sortOrder);
+        }
+        if (sortFieldChanged) {
+            this.sortFieldChange.emit(this.sortField);
+        }
+        if (sortFieldChanged || sortOrderChanged) {
+            this.changePage(1);
+        }
+    }
 
 }

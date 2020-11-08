@@ -17,24 +17,28 @@
   ~ under the License.
   -->
 
-<app-paginated-entities [service]="service" pageSize="5"We #parent>
+<app-paginated-entities [service]="service" pageSize="5" [(sortField)]="sortField" [(sortOrder)]="sortOrder"
+                         #parent>
 
 <table class="table table-striped table-bordered">
     <thead class="thead-light">
-    <tr>
-        <th scope="col">{{'users.list.table.head.user_id' | translate}}</th>
-        <th scope="col">{{'users.list.table.head.fullName' | translate}}</th>
-        <th scope="col">{{'users.list.table.head.email' | translate}}</th>
-        <th scope="col"><span class="fas fa-check" placement="top"
-                              [ngbTooltip]="heads.validated" [attr.aria-label]="heads.validated"></span>
-        </th>
+    <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrder]="sortOrder" [sortFields]="sortField"
+                   [sortOrderEmitter]="parent.sortOrderChange" [toggleObserver]="parent" >
+        <app-th-sorted [fieldArray]="['user_id']" contentText="users.list.table.head.user_id"></app-th-sorted>
+        <app-th-sorted contentText="users.list.table.head.fullName" [fieldArray]="['fullName']" ></app-th-sorted>
+        <app-th-sorted contentText="users.list.table.head.email" [fieldArray]="['email']"></app-th-sorted>
+        <app-th-sorted [fieldArray]="['validated','user_id']">
+            <span class="fas fa-check" placement="top"
+                  [ngbTooltip]="heads.validated" [attr.aria-label]="heads.validated">
+        </span>
+        </app-th-sorted>
         <th scope="col"><span class="fas fa-lock" placement="top"
                               [ngbTooltip]="heads.locked" [attr.aria-label]="heads.locked"></span></th>
         <th scope="col"><span class="fa fa-chevron-circle-right" placement="top"
                               [ngbTooltip]="heads.pwchange" [attr.aria-label]="heads.pwchange"></span>
         </th>
         <th scope="col">{{'users.list.table.head.lastLogin' | translate}}</th>
-        <th scope="col">{{'users.list.table.head.created' | translate}}</th>
+        <app-th-sorted contentText="users.list.table.head.created" [fieldArray]="['created']" ></app-th-sorted>
         <th scope="col">{{'users.list.table.head.lastPwChange' | translate}}</th>
     </tr>
     </thead>

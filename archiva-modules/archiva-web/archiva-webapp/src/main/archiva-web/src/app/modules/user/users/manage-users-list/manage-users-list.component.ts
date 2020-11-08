@@ -25,7 +25,6 @@ import {EntityService} from "../../../../model/entity-service";
 import {Observable, of} from "rxjs";
 import {PagedResult} from "../../../../model/paged-result";
 
-
 @Component({
   selector: 'app-manage-users-list',
   templateUrl: './manage-users-list.component.html',
@@ -35,10 +34,13 @@ export class ManageUsersListComponent implements OnInit {
 
   @Input() heads: any;
   service : EntityService<UserInfo>;
+  sortField = ["user_id"];
+  sortOrder = "asc";
 
 
   constructor(private translator: TranslateService, private userService : UserService) {
-    this.service = function (searchTerm: string, offset: number, limit: number, orderBy: string, order: string) : Observable<PagedResult<UserInfo>> {
+    this.service = function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string) : Observable<PagedResult<UserInfo>> {
+      console.log("Retrieving data " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
       return userService.query(searchTerm, offset, limit, orderBy, order);
     }
 
@@ -53,9 +55,29 @@ export class ManageUsersListComponent implements OnInit {
         this.heads[suffix] = this.translator.instant('users.list.table.head.' + suffix);
       }
     });
+  }
 
 
+  changeSortOrder(order:string) {
+    if (this.sortOrder!=order) {
+      this.sortOrder = order;
+    }
+  }
 
+  private compareArrays(a1: string[], a2: string[]) {
+    let i = a1.length;
+    while (i--) {
+      if (a1[i] !== a2[i]) return false;
+    }
+    return true
+  }
+
+  sortCheck(fieldArray:string[]) {
+    return this.compareArrays(this.sortField, fieldArray);
+  }
+
+  isAscending() : boolean {
+    return this.sortOrder == "asc";
   }
 
 
