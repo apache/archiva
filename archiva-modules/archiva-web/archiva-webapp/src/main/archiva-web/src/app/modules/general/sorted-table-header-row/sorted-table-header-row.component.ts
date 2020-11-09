@@ -41,9 +41,10 @@ export class SortedTableHeaderRowComponent implements OnInit, AfterViewInit, Aft
 
   @Input() sortFieldEmitter: EventEmitter<string[]>;
   @Input() sortOrderEmitter: EventEmitter<string>;
-  @Input() sortFields: string[];
-  @Input() sortOrder: string;
   @Input() toggleObserver: FieldToggle;
+
+  sortFields: string[];
+  sortOrder: string;
 
   @ContentChildren(SortedTableHeaderComponent, { descendants: true }) contentChilds: QueryList<SortedTableHeaderComponent>;
 
@@ -58,9 +59,10 @@ export class SortedTableHeaderRowComponent implements OnInit, AfterViewInit, Aft
   ngAfterContentInit(): void {
     this.contentChilds.changes.pipe(startWith(this.contentChilds), delay(0)).subscribe(() => {
       this.contentChilds.forEach((colComponent, index) => {
-        console.log("Children " + colComponent);
+        // console.log("Children " + colComponent);
         colComponent.registerSortFieldEmitter(this.sortFieldEmitter);
         colComponent.registerSortOrderEmitter(this.sortOrderEmitter);
+
         colComponent.sortOrder = this.sortOrder;
         colComponent.currentFieldArray = this.sortFields;
         colComponent.toggleObserver = this.toggleObserver;
@@ -70,10 +72,26 @@ export class SortedTableHeaderRowComponent implements OnInit, AfterViewInit, Aft
   }
 
   ngOnInit(): void {
+    this.registerSortOrderEmitter(this.sortOrderEmitter);
+    this.registerSortFieldEmitter(this.sortFieldEmitter);
   }
 
   ngAfterViewInit(): void {
 
+  }
+
+  registerSortOrderEmitter(emitter : EventEmitter<string>) {
+    emitter.subscribe((order) => {
+      // console.log("header-row: Changing sort order: " + order);
+      this.sortOrder = order
+    });
+  }
+
+  registerSortFieldEmitter(emitter: EventEmitter<string[]>) {
+    emitter.subscribe((fields)=>{
+      // console.log("header-row: Changing sort fields" + fields);
+      this.sortFields = fields;
+    })
   }
 
 }

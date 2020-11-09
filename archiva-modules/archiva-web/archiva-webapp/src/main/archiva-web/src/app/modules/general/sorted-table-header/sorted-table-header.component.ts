@@ -55,7 +55,7 @@ export class SortedTableHeaderComponent implements OnInit, AfterViewChecked {
   }
 
   toggleSortField() {
-    console.log("Toggling sort field " + this.fieldArray);
+    // console.log("Toggling sort field " + this.fieldArray);
     this.toggleObserver.toggleField(this.fieldArray);
   }
 
@@ -75,7 +75,7 @@ export class SortedTableHeaderComponent implements OnInit, AfterViewChecked {
   }
 
   isAscending() :boolean {
-    console.log("Is ascending: " + this.sortOrder);
+    // console.log("header: Is ascending: " + this.sortOrder);
     return this.sortOrder == 'asc';
   }
 
@@ -84,7 +84,10 @@ export class SortedTableHeaderComponent implements OnInit, AfterViewChecked {
   }
 
   registerSortFieldEmitter(emitter : EventEmitter<string[]>) {
-    emitter.subscribe((field) => this.currentFieldArray = field);
+    emitter.subscribe((field) => {
+      // console.log("header: Change sort field "+field)
+      this.currentFieldArray = field
+    });
   }
 
 }

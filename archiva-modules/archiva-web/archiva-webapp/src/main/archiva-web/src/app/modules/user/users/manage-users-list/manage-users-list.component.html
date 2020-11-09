@@ -22,8 +22,8 @@
 
 <table class="table table-striped table-bordered">
     <thead class="thead-light">
-    <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrder]="sortOrder" [sortFields]="sortField"
-                   [sortOrderEmitter]="parent.sortOrderChange" [toggleObserver]="parent" >
+    <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrderEmitter]="parent.sortOrderChange"
+                   [toggleObserver]="parent" >
         <app-th-sorted [fieldArray]="['user_id']" contentText="users.list.table.head.user_id"></app-th-sorted>
         <app-th-sorted contentText="users.list.table.head.fullName" [fieldArray]="['fullName']" ></app-th-sorted>
         <app-th-sorted contentText="users.list.table.head.email" [fieldArray]="['email']"></app-th-sorted>

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {merge, Observable, Subject} from "rxjs";
 import {debounceTime, distinctUntilChanged, map, mergeMap, pluck, share, startWith} from "rxjs/operators";
 import {EntityService} from "../../../model/entity-service";
@@ -47,7 +47,7 @@ import {FieldToggle} from "../../../model/field-toggle";
     templateUrl: './paginated-entities.component.html',
     styleUrls: ['./paginated-entities.component.scss']
 })
-export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle {
+export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, AfterViewInit {
 
     /**
      * This must be set, if you use the component. This service retrieves the entity data.
@@ -161,11 +161,11 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle {
     }
 
     toggleField(fieldArray: string[]) {
-        console.log("Changing sort field " + fieldArray);
+        // console.log("Changing sort field " + fieldArray);
         let sortOrderChanged: boolean = false;
         let sortFieldChanged: boolean = false;
         if (!this.compareArrays(this.sortField, fieldArray)) {
-          console.log("Fields differ: " + this.sortField + " - " + fieldArray);
+          // console.log("Fields differ: " + this.sortField + " - " + fieldArray);
             this.sortField = fieldArray;
             if (this.sortOrder != 'asc') {
                 this.sortOrder = 'asc';
@@ -178,11 +178,11 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle {
             } else {
                 this.sortOrder = "asc";
             }
-          console.log("Toggled sort order: " + this.sortOrder);
+          // console.log("Toggled sort order: " + this.sortOrder);
             sortOrderChanged = true;
         }
         if (sortOrderChanged) {
-          console.log("Sort order changed: "+this.sortOrder)
+          //console.log("Sort order changed: "+this.sortOrder)
             this.sortOrderChange.emit(this.sortOrder);
         }
         if (sortFieldChanged) {
@@ -191,6 +191,12 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle {
         if (sortFieldChanged || sortOrderChanged) {
             this.changePage(1);
         }
+    }
+
+    ngAfterViewInit(): void {
+        // We emit the current value to push them to the containing reading components
+        this.sortOrderChange.emit(this.sortOrder);
+        this.sortFieldChange.emit(this.sortField);
     }
 
 }
