@@ -51,8 +51,8 @@ export class ManageUsersListComponent implements OnInit {
     // We need to wait for the translator initialization and use the init key as step in.
     this.translator.get('init').subscribe(() => {
       // Only table headings for small columns that use icons
-      for (let suffix of ['validated', 'locked', 'pwchange']) {
-        this.heads[suffix] = this.translator.instant('users.list.table.head.' + suffix);
+      for (let suffix of ['validated', 'locked', 'password_change_required']) {
+        this.heads[suffix] = this.translator.instant('users.attributes.' + suffix);
       }
     });
   }

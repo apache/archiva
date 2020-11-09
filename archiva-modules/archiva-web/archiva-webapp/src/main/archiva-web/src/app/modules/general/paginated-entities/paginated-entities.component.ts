@@ -190,7 +190,7 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
         }
         if (sortFieldChanged || sortOrderChanged) {
             this.page = 1;
-            this.changePage(1);
+            this.changePage(this.page);
         }
     }
 

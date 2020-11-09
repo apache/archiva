@@ -64,7 +64,7 @@ export class LoginComponent implements OnInit {
         if (err != null) {
           this.errorMessages = [];
           for (let msg of err) {
-            console.log("Error "+msg.errorKey);
+            console.log("Error "+msg.error_key);
             this.errorMessages.push(this.archivaRequest.translateError(msg));
           }
         }

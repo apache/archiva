@@ -87,14 +87,14 @@ export class ArchivaRequestService {
      * @param errorMsg the errorMsg as returned by a REST call
      */
     public translateError(errorMsg: ErrorMessage): string {
-        if (errorMsg.errorKey != null && errorMsg.errorKey != '') {
+        if (errorMsg.error_key != null && errorMsg.error_key != '') {
             let parms = {};
             if (errorMsg.args != null && errorMsg.args.length > 0) {
                 for (let i = 0; i < errorMsg.args.length; i++) {
                     parms['arg' + i] = errorMsg.args[i];
                 }
             }
-            return this.translator.instant('api.' + errorMsg.errorKey, parms);
+            return this.translator.instant('api.' + errorMsg.error_key, parms);
         }
     }
 }

@@ -50,29 +50,43 @@
     "rb.auth.invalid_credentials": "Invalid credentials given"
   },
   "users": {
+    "attributes":{
+        "id": "ID",
+        "user_id": "Login Name",
+        "email": "Email",
+        "full_name": "Name",
+        "validated": "User Validated",
+        "locked": "User Locked",
+        "password_change_required": "Password Change Required",
+        "last_login": "Last Login",
+        "created": "Created",
+        "permanent": "Permanent",
+        "last_password_change": "Last Password Change"
+    },
+    "input" : {
+      "small": {
+        "user_id": "Must be a unique key. No space allowed.",
+        "full_name": "This is the display name of the user"
+      },
+      "user_id": "Enter user ID",
+      "full_name": "Enter full user name",
+      "email": "email@example.org"
+    },
+
     "list": {
-      "head": "List Users",
-      "table":{
-        "head": {
-          "id": "ID",
-          "user_id": "Login Name",
-          "email": "Email",
-          "full_name": "Name",
-          "validated": "User Validated",
-          "locked": "User Locked",
-          "pwchange": "Password Change Required",
-          "lastLogin": "Last Login",
-          "created": "Created",
-          "last_password_change": "Last Password Change"
-        }
-      }
+      "head": "List Users"
     },
     "add": {
-      "head": "Add User"
+      "head": "Add User",
+      "submit": "Add User"
     }
   },
   "search": {
     "button": "Search",
-    "label": "Enter your search term"
+    "label": "Enter your search term",
+    "input": "Search"
+  },
+  "form": {
+    "submit": "Submit"
   }
 }

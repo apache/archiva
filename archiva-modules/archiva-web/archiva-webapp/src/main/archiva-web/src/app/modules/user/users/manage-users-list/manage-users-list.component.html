@@ -24,9 +24,9 @@
         <thead class="thead-light">
         <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrderEmitter]="parent.sortOrderChange"
             [toggleObserver]="parent">
-            <app-th-sorted [fieldArray]="['user_id']" contentText="users.list.table.head.user_id"></app-th-sorted>
-            <app-th-sorted [fieldArray]="['full_name']" contentText="users.list.table.head.full_name" ></app-th-sorted>
-            <app-th-sorted [fieldArray]="['email']" contentText="users.list.table.head.email" ></app-th-sorted>
+            <app-th-sorted [fieldArray]="['user_id']" contentText="users.attributes.user_id"></app-th-sorted>
+            <app-th-sorted [fieldArray]="['full_name']" contentText="users.attributes.full_name" ></app-th-sorted>
+            <app-th-sorted [fieldArray]="['email']" contentText="users.attributes.email" ></app-th-sorted>
             <app-th-sorted [fieldArray]="['validated','user_id']">
             <span class="fas fa-check" placement="top"
                   [ngbTooltip]="heads.validated" [attr.aria-label]="heads.validated"></span>
@@ -34,11 +34,11 @@
             <app-th-sorted [fieldArray]="['locked','user_id']"><span class="fas fa-lock" placement="top"
                                   [ngbTooltip]="heads.locked" [attr.aria-label]="heads.locked"></span></app-th-sorted>
             <app-th-sorted [fieldArray]="['password_change_required','user_id']"><span class="fa fa-chevron-circle-right" placement="top"
-                                  [ngbTooltip]="heads.pwchange" [attr.aria-label]="heads.pwchange"></span>
+                                  [ngbTooltip]="heads.password_change_required" [attr.aria-label]="heads.password_change_required"></span>
             </app-th-sorted>
-            <app-th-sorted [fieldArray]="['last_login']" contentText="users.list.table.head.last_login"></app-th-sorted>
-            <app-th-sorted [fieldArray]="['created']" contentText="users.list.table.head.created" ></app-th-sorted>
-            <app-th-sorted [fieldArray]="['last_password_change']" contentText="users.list.table.head.last_password_change"></app-th-sorted>
+            <app-th-sorted [fieldArray]="['last_login']" contentText="users.attributes.last_login"></app-th-sorted>
+            <app-th-sorted [fieldArray]="['created']" contentText="users.attributes.created" ></app-th-sorted>
+            <app-th-sorted [fieldArray]="['last_password_change']" contentText="users.attributes.last_password_change"></app-th-sorted>
         </tr>
         </thead>
         <tbody>

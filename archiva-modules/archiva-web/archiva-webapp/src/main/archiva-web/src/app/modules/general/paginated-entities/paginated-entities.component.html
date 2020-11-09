@@ -20,7 +20,7 @@
     <div class="form-row align-items-center">
         <div class="col-lg-4 col-md-2 col-sm-1">
             <label class="sr-only" for="searchQuery">{{'search.label' |translate}}</label>
-            <input type="text" class="form-control" id="searchQuery" placeholder="Search" #searchTerm
+            <input type="text" class="form-control" id="searchQuery" placeholder="{{'search.input'|translate}}" #searchTerm
                    (keyup)="search(searchTerm.value)">
         </div>
         <div class="col-auto">

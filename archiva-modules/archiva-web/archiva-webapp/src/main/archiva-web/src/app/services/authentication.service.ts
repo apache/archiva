@@ -136,11 +136,11 @@ export class AuthenticationService {
             error: (err: HttpErrorResponse) => {
                 console.log("Error " + (JSON.stringify(err)));
                 let result = err.error as ErrorResult
-                if (result.errorMessages != null) {
-                    for (let msg of result.errorMessages) {
-                        console.debug('Observer got an error: ' + msg.errorKey)
+                if (result.error_messages != null) {
+                    for (let msg of result.error_messages) {
+                        console.debug('Observer got an error: ' + msg.error_key)
                     }
-                    resultHandler("ERROR", result.errorMessages);
+                    resultHandler("ERROR", result.error_messages);
                 } else {
                     resultHandler("ERROR", null);
                 }

@@ -115,9 +115,9 @@ export class UserService implements OnInit, OnDestroy {
                     error: (err: HttpErrorResponse) => {
                         console.log("Error " + (JSON.stringify(err)));
                         let result = err.error as ErrorResult
-                        if (result != null && result.errorMessages != null) {
-                            for (let msg of result.errorMessages) {
-                                console.error('Observer got an error: ' + msg.errorKey)
+                        if (result != null && result.error_messages != null) {
+                            for (let msg of result.error_messages) {
+                                console.error('Observer got an error: ' + msg.error_key)
                             }
                         } else if (err.message != null) {
                             console.error("Bad response from user info call: " + err.message);
@@ -150,9 +150,9 @@ export class UserService implements OnInit, OnDestroy {
                 error: (err: HttpErrorResponse) => {
                     console.log("Error " + (JSON.stringify(err)));
                     let result = err.error as ErrorResult
-                    if (result.errorMessages != null) {
-                        for (let msg of result.errorMessages) {
-                            console.debug('Observer got an error: ' + msg.errorKey)
+                    if (result.error_messages != null) {
+                        for (let msg of result.error_messages) {
+                            console.debug('Observer got an error: ' + msg.error_key)
                         }
                     }
                     this.resetPermissions();

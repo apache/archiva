@@ -17,4 +17,48 @@
   ~ under the License.
   -->
 
-<p>manage-users-add works!</p>
+<form class="mt-3 mb-3" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <fieldset>
+        <div class="form-group col-md-8">
+            <label for="userId">{{'users.attributes.user_id' |translate}}</label>
+            <input type="text" class="form-control" formControlName="userId" id="userId"
+                   [ngClass]="valid('userId')"
+                   placeholder="{{'users.input.user_id'|translate}}">
+            <small>{{'users.input.small.user_id'|translate}}</small>
+        </div>
+        <div class="form-group col-md-8">
+            <label for="fullName">{{'users.attributes.full_name' |translate}}</label>
+            <input type="text" class="form-control" formControlName="fullName" id="fullName"
+                   [ngClass]="valid('fullName')"
+                   placeholder="{{'users.input.full_name'|translate}}">
+            <small>{{'users.input.small.full_name'|translate}}</small>
+        </div>
+        <div class="form-group col-md-8">
+            <label for="email">{{'users.attributes.email' |translate}}</label>
+            <input type="text" class="form-control" formControlName="email" id="email"
+                   [ngClass]="valid('email')"
+                   placeholder="{{'users.input.email'|translate}}">
+        </div>
+        <div class="form-group col-md-8">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" formControlName="locked" id="locked">
+                <label class="form-check-label" for="locked">
+                    {{'users.attributes.locked'|translate}}
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" formControlName="passwordChangeRequired"
+                       id="password_change_required" checked>
+                <label class="form-check-label" for="password_change_required">
+                    {{'users.attributes.password_change_required'|translate}}
+                </label>
+            </div>
+        </div>
+        <div class="form-group col-md-8">
+        <button class="btn btn-primary" type="submit"
+                [disabled]="!userForm.valid">{{'users.add.submit'|translate}}</button>
+        </div>
+    </fieldset>
+
+
+</form>
