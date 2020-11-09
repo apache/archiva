@@ -23,7 +23,7 @@ export class Permission {
     name: string;
     description: string;
     permanent: boolean;
-    descriptionKey: string;
+    description_key: string;
     operation: Operation;
     resource: Resource;
 }

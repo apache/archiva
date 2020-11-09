@@ -132,7 +132,7 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
             mergeMap((params: { search: string, page: number }) => {
                 return this.service(params.search, (params.page - 1) * this.pageSize, this.pageSize, this.sortField, this.sortOrder);
             }), share());
-        this.total$ = source.pipe(pluck('pagination', 'totalCount'));
+        this.total$ = source.pipe(pluck('pagination', 'total_count'));
         this.items$ = source.pipe(pluck('data'));
     }
 
@@ -189,6 +189,7 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
             this.sortFieldChange.emit(this.sortField);
         }
         if (sortFieldChanged || sortOrderChanged) {
+            this.page = 1;
             this.changePage(1);
         }
     }

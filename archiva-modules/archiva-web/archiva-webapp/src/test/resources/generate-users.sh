@@ -21,7 +21,7 @@
 BASE_URL="http://localhost:8080/archiva"
 USER_NAME="admin"
 PASSWD="admin456"
-USERS=25
+USERS=50
 
 #Authenticate
 TOKEN=$(curl -s -X POST "${BASE_URL}/api/v2/redback/auth/authenticate" -H  "accept: application/json" -H  "Content-Type: application/json" \
@@ -40,7 +40,8 @@ while [ $NUM -ge 0 ]; do
   curl -s -w ' - %{http_code}' -X POST "${BASE_URL}/api/v2/redback/users" -H  "accept: application/json" \
    -H  "Authorization: Bearer ${TOKEN}" \
    -H  "Content-Type: application/json" \
-   -d "{\"user_id\":\"test${SUFFIX}\",\"fullName\":\"Test User ${SUFFIX}\",\"email\":\"test${SUFFIX}@test.org\",\"validated\":true,\"locked\":false,\"passwordChangeRequired\":false,\"password\":\"test123\"}"
+   -d "{\"user_id\":\"test${SUFFIX}\",\"full_name\":\"Test User ${SUFFIX}\",\"email\":\"test${SUFFIX}@test.org\",\"validated\":true,\"locked\":false,\"password_change_required\":false,\"password\":\"test123\"}"
   NUM=$((NUM-1))
   echo " "
+  sleep 0.2 # Sleeping to get different creation timestamps
 done

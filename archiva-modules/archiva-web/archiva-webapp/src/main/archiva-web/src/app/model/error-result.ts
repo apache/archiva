@@ -19,9 +19,9 @@
 import {ErrorMessage} from "./error-message";
 
 export class ErrorResult {
-    errorMessages: Array<ErrorMessage>
+    error_messages: Array<ErrorMessage>
 
     constructor(errorMessages: Array<ErrorMessage>) {
-        this.errorMessages = errorMessages;
+        this.error_messages = errorMessages;
     }
 }

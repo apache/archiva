@@ -19,6 +19,6 @@
 export class Operation {
     name: string;
     description: string;
-    descriptionKey: string;
+    description_key: string;
     permanent: boolean;
 }

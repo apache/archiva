@@ -57,13 +57,13 @@
           "id": "ID",
           "user_id": "Login Name",
           "email": "Email",
-          "fullName": "Name",
+          "full_name": "Name",
           "validated": "User Validated",
           "locked": "User Locked",
           "pwchange": "Password Change Required",
           "lastLogin": "Last Login",
           "created": "Created",
-          "lastPwChange": "Last Password Change"
+          "last_password_change": "Last Password Change"
         }
       }
     },

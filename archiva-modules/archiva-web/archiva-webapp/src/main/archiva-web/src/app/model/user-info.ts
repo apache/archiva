@@ -19,17 +19,17 @@
 export class UserInfo {
     user_id:string;
     id:string;
-    fullName:string;
+    full_name:string;
     email:string;
     validated:boolean;
     locked:boolean;
-    passwordChangeRequired:boolean;
+    password_change_required:boolean;
     permanent:boolean;
-    timestampAccountCreation:Date;
-    timestampLastLogin:Date;
-    timestampLastPasswordChange:Date;
-    readOnly:boolean;
-    userManagerId:string;
-    validationToken:string;
+    timestamp_account_creation:Date;
+    timestamp_last_login:Date;
+    timestamp_last_password_change:Date;
+    read_only:boolean;
+    user_manager_id:string;
+    validation_token:string;
     language:string;
 }

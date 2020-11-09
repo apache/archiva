@@ -17,7 +17,7 @@
  */
 
 export class PaginationInfo {
-    totalCount : number;
+    total_count : number;
     offset: number;
     limit: number;
 }

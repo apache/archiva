@@ -17,7 +17,7 @@
  */
 
 export class ErrorMessage {
-    errorKey: string;
+    error_key: string;
     args: string[];
     message: string;
 }

@@ -18,43 +18,45 @@
   -->
 
 <app-paginated-entities [service]="service" pageSize="5" [(sortField)]="sortField" [(sortOrder)]="sortOrder"
-                         #parent>
+                        #parent>
 
-<table class="table table-striped table-bordered">
-    <thead class="thead-light">
-    <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrderEmitter]="parent.sortOrderChange"
-                   [toggleObserver]="parent" >
-        <app-th-sorted [fieldArray]="['user_id']" contentText="users.list.table.head.user_id"></app-th-sorted>
-        <app-th-sorted contentText="users.list.table.head.fullName" [fieldArray]="['fullName']" ></app-th-sorted>
-        <app-th-sorted contentText="users.list.table.head.email" [fieldArray]="['email']"></app-th-sorted>
-        <app-th-sorted [fieldArray]="['validated','user_id']">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-light">
+        <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrderEmitter]="parent.sortOrderChange"
+            [toggleObserver]="parent">
+            <app-th-sorted [fieldArray]="['user_id']" contentText="users.list.table.head.user_id"></app-th-sorted>
+            <app-th-sorted [fieldArray]="['full_name']" contentText="users.list.table.head.full_name" ></app-th-sorted>
+            <app-th-sorted [fieldArray]="['email']" contentText="users.list.table.head.email" ></app-th-sorted>
+            <app-th-sorted [fieldArray]="['validated','user_id']">
             <span class="fas fa-check" placement="top"
-                  [ngbTooltip]="heads.validated" [attr.aria-label]="heads.validated">
-        </span>
-        </app-th-sorted>
-        <th scope="col"><span class="fas fa-lock" placement="top"
-                              [ngbTooltip]="heads.locked" [attr.aria-label]="heads.locked"></span></th>
-        <th scope="col"><span class="fa fa-chevron-circle-right" placement="top"
-                              [ngbTooltip]="heads.pwchange" [attr.aria-label]="heads.pwchange"></span>
-        </th>
-        <th scope="col">{{'users.list.table.head.lastLogin' | translate}}</th>
-        <app-th-sorted contentText="users.list.table.head.created" [fieldArray]="['created']" ></app-th-sorted>
-        <th scope="col">{{'users.list.table.head.lastPwChange' | translate}}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let user of parent.items$ | async"  [ngClass]="(user.permanent||user.readOnly)?'table-secondary':''" >
-        <td><span data-toggle="tooltip" placement="left" ngbTooltip="{{user.id}}">{{user.user_id}}</span></td>
-        <td>{{user.fullName}}</td>
-        <td>{{user.email}}</td>
-        <td><span class="far" [attr.aria-valuetext]="user.validated" [ngClass]="user.validated?'fa-check-circle':'fa-circle'"></span></td>
-        <td><span class="far" [attr.aria-valuetext]="user.locked" [ngClass]="user.locked?'fa-check-circle':'fa-circle'"></span></td>
-        <td><span class="far" [attr.aria-valuetext]="user.passwordChangeRequired" [ngClass]="user.passwordChangeRequired?'fa-check-circle':'fa-circle'"></span></td>
-        <td>{{user.timestampLastLogin | date:'yyyy-MM-ddTHH:mm:ss'}}</td>
-        <td>{{user.timestampAccountCreation | date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
-        <td>{{user.timestampLastPasswordChange| date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
-    </tr>
-    </tbody>
-</table>
+                  [ngbTooltip]="heads.validated" [attr.aria-label]="heads.validated"></span>
+            </app-th-sorted>
+            <app-th-sorted [fieldArray]="['locked','user_id']"><span class="fas fa-lock" placement="top"
+                                  [ngbTooltip]="heads.locked" [attr.aria-label]="heads.locked"></span></app-th-sorted>
+            <app-th-sorted [fieldArray]="['password_change_required','user_id']"><span class="fa fa-chevron-circle-right" placement="top"
+                                  [ngbTooltip]="heads.pwchange" [attr.aria-label]="heads.pwchange"></span>
+            </app-th-sorted>
+            <app-th-sorted [fieldArray]="['last_login']" contentText="users.list.table.head.last_login"></app-th-sorted>
+            <app-th-sorted [fieldArray]="['created']" contentText="users.list.table.head.created" ></app-th-sorted>
+            <app-th-sorted [fieldArray]="['last_password_change']" contentText="users.list.table.head.last_password_change"></app-th-sorted>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let user  of parent.items$ | async" [ngClass]="(user.permanent||user.readOnly)?'table-secondary':''">
+            <td><span data-toggle="tooltip" placement="left" ngbTooltip="{{user.id}}">{{user.user_id}}</span></td>
+            <td>{{user.full_name}}</td>
+            <td>{{user.email}}</td>
+            <td><span class="far" [attr.aria-valuetext]="user.validated"
+                      [ngClass]="user.validated?'fa-check-circle':'fa-circle'"></span></td>
+            <td><span class="far" [attr.aria-valuetext]="user.locked"
+                      [ngClass]="user.locked?'fa-check-circle':'fa-circle'"></span></td>
+            <td><span class="far" [attr.aria-valuetext]="user.passwordChangeRequired"
+                      [ngClass]="user.password_change_required?'fa-check-circle':'fa-circle'"></span></td>
+            <td>{{user.timestamp_last_login | date:'yyyy-MM-ddTHH:mm:ss'}}</td>
+            <td>{{user.timestamp_account_creation | date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
+            <td>{{user.timestamp_last_password_change| date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
+        </tr>
+        </tbody>
+    </table>
 
 </app-paginated-entities>
