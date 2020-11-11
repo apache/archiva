@@ -1,0 +1,83 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<form class="mt-3 mb-3" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div class="form-group col-md-8">
+        <label for="user_id">{{'users.attributes.user_id' |translate}}</label>
+        <input type="text" class="form-control" formControlName="user_id" id="user_id"
+               [ngClass]="valid('user_id')"
+               placeholder="{{'users.input.user_id'|translate}}">
+        <small>{{'users.input.small.user_id'|translate:{'minSize':this.minUserIdSize} }}</small>
+    </div>
+    <div class="form-group col-md-8">
+        <label for="full_name">{{'users.attributes.full_name' |translate}}</label>
+        <input type="text" class="form-control" formControlName="full_name" id="full_name"
+               [ngClass]="valid('full_name')"
+               placeholder="{{'users.input.full_name'|translate}}">
+        <small>{{'users.input.small.full_name'|translate}}</small>
+    </div>
+    <div class="form-group col-md-8">
+        <label for="email">{{'users.attributes.email' |translate}}</label>
+        <input type="text" class="form-control" formControlName="email" id="email"
+               [ngClass]="valid('email')"
+               placeholder="{{'users.input.email'|translate}}">
+    </div>
+    <div class="form-group col-md-8">
+        <label for="password">{{'users.attributes.password' |translate}}</label>
+        <input type="password" class="form-control" formControlName="password" id="password"
+               [ngClass]="valid('password')"
+               placeholder="{{'users.input.password'|translate}}">
+    </div>
+    <div class="form-group col-md-8">
+        <label for="confirm_password">{{'users.attributes.confirm_password' |translate}}</label>
+        <input type="password" class="form-control" formControlName="confirm_password" id="confirm_password"
+               [ngClass]="valid('confirm_password')"
+               placeholder="{{'users.input.confirm_password'|translate}}">
+    </div>
+    <div class="form-group col-md-8">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" formControlName="locked" id="locked">
+            <label class="form-check-label" for="locked">
+                {{'users.attributes.locked'|translate}}
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" formControlName="password_change_required"
+                   id="password_change_required" checked>
+            <label class="form-check-label" for="password_change_required">
+                {{'users.attributes.password_change_required'|translate}}
+            </label>
+        </div>
+    </div>
+    <div class="form-group col-md-8">
+        <button class="btn btn-primary" type="submit"
+                [disabled]="!userForm.valid">{{'users.add.submit'|translate}}</button>
+    </div>
+    <div *ngIf="success" class="alert alert-success" role="alert">
+        User <a [routerLink]="['user','users','edit',userid]">{{userid}}</a> was added to the list.
+    </div>
+    <div *ngIf="error" class="alert alert-danger" role="alert" >
+        <h4 class="alert-heading">Errors</h4>
+        <ng-container *ngFor="let message of errorResult?.error_messages; first as isFirst" >
+            <hr *ngIf="!isFirst">
+            <p>{{message.message}}</p>
+        </ng-container>
+    </div>
+
+
+</form>

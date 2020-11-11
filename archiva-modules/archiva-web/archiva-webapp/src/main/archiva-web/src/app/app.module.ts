@@ -45,6 +45,7 @@ import { NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap
 import { PaginatedEntitiesComponent } from './modules/general/paginated-entities/paginated-entities.component';
 import { SortedTableHeaderComponent } from './modules/general/sorted-table-header/sorted-table-header.component';
 import { SortedTableHeaderRowComponent } from './modules/general/sorted-table-header-row/sorted-table-header-row.component';
+import { ManageUsersEditComponent } from './modules/user/users/manage-users-edit/manage-users-edit.component';
 
 
 @NgModule({
@@ -69,6 +70,7 @@ import { SortedTableHeaderRowComponent } from './modules/general/sorted-table-he
     PaginatedEntitiesComponent,
     SortedTableHeaderComponent,
     SortedTableHeaderRowComponent,
+    ManageUsersEditComponent,
   ],
   imports: [
     BrowserModule,

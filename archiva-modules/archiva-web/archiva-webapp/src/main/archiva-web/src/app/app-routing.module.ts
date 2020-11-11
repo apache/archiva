@@ -32,6 +32,7 @@ import {ManageRolesComponent} from "./modules/user/manage-roles/manage-roles.com
 import {SecurityConfigurationComponent} from "./modules/user/security-configuration/security-configuration.component";
 import {ManageUsersListComponent} from "./modules/user/users/manage-users-list/manage-users-list.component";
 import {ManageUsersAddComponent} from "./modules/user/users/manage-users-add/manage-users-add.component";
+import {ManageUsersEditComponent} from "./modules/user/users/manage-users-edit/manage-users-edit.component";
 
 const routes: Routes = [
   { path: '', component: HomeComponent,
@@ -47,6 +48,7 @@ const routes: Routes = [
         children: [
           {path: 'list', component: ManageUsersListComponent},
           {path: 'add', component: ManageUsersAddComponent},
+          {path: 'edit/:userid', component: ManageUsersEditComponent},
           {path: '', redirectTo:'list', pathMatch:'full'}
         ]
       },
