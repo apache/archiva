@@ -24,8 +24,7 @@ import {ErrorResult} from "../model/error-result";
 import {Observable, throwError} from "rxjs";
 import {Permission} from '../model/permission';
 import {PagedResult} from "../model/paged-result";
-import {EntityService} from "../model/entity-service";
-import { User } from '../model/user';
+import {User} from '../model/user';
 import {catchError, map} from "rxjs/operators";
 
 @Injectable({
@@ -37,25 +36,25 @@ export class UserService implements OnInit, OnDestroy {
     permissions: Permission[];
     guestPermissions: Permission[];
     authenticated: boolean;
-    uiPermissionsDefault  = {
+    uiPermissionsDefault = {
         'menu': {
-            'repo':{
-                'section':true,
-                'browse':true,
-                'search':true,
-                'upload':false
+            'repo': {
+                'section': true,
+                'browse': true,
+                'search': true,
+                'upload': false
             },
-            'admin':{
-                'section':false,
-                'config':false,
-                'status':false,
-                'reports':false
+            'admin': {
+                'section': false,
+                'config': false,
+                'status': false,
+                'reports': false
             },
-            'user':{
-                'section':false,
-                'manage':false,
-                'roles':false,
-                'config':false
+            'user': {
+                'section': false,
+                'manage': false,
+                'roles': false,
+                'config': false
             }
         }
     };
@@ -86,7 +85,7 @@ export class UserService implements OnInit, OnDestroy {
                     }
                 },
                 error: err => {
-                    console.log("Could not retrieve permissions "+err);
+                    console.log("Could not retrieve permissions " + err);
                 }
             }
             this.retrievePermissionInfo().subscribe(observer);
@@ -172,13 +171,14 @@ export class UserService implements OnInit, OnDestroy {
     resetPermissions() {
         this.deepCopy(this.uiPermissionsDefault, this.uiPermissions);
     }
+
     parsePermissions(permissions: Permission[]) {
         this.resetPermissions();
-        for ( let perm of permissions) {
+        for (let perm of permissions) {
             // console.debug("Checking permission for op: " + perm.operation.name);
             switch (perm.operation.name) {
                 case "archiva-manage-configuration": {
-                    if (perm.resource.identifier=='*') {
+                    if (perm.resource.identifier == '*') {
                         this.uiPermissions.menu.admin.section = true;
                         this.uiPermissions.menu.admin.config = true;
                         this.uiPermissions.menu.admin.reports = true;
@@ -187,7 +187,7 @@ export class UserService implements OnInit, OnDestroy {
 
                 }
                 case "archiva-manage-users": {
-                    if (perm.resource.identifier=='*') {
+                    if (perm.resource.identifier == '*') {
                         this.uiPermissions.menu.user.section = true;
                         this.uiPermissions.menu.user.config = true;
                         this.uiPermissions.menu.user.manage = true;
@@ -195,7 +195,7 @@ export class UserService implements OnInit, OnDestroy {
                     }
                 }
                 case "redback-configuration-edit": {
-                    if (perm.resource.identifier=='*') {
+                    if (perm.resource.identifier == '*') {
                         this.uiPermissions.menu.user.section = true;
                         this.uiPermissions.menu.user.config = true;
                     }
@@ -210,7 +210,7 @@ export class UserService implements OnInit, OnDestroy {
     private deepCopy(src: Object, dst: Object) {
         Object.keys(src).forEach((key, idx) => {
             let srcEl = src[key];
-            if (typeof(srcEl)=='object' ) {
+            if (typeof (srcEl) == 'object') {
                 let dstEl;
                 if (!dst.hasOwnProperty(key)) {
                     dst[key] = {}
@@ -260,22 +260,35 @@ export class UserService implements OnInit, OnDestroy {
         this.authenticated = false;
     }
 
-    public query(searchTerm : string, offset : number = 0, limit : number = 10, orderBy : string[] = ['user_id'], order: string = 'asc') : Observable<PagedResult<UserInfo>>  {
+    public query(searchTerm: string, offset: number = 0, limit: number = 10, orderBy: string[] = ['user_id'], order: string = 'asc'): Observable<PagedResult<UserInfo>> {
         console.log("getUserList " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
-        if (searchTerm==null) {
-            searchTerm=""
+        if (searchTerm == null) {
+            searchTerm = ""
         }
-        if (orderBy==null || orderBy.length==0) {
+        if (orderBy == null || orderBy.length == 0) {
             orderBy = ['user_id'];
         }
-        return this.rest.executeRestCall<PagedResult<UserInfo>>("get", "redback", "users", {'q':searchTerm, 'offset':offset,'limit':limit,'orderBy':orderBy,'order':order});
+        return this.rest.executeRestCall<PagedResult<UserInfo>>("get", "redback", "users", {
+            'q': searchTerm,
+            'offset': offset,
+            'limit': limit,
+            'orderBy': orderBy,
+            'order': order
+        });
     }
 
 
-    public addUser(user : User) : Observable<string> {
+    public addUser(user: User): Observable<string> {
         return this.rest.executeResponseCall<string>("post", "redback", "users", user).pipe(
-            catchError( ( error: HttpErrorResponse)  => {
+            catchError((error: HttpErrorResponse) => {
                 return throwError(this.rest.getTranslatedErrorResult(error));
-            }),map( (httpResponse : HttpResponse<string>) => httpResponse.headers.get('Location')));
+            }), map((httpResponse: HttpResponse<string>) => httpResponse.headers.get('Location')));
+    }
+
+    public getUser(userid: string): Observable<UserInfo> {
+        return this.rest.executeRestCall<UserInfo>("get", "redback", "users/" + userid, null).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            }));
     }
 }

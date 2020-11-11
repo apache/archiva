@@ -18,21 +18,40 @@
 
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import {UserService} from "../../../../services/user.service";
+import {FormBuilder, Validators} from "@angular/forms";
+import {ManageUsersAddComponent, MustMatch} from "../manage-users-add/manage-users-add.component";
+import {environment} from "../../../../../environments/environment";
+import {map, switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-manage-users-edit',
   templateUrl: './manage-users-edit.component.html',
   styleUrls: ['./manage-users-edit.component.scss']
 })
-export class ManageUsersEditComponent implements OnInit {
+export class ManageUsersEditComponent extends ManageUsersAddComponent implements OnInit {
 
-  userid;
+  editUser;
+  editMode:boolean=false;
 
-  constructor(private route: ActivatedRoute) {
-    this.route.params.subscribe(params => this.userid=params.userid);
+  constructor(private route: ActivatedRoute, public userService: UserService, public fb: FormBuilder) {
+    super(userService, fb);
+    this.editUser = this.route.params.pipe(map (params => params.userid ),  switchMap(userid => userService.getUser(userid))  ).subscribe(user => {
+      this.editUser = user;});
   }
 
   ngOnInit(): void {
+
   }
+
+  valid(field: string): string[] {
+    if (this.editMode) {
+      let classArr  = super.valid(field);
+      return classArr.concat('form-control')
+    } else {
+      return ['form-control-plaintext'];
+    }
+  }
+
 
 }

@@ -49,6 +49,7 @@ const routes: Routes = [
           {path: 'list', component: ManageUsersListComponent},
           {path: 'add', component: ManageUsersAddComponent},
           {path: 'edit/:userid', component: ManageUsersEditComponent},
+          {path: 'edit', redirectTo:'edit/guest' },
           {path: '', redirectTo:'list', pathMatch:'full'}
         ]
       },

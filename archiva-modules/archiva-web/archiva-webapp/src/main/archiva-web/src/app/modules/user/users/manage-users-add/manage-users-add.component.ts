@@ -26,6 +26,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {ErrorResult} from "../../../../model/error-result";
 import {catchError} from "rxjs/operators";
 import {of, throwError} from 'rxjs';
+import {environment} from "../../../../../environments/environment";
 
 @Component({
     selector: 'app-manage-users-add',
@@ -34,7 +35,7 @@ import {of, throwError} from 'rxjs';
 })
 export class ManageUsersAddComponent implements OnInit {
 
-    minUserIdSize=8;
+    minUserIdSize=environment.application.minUserIdLength;
     success:boolean=false;
     error:boolean=false;
     errorResult:ErrorResult;
@@ -53,7 +54,7 @@ export class ManageUsersAddComponent implements OnInit {
         validator: MustMatch('password', 'confirm_password')
     })
 
-    constructor(private userService: UserService, private fb: FormBuilder) {
+    constructor(public userService: UserService, public fb: FormBuilder) {
 
     }
 
@@ -97,16 +98,16 @@ export class ManageUsersAddComponent implements OnInit {
     }
 
 
-    valid(field:string) : string {
+    valid(field:string) : string[] {
       let formField = this.userForm.get(field);
       if (formField.dirty||formField.touched) {
         if (formField.valid) {
-          return 'is-valid'
+          return ['is-valid']
         } else {
-          return 'is-invalid'
+          return ['is-invalid']
         }
       } else {
-        return ''
+        return ['']
       }
     }
 

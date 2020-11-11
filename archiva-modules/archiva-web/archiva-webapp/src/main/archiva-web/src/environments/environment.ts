@@ -28,6 +28,7 @@ export const environment = {
     client_id:'archiva_web_client',
     baseUrl: 'http://localhost:8080',
     restPath: '/archiva/api/v2',
+    minUserIdLength: 8,
     servicePaths: {
       archiva:"archiva",
       redback:"redback",
