@@ -19,12 +19,14 @@
 import {Injectable, OnDestroy, OnInit} from '@angular/core';
 import {ArchivaRequestService} from "./archiva-request.service";
 import {UserInfo} from '../model/user-info';
-import {HttpErrorResponse} from "@angular/common/http";
+import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {ErrorResult} from "../model/error-result";
-import {Observable} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {Permission} from '../model/permission';
 import {PagedResult} from "../model/paged-result";
 import {EntityService} from "../model/entity-service";
+import { User } from '../model/user';
+import {catchError, map} from "rxjs/operators";
 
 @Injectable({
     providedIn: 'root'
@@ -269,4 +271,11 @@ export class UserService implements OnInit, OnDestroy {
         return this.rest.executeRestCall<PagedResult<UserInfo>>("get", "redback", "users", {'q':searchTerm, 'offset':offset,'limit':limit,'orderBy':orderBy,'order':order});
     }
 
+
+    public addUser(user : User) : Observable<string> {
+        return this.rest.executeResponseCall<string>("post", "redback", "users", user).pipe(
+            catchError( ( error: HttpErrorResponse)  => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            }),map( (httpResponse : HttpResponse<string>) => httpResponse.headers.get('Location')));
+    }
 }

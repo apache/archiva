@@ -50,7 +50,7 @@
                       [ngClass]="user.validated?'fa-check-circle':'fa-circle'"></span></td>
             <td><span class="far" [attr.aria-valuetext]="user.locked"
                       [ngClass]="user.locked?'fa-check-circle':'fa-circle'"></span></td>
-            <td><span class="far" [attr.aria-valuetext]="user.passwordChangeRequired"
+            <td><span class="far" [attr.aria-valuetext]="user.password_change_required"
                       [ngClass]="user.password_change_required?'fa-check-circle':'fa-circle'"></span></td>
             <td>{{user.timestamp_last_login | date:'yyyy-MM-ddTHH:mm:ss'}}</td>
             <td>{{user.timestamp_account_creation | date : 'yyyy-MM-ddTHH:mm:ss'}}</td>

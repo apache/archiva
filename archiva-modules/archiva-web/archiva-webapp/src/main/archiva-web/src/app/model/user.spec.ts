@@ -16,13 +16,10 @@
  * under the License.
  */
 
-import {ErrorMessage} from "./error-message";
+import { User } from './user';
 
-export class ErrorResult {
-    error_messages: Array<ErrorMessage>
-    status: number;
-
-    constructor(errorMessages: Array<ErrorMessage>) {
-        this.error_messages = errorMessages;
-    }
-}
+describe('User', () => {
+  it('should create an instance', () => {
+    expect(new User()).toBeTruthy();
+  });
+});

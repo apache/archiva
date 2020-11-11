@@ -17,11 +17,12 @@
  * under the License.
  */
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {ErrorMessage} from "../model/error-message";
 import {TranslateService} from "@ngx-translate/core";
+import {ErrorResult} from "../model/error-result";
 
 @Injectable({
     providedIn: 'root'
@@ -42,6 +43,21 @@ export class ArchivaRequestService {
      * @param input the input data, if this is a POST or UPDATE request
      */
     executeRestCall<R>(type: string, module: string, service: string, input: object): Observable<R> {
+        let httpArgs = this.getHttpOptions(type, module, service, input);
+        httpArgs['options']['observe'] = 'body';
+        httpArgs['options']['responseType'] = 'json';
+
+        let lType = type.toLowerCase();
+        if (lType == "get") {
+            return this.http.get<R>(httpArgs.url, httpArgs.options);
+        } else if (lType == "head" ) {
+            return this.http.head<R>(httpArgs.url, httpArgs.options);
+        } else if (lType == "post") {
+            return this.http.post<R>(httpArgs.url, input, httpArgs.options);
+        }
+    }
+
+    private getHttpOptions(type: string, module: string, service: string, input: object) {
         let modulePath = environment.application.servicePaths[module];
         let url = environment.application.baseUrl + environment.application.restPath + "/" + modulePath + "/" + service;
         let token = this.getToken();
@@ -53,14 +69,28 @@ export class ArchivaRequestService {
         } else {
             headers = {};
         }
-        if (type == "get") {
+        let options = {'headers': headers}
+        if (type.toLowerCase()=='get') {
             let params = {}
             if (input!=null) {
                 params = input;
             }
-            return this.http.get<R>(url, {"headers": headers,"params":params});
-        } else if (type == "post") {
-            return this.http.post<R>(url, input, {"headers": headers});
+            options['params'] = params;
+        }
+        return {'url':url, 'options':options}
+    }
+
+    executeResponseCall<R>(type: string, module: string, service:string, input:object) : Observable<HttpResponse<R>> {
+        let httpArgs = this.getHttpOptions(type, module, service, input);
+        httpArgs['options']['observe'] = 'response';
+        httpArgs['options']['responseType'] = 'json';
+        let lType = type.toLowerCase();
+        if (lType == "get") {
+            return this.http.get<HttpResponse<R>>(httpArgs.url, httpArgs.options);
+        } else if (lType=='head') {
+            return this.http.head<HttpResponse<R>>(httpArgs.url, httpArgs.options);
+        } else if (lType == 'post') {
+            return this.http.post<HttpResponse<R>>(httpArgs.url, input, httpArgs.options);
         }
     }
 
@@ -96,5 +126,18 @@ export class ArchivaRequestService {
             }
             return this.translator.instant('api.' + errorMsg.error_key, parms);
         }
+    }
+
+    public getTranslatedErrorResult(httpError : HttpErrorResponse) : ErrorResult {
+        let errorResult = httpError.error as ErrorResult;
+        errorResult.status = httpError.status;
+        if (errorResult.error_messages!=null) {
+            for (let message of errorResult.error_messages) {
+                if (message.message==null || message.message=='') {
+                    message.message = this.translateError(message);
+                }
+            }
+        }
+        return errorResult;
     }
 }

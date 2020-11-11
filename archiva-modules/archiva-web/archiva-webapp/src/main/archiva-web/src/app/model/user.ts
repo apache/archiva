@@ -16,13 +16,9 @@
  * under the License.
  */
 
-import {ErrorMessage} from "./error-message";
+import { UserInfo } from './user-info';
 
-export class ErrorResult {
-    error_messages: Array<ErrorMessage>
-    status: number;
-
-    constructor(errorMessages: Array<ErrorMessage>) {
-        this.error_messages = errorMessages;
-    }
+export class User extends UserInfo {
+    password: string;
+    confirm_password: string;
 }
