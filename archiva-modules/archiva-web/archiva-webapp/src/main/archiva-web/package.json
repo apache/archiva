@@ -27,6 +27,8 @@
     "bootstrap": "^4.5.0",
     "flag-icon-css": "^3.5.0",
     "jquery": "^3.5.1",
+    "messageformat": "^2.3.0",
+    "ngx-translate-messageformat-compiler": "^4.8.0",
     "popper.js": "^1.16.1",
     "rxjs": "~6.6.3",
     "service": "^0.1.4",

@@ -278,11 +278,19 @@ export class UserService implements OnInit, OnDestroy {
     }
 
 
-    public addUser(user: User): Observable<string> {
-        return this.rest.executeResponseCall<string>("post", "redback", "users", user).pipe(
+    public addUser(user: User): Observable<UserInfo> {
+        return this.rest.executeResponseCall<UserInfo>("post", "redback", "users", user).pipe(
             catchError((error: HttpErrorResponse) => {
                 return throwError(this.rest.getTranslatedErrorResult(error));
-            }), map((httpResponse: HttpResponse<string>) => httpResponse.headers.get('Location')));
+            }), map((httpResponse: HttpResponse<UserInfo>) => {
+                if (httpResponse.status==201) {
+                    let user = httpResponse.body;
+                    user.location = httpResponse.headers.get('Location');
+                    return user;
+                } else {
+                    throwError(new HttpErrorResponse({headers:httpResponse.headers,status:httpResponse.status,statusText:"Bad response code"}))
+                }
+            }));
     }
 
     public getUser(userid: string): Observable<UserInfo> {
@@ -291,4 +299,25 @@ export class UserService implements OnInit, OnDestroy {
                 return throwError(this.rest.getTranslatedErrorResult(error));
             }));
     }
+
+    public updateUser(user:User): Observable<UserInfo> {
+        return this.rest.executeRestCall<UserInfo>("put", "redback", "users/" + user.user_id, user).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            }));
+    }
+
+    public userExists(userid:string): Observable<boolean> {
+        console.log("Checking user " + userid);
+        return this.rest.executeResponseCall<string>("head", "redback", "users/" + userid, null).pipe(
+            catchError((error: HttpErrorResponse) => {
+                if (error.status==404) {
+                    console.log("Status 404")
+                    return [false];
+                } else {
+                    return throwError(this.rest.getTranslatedErrorResult(error));
+                }
+            }), map((httpResponse: HttpResponse<string>) => httpResponse.status == 200));
+    }
+
 }

@@ -18,15 +18,23 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {Validators, FormBuilder, FormGroup} from '@angular/forms';
+import {
+    FormBuilder,
+    FormGroup,
+    Validators,
+    FormControl,
+    AsyncValidator,
+    AbstractControl,
+    ValidationErrors,
+    ValidatorFn
+} from '@angular/forms';
 import {UserService} from "../../../../services/user.service";
 import {User} from "../../../../model/user";
-import { UserInfo } from 'src/app/model/user-info';
-import {HttpErrorResponse} from "@angular/common/http";
 import {ErrorResult} from "../../../../model/error-result";
-import {catchError} from "rxjs/operators";
-import {of, throwError} from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, map, switchMap} from "rxjs/operators";
+import {throwError, Observable, of, pipe, timer} from 'rxjs';
 import {environment} from "../../../../../environments/environment";
+import {UserInfo} from "../../../../model/user-info";
 
 @Component({
     selector: 'app-manage-users-add',
@@ -35,21 +43,24 @@ import {environment} from "../../../../../environments/environment";
 })
 export class ManageUsersAddComponent implements OnInit {
 
-    minUserIdSize=environment.application.minUserIdLength;
-    success:boolean=false;
-    error:boolean=false;
-    errorResult:ErrorResult;
-    result:string;
-    userid:string;
+    editProperties = ['user_id', 'full_name', 'email', 'locked', 'password_change_required',
+        'password', 'confirm_password', 'validated'];
+    minUserIdSize = environment.application.minUserIdLength;
+    success: boolean = false;
+    error: boolean = false;
+    errorResult: ErrorResult;
+    result: UserInfo;
+    user: string;
 
     userForm = this.fb.group({
-        user_id: ['', [Validators.required, Validators.minLength(this.minUserIdSize)]],
+        user_id: ['', [Validators.required, Validators.minLength(this.minUserIdSize), whitespaceValidator()],this.userUidExistsValidator()],
         full_name: ['', Validators.required],
-        email: ['', [Validators.required,Validators.email]],
+        email: ['', [Validators.required, Validators.email]],
         locked: [false],
         password_change_required: [true],
         password: [''],
         confirm_password: [''],
+        validated: [true]
     }, {
         validator: MustMatch('password', 'confirm_password')
     })
@@ -63,33 +74,39 @@ export class ManageUsersAddComponent implements OnInit {
 
     onSubmit() {
         // Process checkout data here
-        this.result=null;
+        this.result = null;
         if (this.userForm.valid) {
-            let user = this.copyForm(['user_id','full_name','email','locked','password_change_required',
-            'password','confirm_password'])
+            let user = this.copyFromForm(this.editProperties);
             console.info('Adding user ' + user);
-            this.userService.addUser(user).pipe(catchError((error : ErrorResult)=> {
-                console.log("Error " + error + " - " + typeof (error) + " - " + JSON.stringify(error));
-                if (error.status==422) {
-                    console.warn("Validation error");
+            this.userService.addUser(user).pipe(catchError((error: ErrorResult) => {
+                // console.log("Error " + error + " - " + typeof (error) + " - " + JSON.stringify(error));
+                if (error.status == 422) {
+                    // console.warn("Validation error");
+                    let pwdErrors = {};
+                    for (let message of error.error_messages) {
+                        if (message.error_key.startsWith('user.password.violation')) {
+                            pwdErrors[message.error_key] = message.message;
+                        }
+                    }
+                    this.userForm.get('password').setErrors(pwdErrors);
 
                 }
                 this.errorResult = error;
-                this.success=false;
-                this.error=true;
-                return throwError(error);
-            })).subscribe((location : string ) => {
-                this.result = location;
-                this.success=true;
+                this.success = false;
+                this.error = true;
+                return [];
+                // return throwError(error);
+            })).subscribe((user: UserInfo) => {
+                this.result = user;
+                this.success = true;
                 this.error = false;
-                this.userid = location.substring(location.lastIndexOf('/') + 1);
             });
         }
     }
 
 
-    private copyForm(properties:string[]) : User {
-        let user : any  = new User();
+    public copyFromForm(properties: string[]): User {
+        let user: any = new User();
         for (let prop of properties) {
             user[prop] = this.userForm.get(prop).value;
         }
@@ -97,27 +114,83 @@ export class ManageUsersAddComponent implements OnInit {
         return user;
     }
 
-
-    valid(field:string) : string[] {
-      let formField = this.userForm.get(field);
-      if (formField.dirty||formField.touched) {
-        if (formField.valid) {
-          return ['is-valid']
-        } else {
-          return ['is-invalid']
+    public copyToForm(properties: string[], user: User): void {
+        let propMap = {};
+        for (let prop of properties) {
+            let propValue = user[prop] == null ? '' : user[prop];
+            propMap[prop] = propValue;
         }
-      } else {
-        return ['']
-      }
+        this.userForm.patchValue(propMap);
+        console.log("User " + user);
     }
 
+
+    valid(field: string): string[] {
+        let formField = this.userForm.get(field);
+        if (formField.dirty || formField.touched) {
+            if (formField.valid) {
+                return ['is-valid']
+            } else {
+                return ['is-invalid']
+            }
+        } else {
+            return ['']
+        }
+    }
+
+    getAllErrors(formGroup: FormGroup, errors: string[] = []) : string[] {
+        Object.keys(formGroup.controls).forEach(field => {
+            const control = formGroup.get(field);
+            if (control instanceof FormControl && control.errors != null) {
+                let keys = Object.keys(control.errors).map(errorKey=>field+'.'+errorKey);
+                errors = errors.concat(keys);
+            } else if (control instanceof FormGroup) {
+                errors = errors.concat(this.getAllErrors(control));
+            }
+        });
+        return errors;
+    }
+
+    getAttributeErrors(control:string):string[] {
+        return Object.keys(this.userForm.get(control).errors);
+    }
+
+    /**
+     * Async validator with debounce time
+     * @constructor
+     */
+    userUidExistsValidator() {
+
+        return (ctrl : FormControl) => {
+            // debounceTimer() does not work here, as the observable is created with each keystroke
+            // but angular does unsubscribe on previous started async observables.
+            return timer(500).pipe(
+                switchMap((userid) => this.userService.userExists(ctrl.value)),
+                catchError(() => of(null)),
+                map(exists => (exists ? {userexists: true} : null))
+            );
+        }
+    }
+
+    forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
+        return (control: AbstractControl): {[key: string]: any} | null => {
+            const forbidden = nameRe.test(control.value);
+            return forbidden ? {forbiddenName: {value: control.value}} : null;
+        };
+    }
 
 
 
 }
 
-export function MustMatch(controlName: string, matchingControlName: string) {
-    return (formGroup: FormGroup) => {
+export function whitespaceValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+        const hasWhitespace =  /\s/g.test(control.value);
+        return hasWhitespace ? {containsWhitespace: {value: control.value}} : null;
+    };
+}
+export function MustMatch(controlName: string, matchingControlName: string) : ValidatorFn  {
+    return (formGroup: FormGroup): ValidationErrors | null => {
         const control = formGroup.controls[controlName];
         const matchingControl = formGroup.controls[matchingControlName];
 
@@ -128,9 +201,10 @@ export function MustMatch(controlName: string, matchingControlName: string) {
 
         // set error on matchingControl if validation fails
         if (control.value !== matchingControl.value) {
-            matchingControl.setErrors({ mustMatch: true });
+            matchingControl.setErrors({mustMatch: true});
         } else {
             matchingControl.setErrors(null);
         }
     }
 }
+

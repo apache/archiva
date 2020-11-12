@@ -19,7 +19,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {UserService} from "../../../../services/user.service";
-import {FormBuilder, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, Validators} from "@angular/forms";
 import {ManageUsersAddComponent, MustMatch} from "../manage-users-add/manage-users-add.component";
 import {environment} from "../../../../../environments/environment";
 import {map, switchMap} from 'rxjs/operators';
@@ -31,17 +31,23 @@ import {map, switchMap} from 'rxjs/operators';
 })
 export class ManageUsersEditComponent extends ManageUsersAddComponent implements OnInit {
 
+  editProperties = ['user_id', 'full_name', 'email', 'locked', 'password_change_required',
+    'password', 'confirm_password', 'validated'];
   editUser;
+  originUser;
   editMode:boolean=false;
+  minUserIdSize=0;
 
   constructor(private route: ActivatedRoute, public userService: UserService, public fb: FormBuilder) {
     super(userService, fb);
     this.editUser = this.route.params.pipe(map (params => params.userid ),  switchMap(userid => userService.getUser(userid))  ).subscribe(user => {
-      this.editUser = user;});
+      this.editUser = user;
+      this.originUser = user;
+      this.copyToForm(this.editProperties, this.editUser);});
   }
 
   ngOnInit(): void {
-
+    this.userForm.setControl('user_id', new FormControl());
   }
 
   valid(field: string): string[] {
@@ -51,6 +57,12 @@ export class ManageUsersEditComponent extends ManageUsersAddComponent implements
     } else {
       return ['form-control-plaintext'];
     }
+  }
+
+
+  onSubmit() {
+    this.copyFromForm(this.editProperties)
+
   }
 
 

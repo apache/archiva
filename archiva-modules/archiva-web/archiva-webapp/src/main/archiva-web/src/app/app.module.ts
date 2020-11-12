@@ -19,8 +19,9 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateCompiler } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateMessageFormatCompiler, MESSAGE_FORMAT_CONFIG } from 'ngx-translate-messageformat-compiler';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -79,6 +80,10 @@ import { ManageUsersEditComponent } from './modules/user/users/manage-users-edit
     ReactiveFormsModule,
     HttpClientModule,
     TranslateModule.forRoot({
+      compiler: {
+        provide: TranslateCompiler,
+        useClass: TranslateMessageFormatCompiler
+      },
       loader: {
         provide: TranslateLoader,
         useFactory: httpTranslateLoader,
@@ -88,7 +93,9 @@ import { ManageUsersEditComponent } from './modules/user/users/manage-users-edit
       NgbPaginationModule,
       NgbTooltipModule
   ],
-  providers: [],
+  providers: [
+    { provide: MESSAGE_FORMAT_CONFIG, useValue: { locales: ['en', 'de'] }}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

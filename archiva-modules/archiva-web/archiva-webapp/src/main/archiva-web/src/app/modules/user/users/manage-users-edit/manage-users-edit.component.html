@@ -17,84 +17,124 @@
   -->
 
 <form class="mt-3 mb-3" [formGroup]="userForm" (ngSubmit)="onSubmit()">
-    <div class="form-group row col-md-8">
-        <div class="col-md-1">Edit  <span class="fas fa-edit"></span></div>
+    <div class="form-group row col-md-8" *ngIf="!editUser.permanent">
+        <div class="col-md-1">Edit <span class="fas fa-edit"></span></div>
         <div class="col-md-6">
-        <input class="form-check-input" type="checkbox" [value]="editMode"
-                                     (change)="editMode=!editMode"
-                                     >
+            <input class="form-check-input" type="checkbox" [value]="editMode"
+                   (change)="editMode=!editMode"
+            >
         </div>
     </div>
     <div class="form-group row col-md-8">
         <label class="col-md-2 col-form-label" for="user_id">{{'users.attributes.user_id' |translate}}</label>
-        <div class="col-md-6" >
-        <input type="text" formControlName="user_id" id="user_id"
-               [ngClass]="valid('user_id')"
-               value="{{editUser.user_id}}" [attr.readonly]="!editMode">
-        <small *ngIf="editMode">{{'users.input.small.user_id'|translate:{'minSize':this.minUserIdSize} }}</small>
+        <div class="col-md-6">
+            <input type="text" formControlName="user_id" id="user_id"
+                   [ngClass]="valid('user_id')"
+                   [attr.readonly]="true">
         </div>
     </div>
     <div class="form-group row col-md-8">
         <label class="col-md-2 col-form-label" for="full_name">{{'users.attributes.full_name' |translate}}</label>
-        <div class="col-md-6" >
-        <input type="text" formControlName="full_name" id="full_name"
-               [ngClass]="valid('full_name')" value="{{editUser.full_name}}" [attr.readonly]="!editMode" >
-        <small *ngIf="editMode">{{'users.input.small.full_name'|translate}}</small>
+        <div class="col-md-6">
+            <input type="text" formControlName="full_name" id="full_name"
+                   [ngClass]="valid('full_name')" [attr.readonly]="editMode?null:true">
+            <small *ngIf="editMode">{{'users.input.small.full_name'|translate}}</small>
         </div>
     </div>
     <div class="form-group row col-md-8">
         <label class="col-md-2 col-form-label" for="email">{{'users.attributes.email' |translate}}</label>
-        <div class="col-md-6" >
-        <input type="text" formControlName="email" id="email"
-               [ngClass]="valid('email')" value="{{editUser.email}}" [attr.readonly]="!editMode">
+        <div class="col-md-6">
+            <input type="text" formControlName="email" id="email"
+                   [ngClass]="valid('email')" value="{{editUser.email}}" [attr.readonly]="editMode?null:true">
         </div>
     </div>
     <div class="form-group row col-md-8" *ngIf="editMode">
         <label class="col-md-2 col-form-label" for="password">{{'users.attributes.password' |translate}}</label>
-        <div class="col-md-6" >
-        <input type="password" class="form-control" formControlName="password" id="password"
-               [ngClass]="valid('password')"
-               placeholder="{{'users.input.password'|translate}}">
+        <div class="col-md-6">
+            <input type="password" class="form-control" formControlName="password" id="password"
+                   [ngClass]="valid('password')"
+                   placeholder="{{'users.input.password'|translate}}">
+            <small>{{'users.edit.small.password'|translate}}</small>
         </div>
     </div>
     <div class="form-group row col-md-8" *ngIf="editMode">
-        <label class="col-md-2 col-form-label" for="confirm_password">{{'users.attributes.confirm_password' |translate}}</label>
+        <label class="col-md-2 col-form-label"
+               for="confirm_password">{{'users.attributes.confirm_password' |translate}}</label>
         <div class="col-md-6">
-        <input type="password" class="form-control" formControlName="confirm_password" id="confirm_password"
-               [ngClass]="valid('confirm_password')"
-               placeholder="{{'users.input.confirm_password'|translate}}">
+            <input type="password" class="form-control" formControlName="confirm_password" id="confirm_password"
+                   [ngClass]="valid('confirm_password')"
+                   placeholder="{{'users.input.confirm_password'|translate}}">
         </div>
     </div>
     <div class="form-group row col-md-8">
         <div class="col-md-2">Flags</div>
         <div class="col-md-6">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="{{editUser.locked}}" formControlName="locked" id="locked" [attr.disabled]="editMode?null:true">
-            <label class="form-check-label" for="locked" >
-                {{'users.attributes.locked'|translate}}
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="{{editUser.password_change_required}}" formControlName="password_change_required"
-                   id="password_change_required" [attr.disabled]="editMode?null:true">
-            <label class="form-check-label" for="password_change_required">
-                {{'users.attributes.password_change_required'|translate}}
-            </label>
-        </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="locked"
+                       id="locked" [attr.disabled]="editMode?null:true">
+                <label class="form-check-label " for="locked">
+                    {{'users.attributes.locked'|translate}}
+                </label>
+            </div>
+            <div class="form-check" >
+                <input class="form-check-input" type="checkbox"
+                       formControlName="password_change_required"
+                       id="password_change_required" [attr.disabled]="editMode?null:true">
+                <label class="form-check-label" for="password_change_required" >
+                    {{'users.attributes.password_change_required'|translate}}
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                        formControlName="validated"
+                       id="validated" [attr.disabled]="editMode?null:true">
+                <label class="form-check-label" for="validated">
+                    {{'users.attributes.validated'|translate}}
+                </label>
+            </div>
         </div>
     </div>
+    <div class="form-group row col-md-8">
+        <label class="col-md-2 col-form-label" for="created">{{'users.attributes.created' |translate}}</label>
+        <div class="col-md-6">
+            <input type="text"  id="created" class="form-control-plaintext"
+                   value="{{editUser.timestamp_account_creation|date:'yyyy-MM-ddTHH:mm:ss'}}" [attr.readonly]="true">
+        </div>
+    </div>
+    <div class="form-group row col-md-8">
+        <label class="col-md-2 col-form-label" for="last_login">{{'users.attributes.last_login' |translate}}</label>
+        <div class="col-md-6">
+            <input type="text" id="last_login" class="form-control-plaintext"
+                   value="{{editUser.timestamp_last_login|date:'yyyy-MM-ddTHH:mm:ss'}}" [attr.readonly]="true">
+        </div>
+    </div>
+    <div class="form-group row col-md-8">
+        <label class="col-md-2 col-form-label" for="email">{{'users.attributes.last_password_change' |translate}}</label>
+        <div class="col-md-6">
+            <input type="text" id="last_password_change" class="form-control-plaintext"
+                   value="{{editUser.timestamp_last_password_change|date:'yyyy-MM-ddTHH:mm:ss'}}" [attr.readonly]="true">
+        </div>
+    </div>
+
     <div class="form-group col-md-8" *ngIf="editMode">
         <button class="btn btn-primary" type="submit"
-                [disabled]="!userForm.valid">{{'users.edit.submit'|translate}}</button>
+                [disabled]="userForm.invalid || !userForm.dirty">{{'users.edit.submit'|translate}}</button>
     </div>
     <div *ngIf="success" class="alert alert-success" role="alert">
         User <a [routerLink]="['user','users','edit',userid]">{{userid}}</a> was added to the list.
     </div>
-    <div *ngIf="error" class="alert alert-danger" role="alert" >
+    <div *ngIf="editMode && error" class="alert alert-danger" role="alert">
         <h4 class="alert-heading">Errors</h4>
-        <ng-container *ngFor="let message of errorResult?.error_messages; first as isFirst" >
+        <ng-container *ngFor="let message of errorResult?.error_messages; first as isFirst">
             <hr *ngIf="!isFirst">
             <p>{{message.message}}</p>
+        </ng-container>
+    </div>
+    <div *ngIf="editMode && userForm.invalid" class="alert alert-danger" role="alert" >
+        <h4 class="alert-heading">Errors</h4>
+        <ng-container *ngFor="let message of getAllErrors(userForm); first as isFirst" >
+            <hr *ngIf="!isFirst">
+            <p>{{message}}</p>
         </ng-container>
     </div>
 

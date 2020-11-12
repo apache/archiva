@@ -48,7 +48,12 @@
   },
   "api" : {
     "rb.auth.invalid_credentials": "Invalid credentials given",
-    "user.password.violation.numeric" : "Password must have at least {{arg0}} numeric characters."
+    "user.password.violation.length": "You must provide a password between {arg0} and {arg1} characters in length.",
+    "user.password.violation.alpha": "You must provide a password containing at least {arg0} alphabetic {arg0, plural, one {character} other {characters}}.",
+    "user.password.violation.numeric":"You must provide a password containing at least {arg0} numeric {arg0, plural, one {character} other {characters}}.",
+    "user.password.violation.reuse":"The password must not match any of the previous {arg0} {arg0, plural, one {password} other {passwords}}.",
+    "user.password.violation.alphanum.only":"You must provide a password containing all alpha-numeric characters.",
+    "user.password.violation.whitespace.detected":"You must provide a password without whitespace characters."
   },
   "users": {
     "attributes":{
@@ -64,11 +69,11 @@
         "permanent": "Permanent",
         "last_password_change": "Last Password Change",
         "password": "Password",
-      "confirm_password": "Confirm Password"
+        "confirm_password": "Confirm Password"
     },
     "input" : {
       "small": {
-        "user_id": "Must be a unique key with at least {{minSize}} characters. No spaces allowed.",
+        "user_id": "Must be a unique key with at least {minSize} characters. No spaces allowed.",
         "full_name": "This is the display name of the user"
       },
       "user_id": "Enter user ID",
@@ -83,7 +88,15 @@
     },
     "add": {
       "head": "Add User",
-      "submit": "Add User"
+      "submit": "Add User",
+      "errortitle": "Could not add the user. Please check the following error messages."
+    },
+    "edit": {
+      "submit": "Save Changes",
+      "head": "View/Edit User",
+      "small": {
+        "password": "If the password field is empty, it will not be updated."
+      }
     }
   },
   "search": {
@@ -92,7 +105,12 @@
     "input": "Search"
   },
   "form": {
-    "submit": "Submit"
+    "submit": "Submit",
+    "error": {
+      "required": "Value is empty. This is required.",
+      "containsWhitespace": "Value must not contain whitespace.",
+      "userexists": "This user exists already."
+    }
   },
   "password": {
     "violations" : {

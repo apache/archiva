@@ -32,4 +32,5 @@ export class UserInfo {
     user_manager_id:string;
     validation_token:string;
     language:string;
+    location;
 }
