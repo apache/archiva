@@ -16,39 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { TranslateLoader, TranslateModule, TranslateCompiler } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { TranslateMessageFormatCompiler, MESSAGE_FORMAT_CONFIG } from 'ngx-translate-messageformat-compiler';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {HttpClientModule} from '@angular/common/http';
+import {MESSAGE_FORMAT_CONFIG} from 'ngx-translate-messageformat-compiler';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './modules/general/home/home.component';
-import { ContactComponent } from './modules/general/contact/contact.component';
-import { AboutComponent } from './modules/general/about/about.component';
-import { NotFoundComponent } from './modules/general/not-found/not-found.component';
-import { SidemenuComponent } from './modules/general/sidemenu/sidemenu.component';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {HomeComponent} from './modules/shared/home/home.component';
+import {ContactComponent} from './modules/shared/contact/contact.component';
+import {AboutComponent} from './modules/shared/about/about.component';
+import {NotFoundComponent} from './modules/shared/not-found/not-found.component';
+import {SidemenuComponent} from './modules/shared/sidemenu/sidemenu.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import { LoginComponent } from './modules/general/login/login.component';
-import { ViewPermissionDirective } from './directives/view-permission.directive';
-import { NavSubgroupDirective } from './directives/nav-subgroup.directive';
-import { SearchComponent } from './modules/repo/search/search.component';
-import { BrowseComponent } from './modules/repo/browse/browse.component';
-import { UploadComponent } from './modules/repo/upload/upload.component';
-import { ManageUsersComponent } from './modules/user/manage-users/manage-users.component';
-import { ManageRolesComponent } from './modules/user/manage-roles/manage-roles.component';
-import { SecurityConfigurationComponent } from './modules/user/security-configuration/security-configuration.component';
-import { ManageUsersListComponent } from './modules/user/users/manage-users-list/manage-users-list.component';
-import { ManageUsersAddComponent } from './modules/user/users/manage-users-add/manage-users-add.component';
-import { NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
-import { PaginatedEntitiesComponent } from './modules/general/paginated-entities/paginated-entities.component';
-import { SortedTableHeaderComponent } from './modules/general/sorted-table-header/sorted-table-header.component';
-import { SortedTableHeaderRowComponent } from './modules/general/sorted-table-header-row/sorted-table-header-row.component';
-import { ManageUsersEditComponent } from './modules/user/users/manage-users-edit/manage-users-edit.component';
-import {ErrorHandlerModule} from "./modules/core/errors/error-handler.module";
+import {LoginComponent} from './modules/shared/login/login.component';
+import {ViewPermissionDirective} from './directives/view-permission.directive';
+import {NavSubgroupDirective} from './directives/nav-subgroup.directive';
+import {SearchComponent} from './modules/repo/search/search.component';
+import {BrowseComponent} from './modules/repo/browse/browse.component';
+import {UploadComponent} from './modules/repo/upload/upload.component';
+import {SecurityConfigurationComponent} from './modules/user/security-configuration/security-configuration.component';
 import {CoreModule} from "./modules/core/core.module";
+import {SharedModule} from "./modules/shared/shared.module";
+import {UserModule} from "./modules/user/user.module";
 
 
 @NgModule({
@@ -65,15 +55,7 @@ import {CoreModule} from "./modules/core/core.module";
     SearchComponent,
     BrowseComponent,
     UploadComponent,
-    ManageUsersComponent,
-    ManageRolesComponent,
     SecurityConfigurationComponent,
-    ManageUsersListComponent,
-    ManageUsersAddComponent,
-    PaginatedEntitiesComponent,
-    SortedTableHeaderComponent,
-    SortedTableHeaderRowComponent,
-    ManageUsersEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -81,20 +63,10 @@ import {CoreModule} from "./modules/core/core.module";
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    TranslateModule.forRoot({
-      compiler: {
-        provide: TranslateCompiler,
-        useClass: TranslateMessageFormatCompiler
-      },
-      loader: {
-        provide: TranslateLoader,
-        useFactory: httpTranslateLoader,
-        deps: [HttpClient]
-      }
-    }),
-      NgbPaginationModule,
-      NgbTooltipModule,
-      CoreModule
+
+      CoreModule,
+      SharedModule,
+      UserModule
   ],
   providers: [
     { provide: MESSAGE_FORMAT_CONFIG, useValue: { locales: ['en', 'de'] }}
@@ -103,6 +75,3 @@ import {CoreModule} from "./modules/core/core.module";
 })
 export class AppModule { }
 
-export function httpTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http);
-}

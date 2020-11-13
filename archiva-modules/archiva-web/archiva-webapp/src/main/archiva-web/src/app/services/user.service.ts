@@ -88,7 +88,7 @@ export class UserService implements OnInit, OnDestroy {
                     console.log("Could not retrieve permissions " + err);
                 }
             }
-            this.retrievePermissionInfo().subscribe(observer);
+            this.retrievePermissionInfo("guest").subscribe(observer);
         }
     }
 
@@ -138,34 +138,56 @@ export class UserService implements OnInit, OnDestroy {
     /**
      * Retrieves the permission list from the REST service
      */
-    public retrievePermissionInfo(): Observable<Permission[]> {
-        return new Observable<Permission[]>((resultObserver) => {
-            let userName = this.authenticated ? "me" : "guest";
-            let infoObserver = this.rest.executeRestCall<Permission[]>("get", "redback", "users/" + userName + "/permissions", null);
-            let permissionObserver = {
-                next: (x: Permission[]) => {
-                    this.permissions = x;
-                    this.parsePermissions(x);
-                    resultObserver.next(this.permissions);
-                },
-                error: (err: HttpErrorResponse) => {
-                    console.log("Error " + (JSON.stringify(err)));
-                    let result = err.error as ErrorResult
-                    if (result.error_messages != null) {
-                        for (let msg of result.error_messages) {
-                            console.debug('Observer got an error: ' + msg.error_key)
-                        }
+    public retrievePermissionInfo(userNameParam?:string): Observable<Permission[]> {
+        let userName;
+        if (userNameParam==null||userNameParam=='') {
+            userName = this.authenticated ? "me" : "guest";
+        } else {
+            userName = userNameParam;
+        }
+        return this.rest.executeRestCall<Permission[]>("get", "redback", "users/" + userName + "/permissions", null).pipe(
+            catchError((err:HttpErrorResponse)=> {
+                console.log("Error " + (JSON.stringify(err)));
+                let result = err.error as ErrorResult
+                if (result.error_messages != null) {
+                    for (let msg of result.error_messages) {
+                        console.debug('Observer got an error: ' + msg.error_key)
                     }
-                    this.resetPermissions();
-                    resultObserver.error(err);
-                },
-                complete: () => {
-                    resultObserver.complete();
                 }
-            };
-            infoObserver.subscribe(permissionObserver);
+                this.resetPermissions();
+                return [];
+            }), map((perm:Permission[])=>{
+                this.permissions = perm;
+                this.parsePermissions(perm);
+                return perm;
+                })
+        );
 
-        });
+        // return new Observable<Permission[]>((resultObserver) => {
+        //     let permissionObserver = {
+        //         next: (x: Permission[]) => {
+        //             this.permissions = x;
+        //             this.parsePermissions(x);
+        //             resultObserver.next(this.permissions);
+        //         },
+        //         error: (err: HttpErrorResponse) => {
+        //             console.log("Error " + (JSON.stringify(err)));
+        //             let result = err.error as ErrorResult
+        //             if (result.error_messages != null) {
+        //                 for (let msg of result.error_messages) {
+        //                     console.debug('Observer got an error: ' + msg.error_key)
+        //                 }
+        //             }
+        //             this.resetPermissions();
+        //             resultObserver.error(err);
+        //         },
+        //         complete: () => {
+        //             resultObserver.complete();
+        //         }
+        //     };
+        //     infoObserver.subscribe(permissionObserver);
+        //
+        // });
     }
 
     resetPermissions() {

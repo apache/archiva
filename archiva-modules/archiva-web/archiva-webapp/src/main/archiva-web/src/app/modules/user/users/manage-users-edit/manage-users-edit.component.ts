@@ -19,17 +19,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {UserService} from "../../../../services/user.service";
-import {FormBuilder, FormControl, Validators} from "@angular/forms";
-import {ManageUsersAddComponent, MustMatch} from "../manage-users-add/manage-users-add.component";
-import {environment} from "../../../../../environments/environment";
+import {FormBuilder, FormControl} from "@angular/forms";
 import {map, switchMap} from 'rxjs/operators';
+import {ManageUsersBaseComponent} from "../manage-users-base.component";
 
 @Component({
   selector: 'app-manage-users-edit',
   templateUrl: './manage-users-edit.component.html',
   styleUrls: ['./manage-users-edit.component.scss']
 })
-export class ManageUsersEditComponent extends ManageUsersAddComponent implements OnInit {
+export class ManageUsersEditComponent extends ManageUsersBaseComponent implements OnInit {
 
   editProperties = ['user_id', 'full_name', 'email', 'locked', 'password_change_required',
     'password', 'confirm_password', 'validated'];

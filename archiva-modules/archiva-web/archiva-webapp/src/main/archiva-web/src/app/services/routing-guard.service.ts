@@ -16,9 +16,13 @@
  * under the License.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable, OnInit} from '@angular/core';
 import {UserService} from "./user.service";
 import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router} from "@angular/router";
+import {AuthenticationService} from "./authentication.service";
+import {first, timeout, tap, map, take} from "rxjs/operators";
+import { Observable } from 'rxjs';
+import { UserInfo } from '../model/user-info';
 
 /**
  * Guard for the routes, that checks permissions by querying the uiPermission map of the UserService.
@@ -28,18 +32,37 @@ import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router} from "
 @Injectable({
   providedIn: 'root'
 })
-export class RoutingGuardService implements CanActivate {
+export class RoutingGuardService implements CanActivate, OnInit {
 
-  constructor(private userService:UserService, public router: Router) {
+  constructor(private userService:UserService, public router: Router, private authService: AuthenticationService) {
 
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const permString = route.data.perm;
     if (permString==null || permString=='') {
       console.error("Guard active, but permissions not set for route " + state.url);
       return false;
     }
+    if (this.authService.authenticating) {
+      console.debug("Guard: Authentication service is in authentication process");
+      return this.authService.LoginEvent.pipe(take(1),timeout(1000), map(()=>{
+        const myPerm = this.getPermission(permString);
+        if (!myPerm) {
+          this.router.navigate(['']);
+        }
+        return myPerm;
+      }));
+    }
+    let perm = this.getPermission(permString);
+    console.debug("Permission for " + state.url + ": " + perm);
+    if (!perm) {
+      this.router.navigate(['']);
+    }
+    return perm;
+  }
+
+  private getPermission(permString: string) {
     let perm = this.userService.uiPermissions;
     for (let permPath of permString.split(/\./)) {
       perm = perm[permPath];
@@ -48,10 +71,11 @@ export class RoutingGuardService implements CanActivate {
         break;
       }
     }
-    console.debug("Permission for " + state.url + ": " + perm);
-    if (!perm) {
-      this.router.navigate(['']);
-    }
     return perm;
   }
+
+
+  ngOnInit(): void {
+  }
 }
+

@@ -19,11 +19,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AboutComponent } from './modules/general/about/about.component';
-import { ContactComponent } from './modules/general/contact/contact.component';
-import { HomeComponent } from './modules/general/home/home.component';
-import { NotFoundComponent } from './modules/general/not-found/not-found.component';
-import { LoginComponent } from "./modules/general/login/login.component";
+import { AboutComponent } from './modules/shared/about/about.component';
+import { ContactComponent } from './modules/shared/contact/contact.component';
+import { HomeComponent } from './modules/shared/home/home.component';
+import { NotFoundComponent } from './modules/shared/not-found/not-found.component';
+import { LoginComponent } from "./modules/shared/login/login.component";
 import { SearchComponent } from './modules/repo/search/search.component';
 import {BrowseComponent} from "./modules/repo/browse/browse.component";
 import {UploadComponent} from "./modules/repo/upload/upload.component";

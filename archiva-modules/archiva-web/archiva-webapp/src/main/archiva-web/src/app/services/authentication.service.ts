@@ -34,6 +34,7 @@ import {UserInfo} from "../model/user-info";
 })
 export class AuthenticationService {
     authenticated: boolean;
+    authenticating: boolean;
 
     /**
      * The LoginEvent is emitted, when a successful login happened. And the corresponding user info was retrieved.
@@ -49,10 +50,17 @@ export class AuthenticationService {
     constructor(private rest: ArchivaRequestService,
                 private userService: UserService) {
         this.authenticated = false;
+        this.LoginEvent.subscribe((info)=>{
+            this.authenticating=false;
+        })
+        this.LogoutEvent.subscribe(()=>{
+            this.authenticating=false;
+        })
         this.restoreLoginData();
     }
 
     private restoreLoginData() {
+        console.debug("Restoring login data");
         let accessToken = localStorage.getItem("access_token");
         if (accessToken != null) {
             let expirationDate = localStorage.getItem("token_expire");
@@ -60,6 +68,8 @@ export class AuthenticationService {
                 let expDate = new Date(expirationDate);
                 let currentDate = new Date();
                 if (currentDate < expDate) {
+                    console.debug("Retrieving user information");
+                    this.authenticating=true;
                     let observer = this.userService.retrieveUserInfo();
                     observer.subscribe({
                             next: (userInfo: UserInfo) => {
@@ -80,6 +90,9 @@ export class AuthenticationService {
                             error: (err: HttpErrorResponse) => {
                                 console.debug("Error retrieving user info: " + JSON.stringify(err));
                                 this.logout();
+                            },
+                            complete: () => {
+                                this.authenticating=false;
                             }
                         }
                     );
@@ -104,7 +117,7 @@ export class AuthenticationService {
      * @param resultHandler A result handler that is executed, after calling the login service
      */
     login(userid: string, password: string, resultHandler: (n: string, err?: ErrorMessage[]) => void) {
-
+        this.authenticating=true;
         const data = {
             'grant_type': 'authorization_code',
             'client_id': environment.application.client_id,
@@ -134,6 +147,7 @@ export class AuthenticationService {
                 resultHandler("OK");
             },
             error: (err: HttpErrorResponse) => {
+                this.authenticating = false;
                 console.log("Error " + (JSON.stringify(err)));
                 let result = err.error as ErrorResult
                 if (result.error_messages != null) {
@@ -146,7 +160,9 @@ export class AuthenticationService {
                 }
 
             },
-            // complete: () => console.log('Observer got a complete notification'),
+            complete: () => {
+                this.authenticating = false;
+            }
         };
         authObserver.subscribe(tokenObserver)
 

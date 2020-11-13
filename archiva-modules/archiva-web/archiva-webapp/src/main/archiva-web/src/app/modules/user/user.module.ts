@@ -16,22 +16,35 @@
  * under the License.
  */
 
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GlobalErrorHandler } from './global-error-handler';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { HttpErrorInterceptor } from './http-error-interceptor';
+import {ManageUsersComponent} from "./manage-users/manage-users.component";
+import {ManageUsersListComponent} from "./users/manage-users-list/manage-users-list.component";
+import {ManageUsersAddComponent} from "./users/manage-users-add/manage-users-add.component";
+import {ManageUsersEditComponent} from "./users/manage-users-edit/manage-users-edit.component";
+import {SharedModule} from "../shared/shared.module";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+      ManageUsersComponent,
+      ManageUsersListComponent,
+      ManageUsersAddComponent,
+      ManageUsersEditComponent
+  ],
+  exports: [
+    ManageUsersComponent,
+    ManageUsersListComponent,
+    ManageUsersAddComponent,
+    ManageUsersEditComponent
+  ],
   imports: [
     CommonModule,
-  ],
-  providers: [
-    // { provide: ErrorHandler, useClass: GlobalErrorHandler },
-    { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true }
-    ]
+    SharedModule,
+      FormsModule,
+      ReactiveFormsModule
+  ]
 })
-export class ErrorHandlerModule { }
+export class UserModule { }
