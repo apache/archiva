@@ -16,6 +16,25 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
+<ng-template #alertcontainer let-modal>
+    <div class="modal-header alert alert-danger">
+        <h5 class="modal-title alert" id="modal-basic-title">{{'error.modal.title'|translate}}</h5>
+        <button type="button" class="close alert" aria-label="{{'modal.close'|translate}}" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="alert alert-danger">
+        <p>{{'error.modal.info'|translate}}</p>
+        </div>
+        <div *ngFor="let message of errorMessages" class="alert alert-secondary">
+            <p>{{message.message}}</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-danger" (click)="modal.close('Save click')">{{'modal.close'|translate}}</button>
+    </div>
+</ng-template>
 <div class="app d-flex flex-column">
     <header>
         <nav class="navbar navbar-expand-md fixed-top navbar-light " style="background-color: #c6cbd2;">

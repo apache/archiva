@@ -33,6 +33,12 @@ import {SecurityConfigurationComponent} from "./modules/user/security-configurat
 import {ManageUsersListComponent} from "./modules/user/users/manage-users-list/manage-users-list.component";
 import {ManageUsersAddComponent} from "./modules/user/users/manage-users-add/manage-users-add.component";
 import {ManageUsersEditComponent} from "./modules/user/users/manage-users-edit/manage-users-edit.component";
+import {RoutingGuardService as Guard} from "./services/routing-guard.service";
+
+/**
+ * You can use Guard (RoutingGuardService) for permission checking. The service needs data with one parameter 'perm',
+ * that gives the path of the uiPermission map of the user service.
+ */
 
 const routes: Routes = [
   { path: '', component: HomeComponent,
@@ -42,9 +48,10 @@ const routes: Routes = [
     {path:'repo/upload', component: UploadComponent},
     {path:'', redirectTo:'repo/search', pathMatch:'full'},
   ]},
-  { path: 'user', component: HomeComponent,
+  { path: 'user', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.user.section'},
     children: [
-      { path: 'users', component: ManageUsersComponent,
+      { path: 'users', component: ManageUsersComponent,canActivate:[Guard],
+        data: { perm: 'menu.user.manage' },
         children: [
           {path: 'list', component: ManageUsersListComponent},
           {path: 'add', component: ManageUsersAddComponent},

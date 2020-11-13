@@ -47,6 +47,8 @@ import { PaginatedEntitiesComponent } from './modules/general/paginated-entities
 import { SortedTableHeaderComponent } from './modules/general/sorted-table-header/sorted-table-header.component';
 import { SortedTableHeaderRowComponent } from './modules/general/sorted-table-header-row/sorted-table-header-row.component';
 import { ManageUsersEditComponent } from './modules/user/users/manage-users-edit/manage-users-edit.component';
+import {ErrorHandlerModule} from "./modules/core/errors/error-handler.module";
+import {CoreModule} from "./modules/core/core.module";
 
 
 @NgModule({
@@ -91,7 +93,8 @@ import { ManageUsersEditComponent } from './modules/user/users/manage-users-edit
       }
     }),
       NgbPaginationModule,
-      NgbTooltipModule
+      NgbTooltipModule,
+      CoreModule
   ],
   providers: [
     { provide: MESSAGE_FORMAT_CONFIG, useValue: { locales: ['en', 'de'] }}

@@ -16,28 +16,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild, ViewChildren} from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthenticationService } from "./services/authentication.service";
 import {UserService} from "./services/user.service";
+import {ErrorDialogService} from "./services/error/error-dialog.service";
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ErrorMessage} from "./model/error-message";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy{
+export class AppComponent implements OnInit, OnDestroy {
   title = 'archiva-web';
   version = 'Angular version 10.0.2';
+
+  @ViewChild('alertcontainer') errorAlert;
+  private alertUnsubscribe = new Subject();
+  private errorOpen=false;
+  errorMessages: Array<ErrorMessage> = new Array<ErrorMessage>();
+
 
   constructor(
       public translate: TranslateService,
       public auth: AuthenticationService,
-      public user: UserService
+      public user: UserService,
+      public error: ErrorDialogService,
+      private modalService: NgbModal
   ) {
+
     translate.addLangs(['en', 'de']);
     translate.setDefaultLang('en');
+    this.initializeErrors();
   }
+
 
   switchLang(lang: string) {
     this.translate.use(lang);
@@ -58,6 +74,8 @@ export class AppComponent implements OnInit, OnDestroy{
 
   ngOnDestroy(): void {
     this.auth.LoginEvent.unsubscribe();
+    this.alertUnsubscribe.next();
+    this.alertUnsubscribe.complete();
   }
 
 
@@ -75,5 +93,28 @@ export class AppComponent implements OnInit, OnDestroy{
       // console.log("Permissions: " + JSON.stringify(this.user.permissions));
     })
 
+  }
+
+
+  private initializeErrors()
+  {
+    this
+        .error
+        .getErrors()
+        .pipe(takeUntil(this.alertUnsubscribe))
+        .subscribe((errorMsg) =>
+        {
+          this.errorMessages.push(errorMsg);
+          if (!this.errorOpen) {
+            this.errorOpen=true;
+            this.modalService.open(this.errorAlert).result.then((result) => {
+              this.errorOpen=false;
+              this.errorMessages.length = 0;
+            }, (reason) => {
+              this.errorOpen=false;
+              this.errorMessages.length = 0;
+            });
+          }
+        });
   }
 }

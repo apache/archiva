@@ -16,6 +16,16 @@
     "about": "About",
     "contact": "Contact"
   },
+  "error": {
+    "modal": {
+      "title": "Application Error",
+      "info":"The backend does not answer as expected. Please check, if your archiva service is running. See detail messages below."
+    },
+    "http": {
+      "unknownError": "We got a bad response from the backend REST service. Maybe the connection is broken, or the service is down. Please check your network to the backend service and the archiva.log for any errors.",
+      "permissionDenied": "You are not allowed to access the data from the backend service. Try to login again and/or check your permissions."
+    }
+  },
   "sidemenu": {
     "repo": {
       "section": "Artifacts",
