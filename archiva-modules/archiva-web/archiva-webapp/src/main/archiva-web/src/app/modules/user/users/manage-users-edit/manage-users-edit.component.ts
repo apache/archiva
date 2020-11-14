@@ -16,53 +16,78 @@
  * under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {UserService} from "../../../../services/user.service";
 import {FormBuilder, FormControl} from "@angular/forms";
-import {map, switchMap} from 'rxjs/operators';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {ManageUsersBaseComponent} from "../manage-users-base.component";
+import {ErrorResult} from "../../../../model/error-result";
 
 @Component({
-  selector: 'app-manage-users-edit',
-  templateUrl: './manage-users-edit.component.html',
-  styleUrls: ['./manage-users-edit.component.scss']
+    selector: 'app-manage-users-edit',
+    templateUrl: './manage-users-edit.component.html',
+    styleUrls: ['./manage-users-edit.component.scss']
 })
 export class ManageUsersEditComponent extends ManageUsersBaseComponent implements OnInit {
 
-  editProperties = ['user_id', 'full_name', 'email', 'locked', 'password_change_required',
-    'password', 'confirm_password', 'validated'];
-  editUser;
-  originUser;
-  editMode:boolean=false;
-  minUserIdSize=0;
+    editProperties = ['user_id', 'full_name', 'email', 'locked', 'password_change_required',
+        'password', 'confirm_password', 'validated'];
+    editUser;
+    originUser;
+    editMode: boolean;
+    minUserIdSize = 0;
 
-  constructor(private route: ActivatedRoute, public userService: UserService, public fb: FormBuilder) {
-    super(userService, fb);
-    this.editUser = this.route.params.pipe(map (params => params.userid ),  switchMap(userid => userService.getUser(userid))  ).subscribe(user => {
-      this.editUser = user;
-      this.originUser = user;
-      this.copyToForm(this.editProperties, this.editUser);});
-  }
-
-  ngOnInit(): void {
-    this.userForm.setControl('user_id', new FormControl());
-  }
-
-  valid(field: string): string[] {
-    if (this.editMode) {
-      let classArr  = super.valid(field);
-      return classArr.concat('form-control')
-    } else {
-      return ['form-control-plaintext'];
+    constructor(private route: ActivatedRoute, public userService: UserService, public fb: FormBuilder) {
+        super(userService, fb);
+        this.editMode=false;
+        this.route.queryParams.subscribe((params)=>{
+          if (params.editmode) {
+            this.editMode=true;
+          }
+        })
+        this.editUser = this.route.params.pipe(
+            map(params => params.userid), switchMap(userid => userService.getUser(userid))).subscribe(user => {
+            this.editUser = user;
+            this.originUser = user;
+            this.copyToForm(this.editProperties, this.editUser);
+        });
     }
-  }
+
+    ngOnInit(): void {
+      // This resets the validators of the base class
+      this.userForm.get('user_id').clearValidators();
+      this.userForm.get('user_id').clearAsyncValidators();
+    }
+
+    valid(field: string): string[] {
+        if (this.editMode) {
+            let classArr = super.valid(field);
+            return classArr.concat('form-control')
+        } else {
+            return ['form-control-plaintext'];
+        }
+    }
 
 
-  onSubmit() {
-    this.copyFromForm(this.editProperties)
+    onSubmit() {
+        let user = this.copyFromForm(this.editProperties);
+        this.userService.updateUser(user).pipe(
+            catchError((err: ErrorResult) => {
+                this.error = true;
+                this.success = false;
+                this.errorResult = err;
+                return [];
+            })
+        ).subscribe(userInfo=>{
+            this.error=false;
+            this.success=true;
+            this.errorResult=null;
+            this.result = userInfo;
+            this.editMode = false;
+        });
 
-  }
+    }
 
 
 }

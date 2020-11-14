@@ -34,6 +34,7 @@ import {ManageUsersListComponent} from "./modules/user/users/manage-users-list/m
 import {ManageUsersAddComponent} from "./modules/user/users/manage-users-add/manage-users-add.component";
 import {ManageUsersEditComponent} from "./modules/user/users/manage-users-edit/manage-users-edit.component";
 import {RoutingGuardService as Guard} from "./services/routing-guard.service";
+import {ManageUsersDeleteComponent} from "./modules/user/users/manage-users-delete/manage-users-delete.component";
 
 /**
  * You can use Guard (RoutingGuardService) for permission checking. The service needs data with one parameter 'perm',
@@ -57,6 +58,7 @@ const routes: Routes = [
           {path: 'add', component: ManageUsersAddComponent},
           {path: 'edit/:userid', component: ManageUsersEditComponent},
           {path: 'edit', redirectTo:'edit/guest' },
+          {path: 'delete/:userid', component: ManageUsersDeleteComponent},
           {path: '', redirectTo:'list', pathMatch:'full'}
         ]
       },

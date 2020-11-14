@@ -43,6 +43,7 @@ export class ManageUsersBaseComponent {
     errorResult: ErrorResult;
     result: UserInfo;
     user: string;
+    formInitialValues;
 
     userForm = this.fb.group({
         user_id: ['', [Validators.required, Validators.minLength(this.minUserIdSize), whitespaceValidator()], this.userUidExistsValidator()],
@@ -58,6 +59,7 @@ export class ManageUsersBaseComponent {
     })
 
     constructor(public userService: UserService, public fb: FormBuilder) {
+        this.formInitialValues=this.userForm.value
     }
 
 
@@ -116,6 +118,23 @@ export class ManageUsersBaseComponent {
             const forbidden = nameRe.test(control.value);
             return forbidden ? {forbiddenName: {value: control.value}} : null;
         };
+    }
+
+    getAllErrors(formGroup: FormGroup, errors: string[] = []) : string[] {
+        Object.keys(formGroup.controls).forEach(field => {
+            const control = formGroup.get(field);
+            if (control instanceof FormControl && control.errors != null) {
+                let keys = Object.keys(control.errors).map(errorKey=>field+'.'+errorKey);
+                errors = errors.concat(keys);
+            } else if (control instanceof FormGroup) {
+                errors = errors.concat(this.getAllErrors(control));
+            }
+        });
+        return errors;
+    }
+
+    getAttributeErrors(control:string):string[] {
+        return Object.keys(this.userForm.get(control).errors);
     }
 }
 

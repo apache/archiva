@@ -89,7 +89,7 @@
                 [attr.disabled]="userForm.valid?null:true">{{'users.add.submit'|translate}}</button>
     </div>
     <div *ngIf="success" class="alert alert-success" role="alert">
-        User <a [routerLink]="['user','users','edit',result?.user_id]">{{result?.userid}}</a> was added to the list.
+        User <a [routerLink]="['/user','users','edit',result?.user_id]">{{result?.user_id}}</a> was added to the list.
     </div>
     <div *ngIf="error" class="alert alert-danger" role="alert" >
         <h4 class="alert-heading">{{'users.add.errortitle'|translate}}</h4>

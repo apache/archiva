@@ -24,6 +24,7 @@ import {ManageUsersAddComponent} from "./users/manage-users-add/manage-users-add
 import {ManageUsersEditComponent} from "./users/manage-users-edit/manage-users-edit.component";
 import {SharedModule} from "../shared/shared.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { ManageUsersDeleteComponent } from './users/manage-users-delete/manage-users-delete.component';
 
 
 
@@ -32,7 +33,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
       ManageUsersComponent,
       ManageUsersListComponent,
       ManageUsersAddComponent,
-      ManageUsersEditComponent
+      ManageUsersEditComponent,
+      ManageUsersDeleteComponent
   ],
   exports: [
     ManageUsersComponent,

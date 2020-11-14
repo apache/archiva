@@ -39,6 +39,7 @@
             <app-th-sorted [fieldArray]="['last_login']" contentText="users.attributes.last_login"></app-th-sorted>
             <app-th-sorted [fieldArray]="['created']" contentText="users.attributes.created" ></app-th-sorted>
             <app-th-sorted [fieldArray]="['last_password_change']" contentText="users.attributes.last_password_change"></app-th-sorted>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -55,6 +56,10 @@
             <td>{{user.timestamp_last_login | date:'yyyy-MM-ddTHH:mm:ss'}}</td>
             <td>{{user.timestamp_account_creation | date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
             <td>{{user.timestamp_last_password_change| date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
+            <td><ng-container *ngIf="!user.permanent"><a  [routerLink]="['..','edit', user.user_id]" [queryParams]="{editmode:true}" ><span class="fas fa-edit"></span></a>
+                &nbsp;&nbsp; <a *ngIf="!user.permanent" [routerLink]="['..','delete',user.user_id]"><span class="fas fa-user-minus"></span></a>
+            </ng-container>
+            </td>
         </tr>
         </tbody>
     </table>

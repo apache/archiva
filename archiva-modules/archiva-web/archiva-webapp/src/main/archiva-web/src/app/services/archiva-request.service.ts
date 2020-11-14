@@ -54,6 +54,10 @@ export class ArchivaRequestService {
             return this.http.head<R>(httpArgs.url, httpArgs.options);
         } else if (lType == "post") {
             return this.http.post<R>(httpArgs.url, input, httpArgs.options);
+        } else if (lType == "delete") {
+            return this.http.delete<R>(httpArgs.url, httpArgs.options);
+        } else if (lType == "put") {
+            return this.http.put<R>(httpArgs.url, input, httpArgs.options);
         }
     }
 
@@ -91,6 +95,10 @@ export class ArchivaRequestService {
             return this.http.head<HttpResponse<R>>(httpArgs.url, httpArgs.options);
         } else if (lType == 'post') {
             return this.http.post<HttpResponse<R>>(httpArgs.url, input, httpArgs.options);
+        } else if (lType=='delete') {
+            return this.http.delete<HttpResponse<R>>(httpArgs.url, httpArgs.options);
+        } else if (lType=='put') {
+            return this.http.put<HttpResponse<R>>(httpArgs.url, input, httpArgs.options);
         }
     }
 

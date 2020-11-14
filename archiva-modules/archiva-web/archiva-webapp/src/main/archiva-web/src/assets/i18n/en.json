@@ -107,6 +107,12 @@
       "small": {
         "password": "If the password field is empty, it will not be updated."
       }
+    },
+    "delete": {
+      "modal": {
+        "title": "Delete User",
+        "text": "Are you sure? <br/> Do you want to delete the user <strong>{user_id}</strong>?"
+      }
     }
   },
   "search": {
@@ -120,6 +126,10 @@
       "required": "Value is empty. This is required.",
       "containsWhitespace": "Value must not contain whitespace.",
       "userexists": "This user exists already."
+    },
+    "button": {
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "password": {

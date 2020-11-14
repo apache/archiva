@@ -20,7 +20,7 @@
     <div class="form-group row col-md-8" *ngIf="!editUser.permanent">
         <div class="col-md-1">Edit <span class="fas fa-edit"></span></div>
         <div class="col-md-6">
-            <input class="form-check-input" type="checkbox" [value]="editMode"
+            <input class="form-check-input" type="checkbox" [value]="editMode" [checked]="editMode"
                    (change)="editMode=!editMode"
             >
         </div>
@@ -121,9 +121,9 @@
                 [disabled]="userForm.invalid || !userForm.dirty">{{'users.edit.submit'|translate}}</button>
     </div>
     <div *ngIf="success" class="alert alert-success" role="alert">
-        User <a [routerLink]="['user','users','edit',userid]">{{userid}}</a> was added to the list.
+        User has been updated.
     </div>
-    <div *ngIf="editMode && error" class="alert alert-danger" role="alert">
+    <div *ngIf="error" class="alert alert-danger" role="alert">
         <h4 class="alert-heading">Errors</h4>
         <ng-container *ngFor="let message of errorResult?.error_messages; first as isFirst">
             <hr *ngIf="!isFirst">
@@ -131,7 +131,7 @@
         </ng-container>
     </div>
     <div *ngIf="editMode && userForm.invalid" class="alert alert-danger" role="alert" >
-        <h4 class="alert-heading">Errors</h4>
+        <h4 class="alert-heading">Validation Errors</h4>
         <ng-container *ngFor="let message of getAllErrors(userForm); first as isFirst" >
             <hr *ngIf="!isFirst">
             <p>{{message}}</p>

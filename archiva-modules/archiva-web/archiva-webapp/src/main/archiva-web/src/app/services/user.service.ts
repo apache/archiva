@@ -329,6 +329,16 @@ export class UserService implements OnInit, OnDestroy {
             }));
     }
 
+    public deleteUser(user_id:string): Observable<boolean> {
+        return this.rest.executeResponseCall<boolean>("delete", "redback", "users/" + user_id, null).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            }),
+            map((response) => {
+                return response.status == 200;
+            }));
+    }
+
     public userExists(userid:string): Observable<boolean> {
         console.log("Checking user " + userid);
         return this.rest.executeResponseCall<string>("head", "redback", "users/" + userid, null).pipe(

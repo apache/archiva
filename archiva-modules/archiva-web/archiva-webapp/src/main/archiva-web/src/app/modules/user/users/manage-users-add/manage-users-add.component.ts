@@ -68,26 +68,12 @@ export class ManageUsersAddComponent extends ManageUsersBaseComponent implements
                 this.result = user;
                 this.success = true;
                 this.error = false;
+                this.userForm.reset(this.formInitialValues);
             });
         }
     }
 
-    getAllErrors(formGroup: FormGroup, errors: string[] = []) : string[] {
-        Object.keys(formGroup.controls).forEach(field => {
-            const control = formGroup.get(field);
-            if (control instanceof FormControl && control.errors != null) {
-                let keys = Object.keys(control.errors).map(errorKey=>field+'.'+errorKey);
-                errors = errors.concat(keys);
-            } else if (control instanceof FormGroup) {
-                errors = errors.concat(this.getAllErrors(control));
-            }
-        });
-        return errors;
-    }
 
-    getAttributeErrors(control:string):string[] {
-        return Object.keys(this.userForm.get(control).errors);
-    }
 
 
 
