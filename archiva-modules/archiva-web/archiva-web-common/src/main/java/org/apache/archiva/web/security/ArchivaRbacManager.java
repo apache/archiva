@@ -80,6 +80,10 @@ public class ArchivaRbacManager
     private Cache<String, Role> rolesCache;
 
     @Inject
+    @Named( value = "cache#rolesById" )
+    private Cache<String, Role> rolesByIdCache;
+
+    @Inject
     @Named( value = "cache#userAssignments" )
     private Cache<String, UserAssignment> userAssignmentsCache;
 
@@ -134,6 +138,7 @@ public class ArchivaRbacManager
         operationsCache.clear();
         permissionsCache.clear();
         rolesCache.clear();
+        rolesByIdCache.clear();
         userAssignmentsCache.clear();
         userPermissionsCache.clear();
         effectiveRoleSetCache.clear();
@@ -158,6 +163,12 @@ public class ArchivaRbacManager
     public Role createRole( String name )
     {
         return getRbacManagerForWrite().createRole( name );
+    }
+
+    @Override
+    public Role createRole( String id, String name )
+    {
+        return getRbacManagerForWrite( ).createRole( id, name );
     }
 
     @Override
@@ -235,6 +246,7 @@ public class ArchivaRbacManager
                 if ( role != null )
                 {
                     rolesCache.put( role.getName(), role );
+                    rolesByIdCache.put( role.getId( ), role );
                     return role;
                 }
             }
@@ -248,7 +260,42 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return null;
+        throw new RbacObjectNotFoundException( "Role not found " + roleName );
+    }
+
+    @Override
+    public Role getRoleById( String id ) throws RbacObjectNotFoundException, RbacManagerException
+    {
+        Role el = rolesByIdCache.get( id );
+        if ( el != null )
+        {
+            return el;
+        }
+
+        Exception lastException = null;
+        for ( RBACManager rbacManager : rbacManagersPerId.values() )
+        {
+            try
+            {
+                Role role = rbacManager.getRoleById( id );
+                if ( role != null )
+                {
+                    rolesCache.put( role.getName(), role );
+                    rolesByIdCache.put( role.getId( ), role );
+                    return role;
+                }
+            }
+            catch ( Exception e )
+            {
+                lastException = e;
+            }
+        }
+        log.debug( "cannot find role for id: ‘{}", id );
+        if ( lastException != null )
+        {
+            throw new RbacManagerException( lastException.getMessage(), lastException );
+        }
+        throw new RbacObjectNotFoundException( "Role not found " + id );
     }
 
     @Override
@@ -295,6 +342,7 @@ public class ArchivaRbacManager
             {
                 rbacManager.removeRole( role );
                 rolesCache.remove( role.getName() );
+                rolesByIdCache.remove( role.getId( ) );
                 allFailed = false;
             }
             catch ( Exception e )

@@ -61,7 +61,7 @@ public class TestRoleManager
     }
 
     @Override
-    public void updateRole( String templateId, String oldResource, String newResource )
+    public void moveTemplatedRole( String templateId, String oldResource, String newResource )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.

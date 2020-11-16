@@ -79,7 +79,19 @@ public class TestRBACManager implements RBACManager
     }
 
     @Override
+    public Role createRole( String id, String name )
+    {
+        return null;
+    }
+
+    @Override
     public boolean roleExists( String name )
+    {
+        return false;
+    }
+
+    @Override
+    public boolean roleExistsById( String id ) throws RbacManagerException
     {
         return false;
     }
@@ -107,6 +119,12 @@ public class TestRBACManager implements RBACManager
     @Override
     public Role getRole( String roleName )
         throws RbacObjectNotFoundException, RbacManagerException
+    {
+        return null;
+    }
+
+    @Override
+    public Role getRoleById( String id ) throws RbacObjectNotFoundException, RbacManagerException
     {
         return null;
     }
@@ -165,6 +183,12 @@ public class TestRBACManager implements RBACManager
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void removeRoleById( String id ) throws RbacObjectNotFoundException, RbacManagerException
+    {
+
     }
 
     @Override
