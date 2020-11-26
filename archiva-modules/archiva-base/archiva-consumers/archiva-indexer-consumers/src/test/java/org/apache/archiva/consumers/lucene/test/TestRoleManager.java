@@ -47,10 +47,11 @@ public class TestRoleManager
     }
 
     @Override
-    public void createTemplatedRole( String templateId, String resource )
+    public String createTemplatedRole( String templateId, String resource )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
@@ -61,10 +62,11 @@ public class TestRoleManager
     }
 
     @Override
-    public void moveTemplatedRole( String templateId, String oldResource, String newResource )
+    public String moveTemplatedRole( String templateId, String oldResource, String newResource )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override

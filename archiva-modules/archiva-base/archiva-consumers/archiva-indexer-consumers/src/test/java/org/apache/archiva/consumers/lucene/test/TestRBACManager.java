@@ -144,17 +144,29 @@ public class TestRBACManager implements RBACManager
     }
 
     @Override
-    public Map<String, Role> getChildRoles( Role role )
+    public Map<String, Role> getChildRoleNames( Role role )
         throws RbacManagerException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public Map<String, Role> getParentRoles( Role role )
+    public Map<String, ? extends Role> getChildRoleIds( Role role ) throws RbacManagerException
+    {
+        return null;
+    }
+
+    @Override
+    public Map<String, Role> getParentRoleNames( Role role )
         throws RbacManagerException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Map<String, ? extends Role> getParentRoleIds( Role role ) throws RbacManagerException
+    {
+        return null;
     }
 
     @Override
@@ -399,7 +411,7 @@ public class TestRBACManager implements RBACManager
     }
 
     @Override
-    public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleNames )
+    public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleIds )
         throws RbacManagerException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

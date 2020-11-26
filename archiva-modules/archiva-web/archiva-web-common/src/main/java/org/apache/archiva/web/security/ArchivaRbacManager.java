@@ -812,9 +812,9 @@ public class ArchivaRbacManager
                     UserAssignment userAssignment = rbacManager.getUserAssignment( principal );
                     if ( userAssignment != null )
                     {
-                        for ( String roleName : userAssignment.getRoleNames() )
+                        for ( String roleId : userAssignment.getRoleIds() )
                         {
-                            ua.addRoleName( roleName );
+                            ua.addRoleId( roleId );
                         }
                     }
                 }
@@ -900,9 +900,9 @@ public class ArchivaRbacManager
                     UserAssignment userAssignment = allUserAssignments.get( ua.getPrincipal() );
                     if ( userAssignment != null )
                     {
-                        for ( String roleName : ua.getRoleNames() )
+                        for ( String roleId : ua.getRoleIds() )
                         {
-                            userAssignment.addRoleName( roleName );
+                            userAssignment.addRoleId( roleId );
                         }
                     }
                     allUserAssignments.put( ua.getPrincipal(), ua );
@@ -923,7 +923,7 @@ public class ArchivaRbacManager
     }
 
     @Override
-    public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleNames )
+    public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleIds )
         throws RbacManagerException
     {
         List<UserAssignment> allUserAssignments = new ArrayList<>();
@@ -933,7 +933,7 @@ public class ArchivaRbacManager
         {
             try
             {
-                List<? extends UserAssignment> userAssignments = rbacManager.getUserAssignmentsForRoles( roleNames );
+                List<? extends UserAssignment> userAssignments = rbacManager.getUserAssignmentsForRoles( roleIds );
 
                 allUserAssignments.addAll( userAssignments );
 

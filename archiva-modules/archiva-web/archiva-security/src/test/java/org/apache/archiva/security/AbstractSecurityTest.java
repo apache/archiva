@@ -170,7 +170,7 @@ public abstract class AbstractSecurityTest
             log.info( "ignore RbacObjectNotFoundException for id {} during restoreGuestInitialValues", userId );
             return;
         }
-        userAssignment.setRoleNames( new ArrayList( Arrays.asList( "Guest" ) ) );
+        userAssignment.setRoleIds( new ArrayList( Arrays.asList( "guest" ) ) );
         rbacManager.saveUserAssignment( userAssignment );
         CacheManager.getInstance().clearAll();
     }

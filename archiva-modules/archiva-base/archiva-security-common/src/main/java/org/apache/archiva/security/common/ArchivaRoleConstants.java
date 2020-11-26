@@ -40,6 +40,7 @@ public class ArchivaRoleConstants
     public static final String REPOSITORY_MANAGER_ROLE_PREFIX = "Repository Manager";
 
     public static final String REPOSITORY_OBSERVER_ROLE_PREFIX = "Repository Observer";
+    public static final String REPOSITORY_OBSERVER_ROLE_ID_PREFIX = "archiva-repository-observer";
 
     // operations
     public static final String OPERATION_MANAGE_USERS = "archiva-manage-users";
@@ -86,5 +87,10 @@ public class ArchivaRoleConstants
     public static String toRepositoryObserverRoleName( String repoId )
     {
         return REPOSITORY_OBSERVER_ROLE_PREFIX + " - " + repoId;
+    }
+
+    public static String toRepositoryObserverRoleId( String repoId )
+    {
+        return REPOSITORY_OBSERVER_ROLE_ID_PREFIX + "." + repoId;
     }
 }

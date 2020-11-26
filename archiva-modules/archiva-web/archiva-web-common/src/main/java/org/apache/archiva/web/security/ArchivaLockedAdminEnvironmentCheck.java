@@ -112,7 +112,7 @@ public class ArchivaLockedAdminEnvironmentCheck
                     continue;
                 }
                 List<String> roles = new ArrayList<>();
-                roles.add( RedbackRoleConstants.SYSTEM_ADMINISTRATOR_ROLE );
+                roles.add( RedbackRoleConstants.SYSTEM_ADMINISTRATOR_ROLE_ID );
 
                 List<? extends UserAssignment> systemAdminstrators;
                 try

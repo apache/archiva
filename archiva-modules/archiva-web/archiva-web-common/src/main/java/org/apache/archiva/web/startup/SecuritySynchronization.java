@@ -244,12 +244,12 @@ public class SecuritySynchronization
                     ua = rbacManager.createUserAssignment( principal );
                 }
 
-                ua.addRoleName( ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) );
+                ua.addRoleId( ArchivaRoleConstants.toRepositoryObserverRoleId( repoId ) );
                 rbacManager.saveUserAssignment( ua );
             }
             catch ( RbacManagerException e )
             {
-                log.warn( "Unable to add role [{}] to {} user.", ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ), principal, e );
+                log.warn( "Unable to add role [{}] to {} user.", ArchivaRoleConstants.toRepositoryObserverRoleId( repoId ), principal, e );
             }
         }
     }
