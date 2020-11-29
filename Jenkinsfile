@@ -32,7 +32,7 @@ buildJdk = 'jdk_1.8_latest'
 buildJdk9 = 'jdk_1.9_latest'
 buildJdk10 = 'jdk_10_latest'
 buildJdk11 = 'jdk_11_latest'
-buildMvn = 'maven_3.5.4'
+buildMvn = 'maven_3.6.3'
 //localRepository = ".repository"
 //localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
 mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'
