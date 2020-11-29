@@ -548,7 +548,7 @@
               <dependency>
                 <groupId>jakarta.mail</groupId>
       <artifactId>jakarta.mail-api</artifactId>
-                <version>${javax.mail.version}</version>
+                <version>${jakarta.mail.version}</version>
               </dependency>
               <dependency>
                 <groupId>com.google.guava</groupId>
