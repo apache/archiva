@@ -5,7 +5,7 @@ jdk:
 
 install: "mvn clean install -DskipTests=true -B -V -Pci-build"
 
-script: "mvn clean install -B -V -Pit-js -Pci-build"
+script: "mvn clean install -B -V -Pci-build"
 
 cache:
     directories:

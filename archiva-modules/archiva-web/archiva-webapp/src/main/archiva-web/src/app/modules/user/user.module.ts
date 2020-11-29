@@ -18,7 +18,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {ManageUsersComponent} from "./manage-users/manage-users.component";
+import {ManageUsersComponent} from "./users/manage-users/manage-users.component";
 import {ManageUsersListComponent} from "./users/manage-users-list/manage-users-list.component";
 import {ManageUsersAddComponent} from "./users/manage-users-add/manage-users-add.component";
 import {ManageUsersEditComponent} from "./users/manage-users-edit/manage-users-edit.component";

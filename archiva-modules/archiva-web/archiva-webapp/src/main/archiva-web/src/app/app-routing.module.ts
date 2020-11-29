@@ -27,7 +27,6 @@ import { LoginComponent } from "./modules/shared/login/login.component";
 import { SearchComponent } from './modules/repo/search/search.component';
 import {BrowseComponent} from "./modules/repo/browse/browse.component";
 import {UploadComponent} from "./modules/repo/upload/upload.component";
-import {ManageUsersComponent} from "./modules/user/manage-users/manage-users.component";
 import {ManageRolesComponent} from "./modules/user/manage-roles/manage-roles.component";
 import {SecurityConfigurationComponent} from "./modules/user/security-configuration/security-configuration.component";
 import {ManageUsersListComponent} from "./modules/user/users/manage-users-list/manage-users-list.component";
@@ -35,6 +34,8 @@ import {ManageUsersAddComponent} from "./modules/user/users/manage-users-add/man
 import {ManageUsersEditComponent} from "./modules/user/users/manage-users-edit/manage-users-edit.component";
 import {RoutingGuardService as Guard} from "./services/routing-guard.service";
 import {ManageUsersDeleteComponent} from "./modules/user/users/manage-users-delete/manage-users-delete.component";
+import {UserModule} from "./modules/user/user.module";
+import { ManageUsersComponent } from './modules/user/users/manage-users/manage-users.component';
 
 /**
  * You can use Guard (RoutingGuardService) for permission checking. The service needs data with one parameter 'perm',
