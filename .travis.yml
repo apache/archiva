@@ -3,9 +3,13 @@ dist: xenial
 jdk:
   - openjdk8
 
-before_install: "mvn clean install -DskipTests=true -B -V -Pci-build"
+install: "mvn clean install -DskipTests=true -B -V -Pci-build"
 
 script: "mvn clean install -B -V -Pit-js -Pci-build"
+
+cache:
+    directories:
+    - $HOME/.m2
 
 branches:
     except:
