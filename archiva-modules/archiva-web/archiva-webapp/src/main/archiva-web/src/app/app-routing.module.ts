@@ -29,13 +29,8 @@ import {BrowseComponent} from "./modules/repo/browse/browse.component";
 import {UploadComponent} from "./modules/repo/upload/upload.component";
 import {ManageRolesComponent} from "./modules/user/manage-roles/manage-roles.component";
 import {SecurityConfigurationComponent} from "./modules/user/security-configuration/security-configuration.component";
-import {ManageUsersListComponent} from "./modules/user/users/manage-users-list/manage-users-list.component";
-import {ManageUsersAddComponent} from "./modules/user/users/manage-users-add/manage-users-add.component";
-import {ManageUsersEditComponent} from "./modules/user/users/manage-users-edit/manage-users-edit.component";
 import {RoutingGuardService as Guard} from "./services/routing-guard.service";
-import {ManageUsersDeleteComponent} from "./modules/user/users/manage-users-delete/manage-users-delete.component";
 import {UserModule} from "./modules/user/user.module";
-import { ManageUsersComponent } from './modules/user/users/manage-users/manage-users.component';
 
 /**
  * You can use Guard (RoutingGuardService) for permission checking. The service needs data with one parameter 'perm',
@@ -50,19 +45,10 @@ const routes: Routes = [
     {path:'repo/upload', component: UploadComponent},
     {path:'', redirectTo:'repo/search', pathMatch:'full'},
   ]},
+  { path: 'users', loadChildren: () => import('./modules/user/user.module').then(m => m.UserModule)
+  },
   { path: 'user', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.user.section'},
     children: [
-      { path: 'users', component: ManageUsersComponent,canActivate:[Guard],
-        data: { perm: 'menu.user.manage' },
-        children: [
-          {path: 'list', component: ManageUsersListComponent},
-          {path: 'add', component: ManageUsersAddComponent},
-          {path: 'edit/:userid', component: ManageUsersEditComponent},
-          {path: 'edit', redirectTo:'edit/guest' },
-          {path: 'delete/:userid', component: ManageUsersDeleteComponent},
-          {path: '', redirectTo:'list', pathMatch:'full'}
-        ]
-      },
       { path: 'roles', component: ManageRolesComponent },
       { path: 'config', component: SecurityConfigurationComponent},
     ]
@@ -72,10 +58,16 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: HomeComponent },
   { path: '**', component: NotFoundComponent }
+  ,
+  {
+    path: '',
+    redirectTo: '',
+    pathMatch: 'full'
+  }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes), UserModule],
   exports: [RouterModule],
   declarations: []
 })

@@ -16,37 +16,39 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {ManageUsersComponent} from "./users/manage-users/manage-users.component";
 import {ManageUsersListComponent} from "./users/manage-users-list/manage-users-list.component";
 import {ManageUsersAddComponent} from "./users/manage-users-add/manage-users-add.component";
 import {ManageUsersEditComponent} from "./users/manage-users-edit/manage-users-edit.component";
 import {SharedModule} from "../shared/shared.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import { ManageUsersDeleteComponent } from './users/manage-users-delete/manage-users-delete.component';
-
+import {ManageUsersDeleteComponent} from './users/manage-users-delete/manage-users-delete.component';
+import {UserRoutingModule} from "./user-routing.module";
 
 
 @NgModule({
-  declarations: [
-      ManageUsersComponent,
-      ManageUsersListComponent,
-      ManageUsersAddComponent,
-      ManageUsersEditComponent,
-      ManageUsersDeleteComponent
-  ],
-  exports: [
-    ManageUsersComponent,
-    ManageUsersListComponent,
-    ManageUsersAddComponent,
-    ManageUsersEditComponent
-  ],
-  imports: [
-    CommonModule,
-    SharedModule,
-      FormsModule,
-      ReactiveFormsModule
-  ]
+    declarations: [
+        ManageUsersComponent,
+        ManageUsersListComponent,
+        ManageUsersAddComponent,
+        ManageUsersEditComponent,
+        ManageUsersDeleteComponent
+    ],
+    exports: [
+        ManageUsersComponent,
+        ManageUsersListComponent,
+        ManageUsersAddComponent,
+        ManageUsersEditComponent
+    ],
+    imports: [
+        CommonModule,
+        UserRoutingModule,
+        SharedModule,
+        FormsModule,
+        ReactiveFormsModule
+    ]
 })
-export class UserModule { }
+export class UserModule {
+}
