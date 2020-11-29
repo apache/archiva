@@ -18,8 +18,8 @@
  */
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
-import {HttpClientModule} from '@angular/common/http';
-import {MESSAGE_FORMAT_CONFIG} from 'ngx-translate-messageformat-compiler';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {MESSAGE_FORMAT_CONFIG, TranslateMessageFormatCompiler} from 'ngx-translate-messageformat-compiler';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -37,8 +37,8 @@ import {BrowseComponent} from './modules/repo/browse/browse.component';
 import {UploadComponent} from './modules/repo/upload/upload.component';
 import {SecurityConfigurationComponent} from './modules/user/security-configuration/security-configuration.component';
 import {CoreModule} from "./modules/core/core.module";
-import {SharedModule} from "./modules/shared/shared.module";
-import {UserModule} from "./modules/user/user.module";
+import {httpTranslateLoader, SharedModule} from "./modules/shared/shared.module";
+import {TranslateCompiler, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 
 
 @NgModule({
@@ -58,6 +58,17 @@ import {UserModule} from "./modules/user/user.module";
     SecurityConfigurationComponent,
   ],
   imports: [
+    TranslateModule.forRoot({
+      compiler: {
+        provide: TranslateCompiler,
+        useClass: TranslateMessageFormatCompiler
+      },
+      loader: {
+        provide: TranslateLoader,
+        useFactory: httpTranslateLoader,
+        deps: [HttpClient]
+      }
+    }),
     BrowserModule,
     AppRoutingModule,
     FormsModule,
@@ -65,8 +76,7 @@ import {UserModule} from "./modules/user/user.module";
     HttpClientModule,
 
       CoreModule,
-      SharedModule,
-      UserModule
+      SharedModule
   ],
   providers: [
     { provide: MESSAGE_FORMAT_CONFIG, useValue: { locales: ['en', 'de'] }}

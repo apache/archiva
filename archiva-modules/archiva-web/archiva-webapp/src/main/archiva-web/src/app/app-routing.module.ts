@@ -16,21 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 
-import { AboutComponent } from './modules/shared/about/about.component';
-import { ContactComponent } from './modules/shared/contact/contact.component';
-import { HomeComponent } from './modules/shared/home/home.component';
-import { NotFoundComponent } from './modules/shared/not-found/not-found.component';
-import { LoginComponent } from "./modules/shared/login/login.component";
-import { SearchComponent } from './modules/repo/search/search.component';
+import {AboutComponent} from './modules/shared/about/about.component';
+import {ContactComponent} from './modules/shared/contact/contact.component';
+import {HomeComponent} from './modules/shared/home/home.component';
+import {NotFoundComponent} from './modules/shared/not-found/not-found.component';
+import {LoginComponent} from "./modules/shared/login/login.component";
+import {SearchComponent} from './modules/repo/search/search.component';
 import {BrowseComponent} from "./modules/repo/browse/browse.component";
 import {UploadComponent} from "./modules/repo/upload/upload.component";
 import {ManageRolesComponent} from "./modules/user/manage-roles/manage-roles.component";
-import {SecurityConfigurationComponent} from "./modules/user/security-configuration/security-configuration.component";
 import {RoutingGuardService as Guard} from "./services/routing-guard.service";
-import {UserModule} from "./modules/user/user.module";
+import {SecurityConfigurationComponent} from "./modules/user/security-configuration/security-configuration.component";
 
 /**
  * You can use Guard (RoutingGuardService) for permission checking. The service needs data with one parameter 'perm',
@@ -38,38 +37,37 @@ import {UserModule} from "./modules/user/user.module";
  */
 
 const routes: Routes = [
-  { path: '', component: HomeComponent,
-  children: [
-    {path:'repo/search', component: SearchComponent},
-    {path:'repo/browse', component: BrowseComponent},
-    {path:'repo/upload', component: UploadComponent},
-    {path:'', redirectTo:'repo/search', pathMatch:'full'},
-  ]},
-  { path: 'users', loadChildren: () => import('./modules/user/user.module').then(m => m.UserModule)
-  },
-  { path: 'user', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.user.section'},
-    children: [
-      { path: 'roles', component: ManageRolesComponent },
-      { path: 'config', component: SecurityConfigurationComponent},
-    ]
-  },
-  { path: 'contact', component: ContactComponent },
-  { path: 'about', component: AboutComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'logout', component: HomeComponent },
-  { path: '**', component: NotFoundComponent }
-  ,
-  {
-    path: '',
-    redirectTo: '',
-    pathMatch: 'full'
-  }
+    {
+        path: '', component: HomeComponent,
+        children: [
+            {path: 'repo/search', component: SearchComponent},
+            {path: 'repo/browse', component: BrowseComponent},
+            {path: 'repo/upload', component: UploadComponent},
+            {path: '', redirectTo: 'repo/search', pathMatch: 'full'},
+        ]
+    },
+
+    {
+        path: 'user', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.user.section'},
+        children: [
+            {path: 'users', loadChildren: () => import('./modules/user/user.module').then(m => m.UserModule)},
+            {path: 'roles', component: ManageRolesComponent},
+            {path: 'config', component: SecurityConfigurationComponent},
+        ]
+    },
+    {path: 'contact', component: ContactComponent},
+    {path: 'about', component: AboutComponent},
+    {path: 'login', component: LoginComponent},
+    {path: 'logout', component: HomeComponent},
+    {path: '**', component: NotFoundComponent}
+
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }), UserModule],
-  exports: [RouterModule],
-  declarations: []
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule],
+    declarations: []
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}
 

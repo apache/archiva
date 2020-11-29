@@ -26,6 +26,8 @@ import {SharedModule} from "../shared/shared.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ManageUsersDeleteComponent} from './users/manage-users-delete/manage-users-delete.component';
 import {UserRoutingModule} from "./user-routing.module";
+import {TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
 
 
 @NgModule({
@@ -44,10 +46,10 @@ import {UserRoutingModule} from "./user-routing.module";
     ],
     imports: [
         CommonModule,
-        UserRoutingModule,
         SharedModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        UserRoutingModule
     ]
 })
 export class UserModule {

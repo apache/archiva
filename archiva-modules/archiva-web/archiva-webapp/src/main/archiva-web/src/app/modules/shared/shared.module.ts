@@ -27,7 +27,6 @@ import {TranslateMessageFormatCompiler} from "ngx-translate-messageformat-compil
 import {HttpClient} from "@angular/common/http";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {RouterModule} from "@angular/router";
-import {FormsModule} from "@angular/forms";
 
 
 
@@ -52,7 +51,7 @@ import {FormsModule} from "@angular/forms";
       RouterModule,
       NgbPaginationModule,
       NgbTooltipModule,
-    TranslateModule.forRoot({
+    TranslateModule.forChild({
       compiler: {
         provide: TranslateCompiler,
         useClass: TranslateMessageFormatCompiler

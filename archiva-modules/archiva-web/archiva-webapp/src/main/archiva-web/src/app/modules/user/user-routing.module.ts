@@ -23,6 +23,8 @@ import { ManageUsersListComponent } from './users/manage-users-list/manage-users
 import { ManageUsersAddComponent } from './users/manage-users-add/manage-users-add.component';
 import { ManageUsersEditComponent } from './users/manage-users-edit/manage-users-edit.component';
 import { ManageUsersDeleteComponent } from './users/manage-users-delete/manage-users-delete.component';
+import {SharedModule} from "../shared/shared.module";
+import {TranslateModule} from "@ngx-translate/core";
 
 
 /**
@@ -31,8 +33,7 @@ import { ManageUsersDeleteComponent } from './users/manage-users-delete/manage-u
  */
 
 const routes: Routes = [
-      { path: 'users', component: ManageUsersComponent,
-        data: { perm: 'menu.user.manage' },
+      { path: '', component: ManageUsersComponent,
         children: [
           {path: 'list', component: ManageUsersListComponent},
           {path: 'add', component: ManageUsersAddComponent},
@@ -45,7 +46,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [],
   declarations: []
 })
 export class UserRoutingModule { }
