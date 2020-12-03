@@ -56,8 +56,10 @@
             <td>{{user.timestamp_last_login | date:'yyyy-MM-ddTHH:mm:ss'}}</td>
             <td>{{user.timestamp_account_creation | date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
             <td>{{user.timestamp_last_password_change| date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
-            <td><ng-container *ngIf="!user.permanent"><a  [routerLink]="['..','edit', user.user_id]" [queryParams]="{editmode:true}" ><span class="fas fa-edit"></span></a>
-                &nbsp;&nbsp; <a *ngIf="!user.permanent" [routerLink]="['..','delete',user.user_id]"><span class="fas fa-user-minus"></span></a>
+            <td><ng-container *ngIf="!user.permanent">
+                <a  [routerLink]="['..','edit', user.user_id]" [queryParams]="{editmode:true}" [attr.title]="'users.edit.head' |translate"><span class="fas fa-edit"></span></a>
+                &nbsp;&nbsp;<a [routerLink]="['..','delete',user.user_id]" [attr.title]="'users.delete.head'|translate"><span class="fas fa-user-minus"></span></a>
+                &nbsp;&nbsp;<a [routerLink]="['..','roles',user.user_id]" [attr.title]="'users.roles.head'|translate"><span class="fas fa-user-tag" ></span></a>
             </ng-container>
             </td>
         </tr>

@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {PaginatedEntitiesComponent} from "./paginated-entities/paginated-entities.component";
 import {SortedTableHeaderComponent} from "./sorted-table-header/sorted-table-header.component";
 import {SortedTableHeaderRowComponent} from "./sorted-table-header-row/sorted-table-header-row.component";
@@ -29,42 +29,62 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {RouterModule} from "@angular/router";
 
 
-
 @NgModule({
-  declarations: [
-    PaginatedEntitiesComponent,
-    SortedTableHeaderComponent,
-    SortedTableHeaderRowComponent
-  ],
-  exports: [
-      CommonModule,
-      RouterModule,
-      TranslateModule,
-      NgbPaginationModule,
-      NgbTooltipModule,
-      PaginatedEntitiesComponent,
-      SortedTableHeaderComponent,
-      SortedTableHeaderRowComponent
-  ],
-  imports: [
-    CommonModule,
-      RouterModule,
-      NgbPaginationModule,
-      NgbTooltipModule,
-    TranslateModule.forChild({
-      compiler: {
-        provide: TranslateCompiler,
-        useClass: TranslateMessageFormatCompiler
-      },
-      loader: {
-        provide: TranslateLoader,
-        useFactory: httpTranslateLoader,
-        deps: [HttpClient]
-      }
-    }),
-  ]
+    declarations: [
+        PaginatedEntitiesComponent,
+        SortedTableHeaderComponent,
+        SortedTableHeaderRowComponent
+    ],
+    exports: [
+        CommonModule,
+        RouterModule,
+        TranslateModule,
+        NgbPaginationModule,
+        NgbTooltipModule,
+        PaginatedEntitiesComponent,
+        SortedTableHeaderComponent,
+        SortedTableHeaderRowComponent
+    ],
+    imports: [
+        CommonModule,
+        RouterModule,
+        NgbPaginationModule,
+        NgbTooltipModule,
+        TranslateModule.forChild({
+            compiler: {
+                provide: TranslateCompiler,
+                useClass: TranslateMessageFormatCompiler
+            },
+            loader: {
+                provide: TranslateLoader,
+                useFactory: httpTranslateLoader,
+                deps: [HttpClient]
+            }
+        }),
+    ]
 })
-export class SharedModule { }
+export class SharedModule {
+}
+
 export function httpTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http);
+    return new TranslateHttpLoader(http);
+}
+
+export const Util = {
+    deepCopy(src: Object, dst: Object) {
+        Object.keys(src).forEach((key, idx) => {
+            let srcEl = src[key];
+            if (typeof (srcEl) == 'object') {
+                let dstEl;
+                if (!dst.hasOwnProperty(key)) {
+                    dst[key] = {}
+                }
+                dstEl = dst[key];
+                this.deepCopy(srcEl, dstEl);
+            } else {
+                // console.debug("setting " + key + " = " + srcEl);
+                dst[key] = srcEl;
+            }
+        });
+    }
 }

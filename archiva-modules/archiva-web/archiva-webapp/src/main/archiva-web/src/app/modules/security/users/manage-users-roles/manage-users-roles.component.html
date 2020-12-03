@@ -1,0 +1,50 @@
+<h3>Roles</h3>
+<table class="table">
+    <thead class="thead-light">
+    <tr class="d-flex">
+        <th class="col-3">Role</th>
+        <th class="col-2">Scope</th>
+        <th class="col-1">Assign</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let baseRole of baseRoles" class="d-flex">
+        <td class="col-3" [innerHTML]="getRoleContent(baseRole)"></td>
+        <td class="col-2">
+            {{baseRole.application_id}}
+        </td>
+        <td class="col-1">
+            <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox"
+                                                             [attr.disabled]="baseRole.enabled?null:true"
+                                                             [attr.id]="baseRole.id"
+                                                             [(ngModel)]="baseRole.assigned"
+                                                             (change)="changeBaseAssignment(baseRole, $event)"
+            >
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+<h3>Repository Roles</h3>
+<table class="table">
+    <thead class="thead-light">
+    <tr class="d-flex">
+        <th scope="row" class="col-1">Repository</th>
+        <th scope="col" class="col-1" *ngFor="let templateRole of templateRoles$ | async">{{templateRole.name}}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="d-flex" *ngFor="let res of templateRoleInstances | keyvalue" >
+        <td class="table-secondary col-1">{{res.key}}</td>
+        <td class="col-1 text-center" *ngFor="let templateRole of templateRoles$ | async">
+            <div class="form-check form-check-inline" *ngIf="getInstanceContent(templateRole, res.value) as role">
+                <input class="form-check-input" type="checkbox" [attr.id]="role.id"
+                       [(ngModel)]="role.assigned" (ngModelChange)="changeInstAssignment(role, $event)"/>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+
+</table>

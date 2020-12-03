@@ -26,8 +26,8 @@ import {SharedModule} from "../shared/shared.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ManageUsersDeleteComponent} from './users/manage-users-delete/manage-users-delete.component';
 import {UserRoutingModule} from "./user-routing.module";
-import {TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
+import { ManageUsersRolesComponent } from './users/manage-users-roles/manage-users-roles.component';
+import {RoutingGuardService} from "../../services/routing-guard.service";
 
 
 @NgModule({
@@ -36,7 +36,8 @@ import { HttpClient } from '@angular/common/http';
         ManageUsersListComponent,
         ManageUsersAddComponent,
         ManageUsersEditComponent,
-        ManageUsersDeleteComponent
+        ManageUsersDeleteComponent,
+        ManageUsersRolesComponent
     ],
     exports: [
         ManageUsersComponent,

@@ -109,10 +109,14 @@
       }
     },
     "delete": {
+      "head":"Delete User",
       "modal": {
         "title": "Delete User",
         "text": "Are you sure? <br/> Do you want to delete the user <strong>{user_id}</strong>?"
       }
+    },
+    "roles": {
+      "head": "Edit Roles"
     }
   },
   "search": {

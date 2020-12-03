@@ -17,15 +17,16 @@
  */
 
 import {Injectable, OnDestroy, OnInit} from '@angular/core';
-import {ArchivaRequestService} from "./archiva-request.service";
-import {UserInfo} from '../model/user-info';
+import {ArchivaRequestService} from "@app/services/archiva-request.service";
+import {UserInfo} from '@app/model/user-info';
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
-import {ErrorResult} from "../model/error-result";
+import {ErrorResult} from "@app/model/error-result";
 import {Observable, throwError} from "rxjs";
-import {Permission} from '../model/permission';
-import {PagedResult} from "../model/paged-result";
-import {User} from '../model/user';
+import {Permission} from '@app/model/permission';
+import {PagedResult} from "@app/model/paged-result";
+import {User} from '@app/model/user';
 import {catchError, map} from "rxjs/operators";
+import {RoleTree} from "@app/model/role-tree";
 
 @Injectable({
     providedIn: 'root'
@@ -163,31 +164,6 @@ export class UserService implements OnInit, OnDestroy {
                 })
         );
 
-        // return new Observable<Permission[]>((resultObserver) => {
-        //     let permissionObserver = {
-        //         next: (x: Permission[]) => {
-        //             this.permissions = x;
-        //             this.parsePermissions(x);
-        //             resultObserver.next(this.permissions);
-        //         },
-        //         error: (err: HttpErrorResponse) => {
-        //             console.log("Error " + (JSON.stringify(err)));
-        //             let result = err.error as ErrorResult
-        //             if (result.error_messages != null) {
-        //                 for (let msg of result.error_messages) {
-        //                     console.debug('Observer got an error: ' + msg.error_key)
-        //                 }
-        //             }
-        //             this.resetPermissions();
-        //             resultObserver.error(err);
-        //         },
-        //         complete: () => {
-        //             resultObserver.complete();
-        //         }
-        //     };
-        //     infoObserver.subscribe(permissionObserver);
-        //
-        // });
     }
 
     resetPermissions() {
@@ -350,6 +326,19 @@ export class UserService implements OnInit, OnDestroy {
                     return throwError(this.rest.getTranslatedErrorResult(error));
                 }
             }), map((httpResponse: HttpResponse<string>) => httpResponse.status == 200));
+    }
+
+    public userRoleTree(userid:String): Observable<RoleTree> {
+        return this.rest.executeResponseCall<RoleTree>("get", "redback","users/"+userid+"/roletree", null).pipe(
+            catchError((error: HttpErrorResponse)=>{
+                if (error.status==404) {
+                    console.error("User not found: " + userid);
+                    return [];
+                } else {
+                    return throwError(this.rest.getTranslatedErrorResult(error));
+                }
+            })
+        ).pipe(map((httpResponse:HttpResponse<RoleTree>)=>httpResponse.body))
     }
 
 }

@@ -35,7 +35,7 @@ import {NavSubgroupDirective} from './directives/nav-subgroup.directive';
 import {SearchComponent} from './modules/repo/search/search.component';
 import {BrowseComponent} from './modules/repo/browse/browse.component';
 import {UploadComponent} from './modules/repo/upload/upload.component';
-import {SecurityConfigurationComponent} from './modules/user/security-configuration/security-configuration.component';
+import {SecurityConfigurationComponent} from './modules/security/security-configuration/security-configuration.component';
 import {CoreModule} from "./modules/core/core.module";
 import {httpTranslateLoader, SharedModule} from "./modules/shared/shared.module";
 import {TranslateCompiler, TranslateLoader, TranslateModule} from "@ngx-translate/core";

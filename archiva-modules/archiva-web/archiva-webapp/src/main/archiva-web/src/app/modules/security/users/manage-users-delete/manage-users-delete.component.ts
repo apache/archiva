@@ -53,8 +53,10 @@ export class ManageUsersDeleteComponent implements OnInit, AfterViewInit {
         if (result=='YES' && userId!=null && userId!='') {
           let deleted = this.userService.deleteUser(userId).subscribe();
           if (deleted) {
-            this.router.navigate(['/user','users','list']);
+            this.router.navigate(['/security','users','list']);
           }
+        } else if (result=='NO') {
+          this.router.navigate(['/security','users','list']);
         }
       }, (reason) => {
         console.log("Reason: " + reason);

@@ -23,8 +23,8 @@ import { ManageUsersListComponent } from './users/manage-users-list/manage-users
 import { ManageUsersAddComponent } from './users/manage-users-add/manage-users-add.component';
 import { ManageUsersEditComponent } from './users/manage-users-edit/manage-users-edit.component';
 import { ManageUsersDeleteComponent } from './users/manage-users-delete/manage-users-delete.component';
-import {SharedModule} from "../shared/shared.module";
-import {TranslateModule} from "@ngx-translate/core";
+import {ManageUsersRolesComponent} from "./users/manage-users-roles/manage-users-roles.component";
+import {RoutingGuardService as Guard} from "@app/services/routing-guard.service";
 
 
 /**
@@ -33,13 +33,17 @@ import {TranslateModule} from "@ngx-translate/core";
  */
 
 const routes: Routes = [
-      { path: '', component: ManageUsersComponent,
+      { path: '', component: ManageUsersComponent,canActivate:[Guard],
+        data: { perm: 'menu.user.manage' },
         children: [
           {path: 'list', component: ManageUsersListComponent},
           {path: 'add', component: ManageUsersAddComponent},
           {path: 'edit/:userid', component: ManageUsersEditComponent},
           {path: 'edit', redirectTo:'edit/guest' },
           {path: 'delete/:userid', component: ManageUsersDeleteComponent},
+          {path: 'roles', component:ManageUsersRolesComponent},
+          {path: 'roles/:userid', component:ManageUsersRolesComponent},
+          {path: '', redirectTo:'list',pathMatch:'full'}
         ]
       }
 ];

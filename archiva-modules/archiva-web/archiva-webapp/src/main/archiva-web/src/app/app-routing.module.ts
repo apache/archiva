@@ -27,9 +27,9 @@ import {LoginComponent} from "./modules/shared/login/login.component";
 import {SearchComponent} from './modules/repo/search/search.component';
 import {BrowseComponent} from "./modules/repo/browse/browse.component";
 import {UploadComponent} from "./modules/repo/upload/upload.component";
-import {ManageRolesComponent} from "./modules/user/manage-roles/manage-roles.component";
+import {ManageRolesComponent} from "./modules/security/manage-roles/manage-roles.component";
 import {RoutingGuardService as Guard} from "./services/routing-guard.service";
-import {SecurityConfigurationComponent} from "./modules/user/security-configuration/security-configuration.component";
+import {SecurityConfigurationComponent} from "./modules/security/security-configuration/security-configuration.component";
 
 /**
  * You can use Guard (RoutingGuardService) for permission checking. The service needs data with one parameter 'perm',
@@ -48,9 +48,9 @@ const routes: Routes = [
     },
 
     {
-        path: 'user', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.user.section'},
+        path: 'security', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.user.section'},
         children: [
-            {path: 'users', loadChildren: () => import('./modules/user/user.module').then(m => m.UserModule)},
+            {path: 'users', loadChildren: () => import('./modules/security/user.module').then(m => m.UserModule)},
             {path: 'roles', component: ManageRolesComponent},
             {path: 'config', component: SecurityConfigurationComponent},
         ]
