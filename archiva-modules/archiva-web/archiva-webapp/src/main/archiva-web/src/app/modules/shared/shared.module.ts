@@ -71,7 +71,7 @@ export function httpTranslateLoader(http: HttpClient) {
 }
 
 export const Util = {
-    deepCopy(src: Object, dst: Object) {
+    deepCopy(src: Object, dst: Object, overwriteWithEmptyString:boolean=true) {
         Object.keys(src).forEach((key, idx) => {
             let srcEl = src[key];
             if (typeof (srcEl) == 'object') {
@@ -81,6 +81,14 @@ export const Util = {
                 }
                 dstEl = dst[key];
                 this.deepCopy(srcEl, dstEl);
+            } else if (typeof(srcEl)=='string') {
+                if (overwriteWithEmptyString) {
+                    dst[key]=srcEl
+                } else {
+                    if ((srcEl as string).length>0) {
+                        dst[key]=srcEl
+                    }
+                }
             } else {
                 // console.debug("setting " + key + " = " + srcEl);
                 dst[key] = srcEl;

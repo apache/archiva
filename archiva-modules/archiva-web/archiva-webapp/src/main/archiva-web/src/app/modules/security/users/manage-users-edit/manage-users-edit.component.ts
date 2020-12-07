@@ -16,11 +16,11 @@
  * under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {UserService} from "../../../../services/user.service";
 import {FormBuilder, FormControl} from "@angular/forms";
-import {catchError, map, switchMap, tap} from 'rxjs/operators';
+import {catchError, filter, map, switchMap, tap} from 'rxjs/operators';
 import {ManageUsersBaseComponent} from "../manage-users-base.component";
 import {ErrorResult} from "../../../../model/error-result";
 
@@ -38,6 +38,9 @@ export class ManageUsersEditComponent extends ManageUsersBaseComponent implement
     editMode: boolean;
     minUserIdSize = 0;
 
+    @Output()
+    userIdEvent: EventEmitter<string> = new EventEmitter<string>(true);
+
     constructor(private route: ActivatedRoute, public userService: UserService, public fb: FormBuilder) {
         super(userService, fb);
         this.editMode=false;
@@ -46,15 +49,21 @@ export class ManageUsersEditComponent extends ManageUsersBaseComponent implement
             this.editMode=true;
           }
         })
+
+    }
+
+    ngOnInit(): void {
         this.editUser = this.route.params.pipe(
-            map(params => params.userid), switchMap(userid => userService.getUser(userid))).subscribe(user => {
+            map(params => params.userid),
+            filter(userid=>userid!=null),
+            tap(userid=>{
+                this.userIdEvent.emit(userid)
+            }),
+            switchMap(userid => this.userService.getUser(userid))).subscribe(user => {
             this.editUser = user;
             this.originUser = user;
             this.copyToForm(this.editProperties, this.editUser);
         });
-    }
-
-    ngOnInit(): void {
       // This resets the validators of the base class
       this.userForm.get('user_id').clearValidators();
       this.userForm.get('user_id').clearAsyncValidators();

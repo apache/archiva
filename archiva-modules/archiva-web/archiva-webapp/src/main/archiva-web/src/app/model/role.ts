@@ -34,5 +34,7 @@ export class Role {
     // Web Internal attributes
     enabled: boolean = true
     level:number = -1
+    root_path: Array<string>
+    assigned_origin: boolean;
 
 }

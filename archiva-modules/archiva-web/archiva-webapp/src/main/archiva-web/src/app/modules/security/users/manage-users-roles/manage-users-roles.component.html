@@ -1,50 +1,102 @@
-<h3>Roles</h3>
-<table class="table">
-    <thead class="thead-light">
-    <tr class="d-flex">
-        <th class="col-3">Role</th>
-        <th class="col-2">Scope</th>
-        <th class="col-1">Assign</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let baseRole of baseRoles" class="d-flex">
-        <td class="col-3" [innerHTML]="getRoleContent(baseRole)"></td>
-        <td class="col-2">
-            {{baseRole.application_id}}
-        </td>
-        <td class="col-1">
-            <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox"
-                                                             [attr.disabled]="baseRole.enabled?null:true"
-                                                             [attr.id]="baseRole.id"
-                                                             [(ngModel)]="baseRole.assigned"
-                                                             (change)="changeBaseAssignment(baseRole, $event)"
-            >
+
+
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="row">
+
+    <div class="row col-md-6">
+    <h4 class="col-md-2 mt-3">{{'users.roles.base_roles'|translate}} </h4>
+    <h4 class="col-md-2 offset-md-4 mt-3"><span class="badge badge-primary">{{userid}}</span></h4>
+    </div>
+    <ng-container *ngIf="roles$|async as myRoles">
+        <table class="table col-md-12">
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th class="col-3">{{'users.roles.table.role'|translate}}</th>
+                <th class="col-2">{{'users.roles.table.scope'|translate}}</th>
+                <th class="col-1">{{'users.roles.table.assign'|translate}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let baseRoleItem of myRoles.baseRoles|keyvalue" class="d-flex">
+                <td class="col-3" [innerHTML]="getRoleContent(baseRoleItem.value)"></td>
+                <td class="col-2">
+                    {{baseRoleItem.value.application_id}}
+                </td>
+                <td class="col-1">
+                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox"
+                                                                     [attr.disabled]="baseRoleItem.value.enabled?null:true"
+                                                                     [attr.id]="baseRoleItem.key"
+                                                                     [(ngModel)]="baseRoleItem.value.assigned"
+                                                                     (change)="changeBaseAssignment(baseRoleItem.value, $event)"
+                    >
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+
+        <h4>{{'users.roles.template_roles'|translate}}</h4>
+        <table class="table">
+            <thead class="thead-light">
+            <tr class="d-flex">
+                <th scope="row" class="col-1">{{'users.roles.table.repository'|translate}}</th>
+                <th scope="col" class="col-1"
+                    *ngFor="let templateRole of templateRoles$ | async">{{templateRole.name}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="d-flex" *ngFor="let res of myRoles.templateRoleInstances | keyvalue">
+                <td class="table-secondary col-1">{{res.key}}</td>
+                <td class="col-1 text-center" *ngFor="let templateRole of templateRoles$ | async">
+                    <div class="form-check form-check-inline"
+                         *ngIf="getInstanceContent(templateRole, res.value) as role">
+                        <input class="form-check-input"
+                               [attr.disabled]="role.enabled?null:true"
+                               type="checkbox" [attr.id]="role.id"
+                               [(ngModel)]="role.assigned" (ngModelChange)="changeTemplateAssignment(role, $event)"/>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+
+        <div class="form-group col-md-12 mt-3 ">
+            <button class="btn btn-primary" type="submit"
+                    (click)="saveAssignments()">{{'form.button.save'|translate}}</button>
+        </div>
+
+        <ng-container *ngIf="saved">
+            <div *ngIf="success" class="alert alert-success" role="alert">
+                Roles have been assigned
             </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-
-<h3>Repository Roles</h3>
-<table class="table">
-    <thead class="thead-light">
-    <tr class="d-flex">
-        <th scope="row" class="col-1">Repository</th>
-        <th scope="col" class="col-1" *ngFor="let templateRole of templateRoles$ | async">{{templateRole.name}}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr class="d-flex" *ngFor="let res of templateRoleInstances | keyvalue" >
-        <td class="table-secondary col-1">{{res.key}}</td>
-        <td class="col-1 text-center" *ngFor="let templateRole of templateRoles$ | async">
-            <div class="form-check form-check-inline" *ngIf="getInstanceContent(templateRole, res.value) as role">
-                <input class="form-check-input" type="checkbox" [attr.id]="role.id"
-                       [(ngModel)]="role.assigned" (ngModelChange)="changeInstAssignment(role, $event)"/>
+            <div *ngIf="!success" class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">Errors</h4>
+                <ng-container *ngFor="let message of errors.error_messages; first as isFirst">
+                    <hr *ngIf="!isFirst">
+                    <p>{{message.message}}</p>
+                </ng-container>
             </div>
-        </td>
-    </tr>
-    </tbody>
+        </ng-container>
 
-</table>
+    </ng-container>
+
+</div>

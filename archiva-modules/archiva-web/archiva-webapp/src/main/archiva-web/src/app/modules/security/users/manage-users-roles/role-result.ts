@@ -16,12 +16,11 @@
  * under the License.
  */
 
-export class RoleTemplate {
-    id:string
-    name:string
-    description:string
-    application_id:string
-    assignable:boolean
-    permanent:boolean
+import {Role} from "@app/model/role";
 
+export class RoleResult {
+    // Map of (roleId, Role)
+    baseRoles: Array<Role> = [];
+    // Map of (resource, [(modelId, role), ...])
+    templateRoleInstances: Map<string, Map<string, Role>> = new Map<string, Map<string, Role>>();
 }

@@ -116,7 +116,15 @@
       }
     },
     "roles": {
-      "head": "Edit Roles"
+      "head": "Edit Roles",
+      "base_roles": "Roles",
+      "template_roles": "Repository Roles",
+      "table": {
+        "role": "Role",
+        "scope": "Scope",
+        "assign": "Assign",
+        "repository": "Repository"
+      }
     }
   },
   "search": {
@@ -133,7 +141,8 @@
     },
     "button": {
       "yes": "Yes",
-      "no": "No"
+      "no": "No",
+      "save": "Save Changes"
     }
   },
   "password": {

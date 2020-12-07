@@ -8,7 +8,6 @@
  * with the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,7 +16,12 @@
  * under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Params} from "@angular/router";
+import {iif, Observable, of, pipe, merge, combineLatest} from "rxjs";
+import {combineAll, filter, map, mergeMap, share, switchMap, tap} from 'rxjs/operators';
+import {flatMap} from "rxjs/internal/operators";
+import {fromArray} from "rxjs/internal/observable/fromArray";
 
 @Component({
   selector: 'app-manage-users',
@@ -26,9 +30,49 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ManageUsersComponent implements OnInit {
 
-  constructor() { }
+  userId$:Observable<string>
+
+  constructor(private route : ActivatedRoute) {
+  }
 
   ngOnInit(): void {
   }
 
+
+
+  onChildActivate(componentReference) {
+    // console.log("Activating "+componentReference+" - "+JSON.stringify(componentReference,getCircularReplacer()))
+    if (componentReference.userIdEvent!=null) {
+      let componentEmit : Observable<string> = componentReference.userIdEvent.pipe(
+          tap(userid=>console.log("Event "+componentReference.class+" "+userid)),
+          map((userid: string) => this.getSubPath(userid)));
+      if (this.userId$!=null) {
+        this.userId$ = merge(this.userId$, componentEmit)
+      } else {
+        this.userId$ = componentEmit;
+      }
+    }
+  }
+
+  getSubPath(userid:string) {
+    if (userid!=null && userid.length>0) {
+      return '/' + userid;
+    } else {
+      return '';
+    }
+  }
+
 }
+
+const getCircularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
