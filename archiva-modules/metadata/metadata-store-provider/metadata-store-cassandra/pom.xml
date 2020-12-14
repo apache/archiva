@@ -157,6 +157,10 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
           </exclusion>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>
 
 
       </exclusions>
@@ -229,6 +233,10 @@
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
       <version>${netty.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
     </dependency>
 
     <!-- Is a dependency of cassandra -> hibernate-validator and replaced by new version -->
