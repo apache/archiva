@@ -19,11 +19,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-security-configuration',
-  templateUrl: './security-configuration.component.html',
-  styleUrls: ['./security-configuration.component.scss']
+  selector: 'app-manage-roles-edit',
+  templateUrl: './manage-roles-edit.component.html',
+  styleUrls: ['./manage-roles-edit.component.scss']
 })
-export class SecurityConfigurationComponent implements OnInit {
+export class ManageRolesEditComponent implements OnInit {
 
   constructor() { }
 

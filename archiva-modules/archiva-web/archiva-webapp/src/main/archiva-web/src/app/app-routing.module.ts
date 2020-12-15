@@ -27,7 +27,6 @@ import {LoginComponent} from "./modules/shared/login/login.component";
 import {SearchComponent} from './modules/repo/search/search.component';
 import {BrowseComponent} from "./modules/repo/browse/browse.component";
 import {UploadComponent} from "./modules/repo/upload/upload.component";
-import {ManageRolesComponent} from "./modules/security/manage-roles/manage-roles.component";
 import {RoutingGuardService as Guard} from "./services/routing-guard.service";
 import {SecurityConfigurationComponent} from "./modules/security/security-configuration/security-configuration.component";
 
@@ -51,7 +50,7 @@ const routes: Routes = [
         path: 'security', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.user.section'},
         children: [
             {path: 'users', loadChildren: () => import('./modules/security/user.module').then(m => m.UserModule)},
-            {path: 'roles', component: ManageRolesComponent},
+            {path: 'roles', loadChildren: () => import('./modules/security/role.module').then(m => m.RoleModule)},
             {path: 'config', component: SecurityConfigurationComponent},
         ]
     },

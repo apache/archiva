@@ -16,18 +16,28 @@
  * under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-@Component({
-  selector: 'app-security-configuration',
-  templateUrl: './security-configuration.component.html',
-  styleUrls: ['./security-configuration.component.scss']
-})
-export class SecurityConfigurationComponent implements OnInit {
+import { ManageRolesEditComponent } from './manage-roles-edit.component';
 
-  constructor() { }
+describe('ManageRolesEditComponent', () => {
+  let component: ManageRolesEditComponent;
+  let fixture: ComponentFixture<ManageRolesEditComponent>;
 
-  ngOnInit(): void {
-  }
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ ManageRolesEditComponent ]
+    })
+    .compileComponents();
+  });
 
-}
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ManageRolesEditComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

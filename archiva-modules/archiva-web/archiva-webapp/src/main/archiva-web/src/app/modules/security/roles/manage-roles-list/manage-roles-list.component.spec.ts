@@ -8,7 +8,6 @@
  * with the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,18 +16,28 @@
  * under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-@Component({
-  selector: 'app-manage-roles',
-  templateUrl: './manage-roles.component.html',
-  styleUrls: ['./manage-roles.component.scss']
-})
-export class ManageRolesComponent implements OnInit {
+import { ManageRolesListComponent } from './manage-roles-list.component';
 
-  constructor() { }
+describe('ManageRolesListComponent', () => {
+  let component: ManageRolesListComponent;
+  let fixture: ComponentFixture<ManageRolesListComponent>;
 
-  ngOnInit(): void {
-  }
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ ManageRolesListComponent ]
+    })
+    .compileComponents();
+  });
 
-}
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ManageRolesListComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

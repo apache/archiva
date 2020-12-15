@@ -22,6 +22,8 @@ import {RoleTemplate} from "@app/model/role-template";
 import { Observable } from 'rxjs';
 import { Role } from '@app/model/role';
 import {HttpResponse} from "@angular/common/http";
+import {PagedResult} from "@app/model/paged-result";
+import {UserInfo} from "@app/model/user-info";
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +42,23 @@ export class RoleService {
 
   public unAssignRole(roleId, userId) : Observable<HttpResponse<Role>> {
     return this.rest.executeResponseCall<Role>("delete", "redback", "roles/" + roleId + "/user/" + userId, null);
+  }
+
+  public query(searchTerm: string, offset: number = 0, limit: number = 10, orderBy: string[] = ['id'], order: string = 'asc'): Observable<PagedResult<Role>> {
+    console.log("getRoleList " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
+    if (searchTerm == null) {
+      searchTerm = ""
+    }
+    if (orderBy == null || orderBy.length == 0) {
+      orderBy = ['id'];
+    }
+    return this.rest.executeRestCall<PagedResult<Role>>("get", "redback", "roles", {
+      'q': searchTerm,
+      'offset': offset,
+      'limit': limit,
+      'orderBy': orderBy,
+      'order': order
+    });
   }
 
 }

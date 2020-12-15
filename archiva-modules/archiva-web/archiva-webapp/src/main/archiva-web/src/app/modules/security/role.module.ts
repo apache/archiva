@@ -18,39 +18,31 @@
 
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {ManageUsersComponent} from "./users/manage-users/manage-users.component";
-import {ManageUsersListComponent} from "./users/manage-users-list/manage-users-list.component";
-import {ManageUsersAddComponent} from "./users/manage-users-add/manage-users-add.component";
-import {ManageUsersEditComponent} from "./users/manage-users-edit/manage-users-edit.component";
 import {SharedModule} from "../shared/shared.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ManageUsersDeleteComponent} from './users/manage-users-delete/manage-users-delete.component';
-import {UserRoutingModule} from "./user-routing.module";
-import {ManageUsersRolesComponent} from './users/manage-users-roles/manage-users-roles.component';
+import {ManageRolesComponent} from "@app/modules/security/roles/manage-roles/manage-roles.component";
+import {RoleRoutingModule} from "@app/modules/security/role-routing.module";
+import { ManageRolesListComponent } from './roles/manage-roles-list/manage-roles-list.component';
+import { ManageRolesEditComponent } from './roles/manage-roles-edit/manage-roles-edit.component';
 
 
 @NgModule({
     declarations: [
-        ManageUsersComponent,
-        ManageUsersListComponent,
-        ManageUsersAddComponent,
-        ManageUsersEditComponent,
-        ManageUsersDeleteComponent,
-        ManageUsersRolesComponent
+        ManageRolesComponent,
+        ManageRolesListComponent,
+        ManageRolesEditComponent
     ],
     exports: [
-        ManageUsersComponent,
-        ManageUsersListComponent,
-        ManageUsersAddComponent,
-        ManageUsersEditComponent
+        ManageRolesComponent,
+        ManageRolesListComponent
     ],
     imports: [
         CommonModule,
         SharedModule,
-        UserRoutingModule,
+        RoleRoutingModule,
         FormsModule,
         ReactiveFormsModule
     ]
 })
-export class UserModule {
+export class RoleModule {
 }

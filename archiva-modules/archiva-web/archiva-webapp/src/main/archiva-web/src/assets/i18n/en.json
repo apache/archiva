@@ -127,6 +127,21 @@
       }
     }
   },
+  "roles": {
+    "list": {
+      "head": "Roles List"
+    },
+    "edit": {
+      "head": "Edit/View Role"
+    },
+    "attributes": {
+      "id": "Identifier",
+      "name": "Name",
+      "description": "Description",
+      "template_instance": "Template Instance"
+    }
+  },
+
   "search": {
     "button": "Search",
     "label": "Enter your search term",
