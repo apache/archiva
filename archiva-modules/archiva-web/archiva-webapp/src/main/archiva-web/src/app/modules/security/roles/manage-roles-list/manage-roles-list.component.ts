@@ -25,21 +25,20 @@ import {Observable} from "rxjs";
 import {PagedResult} from "@app/model/paged-result";
 import {UserInfo} from "@app/model/user-info";
 import {RoleService} from "@app/services/role.service";
+import {SortedTableComponent} from "@app/modules/shared/sorted-table-component";
 
 @Component({
   selector: 'app-manage-roles-list',
   templateUrl: './manage-roles-list.component.html',
   styleUrls: ['./manage-roles-list.component.scss']
 })
-export class ManageRolesListComponent implements OnInit {
+export class ManageRolesListComponent extends SortedTableComponent<Role> implements OnInit {
 
-  service: EntityService<Role>
-
-  constructor(private translator: TranslateService, private roleService : RoleService) {
-    this.service = function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string) : Observable<PagedResult<Role>> {
+  constructor(translator: TranslateService, roleService : RoleService) {
+    super(translator, function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string): Observable<PagedResult<Role>> {
       console.log("Retrieving data " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
       return roleService.query(searchTerm, offset, limit, orderBy, order);
-    }
+    });
   }
 
   ngOnInit(): void {

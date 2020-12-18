@@ -45,7 +45,6 @@ export class RoleService {
   }
 
   public query(searchTerm: string, offset: number = 0, limit: number = 10, orderBy: string[] = ['id'], order: string = 'asc'): Observable<PagedResult<Role>> {
-    console.log("getRoleList " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
     if (searchTerm == null) {
       searchTerm = ""
     }
@@ -59,6 +58,14 @@ export class RoleService {
       'orderBy': orderBy,
       'order': order
     });
+  }
+
+  public getRole(roleId:string) : Observable<Role> {
+    return this.rest.executeRestCall("get", "redback", "roles/" + roleId, null);
+  }
+
+  public updateRole(role:Role) : Observable<Role> {
+    return this.rest.executeRestCall("put", "redback", "roles/" + role.id, role);
   }
 
 }

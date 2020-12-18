@@ -39,7 +39,6 @@ export class ManageRolesComponent implements OnInit {
     // console.log("Activating "+componentReference+" - "+JSON.stringify(componentReference,getCircularReplacer()))
     if (componentReference.roleIdEvent!=null) {
       let componentEmit : Observable<string> = componentReference.roleIdEvent.pipe(
-          tap(userid=>console.log("Event "+componentReference.class+" "+userid)),
           map((userid: string) => this.getSubPath(userid)));
       if (this.roleId$!=null) {
         this.roleId$ = merge(this.roleId$, componentEmit)

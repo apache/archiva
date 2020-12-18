@@ -35,6 +35,7 @@ const routes: Routes = [
         children: [
             {path: 'list', component: ManageRolesListComponent},
             {path: 'edit/:roleid', component: ManageRolesEditComponent},
+            {path: 'edit', component: ManageRolesEditComponent},
             {path: '', redirectTo: 'list', pathMatch: 'full'}
         ]
     }

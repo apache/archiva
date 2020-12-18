@@ -132,16 +132,29 @@
       "head": "Roles List"
     },
     "edit": {
-      "head": "Edit/View Role"
+      "head": "Edit/View Role",
+      "parents": "Parents",
+      "children": "Children",
+      "permissions": "Permissions",
+      "users": "Users"
     },
     "attributes": {
       "id": "Identifier",
       "name": "Name",
       "description": "Description",
-      "template_instance": "Template Instance"
+      "template_instance": "Template Instance",
+      "resource": "Repository",
+      "assignable": "Assignable"
     }
   },
 
+  "permissions": {
+    "attributes": {
+      "permission": "Permission",
+      "operation": "Operation",
+      "resource": "Resource"
+    }
+  },
   "search": {
     "button": "Search",
     "label": "Enter your search term",
@@ -158,7 +171,8 @@
       "yes": "Yes",
       "no": "No",
       "save": "Save Changes"
-    }
+    },
+    "edit": "Edit"
   },
   "password": {
     "violations" : {

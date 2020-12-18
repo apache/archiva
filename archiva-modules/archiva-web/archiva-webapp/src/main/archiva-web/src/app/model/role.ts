@@ -16,6 +16,8 @@
  * under the License.
  */
 
+import {Permission} from "@app/model/permission";
+
 export class Role {
     id: string
     name: string
@@ -29,7 +31,11 @@ export class Role {
     model_id:string
     resource:string
 
+    child_role_ids: Array<string>
+    parent_role_ids: Array<string>
     children: Array<Role>
+    parents: Array<Role>
+    permissions: Array<Permission>
 
     // Web Internal attributes
     enabled: boolean = true

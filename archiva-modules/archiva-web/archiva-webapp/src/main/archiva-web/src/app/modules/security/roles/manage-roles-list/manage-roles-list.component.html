@@ -26,6 +26,7 @@
             <app-th-sorted [fieldArray]="['id']" contentText="roles.attributes.id"></app-th-sorted>
             <app-th-sorted [fieldArray]="['name']" contentText="roles.attributes.name" ></app-th-sorted>
             <app-th-sorted [fieldArray]="['description']" contentText="roles.attributes.description" ></app-th-sorted>
+            <app-th-sorted [fieldArray]="['assignable']" contentText="roles.attributes.assignable"></app-th-sorted>
             <app-th-sorted [fieldArray]="['template_instance']" contentText="roles.attributes.template_instance" ></app-th-sorted>
             <app-th-sorted [fieldArray]="['resource']" contentText="roles.attributes.resource" ></app-th-sorted>
             <th>Action</th>
@@ -36,6 +37,8 @@
             <td><span data-toggle="tooltip" placement="left" ngbTooltip="{{role.id}}">{{role.id}}</span></td>
             <td>{{role.name}}</td>
             <td>{{role.description}}</td>
+            <td><span class="far" [attr.aria-valuetext]="role.assignable"
+                      [ngClass]="role.assignable?'fa-check-circle':'fa-circle'"></span></td>
             <td><span class="far" [attr.aria-valuetext]="role.template_instance"
                       [ngClass]="role.template_instance?'fa-check-circle':'fa-circle'"></span></td>
             <td>{{role.resource}}</td>
