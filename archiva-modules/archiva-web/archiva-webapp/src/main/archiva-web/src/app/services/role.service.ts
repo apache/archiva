@@ -24,6 +24,7 @@ import { Role } from '@app/model/role';
 import {HttpResponse} from "@angular/common/http";
 import {PagedResult} from "@app/model/paged-result";
 import {UserInfo} from "@app/model/user-info";
+import {RoleUpdate} from "@app/model/role-update";
 
 @Injectable({
   providedIn: 'root'
@@ -64,8 +65,8 @@ export class RoleService {
     return this.rest.executeRestCall("get", "redback", "roles/" + roleId, null);
   }
 
-  public updateRole(role:Role) : Observable<Role> {
-    return this.rest.executeRestCall("put", "redback", "roles/" + role.id, role);
+  public updateRole(role:RoleUpdate) : Observable<Role> {
+    return this.rest.executeRestCall("patch", "redback", "roles/" + role.id, role);
   }
 
 }

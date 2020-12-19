@@ -16,13 +16,13 @@
  * under the License.
  */
 
-import {Component, OnInit, Input, OnDestroy} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";
-import {UserService} from "../../../../services/user.service";
-import {UserInfo} from "../../../../model/user-info";
-import {EntityService} from "../../../../model/entity-service";
-import {Observable, of} from "rxjs";
-import {PagedResult} from "../../../../model/paged-result";
+import {UserInfo} from "@app/model/user-info";
+import {EntityService} from "@app/model/entity-service";
+import {Observable} from "rxjs";
+import {PagedResult} from "@app/model/paged-result";
+import {UserService} from '@app/services/user.service';
 
 @Component({
   selector: 'app-manage-users-list',

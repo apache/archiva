@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {AfterContentInit, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {FormBuilder, Validators} from "@angular/forms";
 import {RoleService} from "@app/services/role.service";
@@ -25,15 +25,14 @@ import {Role} from '@app/model/role';
 import {ErrorResult} from "@app/model/error-result";
 import {EditBaseComponent} from "@app/modules/shared/edit-base.component";
 import {forkJoin, iif, Observable, of, pipe, zip} from 'rxjs';
+import {RoleUpdate} from "@app/model/role-update";
 
 @Component({
     selector: 'app-manage-roles-edit',
     templateUrl: './manage-roles-edit.component.html',
     styleUrls: ['./manage-roles-edit.component.scss']
 })
-export class ManageRolesEditComponent extends EditBaseComponent<Role> implements OnInit {
-
-    parentsOpened: boolean
+export class ManageRolesEditComponent extends EditBaseComponent<Role> implements OnInit, AfterContentInit {
 
     editRole: Role;
     editProperties = ['id', 'name', 'description', 'template_instance', 'resource', 'assignable'];
@@ -47,7 +46,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
     constructor(private route: ActivatedRoute, private roleService: RoleService, public fb: FormBuilder) {
         super(fb);
         super.init(fb.group({
-            id: ['', [Validators.required]],
+            id: [''],
             name: ['', Validators.required],
             description: [''],
             resource: [''],
@@ -80,6 +79,8 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             this.editRole = new Role();
         });
     }
+
+
 
     /**
      * Array of [role, children[], parents[]]
@@ -137,7 +138,10 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
     }
 
     onSubmit() {
-        let role = this.copyFromForm(this.editProperties);
+        let role = new RoleUpdate();
+        role.id=this.userForm.get('id').value;
+        role.description = this.userForm.get('description').value;
+        console.log("Submitting changes " + role);
         this.roleService.updateRole(role).pipe(
             catchError((err: ErrorResult) => {
                 this.error = true;
@@ -153,6 +157,12 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             this.editMode = false;
         });
 
+    }
+
+    ngAfterContentInit(): void {
+        if (this.originRole) {
+            this.editRole = this.originRole;
+        }
     }
 
 }

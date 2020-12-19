@@ -17,10 +17,25 @@
  */
 
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {merge, Observable, Subject} from "rxjs";
-import {debounceTime, distinctUntilChanged, map, mergeMap, pluck, share, startWith} from "rxjs/operators";
+import {concat, merge, Observable, of, pipe, Subject} from "rxjs";
+import {
+    concatAll,
+    debounceTime,
+    delay,
+    distinctUntilChanged,
+    filter,
+    map,
+    mergeMap,
+    pluck,
+    share,
+    startWith,
+    switchMap
+} from "rxjs/operators";
 import {EntityService} from "../../../model/entity-service";
 import {FieldToggle} from "../../../model/field-toggle";
+import {PageQuery} from "@app/modules/shared/model/page-query";
+import { LoadingValue } from '../shared.module';
+import {PagedResult} from "@app/model/paged-result";
 
 
 /**
@@ -107,7 +122,7 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
     /**
      * The entity items retrieved from the service
      */
-    items$: Observable<T[]>;
+    items$: Observable<LoadingValue<PagedResult<T>>>;
 
     private pageStream: Subject<number> = new Subject<number>();
     private searchTermStream: Subject<string> = new Subject<string>();
@@ -118,22 +133,26 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
     ngOnInit(): void {
         // We combine the sources for the page and the search input field to a observable 'source'
         const pageSource = this.pageStream.pipe(map(pageNumber => {
-            return {search: this.searchTerm, page: pageNumber}
+            return new PageQuery(this.searchTerm, pageNumber);
         }));
         const searchSource = this.searchTermStream.pipe(
             debounceTime(1000),
             distinctUntilChanged(),
             map(searchTerm => {
                 this.searchTerm = searchTerm;
-                return {search: searchTerm, page: 1}
+                return new PageQuery(searchTerm, 1)
             }));
         const source = merge(pageSource, searchSource).pipe(
-            startWith({search: this.searchTerm, page: this.page}),
-            mergeMap((params: { search: string, page: number }) => {
-                return this.service(params.search, (params.page - 1) * this.pageSize, this.pageSize, this.sortField, this.sortOrder);
-            }), share());
-        this.total$ = source.pipe(pluck('pagination', 'total_count'));
-        this.items$ = source.pipe(pluck('data'));
+            startWith(new PageQuery(this.searchTerm, this.page)),
+            switchMap((params: PageQuery) =>
+                concat(
+                    of(LoadingValue.start<PagedResult<T>>()),
+                    this.service(params.search, (params.page - 1) * this.pageSize, this.pageSize, this.sortField, this.sortOrder)
+                        .pipe(map(pagedResult=>LoadingValue.finish<PagedResult<T>>(pagedResult)))
+                )
+            ), share());
+        this.total$ = source.pipe(filter(val=>val.hasValue()),map(val=>val.value),pluck('pagination', 'total_count'));
+        this.items$ = source;
     }
 
     search(terms: string) {

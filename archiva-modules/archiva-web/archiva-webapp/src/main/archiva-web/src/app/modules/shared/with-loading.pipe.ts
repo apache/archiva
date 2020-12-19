@@ -1,4 +1,4 @@
-/*!
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,3 +15,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import { Pipe, PipeTransform } from '@angular/core';
+import {concat, isObservable, of } from 'rxjs';
+import {catchError, map, startWith, tap } from 'rxjs/operators';
+import {LoadingValue} from "@app/modules/shared/shared.module";
+
+@Pipe({
+  name: 'withLoading'
+})
+export class WithLoadingPipe implements PipeTransform {
+  transform(val) {
+    return isObservable(val)
+        ? val.pipe(
+            map((value: any) => {
+                if(value instanceof LoadingValue) {
+                    return value as LoadingValue<any>;
+                } else {
+                    return LoadingValue.finish(value);
+                }
+            }),
+            startWith(LoadingValue.start()),
+            catchError(error => of(LoadingValue.error(error)))
+        )
+        : val;
+  }
+}

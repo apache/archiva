@@ -16,16 +16,15 @@
  * under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TranslateService} from "@ngx-translate/core";
-import {UserService} from "@app/services/user.service";
-import {EntityService} from "@app/model/entity-service";
 import {Role} from "@app/model/role";
 import {Observable} from "rxjs";
 import {PagedResult} from "@app/model/paged-result";
-import {UserInfo} from "@app/model/user-info";
 import {RoleService} from "@app/services/role.service";
 import {SortedTableComponent} from "@app/modules/shared/sorted-table-component";
+import {delay} from "rxjs/operators";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-manage-roles-list',
@@ -34,7 +33,10 @@ import {SortedTableComponent} from "@app/modules/shared/sorted-table-component";
 })
 export class ManageRolesListComponent extends SortedTableComponent<Role> implements OnInit {
 
-  constructor(translator: TranslateService, roleService : RoleService) {
+  @ViewChild('content') public spinnerTemplate: TemplateRef<any>;
+
+
+  constructor(translator: TranslateService, roleService : RoleService, private ngbModal:NgbModal) {
     super(translator, function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string): Observable<PagedResult<Role>> {
       console.log("Retrieving data " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
       return roleService.query(searchTerm, offset, limit, orderBy, order);
@@ -43,6 +45,8 @@ export class ManageRolesListComponent extends SortedTableComponent<Role> impleme
 
   ngOnInit(): void {
   }
+
+
 
 
 }

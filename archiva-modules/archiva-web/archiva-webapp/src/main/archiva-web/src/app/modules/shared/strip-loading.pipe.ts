@@ -1,4 +1,4 @@
-/*!
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,3 +15,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import { Pipe, PipeTransform } from '@angular/core';
+import {isObservable, of} from "rxjs";
+import {catchError, filter, map, startWith, tap} from "rxjs/operators";
+import {LoadingValue} from "@app/modules/shared/model/loading-value";
+
+@Pipe({
+  name: 'stripLoading'
+})
+export class StripLoadingPipe implements PipeTransform {
+
+  transform(val) {
+    return isObservable(val)
+        ? val.pipe(
+            filter(val => (val instanceof LoadingValue) && val.value),
+            map(( val : LoadingValue<any>) => val.value)
+        )
+        : val;
+  }
+
+}

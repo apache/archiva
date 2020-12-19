@@ -19,50 +19,76 @@
 <app-paginated-entities [service]="service" pageSize="10" [(sortField)]="sortField" [(sortOrder)]="sortOrder"
                         #parent>
 
-    <table class="table table-striped table-bordered">
-        <thead class="thead-light">
-        <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrderEmitter]="parent.sortOrderChange"
-            [toggleObserver]="parent">
-            <app-th-sorted [fieldArray]="['user_id']" contentText="users.attributes.user_id"></app-th-sorted>
-            <app-th-sorted [fieldArray]="['full_name']" contentText="users.attributes.full_name" ></app-th-sorted>
-            <app-th-sorted [fieldArray]="['email']" contentText="users.attributes.email" ></app-th-sorted>
-            <app-th-sorted [fieldArray]="['validated','user_id']">
+    <ng-container *ngIf="parent.items$ |async as roleItemLoader">
+        <ng-template [ngIf]="roleItemLoader.loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </ng-template>
+    </ng-container>
+    <ng-container *ngIf="parent.items$ |stripLoading|async as roleItem">
+
+            <table class="table table-striped table-bordered">
+                <thead class="thead-light">
+                <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrderEmitter]="parent.sortOrderChange"
+                    [toggleObserver]="parent">
+                    <app-th-sorted [fieldArray]="['user_id']" contentText="users.attributes.user_id"></app-th-sorted>
+                    <app-th-sorted [fieldArray]="['full_name']"
+                                   contentText="users.attributes.full_name"></app-th-sorted>
+                    <app-th-sorted [fieldArray]="['email']" contentText="users.attributes.email"></app-th-sorted>
+                    <app-th-sorted [fieldArray]="['validated','user_id']">
             <span class="fas fa-check" placement="top"
                   [ngbTooltip]="heads.validated" [attr.aria-label]="heads.validated"></span>
-            </app-th-sorted>
-            <app-th-sorted [fieldArray]="['locked','user_id']"><span class="fas fa-lock" placement="top"
-                                  [ngbTooltip]="heads.locked" [attr.aria-label]="heads.locked"></span></app-th-sorted>
-            <app-th-sorted [fieldArray]="['password_change_required','user_id']"><span class="fa fa-chevron-circle-right" placement="top"
-                                  [ngbTooltip]="heads.password_change_required" [attr.aria-label]="heads.password_change_required"></span>
-            </app-th-sorted>
-            <app-th-sorted [fieldArray]="['last_login']" contentText="users.attributes.last_login"></app-th-sorted>
-            <app-th-sorted [fieldArray]="['created']" contentText="users.attributes.created" ></app-th-sorted>
-            <app-th-sorted [fieldArray]="['last_password_change']" contentText="users.attributes.last_password_change"></app-th-sorted>
-            <th>Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let user  of parent.items$ | async" [ngClass]="(user.permanent||user.readOnly)?'table-secondary':''">
-            <td><span data-toggle="tooltip" placement="left" ngbTooltip="{{user.id}}">{{user.user_id}}</span></td>
-            <td>{{user.full_name}}</td>
-            <td>{{user.email}}</td>
-            <td><span class="far" [attr.aria-valuetext]="user.validated"
-                      [ngClass]="user.validated?'fa-check-circle':'fa-circle'"></span></td>
-            <td><span class="far" [attr.aria-valuetext]="user.locked"
-                      [ngClass]="user.locked?'fa-check-circle':'fa-circle'"></span></td>
-            <td><span class="far" [attr.aria-valuetext]="user.password_change_required"
-                      [ngClass]="user.password_change_required?'fa-check-circle':'fa-circle'"></span></td>
-            <td>{{user.timestamp_last_login | date:'yyyy-MM-ddTHH:mm:ss'}}</td>
-            <td>{{user.timestamp_account_creation | date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
-            <td>{{user.timestamp_last_password_change| date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
-            <td><ng-container *ngIf="!user.permanent">
-                <a  [routerLink]="['..','edit', user.user_id]" [queryParams]="{editmode:true}" [attr.title]="'users.edit.head' |translate"><span class="fas fa-edit"></span></a>
-                &nbsp;&nbsp;<a [routerLink]="['..','delete',user.user_id]" [attr.title]="'users.delete.head'|translate"><span class="fas fa-user-minus"></span></a>
-                &nbsp;&nbsp;<a [routerLink]="['..','roles',user.user_id]" [attr.title]="'users.roles.head'|translate"><span class="fas fa-user-tag" ></span></a>
-            </ng-container>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                    </app-th-sorted>
+                    <app-th-sorted [fieldArray]="['locked','user_id']"><span class="fas fa-lock" placement="top"
+                                                                             [ngbTooltip]="heads.locked"
+                                                                             [attr.aria-label]="heads.locked"></span>
+                    </app-th-sorted>
+                    <app-th-sorted [fieldArray]="['password_change_required','user_id']"><span
+                            class="fa fa-chevron-circle-right" placement="top"
+                            [ngbTooltip]="heads.password_change_required"
+                            [attr.aria-label]="heads.password_change_required"></span>
+                    </app-th-sorted>
+                    <app-th-sorted [fieldArray]="['last_login']"
+                                   contentText="users.attributes.last_login"></app-th-sorted>
+                    <app-th-sorted [fieldArray]="['created']" contentText="users.attributes.created"></app-th-sorted>
+                    <app-th-sorted [fieldArray]="['last_password_change']"
+                                   contentText="users.attributes.last_password_change"></app-th-sorted>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let user  of roleItem.data"
+                    [ngClass]="(user.permanent||user.readOnly)?'table-secondary':''">
+                    <td><span data-toggle="tooltip" placement="left" ngbTooltip="{{user.id}}">{{user.user_id}}</span>
+                    </td>
+                    <td>{{user.full_name}}</td>
+                    <td>{{user.email}}</td>
+                    <td><span class="far" [attr.aria-valuetext]="user.validated"
+                              [ngClass]="user.validated?'fa-check-circle':'fa-circle'"></span></td>
+                    <td><span class="far" [attr.aria-valuetext]="user.locked"
+                              [ngClass]="user.locked?'fa-check-circle':'fa-circle'"></span></td>
+                    <td><span class="far" [attr.aria-valuetext]="user.password_change_required"
+                              [ngClass]="user.password_change_required?'fa-check-circle':'fa-circle'"></span></td>
+                    <td>{{user.timestamp_last_login | date:'yyyy-MM-ddTHH:mm:ss'}}</td>
+                    <td>{{user.timestamp_account_creation | date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
+                    <td>{{user.timestamp_last_password_change| date : 'yyyy-MM-ddTHH:mm:ss'}}</td>
+                    <td>
+                        <ng-container *ngIf="!user.permanent">
+                            <a [routerLink]="['..','edit', user.user_id]" [queryParams]="{editmode:true}"
+                               [attr.title]="'users.edit.head' |translate"><span class="fas fa-edit"></span></a>
+                            &nbsp;&nbsp;<a [routerLink]="['..','delete',user.user_id]"
+                                           [attr.title]="'users.delete.head'|translate"><span
+                                class="fas fa-user-minus"></span></a>
+                            &nbsp;&nbsp;<a [routerLink]="['..','roles',user.user_id]"
+                                           [attr.title]="'users.roles.head'|translate"><span
+                                class="fas fa-user-tag"></span></a>
+                        </ng-container>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+    </ng-container>
+
 
 </app-paginated-entities>

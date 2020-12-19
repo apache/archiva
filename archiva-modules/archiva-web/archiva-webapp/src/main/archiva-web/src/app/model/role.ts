@@ -43,4 +43,9 @@ export class Role {
     root_path: Array<string>
     assigned_origin: boolean;
 
+
+    public toString = () : string => {
+        return 'Role: id='+this.id+', name='+this.name+', description='+this.description;
+    }
+
 }

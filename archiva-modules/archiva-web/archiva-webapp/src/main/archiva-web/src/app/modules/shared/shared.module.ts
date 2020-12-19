@@ -21,20 +21,25 @@ import {CommonModule} from '@angular/common';
 import {PaginatedEntitiesComponent} from "./paginated-entities/paginated-entities.component";
 import {SortedTableHeaderComponent} from "./sorted-table-header/sorted-table-header.component";
 import {SortedTableHeaderRowComponent} from "./sorted-table-header-row/sorted-table-header-row.component";
-import {NgbAccordionModule, NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAccordionModule, NgbModalModule, NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {TranslateCompiler, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateMessageFormatCompiler} from "ngx-translate-messageformat-compiler";
 import {HttpClient} from "@angular/common/http";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {RouterModule} from "@angular/router";
-import {SortedTableComponent} from "@app/modules/shared/sorted-table-component";
+import { WithLoadingPipe } from './with-loading.pipe';
+import { StripLoadingPipe } from './strip-loading.pipe';
 
+export { LoadingValue } from './model/loading-value';
+export { PageQuery } from './model/page-query';
 
 @NgModule({
     declarations: [
         PaginatedEntitiesComponent,
         SortedTableHeaderComponent,
-        SortedTableHeaderRowComponent
+        SortedTableHeaderRowComponent,
+        WithLoadingPipe,
+        StripLoadingPipe
     ],
     exports: [
         CommonModule,
@@ -43,9 +48,12 @@ import {SortedTableComponent} from "@app/modules/shared/sorted-table-component";
         NgbPaginationModule,
         NgbTooltipModule,
         NgbAccordionModule,
+        NgbModalModule,
         PaginatedEntitiesComponent,
         SortedTableHeaderComponent,
-        SortedTableHeaderRowComponent
+        SortedTableHeaderRowComponent,
+        WithLoadingPipe,
+        StripLoadingPipe
     ],
     imports: [
         CommonModule,
