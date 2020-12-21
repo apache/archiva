@@ -21,7 +21,13 @@ import {CommonModule} from '@angular/common';
 import {PaginatedEntitiesComponent} from "./paginated-entities/paginated-entities.component";
 import {SortedTableHeaderComponent} from "./sorted-table-header/sorted-table-header.component";
 import {SortedTableHeaderRowComponent} from "./sorted-table-header-row/sorted-table-header-row.component";
-import {NgbAccordionModule, NgbModalModule, NgbPaginationModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+    NgbAccordionModule,
+    NgbModalModule,
+    NgbPaginationModule,
+    NgbTooltipModule,
+    NgbTypeaheadModule
+} from "@ng-bootstrap/ng-bootstrap";
 import {TranslateCompiler, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateMessageFormatCompiler} from "ngx-translate-messageformat-compiler";
 import {HttpClient} from "@angular/common/http";
@@ -49,6 +55,7 @@ export { PageQuery } from './model/page-query';
         NgbTooltipModule,
         NgbAccordionModule,
         NgbModalModule,
+        NgbTypeaheadModule,
         PaginatedEntitiesComponent,
         SortedTableHeaderComponent,
         SortedTableHeaderRowComponent,

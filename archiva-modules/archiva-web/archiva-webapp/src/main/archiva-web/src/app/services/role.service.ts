@@ -25,6 +25,7 @@ import {HttpResponse} from "@angular/common/http";
 import {PagedResult} from "@app/model/paged-result";
 import {UserInfo} from "@app/model/user-info";
 import {RoleUpdate} from "@app/model/role-update";
+import { User } from '@app/model/user';
 
 @Injectable({
   providedIn: 'root'
@@ -53,6 +54,44 @@ export class RoleService {
       orderBy = ['id'];
     }
     return this.rest.executeRestCall<PagedResult<Role>>("get", "redback", "roles", {
+      'q': searchTerm,
+      'offset': offset,
+      'limit': limit,
+      'orderBy': orderBy,
+      'order': order
+    });
+  }
+
+  public queryAssignedUsers(roleId: string,
+                            searchTerm: string, offset: number = 0, limit: number = 5,
+                            orderBy: string[] = ['id'], order: string = 'asc'): Observable<PagedResult<User>> {
+    if (searchTerm == null) {
+      searchTerm = ""
+    }
+    if (orderBy == null || orderBy.length == 0) {
+      orderBy = ['id'];
+    }
+    return this.rest.executeRestCall<PagedResult<User>>("get", "redback", "roles/" + roleId + "/user", {
+      'q': searchTerm,
+      'offset': offset,
+      'limit': limit,
+      'orderBy': orderBy,
+      'order': order
+    });
+  }
+
+  public queryAssignedParentUsers(roleId: string,
+                            searchTerm: string, offset: number = 0, limit: number = 5,
+                            orderBy: string[] = ['id'], order: string = 'asc', parentsOnly:boolean=true): Observable<PagedResult<User>> {
+    if (searchTerm == null) {
+      searchTerm = ""
+    }
+    if (orderBy == null || orderBy.length == 0) {
+      orderBy = ['id'];
+    }
+    const recurseFlag = parentsOnly ? 'parentsOnly' : 'true';
+    return this.rest.executeRestCall<PagedResult<User>>("get", "redback", "roles/" + roleId + "/user", {
+      'recurse':recurseFlag,
       'q': searchTerm,
       'offset': offset,
       'limit': limit,

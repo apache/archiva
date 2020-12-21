@@ -16,8 +16,9 @@
   ~ under the License.
   -->
 
+<ng-template [ngIf]="(displayIfEmpty || (total$|async)>0)" [ngIfElse]="noContent" >
 <form class="mt-3 mb-3">
-    <div class="form-row align-items-center">
+    <div class="form-row align-items-center" *ngIf="displayControlsIfSinglePage||(multiplePages$|async)">
         <div class="col-lg-4 col-md-2 col-sm-1">
             <label class="sr-only" for="searchQuery">{{'search.label' |translate}}</label>
             <input type="text" class="form-control" id="searchQuery" placeholder="{{'search.input'|translate}}" #searchTerm
@@ -33,6 +34,11 @@
 
 <ng-content></ng-content>
 
-<ngb-pagination [collectionSize]="total$|async" [pageSize]="pageSize" [maxSize]="pagination.maxSize" [rotate]="pagination.rotate"
+<ngb-pagination *ngIf="displayControlsIfSinglePage||(multiplePages$|async)"
+                [collectionSize]="total$|async" [pageSize]="pageSize" [maxSize]="pagination.maxSize" [rotate]="pagination.rotate"
                 [boundaryLinks]="pagination.boundaryLinks" [ellipses]="pagination.ellipses"
                 [(page)]="page" (pageChange)="changePage($event)" aria-label="Pagination"></ngb-pagination>
+</ng-template>
+<ng-template #noContent>
+    {{displayKeyIfEmpty|translate}}
+</ng-template>

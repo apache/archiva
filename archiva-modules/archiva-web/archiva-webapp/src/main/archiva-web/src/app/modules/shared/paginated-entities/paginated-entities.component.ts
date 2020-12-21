@@ -94,6 +94,26 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
     }
 
     /**
+     * If true, all controls are displayed, if the total count is 0
+     */
+    @Input()
+    displayIfEmpty:boolean=true;
+    /**
+     * Sets the translation key, for the text to display, if displayIfEmpty=false and the total count is 0.
+     */
+    @Input()
+    displayKeyIfEmpty:string='form.emptyContent';
+
+    /**
+     * If set to true, all controls are displayed, even if there is only one page to display.
+     * Otherwise the controls are not displayed, if there is only a single page of results.
+     */
+    @Input()
+    displayControlsIfSinglePage:boolean=true;
+
+
+
+    /**
      * The current page that is selected
      */
     page = 1;
@@ -124,6 +144,13 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
      */
     items$: Observable<LoadingValue<PagedResult<T>>>;
 
+    /**
+     * true, if the current page result value represents a result with multiple pages,
+     * otherwise false.
+     */
+    multiplePages$:Observable<boolean>;
+
+
     private pageStream: Subject<number> = new Subject<number>();
     private searchTermStream: Subject<string> = new Subject<string>();
 
@@ -153,6 +180,7 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
             ), share());
         this.total$ = source.pipe(filter(val=>val.hasValue()),map(val=>val.value),pluck('pagination', 'total_count'));
         this.items$ = source;
+        this.multiplePages$ = source.pipe(filter(val => val.hasValue()), map(val => val.value.pagination.total_count >= val.value.pagination.limit));
     }
 
     search(terms: string) {

@@ -20,12 +20,17 @@ import {AfterContentInit, Component, EventEmitter, OnInit, Output} from '@angula
 import {ActivatedRoute} from "@angular/router";
 import {FormBuilder, Validators} from "@angular/forms";
 import {RoleService} from "@app/services/role.service";
-import {catchError, filter, map, switchMap, tap} from "rxjs/operators";
+import {catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap} from "rxjs/operators";
 import {Role} from '@app/model/role';
 import {ErrorResult} from "@app/model/error-result";
 import {EditBaseComponent} from "@app/modules/shared/edit-base.component";
-import {forkJoin, iif, Observable, of, pipe, zip} from 'rxjs';
+import {forkJoin, Observable, of, zip} from 'rxjs';
 import {RoleUpdate} from "@app/model/role-update";
+import {EntityService} from "@app/model/entity-service";
+import {User} from '@app/model/user';
+import {PagedResult} from "@app/model/paged-result";
+import {UserService} from "@app/services/user.service";
+import {UserInfo} from '@app/model/user-info';
 
 @Component({
     selector: 'app-manage-roles-edit',
@@ -38,12 +43,23 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
     editProperties = ['id', 'name', 'description', 'template_instance', 'resource', 'assignable'];
     originRole;
     roleCache: Map<string, Role> = new Map<string, Role>();
+    roleUserService: EntityService<User>
+    roleUserParentService: EntityService<User>;
+    userSortField = ["id"];
+    userSortOrder = "asc";
+    userParentSortField = ["id"];
+    userParentSortOrder = "asc";
+
+    userSearching:boolean=false;
+    userSearchFailed:boolean=false;
+
+    public userSearchModel:any;
 
 
     @Output()
     roleIdEvent: EventEmitter<string> = new EventEmitter<string>(true);
 
-    constructor(private route: ActivatedRoute, private roleService: RoleService, public fb: FormBuilder) {
+    constructor(private route: ActivatedRoute, public roleService: RoleService, private userService: UserService, public fb: FormBuilder) {
         super(fb);
         super.init(fb.group({
             id: [''],
@@ -53,6 +69,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             template_instance: [''],
             assignable: ['']
         }, {}));
+
     }
 
     createEntity(): Role {
@@ -75,6 +92,14 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             this.editRole = role;
             this.originRole = role;
             this.copyToForm(this.editProperties, this.editRole);
+            const fRoleService = this.roleService;
+            const roleId = role.id;
+            this.roleUserService = function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string): Observable<PagedResult<User>> {
+                return fRoleService.queryAssignedUsers(roleId, searchTerm, offset, limit, orderBy, order);
+            };
+            this.roleUserParentService = function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string): Observable<PagedResult<User>> {
+                return fRoleService.queryAssignedParentUsers(roleId, searchTerm, offset, limit, orderBy, order, true);
+            };
         }, error => {
             this.editRole = new Role();
         });
@@ -163,6 +188,40 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
         if (this.originRole) {
             this.editRole = this.originRole;
         }
+    }
+
+    searchUser = (text$: Observable<string>) =>
+        text$.pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            tap(() => this.userSearching = true),
+            switchMap(term =>
+                this.userService.query(term, 0, 10).pipe(
+                    tap(() => this.userSearchFailed = false),
+                    map(pagedResult=>
+                    pagedResult.data),
+                    catchError(() => {
+                        this.userSearchFailed = true;
+                        return of([]);
+                    }))
+            ),
+            tap(() => this.userSearching = false)
+        )
+
+    getUserId(item:UserInfo) : string {
+        return item.user_id;
+    }
+
+    assignUserRole() {
+        let userId;
+        if (typeof(this.userSearchModel)=='string') {
+            userId=this.userSearchModel;
+        } else {
+            if (this.userSearchModel.user_id) {
+                userId = this.userSearchModel.user_id;
+            }
+        }
+        console.log("Assigning user " + userId)
     }
 
 }
