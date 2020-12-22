@@ -44,7 +44,6 @@ export class ManageUsersComponent implements OnInit {
     // console.log("Activating "+componentReference+" - "+JSON.stringify(componentReference,getCircularReplacer()))
     if (componentReference.userIdEvent!=null) {
       let componentEmit : Observable<string> = componentReference.userIdEvent.pipe(
-          tap(userid=>console.log("Event "+componentReference.class+" "+userid)),
           map((userid: string) => this.getSubPath(userid)));
       if (this.userId$!=null) {
         this.userId$ = merge(this.userId$, componentEmit)

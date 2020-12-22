@@ -68,7 +68,7 @@ export class ManageUsersBaseComponent {
         for (let prop of properties) {
             user[prop] = this.userForm.get(prop).value;
         }
-        console.log("User " + user);
+        // console.log("User " + user);
         return user;
     }
 
@@ -79,7 +79,7 @@ export class ManageUsersBaseComponent {
             propMap[prop] = propValue;
         }
         this.userForm.patchValue(propMap);
-        console.log("User " + user);
+        // console.log("User " + user);
     }
 
 

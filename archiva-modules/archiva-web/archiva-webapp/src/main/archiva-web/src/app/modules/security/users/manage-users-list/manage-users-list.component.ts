@@ -39,7 +39,7 @@ export class ManageUsersListComponent implements OnInit {
 
   constructor(private translator: TranslateService, private userService : UserService) {
     this.service = function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string) : Observable<PagedResult<UserInfo>> {
-      console.log("Retrieving data " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
+      // console.log("Retrieving data " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
       return userService.query(searchTerm, offset, limit, orderBy, order);
     }
 

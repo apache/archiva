@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {concat, merge, Observable, of, pipe, Subject} from "rxjs";
 import {
     concatAll,
@@ -29,7 +29,8 @@ import {
     pluck,
     share,
     startWith,
-    switchMap
+    switchMap,
+    tap
 } from "rxjs/operators";
 import {EntityService} from "../../../model/entity-service";
 import {FieldToggle} from "../../../model/field-toggle";
@@ -63,6 +64,8 @@ import {PagedResult} from "@app/model/paged-result";
     styleUrls: ['./paginated-entities.component.scss']
 })
 export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, AfterViewInit {
+
+    @Input() id: string;
 
     /**
      * This must be set, if you use the component. This service retrieves the entity data.
@@ -138,26 +141,30 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
     /**
      * The total number of elements available for the given search term
      */
-    total$: Observable<number>;
+    public total$: Observable<number>;
     /**
      * The entity items retrieved from the service
      */
-    items$: Observable<LoadingValue<PagedResult<T>>>;
+    public items$: Observable<LoadingValue<PagedResult<T>>>;
 
     /**
      * true, if the current page result value represents a result with multiple pages,
      * otherwise false.
      */
-    multiplePages$:Observable<boolean>;
-
+    public multiplePages$:Observable<boolean>;
 
     private pageStream: Subject<number> = new Subject<number>();
     private searchTermStream: Subject<string> = new Subject<string>();
 
     constructor() {
+        // console.log("Construct " + this.id);
+        this.items$=null;
+        this.total$=null;
+        this.multiplePages$=null;
     }
 
     ngOnInit(): void {
+        // console.log("Pag Init " + this.id);
         // We combine the sources for the page and the search input field to a observable 'source'
         const pageSource = this.pageStream.pipe(map(pageNumber => {
             return new PageQuery(this.searchTerm, pageNumber);
@@ -177,10 +184,13 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
                     this.service(params.search, (params.page - 1) * this.pageSize, this.pageSize, this.sortField, this.sortOrder)
                         .pipe(map(pagedResult=>LoadingValue.finish<PagedResult<T>>(pagedResult)))
                 )
-            ), share());
-        this.total$ = source.pipe(filter(val=>val.hasValue()),map(val=>val.value),pluck('pagination', 'total_count'));
+            )
+            );
+        this.total$ = source.pipe(filter(val=>val.hasValue()),map(val=>val.value),
+            pluck('pagination', 'total_count'));
+        this.multiplePages$ = source.pipe(filter(val => val.hasValue()),
+            map(val => val.value.pagination.total_count > val.value.pagination.limit));
         this.items$ = source;
-        this.multiplePages$ = source.pipe(filter(val => val.hasValue()), map(val => val.value.pagination.total_count >= val.value.pagination.limit));
     }
 
     search(terms: string) {
@@ -189,7 +199,7 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
         this.searchTermStream.next(terms)
     }
 
-    changePage(pageNumber: number) {
+    public changePage(pageNumber: number) {
         // console.log("Page change " +pageNumber);
         this.pageChange.emit(pageNumber);
         this.pageStream.next(pageNumber);
@@ -242,9 +252,16 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
     }
 
     ngAfterViewInit(): void {
+        // console.log("Pag afterViewInit " + this.id);
         // We emit the current value to push them to the containing reading components
         this.sortOrderChange.emit(this.sortOrder);
         this.sortFieldChange.emit(this.sortField);
+    }
+
+
+    public changeService(newService : EntityService<T>): void {
+        this.service = newService;
+        this.changePage(1);
     }
 
 }

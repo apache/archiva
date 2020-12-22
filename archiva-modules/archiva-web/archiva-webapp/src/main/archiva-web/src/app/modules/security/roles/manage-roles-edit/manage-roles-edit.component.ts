@@ -16,7 +16,16 @@
  * under the License.
  */
 
-import {AfterContentInit, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {
+    AfterContentInit,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    OnInit,
+    Output,
+    TemplateRef,
+    ViewChild
+} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {FormBuilder, Validators} from "@angular/forms";
 import {RoleService} from "@app/services/role.service";
@@ -31,6 +40,8 @@ import {User} from '@app/model/user';
 import {PagedResult} from "@app/model/paged-result";
 import {UserService} from "@app/services/user.service";
 import {UserInfo} from '@app/model/user-info';
+import {HttpResponse} from "@angular/common/http";
+import {PaginatedEntitiesComponent} from "@app/modules/shared/paginated-entities/paginated-entities.component";
 
 @Component({
     selector: 'app-manage-roles-edit',
@@ -55,11 +66,14 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
 
     public userSearchModel:any;
 
+    @ViewChild('userSection') roleUserComponent: PaginatedEntitiesComponent<UserInfo>;
+    @ViewChild('userParentSection') roleUserParentComponent: PaginatedEntitiesComponent<UserInfo>;
 
     @Output()
     roleIdEvent: EventEmitter<string> = new EventEmitter<string>(true);
 
-    constructor(private route: ActivatedRoute, public roleService: RoleService, private userService: UserService, public fb: FormBuilder) {
+    constructor(private route: ActivatedRoute, public roleService: RoleService, private userService: UserService,
+                public fb: FormBuilder, private changeDetect : ChangeDetectorRef) {
         super(fb);
         super.init(fb.group({
             id: [''],
@@ -100,6 +114,12 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             this.roleUserParentService = function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string): Observable<PagedResult<User>> {
                 return fRoleService.queryAssignedParentUsers(roleId, searchTerm, offset, limit, orderBy, order, true);
             };
+            if (this.roleUserComponent) {
+                this.roleUserComponent.changeService(this.roleUserService);
+            }
+            if (this.roleUserParentComponent) {
+                this.roleUserParentComponent.changeService(this.roleUserParentService);
+            }
         }, error => {
             this.editRole = new Role();
         });
@@ -166,7 +186,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
         let role = new RoleUpdate();
         role.id=this.userForm.get('id').value;
         role.description = this.userForm.get('description').value;
-        console.log("Submitting changes " + role);
+        // console.log("Submitting changes " + role);
         this.roleService.updateRole(role).pipe(
             catchError((err: ErrorResult) => {
                 this.error = true;
@@ -185,6 +205,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
     }
 
     ngAfterContentInit(): void {
+        // console.log("AfterContentInit")
         if (this.originRole) {
             this.editRole = this.originRole;
         }
@@ -196,7 +217,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             distinctUntilChanged(),
             tap(() => this.userSearching = true),
             switchMap(term =>
-                this.userService.query(term, 0, 10).pipe(
+                this.roleService.queryUnAssignedUsers(this.editRole.id, term, 0, 10).pipe(
                     tap(() => this.userSearchFailed = false),
                     map(pagedResult=>
                     pagedResult.data),
@@ -221,7 +242,45 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                 userId = this.userSearchModel.user_id;
             }
         }
-        console.log("Assigning user " + userId)
+        if (this.editRole.id!=null && userId!=null && userId.length>0) {
+            this.roleService.assignRole(this.editRole.id, userId).pipe(
+                catchError((err: ErrorResult) => {
+                    this.error = true;
+                    this.success = false;
+                    this.errorResult = err;
+                    return [];
+                })
+            ).subscribe((response : HttpResponse<Role>)  => {
+                this.error = false;
+                this.success = true;
+                this.errorResult = null;
+                this.result = response.body;
+                this.roleUserComponent.changePage(1);
+                this.userSearchModel=''
+            });
+        }
+    }
+
+    unassignUser(user_id:string) {
+        // console.log("Unassigning " + this.editRole.id + " - " + user_id);
+        if (this.editRole.id!=null && user_id!=null && user_id.length>0) {
+            this.roleService.unAssignRole(this.editRole.id, user_id).pipe(
+                catchError((err: ErrorResult) => {
+                    this.error = true;
+                    this.success = false;
+                    this.errorResult = err;
+                    return [];
+                })
+            ).subscribe((response : HttpResponse<Role>)  => {
+                    // console.log("Deleted ");
+                    this.error = false;
+                    this.success = true;
+                    this.errorResult = null;
+                    this.result = response.body;
+                    this.roleUserComponent.changePage(1);
+                }
+            );
+        }
     }
 
 }

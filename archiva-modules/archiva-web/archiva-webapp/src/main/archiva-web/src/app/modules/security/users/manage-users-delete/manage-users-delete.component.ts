@@ -48,7 +48,7 @@ export class ManageUsersDeleteComponent implements OnInit, AfterViewInit {
   private runModal() {
     if (this.user_id!=null && this.user_id!='') {
       let modalInstance = this.modal.open(this.askModal).result.then((result) => {
-        console.log("Result: " + result);
+        // console.log("Result: " + result);
         let userId = this.user_id;
         if (result=='YES' && userId!=null && userId!='') {
           let deleted = this.userService.deleteUser(userId).subscribe();
@@ -59,7 +59,7 @@ export class ManageUsersDeleteComponent implements OnInit, AfterViewInit {
           this.router.navigate(['/security','users','list']);
         }
       }, (reason) => {
-        console.log("Reason: " + reason);
+        // console.log("Reason: " + reason);
       });
     }
   }

@@ -163,6 +163,7 @@
             <h4>{{'roles.edit.usersParents'|translate}}</h4>
             <app-paginated-entities [service]="roleUserParentService" pageSize="5" [(sortField)]="userParentSortField"
                                     [(sortOrder)]="userParentSortOrder" [displayControlsIfSinglePage]="false"
+                                    [id]="'userParentSection'"
                                     #userParentSection>
 
                 <ng-container *ngIf="userParentSection.items$ |async as itemLoader">
@@ -198,8 +199,10 @@
             <hr/>
             <h4>{{'roles.edit.usersInstance'|translate}}</h4>
             <app-paginated-entities [service]="roleUserService" pageSize="5" [(sortField)]="userSortField"
+                                    [id]="'userSection'"
                                     [(sortOrder)]="userSortOrder"
                                     [displayIfEmpty]="false" [displayKeyIfEmpty]="'roles.edit.noUsersAssigned'"
+                                    [displayControlsIfSinglePage]="false"
                                     #userSection>
 
                 <ng-container *ngIf="userSection.items$ |async as itemLoader">
@@ -219,6 +222,7 @@
                                            contentText="users.attributes.user_id"></app-th-sorted>
                             <app-th-sorted [fieldArray]="['full_name']"
                                            contentText="users.attributes.full_name"></app-th-sorted>
+                            <th>{{'headers.action'|translate}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -227,6 +231,8 @@
                                       ngbTooltip="{{user.id}}">{{user.user_id}}</span>
                             </td>
                             <td>{{user.full_name}}</td>
+                            <td><a href="javascript: void(0)" (click)="unassignUser(user.user_id)"><span
+                                    class="fas fa-user-minus"></span></a></td>
                         </tr>
                         </tbody>
                     </table>
@@ -235,7 +241,7 @@
             <hr/>
             <form class="mt-2">
                 <ng-template #userResultTemplate let-r="result" let-t="term">
-                    <ngb-highlight [result]="r.user_id + '-' + r.full_name" [term]="t"></ngb-highlight>
+                    <ngb-highlight [result]="r.user_id + ' - ' + r.full_name" [term]="t"></ngb-highlight>
                 </ng-template>
                 <div class="form-group">
                     <label for="typeahead-http">{{'roles.edit.assignUserSearch'|translate}}</label>
@@ -254,6 +260,12 @@
             </form>
 
         </ng-template>
+        <div *ngIf="success">
+            Success
+        </div>
+        <div *ngIf="error">
+            <div>Error {{errorResult.error_messages}}</div>
+        </div>
     </ngb-panel>
 
 </ngb-accordion>

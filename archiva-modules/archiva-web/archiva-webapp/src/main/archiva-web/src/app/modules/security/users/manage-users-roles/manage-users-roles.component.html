@@ -22,7 +22,7 @@
 
     <div class="row col-md-6">
     <h4 class="col-md-2 mt-3">{{'users.roles.base_roles'|translate}} </h4>
-    <h4 class="col-md-2 offset-md-4 mt-3"><span class="badge badge-primary">{{userid}}</span></h4>
+    <h4 class="col-md-2 offset-md-4 mt-3" *ngIf="roles$"><span class="badge badge-primary">{{userid}}</span></h4>
     </div>
     <ng-container *ngIf="roles$|async as myRoles">
         <table class="table col-md-12">

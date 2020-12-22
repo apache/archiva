@@ -38,7 +38,7 @@ export class ManageRolesListComponent extends SortedTableComponent<Role> impleme
 
   constructor(translator: TranslateService, roleService : RoleService, private ngbModal:NgbModal) {
     super(translator, function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string): Observable<PagedResult<Role>> {
-      console.log("Retrieving data " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
+      // console.log("Retrieving data " + searchTerm + "," + offset + "," + limit + "," + orderBy + "," + order);
       return roleService.query(searchTerm, offset, limit, orderBy, order);
     });
   }

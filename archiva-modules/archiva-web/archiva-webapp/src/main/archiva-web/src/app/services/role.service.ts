@@ -80,6 +80,17 @@ export class RoleService {
     });
   }
 
+  /**
+   * Query for assigned users, that are part of the parent roles.
+   *
+   * @param roleId
+   * @param searchTerm
+   * @param offset
+   * @param limit
+   * @param orderBy
+   * @param order
+   * @param parentsOnly
+   */
   public queryAssignedParentUsers(roleId: string,
                             searchTerm: string, offset: number = 0, limit: number = 5,
                             orderBy: string[] = ['id'], order: string = 'asc', parentsOnly:boolean=true): Observable<PagedResult<User>> {
@@ -99,6 +110,25 @@ export class RoleService {
       'order': order
     });
   }
+
+  public queryUnAssignedUsers(roleId: string,
+                            searchTerm: string, offset: number = 0, limit: number = 5,
+                            orderBy: string[] = ['id'], order: string = 'asc'): Observable<PagedResult<User>> {
+    if (searchTerm == null) {
+      searchTerm = ""
+    }
+    if (orderBy == null || orderBy.length == 0) {
+      orderBy = ['id'];
+    }
+    return this.rest.executeRestCall<PagedResult<User>>("get", "redback", "roles/" + roleId + "/unassigned", {
+      'q': searchTerm,
+      'offset': offset,
+      'limit': limit,
+      'orderBy': orderBy,
+      'order': order
+    });
+  }
+
 
   public getRole(roleId:string) : Observable<Role> {
     return this.rest.executeRestCall("get", "redback", "roles/" + roleId, null);
