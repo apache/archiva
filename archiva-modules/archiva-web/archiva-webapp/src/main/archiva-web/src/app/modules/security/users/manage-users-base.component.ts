@@ -96,6 +96,16 @@ export class ManageUsersBaseComponent {
         }
     }
 
+    public getErrorsFor(formField:string) : string[] {
+        let field=this.userForm.get(formField)
+        if (field) {
+            if (field.errors) {
+                return Object.values(field.errors);
+            }
+        }
+        return []
+    }
+
     /**
      * Async validator with debounce time
      * @constructor

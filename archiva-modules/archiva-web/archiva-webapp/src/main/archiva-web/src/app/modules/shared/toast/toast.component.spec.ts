@@ -16,18 +16,28 @@
  * under the License.
  */
 
-export class ErrorMessage {
-    error_key: string;
-    args: string[];
-    message: string;
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-    static of(messageString:string): ErrorMessage {
-        const msg = new ErrorMessage()
-        msg.message = messageString;
-        return msg;
-    }
+import { ToastComponent } from './toast.component';
 
-    public toString() {
-        return this.message;
-    }
-}
+describe('ToastComponent', () => {
+  let component: ToastComponent;
+  let fixture: ComponentFixture<ToastComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [ ToastComponent ]
+    })
+    .compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ToastComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

@@ -99,7 +99,8 @@
     "add": {
       "head": "Add User",
       "submit": "Add User",
-      "errortitle": "Could not add the user. Please check the following error messages."
+      "errortitle1": "Could not add the user!",
+      "errortitle2": "Please check the following error messages:"
     },
     "edit": {
       "submit": "Save Changes",

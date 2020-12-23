@@ -16,13 +16,15 @@
  * under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn} from '@angular/forms';
-import {UserService} from "../../../../services/user.service";
-import {ErrorResult} from "../../../../model/error-result";
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {FormBuilder} from '@angular/forms';
+import {UserService} from "@app/services/user.service";
+import {ErrorResult} from "@app/model/error-result";
 import {catchError} from "rxjs/operators";
-import {UserInfo} from "../../../../model/user-info";
+import {UserInfo} from "@app/model/user-info";
 import {ManageUsersBaseComponent} from "../manage-users-base.component";
+import {ToastService} from "@app/services/toast.service";
+import {ErrorMessage} from "@app/model/error-message";
 
 @Component({
     selector: 'app-manage-users-add',
@@ -31,7 +33,10 @@ import {ManageUsersBaseComponent} from "../manage-users-base.component";
 })
 export class ManageUsersAddComponent extends ManageUsersBaseComponent implements OnInit {
 
-    constructor(userService: UserService, fb: FormBuilder) {
+    @ViewChild('errorTmpl') public errorTmpl: TemplateRef<any>;
+    @ViewChild('successTmpl') public successTmpl: TemplateRef<any>;
+
+    constructor(userService: UserService, fb: FormBuilder, private toastService: ToastService) {
         super(userService, fb);
 
     }
@@ -61,12 +66,15 @@ export class ManageUsersAddComponent extends ManageUsersBaseComponent implements
                 this.errorResult = error;
                 this.success = false;
                 this.error = true;
+                this.toastService.showError('manage-users-add',this.errorTmpl,{contextData:this.errorResult})
+
                 return [];
                 // return throwError(error);
             })).subscribe((user: UserInfo) => {
                 this.result = user;
                 this.success = true;
                 this.error = false;
+                this.toastService.showSuccess('manage-users-add',this.successTmpl,{contextData:this.result})
                 this.userForm.reset(this.formInitialValues);
             });
         }
@@ -74,7 +82,18 @@ export class ManageUsersAddComponent extends ManageUsersBaseComponent implements
 
 
 
-
+    showMessage() {
+        this.result=new UserInfo()
+        this.result.user_id='XXXXX'
+        const errorResult : ErrorResult = new ErrorResult([
+            ErrorMessage.of('Not so good'),
+            ErrorMessage.of('Completely crap')
+        ]);
+        console.log(JSON.stringify(errorResult));
+        errorResult.status=422;
+        this.toastService.showSuccess('manage-users-add',this.successTmpl,{contextData:this.result,delay:1000})
+        this.toastService.showError('manage-users-add',this.errorTmpl,{contextData:errorResult,delay:10000})
+    }
 
 }
 

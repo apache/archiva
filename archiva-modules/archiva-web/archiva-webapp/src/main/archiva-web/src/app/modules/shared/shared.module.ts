@@ -26,7 +26,8 @@ import {
     NgbModalModule,
     NgbPaginationModule,
     NgbTooltipModule,
-    NgbTypeaheadModule
+    NgbTypeaheadModule,
+    NgbToastModule
 } from "@ng-bootstrap/ng-bootstrap";
 import {TranslateCompiler, TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateMessageFormatCompiler} from "ngx-translate-messageformat-compiler";
@@ -35,6 +36,7 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {RouterModule} from "@angular/router";
 import { WithLoadingPipe } from './with-loading.pipe';
 import { StripLoadingPipe } from './strip-loading.pipe';
+import { ToastComponent } from './toast/toast.component';
 
 export { LoadingValue } from './model/loading-value';
 export { PageQuery } from './model/page-query';
@@ -45,7 +47,8 @@ export { PageQuery } from './model/page-query';
         SortedTableHeaderComponent,
         SortedTableHeaderRowComponent,
         WithLoadingPipe,
-        StripLoadingPipe
+        StripLoadingPipe,
+        ToastComponent
     ],
     exports: [
         CommonModule,
@@ -56,17 +59,20 @@ export { PageQuery } from './model/page-query';
         NgbAccordionModule,
         NgbModalModule,
         NgbTypeaheadModule,
+        NgbToastModule,
         PaginatedEntitiesComponent,
         SortedTableHeaderComponent,
         SortedTableHeaderRowComponent,
         WithLoadingPipe,
-        StripLoadingPipe
+        StripLoadingPipe,
+        ToastComponent
     ],
     imports: [
         CommonModule,
         RouterModule,
         NgbPaginationModule,
         NgbTooltipModule,
+        NgbToastModule,
         TranslateModule.forChild({
             compiler: {
                 provide: TranslateCompiler,

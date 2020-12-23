@@ -16,18 +16,19 @@
  * under the License.
  */
 
-export class ErrorMessage {
-    error_key: string;
-    args: string[];
-    message: string;
+import { TestBed } from '@angular/core/testing';
 
-    static of(messageString:string): ErrorMessage {
-        const msg = new ErrorMessage()
-        msg.message = messageString;
-        return msg;
-    }
+import { ToastService } from './toast.service';
 
-    public toString() {
-        return this.message;
-    }
-}
+describe('ToastService', () => {
+  let service: ToastService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(ToastService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
