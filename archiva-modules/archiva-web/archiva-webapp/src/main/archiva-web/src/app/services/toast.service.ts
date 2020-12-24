@@ -19,6 +19,7 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import {AppNotification} from "@app/model/app-notification";
 import {not} from "rxjs/internal-compatibility";
+import {TranslateService} from "@ngx-translate/core";
 
 @Injectable({
   providedIn: 'root'
@@ -30,9 +31,9 @@ export class ToastService {
   toasts:AppNotification[]=[]
   toastHistory:AppNotification[]=[]
 
-  constructor() { }
+  constructor(private translator: TranslateService) { }
 
-  show(origin:string, textOrTpl: string | TemplateRef<any>, options: any = {}) {
+  public show(origin:string, textOrTpl: string | TemplateRef<any>, options: any = {}): void {
     let notification = new AppNotification(origin, textOrTpl, "", options);
     this.toasts.push(notification);
     this.toastHistory.push(notification);
@@ -45,7 +46,7 @@ export class ToastService {
     console.log("Notification " + notification);
   }
 
-  showStandard(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) {
+  public showStandard(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) : void {
     options.classname='bg-primary'
     if (!options.delay) {
       options.delay=8000
@@ -53,7 +54,17 @@ export class ToastService {
     this.show(origin,textOrTpl,options)
   }
 
-  showError(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) {
+  public showStandardByKey(origin:string,translationKey:string, params:any={}, options:any={} ) : void {
+    let message:string;
+    if (params) {
+      message = this.translator.instant(translationKey, params);
+    } else {
+      message = this.translator.instant(translationKey);
+    }
+    this.showStandard(origin, message, options);
+  }
+
+  public showError(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) : void {
     options.classname='bg-warning'
     options.type='error'
     if (!options.delay) {
@@ -62,7 +73,17 @@ export class ToastService {
     this.show(origin,textOrTpl,options)
   }
 
-  showSuccess(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) {
+  public showErrorByKey(origin:string,translationKey:string, params:any={}, options:any={} ) : void {
+    let message:string;
+    if (params) {
+      message = this.translator.instant(translationKey, params);
+    } else {
+      message = this.translator.instant(translationKey);
+    }
+    this.showError(origin, message, options);
+  }
+
+  public showSuccess(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) : void {
     options.classname='bg-info'
     options.type='success'
     if (!options.delay) {
@@ -70,6 +91,17 @@ export class ToastService {
     }
     this.show(origin,textOrTpl,options)
   }
+
+  public showSuccessByKey(origin:string,translationKey:string, params:any={}, options:any={} ) : void {
+    let message:string;
+    if (params) {
+      message = this.translator.instant(translationKey, params);
+    } else {
+      message = this.translator.instant(translationKey);
+    }
+    this.showSuccess(origin, message, options);
+  }
+
 
   remove(toast) {
     this.toasts = this.toasts.filter(t => t != toast);

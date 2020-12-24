@@ -16,16 +16,7 @@
  * under the License.
  */
 
-import {
-    AfterContentInit,
-    ChangeDetectorRef,
-    Component,
-    EventEmitter,
-    OnInit,
-    Output,
-    TemplateRef,
-    ViewChild
-} from '@angular/core';
+import {AfterContentInit, Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {FormBuilder, Validators} from "@angular/forms";
 import {RoleService} from "@app/services/role.service";
@@ -42,6 +33,7 @@ import {UserService} from "@app/services/user.service";
 import {UserInfo} from '@app/model/user-info';
 import {HttpResponse} from "@angular/common/http";
 import {PaginatedEntitiesComponent} from "@app/modules/shared/paginated-entities/paginated-entities.component";
+import {ToastService} from "@app/services/toast.service";
 
 @Component({
     selector: 'app-manage-roles-edit',
@@ -73,7 +65,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
     roleIdEvent: EventEmitter<string> = new EventEmitter<string>(true);
 
     constructor(private route: ActivatedRoute, public roleService: RoleService, private userService: UserService,
-                public fb: FormBuilder, private changeDetect : ChangeDetectorRef) {
+                public fb: FormBuilder, private toastService: ToastService) {
         super(fb);
         super.init(fb.group({
             id: [''],
@@ -151,7 +143,9 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                 } else {
                     return this.roleService.getRole(myId).pipe(tap(role => {
                         this.roleCache.set(role.id, role);
-                    }),catchError(() => of(this.createRole(id))));
+                    }),catchError((error : ErrorResult) => {
+                        this.showError(error, "roles.edit.errors.retrieveFailed")
+                        return of(this.createRole(id)); }));
                 }
             }));
     }
@@ -192,6 +186,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                 this.error = true;
                 this.success = false;
                 this.errorResult = err;
+                this.showError(err, 'roles.edit.errors.updateFailed',{'role_id':role.id})
                 return [];
             })
         ).subscribe(roleInfo => {
@@ -199,6 +194,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             this.success = true;
             this.errorResult = null;
             this.result = roleInfo;
+            this.showSuccess('roles.edit.success.updated',{'role_id':role.id})
             this.editMode = false;
         });
 
@@ -233,6 +229,17 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
         return item.user_id;
     }
 
+    showError(err: ErrorResult, errorKey:string, params:any={}) : void {
+        let message = err.error_messages.length>0?err.error_messages[0]:''
+        params['message']=message
+        this.toastService.showErrorByKey('manage-roles-edit',errorKey,params)
+    }
+
+    showSuccess(successKey:string, params:any={}) : void  {
+        console.log("Success " + successKey + " - " + JSON.stringify(params));
+        this.toastService.showSuccessByKey('manage-roles-edit',successKey,params)
+    }
+
     assignUserRole() {
         let userId;
         if (typeof(this.userSearchModel)=='string') {
@@ -248,6 +255,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                     this.error = true;
                     this.success = false;
                     this.errorResult = err;
+                    this.showError(err, 'roles.edit.errors.assignFailed', {'role_id':this.editRole.id,'user_id':userId})
                     return [];
                 })
             ).subscribe((response : HttpResponse<Role>)  => {
@@ -256,6 +264,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                 this.errorResult = null;
                 this.result = response.body;
                 this.roleUserComponent.changePage(1);
+                this.showSuccess('roles.edit.success.assign',{'role_id':this.editRole.id,'user_id':userId})
                 this.userSearchModel=''
             });
         }
@@ -269,6 +278,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                     this.error = true;
                     this.success = false;
                     this.errorResult = err;
+                    this.showError(err, 'roles.edit.errors.unassignFailed',{'role_id':this.editRole.id,'user_id':user_id})
                     return [];
                 })
             ).subscribe((response : HttpResponse<Role>)  => {
@@ -278,6 +288,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                     this.errorResult = null;
                     this.result = response.body;
                     this.roleUserComponent.changePage(1);
+                    this.showSuccess('roles.edit.success.unassign',{'role_id':this.editRole.id,'user_id':user_id})
                 }
             );
         }

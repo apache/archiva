@@ -90,9 +90,6 @@
         <button class="btn btn-primary" type="submit"
                 [attr.disabled]="userForm.valid?null:true">{{'users.add.submit'|translate}}</button>
     </div>
-    <div class="form-group col-md-8">
-        <button class="btn btn-primary" (click)="showMessage()">Show Message</button>
-    </div>
 
     <ng-template #successTmpl let-userId="user_id">
         User <a [routerLink]="['/security','users','edit',userId]">{{userId}}</a> was added to the list.

@@ -33,7 +33,6 @@ export class AppNotification {
         this.header = header;
         this.body = body;
         this.timestamp = timestamp;
-        console.log("Options " + JSON.stringify(options));
         if (options.classname) {
             this.classname = options.classname;
         }
@@ -49,7 +48,7 @@ export class AppNotification {
     }
 
     public toString(): string {
-        return this.origin + ',classname:' + this.classname + ", delay:" + this.delay +", context: "+JSON.stringify(this.contextData);
+        return this.origin + ',classname:' + this.classname + ", delay:" + this.delay ;
     }
 
 }

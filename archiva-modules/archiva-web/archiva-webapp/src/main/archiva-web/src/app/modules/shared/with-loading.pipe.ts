@@ -16,10 +16,10 @@
  * under the License.
  */
 
-import { Pipe, PipeTransform } from '@angular/core';
-import {concat, isObservable, of } from 'rxjs';
-import {catchError, map, startWith, tap } from 'rxjs/operators';
-import {LoadingValue} from "@app/modules/shared/shared.module";
+import {Pipe, PipeTransform} from '@angular/core';
+import {isObservable, of} from 'rxjs';
+import {catchError, map, startWith} from 'rxjs/operators';
+import {LoadingValue} from "@app/modules/shared/model/loading-value";
 
 @Pipe({
   name: 'withLoading'

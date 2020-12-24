@@ -143,7 +143,17 @@
       "noUsersAssigned": "There are no users assigned to this role",
       "assignUserSearch": "Search and assign users to this role",
       "userSearchFailed": "Sorry, could not load users",
-      "assignButton": "Assign"
+      "assignButton": "Assign",
+      "errors": {
+        "updateFailed": "Could not update role {role_id}: {message}",
+        "assignFailed": "Could not assign role {role_id} to user {user_id}: {message}",
+        "retrieveFailed": "Could not retrieve role information: {message}"
+      },
+      "success": {
+        "updated": "Role {role_id} was updated",
+        "assign": "Role {role_id} was assigned to user {user_id}",
+        "unassign": "Removed assignment of {role_id} to {user_id}"
+      }
     },
     "attributes": {
       "id": "Identifier",

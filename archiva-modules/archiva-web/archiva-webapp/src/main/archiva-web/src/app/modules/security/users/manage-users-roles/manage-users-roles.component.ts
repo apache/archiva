@@ -17,16 +17,16 @@
  */
 
 import {AfterViewInit, Component, EventEmitter, OnInit, Output} from '@angular/core';
-import { Role } from '@app/model/role';
+import {Role} from '@app/model/role';
 import {UserService} from "@app/services/user.service";
 import {ActivatedRoute} from "@angular/router";
-import {catchError, filter, map, multicast, share, switchMap, tap} from "rxjs/operators";
+import {catchError, filter, map, share, switchMap, tap} from "rxjs/operators";
 import {RoleTree} from "@app/model/role-tree";
 import {RoleService} from "@app/services/role.service";
 import {RoleTemplate} from "@app/model/role-template";
-import {Observable, of} from "rxjs";
+import {Observable} from "rxjs";
 import {Util} from "@app/modules/shared/shared.module";
-import { RoleResult } from './role-result';
+import {RoleResult} from './role-result';
 import {fromArray} from "rxjs/internal/observable/fromArray";
 import {ErrorResult} from "@app/model/error-result";
 import {HttpResponse} from "@angular/common/http";

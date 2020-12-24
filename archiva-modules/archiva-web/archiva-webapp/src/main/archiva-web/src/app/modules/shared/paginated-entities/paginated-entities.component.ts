@@ -16,26 +16,13 @@
  * under the License.
  */
 
-import {AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {concat, merge, Observable, of, pipe, Subject} from "rxjs";
-import {
-    concatAll,
-    debounceTime,
-    delay,
-    distinctUntilChanged,
-    filter,
-    map,
-    mergeMap,
-    pluck,
-    share,
-    startWith,
-    switchMap,
-    tap
-} from "rxjs/operators";
-import {EntityService} from "../../../model/entity-service";
-import {FieldToggle} from "../../../model/field-toggle";
-import {PageQuery} from "@app/modules/shared/model/page-query";
-import { LoadingValue } from '../shared.module';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {concat, merge, Observable, of, Subject} from "rxjs";
+import {debounceTime, distinctUntilChanged, filter, map, pluck, startWith, switchMap} from "rxjs/operators";
+import {EntityService} from "@app/model/entity-service";
+import {FieldToggle} from "@app/model/field-toggle";
+import {PageQuery} from "../model/page-query";
+import {LoadingValue} from '../model/loading-value';
 import {PagedResult} from "@app/model/paged-result";
 
 
