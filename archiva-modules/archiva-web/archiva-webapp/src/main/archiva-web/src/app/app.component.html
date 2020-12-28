@@ -50,9 +50,11 @@
             <div class="collapse navbar-collapse" id="navbarsDefault">
                 <div class="navbar-nav ml-auto">
                     <span *ngIf="auth.authenticated" class="navbar-text border-right pr-2 mr-2">
-                      {{user.userInfo.full_name}}
+                      <a class="nav-link" routerLink="/me/info" >
+                                {{user.userInfo.full_name}}
+                            </a>
                     </span>
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav d-lg-flex align-items-center">
                         <li class="nav-item active">
                             <a class="nav-link" routerLink="/">
                                 <i class="fas fa-home mr-1"></i>{{ 'menu.home' |translate }}

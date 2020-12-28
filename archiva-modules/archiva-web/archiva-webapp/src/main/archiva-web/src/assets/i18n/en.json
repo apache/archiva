@@ -6,7 +6,7 @@
     "userid": "User Id",
     "submit": "Login"
   },
-  "modal" : {
+  "modal": {
     "close": "Close"
   },
   "menu": {
@@ -19,7 +19,7 @@
   "error": {
     "modal": {
       "title": "Application Error",
-      "info":"The backend does not answer as expected. Please check, if your archiva service is running. See detail messages below."
+      "info": "The backend does not answer as expected. Please check, if your archiva service is running. See detail messages below."
     },
     "http": {
       "unknownError": "We got a bad response from the backend REST service. Maybe the connection is broken, or the service is down. Please check your network to the backend service and the archiva.log for any errors.",
@@ -47,7 +47,7 @@
     "user": {
       "section": "User",
       "users": "Manage Users",
-      "roles":"Manage Roles",
+      "roles": "Manage Roles",
       "config": "Security Configuration"
     },
     "doc": {
@@ -56,32 +56,38 @@
       "restapi": "REST API"
     }
   },
-  "api" : {
+  "api": {
     "rb.auth.invalid_credentials": "Invalid credentials given",
     "user.password.violation.length": "You must provide a password between {arg0} and {arg1} characters in length.",
     "user.password.violation.alpha": "You must provide a password containing at least {arg0} alphabetic {arg0, plural, one {character} other {characters}}.",
-    "user.password.violation.numeric":"You must provide a password containing at least {arg0} numeric {arg0, plural, one {character} other {characters}}.",
-    "user.password.violation.reuse":"The password must not match any of the previous {arg0} {arg0, plural, one {password} other {passwords}}.",
-    "user.password.violation.alphanum.only":"You must provide a password containing all alpha-numeric characters.",
-    "user.password.violation.whitespace.detected":"You must provide a password without whitespace characters."
+    "user.password.violation.numeric": "You must provide a password containing at least {arg0} numeric {arg0, plural, one {character} other {characters}}.",
+    "user.password.violation.reuse": "The password must not match any of the previous {arg0} {arg0, plural, one {password} other {passwords}}.",
+    "user.password.violation.alphanum.only": "You must provide a password containing all alpha-numeric characters.",
+    "user.password.violation.whitespace.detected": "You must provide a password without whitespace characters."
   },
   "users": {
-    "attributes":{
-        "id": "ID",
-        "user_id": "Login Name",
-        "email": "Email",
-        "full_name": "Name",
-        "validated": "User Validated",
-        "locked": "User Locked",
-        "password_change_required": "Password Change Required",
-        "last_login": "Last Login",
-        "created": "Created",
-        "permanent": "Permanent",
-        "last_password_change": "Last Password Change",
-        "password": "Password",
-        "confirm_password": "Confirm Password"
+    "attributes": {
+      "id": "ID",
+      "user_id": "Login Name",
+      "email": "Email",
+      "full_name": "Name",
+      "validated": "User Validated",
+      "locked": "User Locked",
+      "password_change_required": "Password Change Required",
+      "last_login": "Last Login",
+      "created": "Created",
+      "permanent": "Permanent",
+      "last_password_change": "Last Password Change",
+      "timestamp_last_password_change": "Last Password Change",
+      "timestamp_account_creation": "Account Created",
+      "timestamp_last_login": "Last Login",
+      "password": "Password",
+      "new_password": "New Password",
+      "current_password": "Current Password",
+      "confirm_password": "Confirm Password",
+      "language": "UI Language"
     },
-    "input" : {
+    "input": {
       "small": {
         "user_id": "Must be a unique key with at least {minSize} characters. No spaces allowed.",
         "full_name": "This is the display name of the user"
@@ -92,7 +98,6 @@
       "password": "Enter password",
       "confirm_password": "Confirm password"
     },
-
     "list": {
       "head": "List Users"
     },
@@ -107,10 +112,13 @@
       "head": "View/Edit User",
       "small": {
         "password": "If the password field is empty, it will not be updated."
-      }
+      },
+      "submitPassword": "Change Password",
+      "passwordChanged": "Password has been changed successfully",
+      "changePasswordTitle": "Change password"
     },
     "delete": {
-      "head":"Delete User",
+      "head": "Delete User",
       "modal": {
         "title": "Delete User",
         "text": "Are you sure? <br/> Do you want to delete the user <strong>{user_id}</strong>?"
@@ -164,7 +172,6 @@
       "assignable": "Assignable"
     }
   },
-
   "permissions": {
     "attributes": {
       "permission": "Permission",
@@ -182,7 +189,8 @@
     "error": {
       "required": "Value is empty. This is required.",
       "containsWhitespace": "Value must not contain whitespace.",
-      "userexists": "This user exists already."
+      "userexists": "This user exists already.",
+      "invaliddata": "The data is not valid"
     },
     "button": {
       "yes": "Yes",
@@ -197,8 +205,10 @@
     "action": "Action"
   },
   "password": {
-    "violations" : {
-
+    "violations": {
     }
+  },
+  "me": {
+    "title": "Current User Information"
   }
 }

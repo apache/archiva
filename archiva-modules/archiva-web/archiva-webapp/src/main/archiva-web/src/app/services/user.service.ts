@@ -328,7 +328,7 @@ export class UserService implements OnInit, OnDestroy {
             }), map((httpResponse: HttpResponse<string>) => httpResponse.status == 200));
     }
 
-    public userRoleTree(userid:String): Observable<RoleTree> {
+    public userRoleTree(userid:string): Observable<RoleTree> {
         return this.rest.executeResponseCall<RoleTree>("get", "redback","users/"+userid+"/roletree", null).pipe(
             catchError((error: HttpErrorResponse)=>{
                 if (error.status==404) {
@@ -339,6 +339,20 @@ export class UserService implements OnInit, OnDestroy {
                 }
             })
         ).pipe(map((httpResponse:HttpResponse<RoleTree>)=>httpResponse.body))
+    }
+
+    public changeOwnPassword(current_password:string, password:string, confirm_password:string) {
+        let data = {
+            "user_id":this.userInfo.user_id,
+            "current_password":current_password,
+            "new_password":password,
+            "new_password_confirmation":confirm_password
+        }
+        return this.rest.executeRestCall<any>("post", "redback", "users/me/password/update", data).pipe(
+            catchError((error: HttpErrorResponse)=>{
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            })
+        );
     }
 
 }

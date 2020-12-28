@@ -41,9 +41,7 @@ import {AppNotification} from "@app/model/app-notification";
       <ng-template #text>{{ toast.body }}</ng-template>
     </ngb-toast>
   `,
-  styles: [".ngb-toasts{margin:.5em;padding:0.5em;position:fixed;right:2px;top:20px;z-index:1200}"
-  ],
-  host: {'[class.ngb-toasts]': 'true'}
+  styles: [':host { margin:.5em; padding:1em; position:fixed; right:10px; top:40px; z-index:1200; }']
 })
 export class ToastComponent implements OnInit {
 

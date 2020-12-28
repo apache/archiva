@@ -37,6 +37,8 @@ import {RouterModule} from "@angular/router";
 import { WithLoadingPipe } from './with-loading.pipe';
 import { StripLoadingPipe } from './strip-loading.pipe';
 import { ToastComponent } from './toast/toast.component';
+import { UserInfoComponent } from './user-info/user-info.component';
+import {FormsModule} from "@angular/forms";
 
 export { LoadingValue } from './model/loading-value';
 export { PageQuery } from './model/page-query';
@@ -48,7 +50,8 @@ export { PageQuery } from './model/page-query';
         SortedTableHeaderRowComponent,
         WithLoadingPipe,
         StripLoadingPipe,
-        ToastComponent
+        ToastComponent,
+        UserInfoComponent
     ],
     exports: [
         CommonModule,
@@ -84,6 +87,7 @@ export { PageQuery } from './model/page-query';
                 deps: [HttpClient]
             }
         }),
+        FormsModule,
     ]
 })
 export class SharedModule {

@@ -29,6 +29,7 @@ import {BrowseComponent} from "./modules/repo/browse/browse.component";
 import {UploadComponent} from "./modules/repo/upload/upload.component";
 import {RoutingGuardService as Guard} from "./services/routing-guard.service";
 import {SecurityConfigurationComponent} from "./modules/security/security-configuration/security-configuration.component";
+import {UserInfoComponent} from "@app/modules/shared/user-info/user-info.component";
 
 /**
  * You can use Guard (RoutingGuardService) for permission checking. The service needs data with one parameter 'perm',
@@ -55,6 +56,7 @@ const routes: Routes = [
         ]
     },
     {path: 'contact', component: ContactComponent},
+    {path: 'me/info', component: UserInfoComponent},
     {path: 'about', component: AboutComponent},
     {path: 'login', component: LoginComponent},
     {path: 'logout', component: HomeComponent},

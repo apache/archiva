@@ -128,6 +128,7 @@ export class ArchivaRequestService {
      * @param errorMsg the errorMsg as returned by a REST call
      */
     public translateError(errorMsg: ErrorMessage): string {
+        console.log("Translating error "+errorMsg.error_key)
         if (errorMsg.error_key != null && errorMsg.error_key != '') {
             let parms = {};
             if (errorMsg.args != null && errorMsg.args.length > 0) {
