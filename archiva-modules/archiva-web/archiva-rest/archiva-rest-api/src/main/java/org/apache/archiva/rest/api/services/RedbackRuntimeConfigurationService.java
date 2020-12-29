@@ -22,7 +22,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.RedbackImplementationsInformations;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
@@ -57,7 +56,7 @@ public interface RedbackRuntimeConfigurationService
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    ActionStatus updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    Boolean updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws ArchivaRestServiceException;
 
     @Path("userManagerImplementationInformations")
@@ -86,7 +85,7 @@ public interface RedbackRuntimeConfigurationService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    ActionStatus checkLdapConnection()
+    Boolean checkLdapConnection()
         throws ArchivaRestServiceException;
 
     @Path("checkLdapConnection")
@@ -94,6 +93,6 @@ public interface RedbackRuntimeConfigurationService
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    ActionStatus checkLdapConnection( LdapConfiguration ldapConfiguration )
+    Boolean checkLdapConnection( LdapConfiguration ldapConfiguration )
         throws ArchivaRestServiceException;
 }

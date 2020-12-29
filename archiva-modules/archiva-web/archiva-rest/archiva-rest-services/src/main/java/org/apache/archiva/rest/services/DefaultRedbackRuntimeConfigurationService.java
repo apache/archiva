@@ -113,7 +113,7 @@ public class DefaultRedbackRuntimeConfigurationService
     }
 
     @Override
-    public ActionStatus updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    public Boolean updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws ArchivaRestServiceException
     {
         try
@@ -222,7 +222,7 @@ public class DefaultRedbackRuntimeConfigurationService
             }
 
 
-            return ActionStatus.SUCCESS;
+            return Boolean.TRUE;
         }
         catch (ArchivaRestServiceException e) {
             log.error(e.getMessage(), e);
@@ -302,7 +302,7 @@ public class DefaultRedbackRuntimeConfigurationService
     }
 
     @Override
-    public ActionStatus checkLdapConnection()
+    public Boolean checkLdapConnection()
         throws ArchivaRestServiceException
     {
         LdapConnection ldapConnection = null;
@@ -324,11 +324,11 @@ public class DefaultRedbackRuntimeConfigurationService
             }
         }
 
-        return ActionStatus.SUCCESS;
+        return Boolean.TRUE;
     }
 
     @Override
-    public ActionStatus checkLdapConnection( LdapConfiguration ldapConfiguration )
+    public Boolean checkLdapConnection( LdapConfiguration ldapConfiguration )
         throws ArchivaRestServiceException
     {
         LdapConnection ldapConnection = null;
@@ -379,7 +379,7 @@ public class DefaultRedbackRuntimeConfigurationService
             }
         }
 
-        return ActionStatus.SUCCESS;
+        return Boolean.TRUE;
     }
 
     private Properties toProperties( Map<String, String> map )
