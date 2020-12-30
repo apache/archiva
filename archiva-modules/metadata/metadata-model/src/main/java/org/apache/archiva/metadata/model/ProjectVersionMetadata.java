@@ -199,12 +199,6 @@ public class ProjectVersionMetadata
         this.properties = properties;
     }
 
-    @SuppressWarnings( { "unchecked", "rawtypes" } )
-    public void setProperties( Properties properties )
-    {
-        setProperties( new HashMap<String, String>((Map) properties ) );
-    }
-
     public boolean isIncomplete()
     {
         return incomplete;
