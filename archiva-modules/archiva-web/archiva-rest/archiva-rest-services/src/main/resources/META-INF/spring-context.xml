@@ -39,8 +39,22 @@
   <context:component-scan
       base-package="org.apache.archiva.rest.services,org.apache.archiva.redback.rest.services"/>
 
+  <!-- CXF OpenApiFeature -->
+  <bean id="archivaOpenApiFeature" class="org.apache.cxf.jaxrs.openapi.OpenApiFeature">
+    <property name="scanKnownConfigLocations" value="false"/>
+    <property name="configLocation" value="archiva/openapi-configuration.yaml"/>
+    <property name="scan" value="false"/>
+    <property name="useContextBasedConfig" value="true"/>
+    <!-- <property name="scannerClass" value="io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner"/> -->
+  </bean>
+
+
   <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
     <property name="mapper" ref="redbackJacksonJsonMapper"/>
+  </bean>
+
+  <bean id="v2.jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+    <property name="mapper" ref="v2.redbackJacksonJsonMapper"/>
   </bean>
 
   <bean id="xmlProvider" class="com.fasterxml.jackson.jaxrs.xml.JacksonJaxbXMLProvider">
@@ -48,6 +62,8 @@
   </bean>
 
   <bean id="redbackJacksonJsonMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
+  <bean id="v2.redbackJacksonJsonMapper" class="com.fasterxml.jackson.databind.ObjectMapper" >
+  </bean>
   <bean id="redbackJacksonXMLMapper" class="com.fasterxml.jackson.dataformat.xml.XmlMapper" />
 
 
@@ -86,6 +102,29 @@
 
 
   </jaxrs:server>
+
+
+  <jaxrs:server name="v2.archiva" address="/v2/archiva" >
+
+    <jaxrs:providers>
+      <ref bean="v2.jsonProvider" />
+      <ref bean="bearerAuthInterceptor#rest"/>
+      <ref bean="permissionInterceptor#rest"/>
+      <ref bean="requestValidationInterceptor#rest" />
+      <ref bean="v2.archivaRestServiceExceptionMapper"/>
+      <ref bean="threadLocalUserCleaner#rest" />
+    </jaxrs:providers>
+
+    <jaxrs:serviceBeans>
+      <ref bean="v2.defaultSecurityConfigurationService" />
+    </jaxrs:serviceBeans>
+
+    <jaxrs:features>
+      <ref bean="archivaOpenApiFeature" />
+    </jaxrs:features>
+
+  </jaxrs:server>
+
 
   <bean name="browse#versionMetadata" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">

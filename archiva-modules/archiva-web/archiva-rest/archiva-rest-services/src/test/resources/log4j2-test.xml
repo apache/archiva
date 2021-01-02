@@ -39,11 +39,11 @@
   <loggers>
 
     <logger name="jaxrs" level="info" />
-    <logger name="org.apache.cxf" level="info" />
+    <logger name="org.apache.cxf" level="debug" />
     <logger name="org.apache.archiva" level="debug" />
     <logger name="org.apache.archiva.redback" level="debug"/>
     <logger name="com.fasterxml.jackson" level="info" />
-    <logger name="org.apache.archiva.components.registry.commons" level="error" />
+    <logger name="org.apache.archiva.components" level="error" />
 
     <logger name="JPOX" level="error"/>
     <logger name="org.apache.archiva.rest.services" level="info"/>

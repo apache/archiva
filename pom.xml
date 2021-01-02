@@ -865,6 +865,47 @@
         <artifactId>cxf-rt-features-logging</artifactId>
         <version>${cxf.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-service-description-openapi-v3</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-core</artifactId>
+        <scope>compile</scope>
+        <version>${io.swagger.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-jaxrs2</artifactId>
+        <version>${io.swagger.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>${io.swagger.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
 
       <dependency>
         <groupId>org.apache.archiva</groupId>
@@ -1137,10 +1178,14 @@
 
       <dependency>
         <groupId>org.apache.archiva.components</groupId>
+        <artifactId>archiva-components-rest-util</artifactId>
+        <version>${archiva.comp.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.components</groupId>
         <artifactId>archiva-components-expression-evaluator</artifactId>
         <version>${archiva.comp.version}</version>
       </dependency>
-
       <dependency>
         <groupId>org.apache.archiva.components</groupId>
         <artifactId>archiva-components-spring-taskqueue</artifactId>
@@ -1494,6 +1539,7 @@
       </dependency>
 
 
+
       <!-- Transitive dependency - fixing version -->
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -1729,6 +1775,12 @@
         <scope>test</scope>
       </dependency>
 
+      <dependency>
+        <groupId>io.rest-assured</groupId>
+        <artifactId>rest-assured</artifactId>
+        <version>${rest-assured.version}</version>
+        <scope>test</scope>
+      </dependency>
 
       <!-- JUNIT 5 -->
       <dependency>
@@ -1787,44 +1839,6 @@
         <artifactId>cxf-core</artifactId>
         <version>${cxf.version}</version>
       </dependency>
-
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-core</artifactId>
-        <scope>compile</scope>
-        <version>${io.swagger.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-jaxrs2</artifactId>
-        <version>${io.swagger.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-annotations</artifactId>
-        <version>${io.swagger.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-
-
 
     </dependencies>
   </dependencyManagement>

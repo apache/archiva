@@ -31,6 +31,8 @@
   <properties>
     <enunciate.docsDir>${project.build.outputDirectory}/rest-docs-archiva-rest-api</enunciate.docsDir>
     <site.staging.base>${project.parent.parent.parent.basedir}</site.staging.base>
+    <openapi.config.file>${project.basedir}/src/main/resources/archiva/openapi-configuration.yaml</openapi.config.file>
+    <openapi.prefix>archiva</openapi.prefix>
   </properties>
 
   <dependencies>
@@ -74,6 +76,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-rest-util</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>jakarta.ws.rs</groupId>
       <artifactId>jakarta.ws.rs-api</artifactId>
     </dependency>
@@ -82,6 +89,23 @@
       <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
 
+
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-core</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-jaxrs2</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-annotations</artifactId>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+      </dependency>
   </dependencies>
 
   <build>
