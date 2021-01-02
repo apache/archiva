@@ -1,0 +1,41 @@
+resourcePackages:
+  - org.apache.archiva.rest.api.services.v2
+  - org.apache.archiva.rest.api.model.v2
+
+prettyPrint: true
+cacheTTL: 0
+openAPI:
+  components:
+    securitySchemes:
+      BearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+      BasicAuth:
+        type: http
+        scheme: basic
+
+  servers:
+    - url: /archiva/api/v2/archiva
+      description: Base URL Version 2 API
+    - url: /archiva/archivaServices
+      description: Base URL Version 1 API (deprecated)
+  tags:
+    - name: v2
+      description: Version 2 REST API
+    - name: v2/Security
+      description: Authentication operations for Login and token refresh
+    - name: v1
+      description: Version 1 REST API (deprecated)
+
+  info:
+    version: '3.0'
+    title: Apache Archiva REST API
+    description: 'This is the Apache Archiva REST API documentation'
+    termsOfService: https://archiva.apache.org
+    contact:
+      email: users@archiva.apache.org
+      url: https://archiva.apache.org/index.html
+    license:
+      name: Apache 2.0
+      url: http://www.apache.org/licenses/LICENSE-2.0.html

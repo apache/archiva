@@ -58,6 +58,7 @@
   </bean>
 
   <alias name="roleManager#test" alias="roleManager"/>
+  <alias name="rbacManager#test" alias="rbacManager#cached" />
 
   <!--
   <bean id="jcr-config" class="org.apache.archiva.metadata.repository.jcr.ArchivaJcrRepositoryConfig" factory-method="create">
