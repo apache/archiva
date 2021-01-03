@@ -26,6 +26,7 @@ import java.util.TreeMap;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
+ * @since 3.0
  */
 @XmlRootElement(name="ldapConfiguration")
 public class LdapConfiguration implements Serializable
@@ -73,7 +74,7 @@ public class LdapConfiguration implements Serializable
 
     public void setHostName( String hostName )
     {
-        this.hostName = hostName;
+        this.hostName = hostName==null?"":hostName;
     }
 
     @Schema(description = "The port to use to connect to the LDAP server")
@@ -106,7 +107,7 @@ public class LdapConfiguration implements Serializable
 
     public void setBaseDn( String baseDn )
     {
-        this.baseDn = baseDn;
+        this.baseDn = baseDn == null ? "" : baseDn;
     }
 
     @Schema(description = "The distinguished name of the bind user which is used to bind to the LDAP server")
@@ -117,7 +118,7 @@ public class LdapConfiguration implements Serializable
 
     public void setBindDn( String bindDn )
     {
-        this.bindDn = bindDn;
+        this.bindDn = bindDn == null ? "" : bindDn;
     }
 
     @Schema(description = "The password used to bind to the ldap server")
@@ -128,7 +129,7 @@ public class LdapConfiguration implements Serializable
 
     public void setBindPassword( String bindPassword )
     {
-        this.bindPassword = bindPassword;
+        this.bindPassword = bindPassword==null?"":bindPassword;
     }
 
     @Schema(description = "The distinguished name of the base to use for searching group.")
@@ -139,7 +140,7 @@ public class LdapConfiguration implements Serializable
 
     public void setGroupsBaseDn( String groupsBaseDn )
     {
-        this.groupsBaseDn = groupsBaseDn;
+        this.groupsBaseDn = groupsBaseDn==null?"":groupsBaseDn;
     }
 
     @Schema(description = "The authentication method used to bind to the LDAP server (PLAINTEXT, SASL, ...)")
@@ -150,7 +151,7 @@ public class LdapConfiguration implements Serializable
 
     public void setAuthenticationMethod( String authenticationMethod )
     {
-        this.authenticationMethod = authenticationMethod;
+        this.authenticationMethod = authenticationMethod==null?"":authenticationMethod;
     }
 
     @Schema(description = "True, if the LDAP bind authentication is used for logging in to Archiva")

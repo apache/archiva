@@ -495,6 +495,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         if (LDAP_MAPPER.isPrefixMapping( key )) {
             return LDAP_MAPPER.getPrefixString( key, conf.getLdapGroupMappings( ) );
         }
+        if (conf.getLdapConfiguration().getExtraProperties().containsKey( key )) {
+            return conf.getLdapConfiguration( ).getExtraProperties( ).get( key );
+        }
 
         if ( USER_MANAGER_IMPL.equals( key ) )
         {
@@ -537,6 +540,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         }
         if (LDAP_MAPPER.isPrefixMapping( key )) {
             return LDAP_MAPPER.getPrefixString( key, conf.getLdapGroupMappings( ) );
+        }
+        if (conf.getLdapConfiguration().getExtraProperties().containsKey( key )) {
+            return conf.getLdapConfiguration( ).getExtraProperties( ).get( key );
         }
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
