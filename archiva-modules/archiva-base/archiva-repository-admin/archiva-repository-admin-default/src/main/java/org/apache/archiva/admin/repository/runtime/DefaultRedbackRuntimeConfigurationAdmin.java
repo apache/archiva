@@ -422,16 +422,18 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private void cleanupProperties( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
     {
         Map<String, String> properties = redbackRuntimeConfiguration.getConfigurationProperties();
+        LdapConfiguration ldapConf = redbackRuntimeConfiguration.getLdapConfiguration( );
         LDAP_MAPPER.getAllAttributes( ).stream( ).forEach( att -> properties.remove( att ) );
-
-        // cleanup groups <-> role mapping
-        /**for ( Map.Entry<String, String> entry : new HashMap<String, String>( properties ).entrySet() )
-         {
-         if ( entry.getKey().startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
-         {
-         properties.remove( entry.getKey() );
-         }
-         }*/
+        List<String> prefixRemove = new ArrayList<>( );
+        for ( String key : properties.keySet()) {
+            boolean prefixMapping = LDAP_MAPPER.isPrefixMapping( key );
+            if (prefixMapping) {
+                prefixRemove.add( key );
+            } else if ( key.startsWith( "ldap" ) && !LDAP_MAPPER.isMapping( key ) ) {
+                ldapConf.getExtraProperties( ).put( key, properties.get( key ) );
+            }
+        }
+        prefixRemove.stream( ).forEach( att -> properties.remove( att ) );
     }
 
     private org.apache.archiva.configuration.RedbackRuntimeConfiguration build(

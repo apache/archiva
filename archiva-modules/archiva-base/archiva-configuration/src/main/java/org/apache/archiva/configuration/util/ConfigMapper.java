@@ -1,4 +1,5 @@
-package org.apache.archiva.configuration.util;/*
+package org.apache.archiva.configuration.util;
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -76,6 +77,9 @@ public class ConfigMapper<T, K>
         return prefixStringFunctionMap.keySet( ).stream( ).anyMatch( prefix -> attributeName.startsWith( prefix ) );
     }
 
+    public boolean isMapping(String attributeName) {
+        return isStringMapping( attributeName ) || isIntMapping( attributeName ) || isBooleanMapping( attributeName );
+    }
 
     public void addIntMapping( String attributeName, Function<T, Integer> mapping) {
         this.intFunctionMap.put( attributeName, mapping );
