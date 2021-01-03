@@ -30,6 +30,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.components.registry.RegistryException;
+import org.apache.archiva.configuration.util.ConfigMapper;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationException;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
@@ -44,10 +45,14 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+
+import static org.apache.archiva.redback.configuration.UserConfigurationKeys.*;
 
 /**
  * @author Olivier Lamy
@@ -64,6 +69,36 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     private UserConfiguration userConfiguration;
+
+    private static final Map<String, List<String>> LDAP_PROPERTIES = new HashMap<>( );
+
+    private static final ConfigMapper<LdapConfiguration, List<LdapGroupMapping>> LDAP_MAPPER = new ConfigMapper( );
+
+    static {
+        LDAP_MAPPER.addStringMapping( LDAP_HOSTNAME, LdapConfiguration::getHostName );
+        LDAP_MAPPER.addStringMapping( LDAP_CONTEX_FACTORY, LdapConfiguration::getContextFactory );
+        LDAP_MAPPER.addStringMapping( LDAP_PASSWORD, LdapConfiguration::getPassword );
+        LDAP_MAPPER.addStringMapping( LDAP_AUTHENTICATION_METHOD, LdapConfiguration::getAuthenticationMethod );
+        LDAP_MAPPER.addStringMapping( LDAP_BASEDN, LdapConfiguration::getBaseDn );
+        LDAP_MAPPER.addStringMapping( LDAP_GROUPS_BASEDN, LdapConfiguration::getBaseGroupsDn );
+        LDAP_MAPPER.addStringMapping( LDAP_BINDDN, LdapConfiguration::getBindDn );
+        LDAP_MAPPER.addPrefixStringMapping( LDAP_GROUPS_ROLE_START_KEY, (String attributeName, List<LdapGroupMapping> mapping)-> {
+            int index = mapping.indexOf( new LdapGroupMapping(
+                StringUtils.substringAfter( attributeName, LDAP_GROUPS_ROLE_START_KEY ) ) );
+            if ( index > -1 )
+            {
+                return StringUtils.join( mapping.get( index ).getRoleNames(),
+                    ',' );
+            } else {
+                return "";
+            }
+        } );
+        LDAP_MAPPER.addIntMapping( LDAP_PORT, LdapConfiguration::getPort );
+        LDAP_MAPPER.addBooleanMapping( LDAP_SSL, LdapConfiguration::isSsl );
+        LDAP_MAPPER.addBooleanMapping( LDAP_WRITABLE, LdapConfiguration::isWritable );
+        LDAP_MAPPER.addBooleanMapping( LDAP_GROUPS_USE_ROLENAME, LdapConfiguration::isUseRoleNameAsGroup );
+        LDAP_MAPPER.addBooleanMapping( LDAP_BIND_AUTHENTICATOR_ENABLED, LdapConfiguration::isBindAuthenticatorEnabled );
+    }
 
     private Cache usersCache;
 
@@ -86,6 +121,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         try
         {
             RedbackRuntimeConfiguration redbackRuntimeConfiguration = getRedbackRuntimeConfiguration();
+            Function<RedbackRuntimeConfiguration, LdapConfiguration> kk = RedbackRuntimeConfiguration::getLdapConfiguration;
             // migrate or not data from redback
             if ( !redbackRuntimeConfiguration.isMigratedFromRedbackConfiguration() )
             {
@@ -93,7 +129,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 redbackRuntimeConfiguration = new RedbackRuntimeConfiguration();
                 // so migrate if available
                 String userManagerImpl =
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.USER_MANAGER_IMPL, //
+                    userConfiguration.getConcatenatedList( USER_MANAGER_IMPL, //
                                                            DEFAULT_USER_MANAGER_IMPL );
                 if ( StringUtils.isNotEmpty( userManagerImpl ) )
                 {
@@ -113,7 +149,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 }
 
                 String rbacManagerImpls =
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.RBAC_MANAGER_IMPL, //
+                    userConfiguration.getConcatenatedList( RBAC_MANAGER_IMPL, //
                                                            DEFAULT_RBAC_MANAGER_IMPL );
 
                 if ( StringUtils.isNotEmpty( rbacManagerImpls ) )
@@ -143,36 +179,36 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 }
 
                 ldapConfiguration.setHostName(
-                    userConfiguration.getString( UserConfigurationKeys.LDAP_HOSTNAME, null ) );
-                ldapConfiguration.setPort( userConfiguration.getInt( UserConfigurationKeys.LDAP_PORT, -1 ) );
-                ldapConfiguration.setSsl( userConfiguration.getBoolean( UserConfigurationKeys.LDAP_SSL, false ) );
+                    userConfiguration.getString( LDAP_HOSTNAME, null ) );
+                ldapConfiguration.setPort( userConfiguration.getInt( LDAP_PORT, -1 ) );
+                ldapConfiguration.setSsl( userConfiguration.getBoolean( LDAP_SSL, false ) );
                 ldapConfiguration.setBaseDn(
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, null ) );
+                    userConfiguration.getConcatenatedList( LDAP_BASEDN, null ) );
 
                 ldapConfiguration.setBaseGroupsDn(
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_GROUPS_BASEDN,
+                    userConfiguration.getConcatenatedList( LDAP_GROUPS_BASEDN,
                                                            ldapConfiguration.getBaseDn() ) );
 
                 ldapConfiguration.setContextFactory(
-                    userConfiguration.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY,
+                    userConfiguration.getString( LDAP_CONTEX_FACTORY,
                                                  isSunContextFactoryAvailable()
                                                      ? "com.sun.jndi.ldap.LdapCtxFactory"
                                                      : "" ) );
                 ldapConfiguration.setBindDn(
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, null ) );
+                    userConfiguration.getConcatenatedList( LDAP_BINDDN, null ) );
                 ldapConfiguration.setPassword(
-                    userConfiguration.getString( UserConfigurationKeys.LDAP_PASSWORD, null ) );
+                    userConfiguration.getString( LDAP_PASSWORD, null ) );
                 ldapConfiguration.setAuthenticationMethod(
-                    userConfiguration.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, null ) );
+                    userConfiguration.getString( LDAP_AUTHENTICATION_METHOD, null ) );
 
                 ldapConfiguration.setWritable(
-                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_WRITABLE, false ) );
+                    userConfiguration.getBoolean( LDAP_WRITABLE, false ) );
 
                 ldapConfiguration.setUseRoleNameAsGroup(
-                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME, false ) );
+                    userConfiguration.getBoolean( LDAP_GROUPS_USE_ROLENAME, false ) );
 
                 boolean ldapBindAuthenticatorEnabled =
-                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED, false );
+                    userConfiguration.getBoolean( LDAP_BIND_AUTHENTICATOR_ENABLED, false );
                 ldapConfiguration.setBindAuthenticatorEnabled( ldapBindAuthenticatorEnabled );
 
                 // LDAP groups mapping reading !!
@@ -185,10 +221,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
                 for ( String key : keys )
                 {
-                    if ( key.startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
+                    if ( key.startsWith( LDAP_GROUPS_ROLE_START_KEY ) )
                     {
                         String group =
-                            StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY );
+                            StringUtils.substringAfter( key, LDAP_GROUPS_ROLE_START_KEY );
                         String val = userConfiguration.getConcatenatedList( key, "" );
                         if ( !StringUtils.isEmpty( val ) )
                         {
@@ -386,18 +422,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private void cleanupProperties( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
     {
         Map<String, String> properties = redbackRuntimeConfiguration.getConfigurationProperties();
-        properties.remove( UserConfigurationKeys.LDAP_HOSTNAME );
-        properties.remove( UserConfigurationKeys.LDAP_PORT );
-        properties.remove( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED );
-        properties.remove( UserConfigurationKeys.LDAP_SSL );
-        properties.remove( UserConfigurationKeys.LDAP_BASEDN );
-        properties.remove( UserConfigurationKeys.LDAP_GROUPS_BASEDN );
-        properties.remove( UserConfigurationKeys.LDAP_CONTEX_FACTORY );
-        properties.remove( UserConfigurationKeys.LDAP_BINDDN );
-        properties.remove( UserConfigurationKeys.LDAP_PASSWORD );
-        properties.remove( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD );
-        properties.remove( UserConfigurationKeys.LDAP_WRITABLE );
-        properties.remove( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME );
+        LDAP_MAPPER.getAllAttributes( ).stream( ).forEach( att -> properties.remove( att ) );
 
         // cleanup groups <-> role mapping
         /**for ( Map.Entry<String, String> entry : new HashMap<String, String>( properties ).entrySet() )
@@ -461,40 +486,19 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     public String getString( String key )
     {
         final RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
-        if ( UserConfigurationKeys.LDAP_HOSTNAME.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getHostName();
+        if (LDAP_MAPPER.isStringMapping( key )) {
+            final LdapConfiguration ldapConf = conf.getLdapConfiguration( );
+            return LDAP_MAPPER.getString( key, ldapConf );
         }
-        if ( UserConfigurationKeys.LDAP_CONTEX_FACTORY.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getContextFactory();
-        }
-        if ( UserConfigurationKeys.LDAP_PASSWORD.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getPassword();
-        }
-        if ( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getAuthenticationMethod();
+        if (LDAP_MAPPER.isPrefixMapping( key )) {
+            return LDAP_MAPPER.getPrefixString( key, conf.getLdapGroupMappings( ) );
         }
 
-        if ( UserConfigurationKeys.USER_MANAGER_IMPL.equals( key ) )
+        if ( USER_MANAGER_IMPL.equals( key ) )
         {
             // possible false for others than archiva user manager
             return conf.getUserManagerImpls().get( 0 );
         }
-
-        if ( StringUtils.startsWith( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
-        {
-            int index = conf.getLdapGroupMappings().indexOf( new LdapGroupMapping(
-                StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) ) );
-            if ( index > -1 )
-            {
-                return StringUtils.join( conf.getLdapGroupMappings().get( index ).getRoleNames(),
-                                         ',' );
-            }
-        }
-
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -525,33 +529,13 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     public String getString( String key, String defaultValue )
     {
         final RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
-        if ( UserConfigurationKeys.LDAP_HOSTNAME.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getHostName();
+        if (LDAP_MAPPER.isStringMapping( key )) {
+            final LdapConfiguration ldapConf = conf.getLdapConfiguration( );
+            return LDAP_MAPPER.getString( key, ldapConf );
         }
-        if ( UserConfigurationKeys.LDAP_CONTEX_FACTORY.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getContextFactory();
+        if (LDAP_MAPPER.isPrefixMapping( key )) {
+            return LDAP_MAPPER.getPrefixString( key, conf.getLdapGroupMappings( ) );
         }
-        if ( UserConfigurationKeys.LDAP_PASSWORD.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getPassword();
-        }
-        if ( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getAuthenticationMethod();
-        }
-        if ( StringUtils.startsWith( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
-        {
-            int index = conf.getLdapGroupMappings().indexOf( new LdapGroupMapping(
-                StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) ) );
-            if ( index > -1 )
-            {
-                return StringUtils.join( conf.getLdapGroupMappings().get( index ).getRoleNames(),
-                    ',' );
-            }
-        }
-
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -583,6 +567,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     public int getInt( String key )
     {
         final RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
+        if (LDAP_MAPPER.isIntMapping( key )) {
+            return LDAP_MAPPER.getInt( key, conf.getLdapConfiguration( ) );
+        }
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -609,11 +596,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     public int getInt( String key, int defaultValue )
     {
         final RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
-        if ( UserConfigurationKeys.LDAP_PORT.equals( key ) )
-        {
-            return conf.getLdapConfiguration().getPort();
+        if (LDAP_MAPPER.isIntMapping( key )) {
+            return LDAP_MAPPER.getInt( key, conf.getLdapConfiguration( ) );
         }
-
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -640,24 +625,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     public boolean getBoolean( String key )
     {
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
-        if ( UserConfigurationKeys.LDAP_SSL.equals( key ) )
-        {
-            return getRedbackRuntimeConfiguration().getLdapConfiguration().isSsl();
-        }
-
-        if ( UserConfigurationKeys.LDAP_WRITABLE.equals( key ) )
-        {
-            return conf.getLdapConfiguration().isWritable();
-        }
-
-        if ( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME.equals( key ) )
-        {
-            return conf.getLdapConfiguration().isUseRoleNameAsGroup();
-        }
-
-        if ( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED.equals( key ) )
-        {
-            return conf.getLdapConfiguration().isBindAuthenticatorEnabled();
+        if (LDAP_MAPPER.isBooleanMapping( key )) {
+            return LDAP_MAPPER.getBoolean( key, conf.getLdapConfiguration( ) );
         }
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
@@ -684,27 +653,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     @Override
     public boolean getBoolean( String key, boolean defaultValue )
     {
-        if ( UserConfigurationKeys.LDAP_SSL.equals( key ) )
-        {
-            return getRedbackRuntimeConfiguration().getLdapConfiguration().isSsl();
-        }
-
-        if ( UserConfigurationKeys.LDAP_WRITABLE.equals( key ) )
-        {
-            return getRedbackRuntimeConfiguration().getLdapConfiguration().isWritable();
-        }
-
-        if ( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME.equals( key ) )
-        {
-            return getRedbackRuntimeConfiguration().getLdapConfiguration().isUseRoleNameAsGroup();
-        }
-
-        if ( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED.equals( key ) )
-        {
-            return getRedbackRuntimeConfiguration().getLdapConfiguration().isBindAuthenticatorEnabled();
-        }
-
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
+        if (LDAP_MAPPER.isBooleanMapping( key )) {
+            return LDAP_MAPPER.getBoolean( key, conf.getLdapConfiguration( ) );
+        }
 
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
@@ -754,17 +706,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     @Override
     public String getConcatenatedList( String key, String defaultValue )
     {
-        if ( UserConfigurationKeys.LDAP_BASEDN.equals( key ) )
-        {
-            return getRedbackRuntimeConfiguration().getLdapConfiguration().getBaseDn();
-        }
-        if ( UserConfigurationKeys.LDAP_BINDDN.equals( key ) )
-        {
-            return getRedbackRuntimeConfiguration().getLdapConfiguration().getBindDn();
-        }
-        if ( UserConfigurationKeys.LDAP_GROUPS_BASEDN.equals( key ) )
-        {
-            return getRedbackRuntimeConfiguration().getLdapConfiguration().getBaseGroupsDn();
+        if (LDAP_MAPPER.isStringMapping( key )) {
+            return LDAP_MAPPER.getString( key,  getRedbackRuntimeConfiguration().getLdapConfiguration());
         }
         return userConfiguration.getConcatenatedList( key, defaultValue );
     }
