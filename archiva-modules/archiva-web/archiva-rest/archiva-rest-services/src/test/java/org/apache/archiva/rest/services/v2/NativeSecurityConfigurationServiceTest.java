@@ -19,6 +19,9 @@ package org.apache.archiva.rest.services.v2;
  */
 
 import io.restassured.response.Response;
+import org.apache.archiva.components.rest.model.PagedResult;
+import org.apache.archiva.components.rest.model.PropertyEntry;
+import org.apache.archiva.rest.api.model.v2.BeanInformation;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +33,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -68,7 +73,6 @@ public class NativeSecurityConfigurationServiceTest extends AbstractNativeRestSe
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
                 .get( "config" )
-                .prettyPeek()
                 .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
         assertEquals( "jpa", response.getBody( ).jsonPath( ).getString( "active_user_managers[0]" ) );
@@ -77,6 +81,88 @@ public class NativeSecurityConfigurationServiceTest extends AbstractNativeRestSe
         assertEquals("10",response.getBody( ).jsonPath( ).getString( "properties.\"security.policy.allowed.login.attempt\""));
         assertTrue( response.getBody( ).jsonPath( ).getBoolean( "user_cache_enabled" ) );
         assertFalse( response.getBody( ).jsonPath( ).getBoolean( "ldap_active" ) );
+    }
+
+    @Test
+    void testGetConfigurationProperties() {
+        String token = getAdminToken( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .get( "config/properties" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+        PagedResult<PropertyEntry> result = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+        List<PropertyEntry> propList = response.getBody( ).jsonPath( ).getList( "data", PropertyEntry.class );
+        assertEquals( 10, result.getPagination( ).getLimit( ) );
+        assertEquals( 0, result.getPagination( ).getOffset( ) );
+        assertEquals( 47, result.getPagination( ).getTotalCount( ) );
+        assertEquals( "authentication.jwt.keystoreType", propList.get( 0 ).getKey() );
+
+        response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .queryParam( "offset", "3" )
+            .queryParam( "limit", "5" )
+            .get( "config/properties" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+
+        assertNotNull( response );
+        result = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+        assertEquals( 5, result.getPagination( ).getLimit( ) );
+        assertEquals( 47, result.getPagination( ).getTotalCount( ) );
+        propList = response.getBody( ).jsonPath( ).getList( "data", PropertyEntry.class );
+        assertEquals( "authentication.jwt.refreshLifetimeMs", propList.get( 0 ).getKey() );
+    }
+
+    @Test
+    void testGetLdapConfiguration() {
+        String token = getAdminToken( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .get( "config/ldap" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+        assertEquals( "", response.getBody( ).jsonPath( ).get( "host_name" ) );
+        assertEquals( 13, response.getBody( ).jsonPath( ).getMap( "properties" ).size( ) );
+    }
+
+    @Test
+    void testGetCacheConfiguration() {
+        String token = getAdminToken( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .get( "config/cache" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+    }
+
+    @Test
+    void testGetUserManagers() {
+        String token = getAdminToken( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .get( "user_managers" )
+            .prettyPeek()
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+        List<BeanInformation> usrList = response.getBody( ).jsonPath( ).getList( "", BeanInformation.class );
+        assertEquals( 2, usrList.size( ) );
+        assertTrue( usrList.stream( ).anyMatch( bi -> "LDAP User Manager".equals( bi.getDisplayName( ) ) ) );
+        assertTrue( usrList.stream( ).anyMatch( bi -> "Database User Manager".equals( bi.getDisplayName( ) ) ) );
+    }
+
+    @Test
+    void testGetRbacManagers() {
+        String token = getAdminToken( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .get( "rbac_managers" )
+            .prettyPeek()
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+        List<BeanInformation> rbacList = response.getBody( ).jsonPath( ).getList( "", BeanInformation.class );
+        assertEquals( 2, rbacList.size( ) );
+        assertTrue( rbacList.stream( ).anyMatch( bi -> "Database RBAC Manager".equals( bi.getDisplayName( ) ) ) );
+        assertTrue( rbacList.stream( ).anyMatch( bi -> "LDAP RBAC Manager".equals( bi.getDisplayName( ) ) ) );
     }
 
 }

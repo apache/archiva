@@ -77,6 +77,7 @@ public interface SecurityConfigurationService
     SecurityConfiguration getConfiguration()
         throws ArchivaRestServiceException;
 
+    @Path( "config/properties" )
     @GET
     @Produces( { APPLICATION_JSON } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
@@ -85,7 +86,7 @@ public interface SecurityConfigurationService
             @Parameter(name = "q", description = "Search term"),
             @Parameter(name = "offset", description = "The offset of the first element returned"),
             @Parameter(name = "limit", description = "Maximum number of items to return in the response"),
-            @Parameter(name = "orderBy", description = "List of attribute used for sorting (user_id, fullName, email, created"),
+            @Parameter(name = "orderBy", description = "List of attribute used for sorting (key, value)"),
             @Parameter(name = "order", description = "The sort order. Either ascending (asc) or descending (desc)")
         },
         security = {
@@ -105,10 +106,10 @@ public interface SecurityConfigurationService
     PagedResult<PropertyEntry> getConfigurationProperties( @QueryParam("q") @DefaultValue( "" ) String searchTerm,
                                                            @QueryParam( "offset" ) @DefaultValue( "0" ) Integer offset,
                                                            @QueryParam( "limit" ) @DefaultValue( value = DEFAULT_PAGE_LIMIT ) Integer limit,
-                                                           @QueryParam( "orderBy") @DefaultValue( "id" ) List<String> orderBy,
+                                                           @QueryParam( "orderBy") @DefaultValue( "key" ) List<String> orderBy,
                                                            @QueryParam("order") @DefaultValue( "asc" ) String order ) throws ArchivaRestServiceException;
 
-    @Path("ldap")
+    @Path("config/ldap")
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
@@ -129,7 +130,7 @@ public interface SecurityConfigurationService
     LdapConfiguration getLdapConfiguration( ) throws ArchivaRestServiceException;
 
 
-    @Path("user/cache")
+    @Path("config/cache")
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
@@ -149,7 +150,7 @@ public interface SecurityConfigurationService
     )
     CacheConfiguration getCacheConfiguration( ) throws ArchivaRestServiceException;
 
-    @Path("user/managers")
+    @Path("user_managers")
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
@@ -170,7 +171,7 @@ public interface SecurityConfigurationService
     List<BeanInformation> getAvailableUserManagers()
         throws ArchivaRestServiceException;
 
-    @Path("rbac/managers")
+    @Path("rbac_managers")
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)

@@ -34,6 +34,19 @@ public class BeanInformation implements Serializable
     String defaultDescription;
     boolean readonly;
 
+    public BeanInformation( )
+    {
+    }
+
+    public BeanInformation( String id, String displayName, String descriptionKey, String defaultDescription, boolean readonly )
+    {
+        this.id = id;
+        this.displayName = displayName;
+        this.descriptionKey = descriptionKey;
+        this.defaultDescription = defaultDescription;
+        this.readonly = readonly;
+    }
+
     @Schema(description = "The identifier")
     public String getId( )
     {

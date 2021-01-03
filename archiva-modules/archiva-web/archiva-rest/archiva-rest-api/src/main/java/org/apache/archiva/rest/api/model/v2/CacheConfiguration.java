@@ -58,7 +58,7 @@ public class CacheConfiguration
         // no op
     }
 
-    public CacheConfiguration of( org.apache.archiva.admin.model.beans.CacheConfiguration beanConfiguration ) {
+    public static CacheConfiguration of( org.apache.archiva.admin.model.beans.CacheConfiguration beanConfiguration ) {
         CacheConfiguration newConfig = new CacheConfiguration( );
         newConfig.setMaxEntriesInMemory( beanConfiguration.getMaxElementsInMemory() );
         newConfig.setMaxEntriesOnDisk( beanConfiguration.getMaxElementsOnDisk() );

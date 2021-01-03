@@ -381,8 +381,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-ldap</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-jpa</artifactId>
-      <version>${redback.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
