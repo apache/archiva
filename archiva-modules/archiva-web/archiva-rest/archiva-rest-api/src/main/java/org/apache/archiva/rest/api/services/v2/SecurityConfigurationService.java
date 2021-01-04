@@ -98,6 +98,8 @@ public interface SecurityConfigurationService
             @ApiResponse( responseCode = "200",
                 description = "If the configuration was updated"
             ),
+            @ApiResponse( responseCode = "422", description = "Invalid content data",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to update the configuration",
                 content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
         }
@@ -182,6 +184,8 @@ public interface SecurityConfigurationService
             @ApiResponse( responseCode = "200",
                 description = "If the property value was updated."
             ),
+            @ApiResponse( responseCode = "400", description = "The body data is not valid",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
             @ApiResponse( responseCode = "404", description = "The given property name does not exist",
                 content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",

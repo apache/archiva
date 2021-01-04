@@ -22,6 +22,8 @@ import io.restassured.response.Response;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.model.PropertyEntry;
 import org.apache.archiva.rest.api.model.v2.BeanInformation;
+import org.apache.archiva.rest.api.model.v2.CacheConfiguration;
+import org.apache.archiva.rest.api.model.v2.LdapConfiguration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -34,7 +36,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -125,6 +130,54 @@ public class NativeSecurityConfigurationServiceTest extends AbstractNativeRestSe
         assertEquals( 13, response.getBody( ).jsonPath( ).getMap( "properties" ).size( ) );
     }
 
+
+    @Test
+    void testUpdateLdapConfiguration() {
+        String token = getAdminToken( );
+        try
+        {
+            Map<String, Object> jsonMap = new HashMap<>( );
+            jsonMap.put( "host_name", "localhost" );
+            jsonMap.put( "port", 389 );
+            jsonMap.put( "ssl_enabled", false );
+            jsonMap.put( "writable", true );
+            jsonMap.put( "base_dn", "dc=apache,dc=org" );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonMap )
+                .put( "config/ldap" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "config/ldap" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            LdapConfiguration config = response.getBody( ).jsonPath( ).getObject( "", LdapConfiguration.class );
+            assertEquals( "localhost", config.getHostName( ) );
+            assertEquals( 389, config.getPort( ) );
+            assertFalse( config.isSslEnabled( ) );
+            assertTrue( config.isWritable( ) );
+            assertEquals( "dc=apache,dc=org", config.getBaseDn( ) );
+        } finally
+        {
+            Map<String, Object> jsonMap = new HashMap<>( );
+            jsonMap.put( "host_name", "" );
+            jsonMap.put( "port", -1 );
+            jsonMap.put( "ssl_enabled", false );
+            jsonMap.put( "base_dn", "" );
+            jsonMap.put( "writable", false );
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonMap )
+                .put( "config/ldap" )
+                .then( ).statusCode( 200 );
+
+        }
+    }
+
+
     @Test
     void testGetCacheConfiguration() {
         String token = getAdminToken( );
@@ -136,12 +189,57 @@ public class NativeSecurityConfigurationServiceTest extends AbstractNativeRestSe
     }
 
     @Test
+    void testUpdateCacheConfiguration() {
+        String token = getAdminToken( );
+
+        try
+        {
+            Map<String, Object> jsonMap = new HashMap<>( );
+            jsonMap.put( "time_to_idle_seconds", 1600 );
+            jsonMap.put( "time_to_live_seconds", 12000 );
+            jsonMap.put( "max_entries_in_memory", 500 );
+            jsonMap.put( "max_entries_on_disk", 400 );
+
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonMap )
+                .put( "config/cache" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "config/cache" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            CacheConfiguration config = response.getBody( ).jsonPath( ).getObject( "", CacheConfiguration.class );
+            assertEquals( 1600, config.getTimeToIdleSeconds( ) );
+            assertEquals( 12000, config.getTimeToLiveSeconds( ) );
+            assertEquals( 500, config.getMaxEntriesInMemory( ) );
+            assertEquals( 400, config.getMaxEntriesOnDisk( ) );
+        } finally
+        {
+            Map<String, Object> jsonMap = new HashMap<>( );
+            jsonMap.put( "time_to_idle_seconds", 1800 );
+            jsonMap.put( "time_to_live_seconds", 14400 );
+            jsonMap.put( "max_entries_in_memory", 1000 );
+            jsonMap.put( "max_entries_on_disk", 0 );
+
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonMap )
+                .put( "config/cache" )
+                .then( ).statusCode( 200 );
+
+        }
+    }
+
+
+    @Test
     void testGetUserManagers() {
         String token = getAdminToken( );
         Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
             .when( )
             .get( "user_managers" )
-            .prettyPeek()
             .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
         List<BeanInformation> usrList = response.getBody( ).jsonPath( ).getList( "", BeanInformation.class );
@@ -156,7 +254,6 @@ public class NativeSecurityConfigurationServiceTest extends AbstractNativeRestSe
         Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
             .when( )
             .get( "rbac_managers" )
-            .prettyPeek()
             .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
         List<BeanInformation> rbacList = response.getBody( ).jsonPath( ).getList( "", BeanInformation.class );
@@ -164,5 +261,91 @@ public class NativeSecurityConfigurationServiceTest extends AbstractNativeRestSe
         assertTrue( rbacList.stream( ).anyMatch( bi -> "Database RBAC Manager".equals( bi.getDisplayName( ) ) ) );
         assertTrue( rbacList.stream( ).anyMatch( bi -> "LDAP RBAC Manager".equals( bi.getDisplayName( ) ) ) );
     }
+
+    @Test
+    void testUpdateConfiguration() {
+        String token = getAdminToken( );
+        try
+        {
+            Map<String, Object> jsonAsMap = new HashMap<>( );
+            jsonAsMap.put( "active_user_managers", Arrays.asList( "jpa", "ldap" ) );
+            jsonAsMap.put( "active_rbac_managers", Arrays.asList( "jpa" ) );
+            jsonAsMap.put( "user_cache_enabled", false );
+            jsonAsMap.put( "ldap_active", false );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .put( "config" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "config" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            assertEquals( 2, response.getBody( ).jsonPath( ).getList( "active_user_managers" ).size( ) );
+        } finally
+        {
+            Map<String, Object> jsonAsMap = new HashMap<>( );
+            jsonAsMap.put( "active_user_managers", Arrays.asList( "jpa" ) );
+            jsonAsMap.put( "active_rbac_managers", Arrays.asList( "jpa" ) );
+            jsonAsMap.put( "user_cache_enabled", true );
+            jsonAsMap.put( "ldap_active", false );
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .put( "config" )
+                .then( ).statusCode( 200 );
+
+        }
+
+    }
+
+    @Test
+    void testGetConfigProperty() {
+        String token = getAdminToken( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .get( "config/properties/rest.csrffilter.absentorigin.deny" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+        assertEquals( "true", response.getBody( ).jsonPath( ).getString( "value" ) );
+    }
+
+    @Test
+    void testUpdateConfigProperty() {
+        String token = getAdminToken( );
+
+        try
+        {
+            Map<String, String> jsonMap = new HashMap<>( );
+            jsonMap.put( "value", "false" );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonMap )
+                .put( "config/properties/rest.csrffilter.absentorigin.deny" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "config/properties/rest.csrffilter.absentorigin.deny" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            assertEquals( "false", response.getBody( ).jsonPath( ).getString( "value" ) );
+        } finally
+        {
+            Map<String, String> jsonMap = new HashMap<>( );
+            jsonMap.put( "value", "true" );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonMap )
+                .put( "config/properties/rest.csrffilter.absentorigin.deny" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+        }
+    }
+
 
 }

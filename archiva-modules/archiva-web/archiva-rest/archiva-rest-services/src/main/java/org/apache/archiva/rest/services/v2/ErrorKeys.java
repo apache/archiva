@@ -27,4 +27,6 @@ public interface ErrorKeys
 
     String PROPERTY_NOT_FOUND = "archiva.property.not.found";
 
+    String MISSING_DATA = "archiva.missing.data";
+
 }

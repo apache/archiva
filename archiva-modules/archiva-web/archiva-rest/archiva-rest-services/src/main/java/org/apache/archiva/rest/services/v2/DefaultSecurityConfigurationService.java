@@ -179,6 +179,9 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     @Override
     public Response updateConfiguration( SecurityConfiguration newConfiguration ) throws ArchivaRestServiceException
     {
+        if (newConfiguration==null) {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.MISSING_DATA ), 400 );
+        }
         try
         {
             RedbackRuntimeConfiguration conf = redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( );
@@ -321,6 +324,9 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     @Override
     public Response updateConfigurationProperty( String propertyName, PropertyEntry propertyValue ) throws ArchivaRestServiceException
     {
+        if (propertyValue==null) {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.MISSING_DATA ), 400 );
+        }
         try
         {
             RedbackRuntimeConfiguration conf = redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( );
@@ -403,6 +409,9 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     @Override
     public Response updateCacheConfiguration( CacheConfiguration cacheConfiguration ) throws ArchivaRestServiceException
     {
+        if (cacheConfiguration==null) {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.MISSING_DATA ), 400 );
+        }
         try
         {
             RedbackRuntimeConfiguration redbackRuntimeConfiguration =
