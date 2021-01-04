@@ -175,7 +175,6 @@ public interface SecurityConfigurationService
                 name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
             )
         },
-        requestBody = @RequestBody(required = true, description = "The property value"),
         parameters = {
             @Parameter(in = ParameterIn.PATH, name="propertyName", description = "The name of the property to update")
         },
@@ -223,7 +222,6 @@ public interface SecurityConfigurationService
                 name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
             )
         },
-        requestBody = @RequestBody(required = true, description = "The LDAP configuration"),
         responses = {
             @ApiResponse( responseCode = "200",
                 description = "If the configuration was updated"
@@ -264,7 +262,6 @@ public interface SecurityConfigurationService
                 name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
             )
         },
-        requestBody = @RequestBody(required = true, description = "The LDAP configuration"),
         responses = {
             @ApiResponse( responseCode = "200",
                 description = "If the configuration was updated"
