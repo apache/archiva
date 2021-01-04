@@ -19,11 +19,18 @@ package org.apache.archiva.rest.services.v2;/*
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
+import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.model.PropertyEntry;
 import org.apache.archiva.components.rest.util.PagingHelper;
 import org.apache.archiva.components.rest.util.QueryHelper;
+import org.apache.archiva.redback.authentication.Authenticator;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
+import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
+import org.apache.archiva.redback.policy.CookieSettings;
+import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.v2.BeanInformation;
@@ -33,6 +40,8 @@ import org.apache.archiva.rest.api.model.v2.SecurityConfiguration;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.v2.ErrorMessage;
 import org.apache.archiva.rest.api.services.v2.SecurityConfigurationService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +50,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.management.Query;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -81,6 +93,29 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     @Inject
     private ApplicationContext applicationContext;
 
+    @Inject
+    @Named(value = "userManager#default")
+    private UserManager userManager;
+
+    @Inject
+    @Named(value = "rbacManager#default")
+    private RBACManager rbacManager;
+
+    @Inject
+    private RoleManager roleManager;
+
+    @Inject
+    @Named(value = "ldapConnectionFactory#configurable")
+    private LdapConnectionFactory ldapConnectionFactory;
+
+    @Inject
+    private LdapUserMapper ldapUserMapper;
+
+    @Inject
+    @Named(value = "cache#users")
+    private Cache usersCache;
+
+
     @PostConstruct
     void init() {
         bundle = ResourceBundle.getBundle( "org.apache.archiva.rest.RestBundle" );
@@ -102,6 +137,135 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
         {
             throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR ) );
         }
+    }
+    private void updateConfig(SecurityConfiguration newConfig, RedbackRuntimeConfiguration rbConfig) {
+        rbConfig.setUserManagerImpls( newConfig.getActiveUserManagers() );
+        rbConfig.setRbacManagerImpls( newConfig.getActiveRbacManagers() );
+        rbConfig.setUseUsersCache( newConfig.isUserCacheEnabled() );
+        Map<String, String> props = rbConfig.getConfigurationProperties( );
+        for ( Map.Entry<String,String> newProp : newConfig.getProperties().entrySet() ) {
+            props.put( newProp.getKey( ), newProp.getValue( ) );
+        }
+    }
+
+    private void updateConfig(LdapConfiguration newConfig, RedbackRuntimeConfiguration rbConfig) {
+        org.apache.archiva.admin.model.beans.LdapConfiguration ldapConfig = rbConfig.getLdapConfiguration( );
+        ldapConfig.setBaseDn( newConfig.getBaseDn( ) );
+        ldapConfig.setAuthenticationMethod( newConfig.getAuthenticationMethod() );
+        ldapConfig.setBindAuthenticatorEnabled( newConfig.isBindAuthenticatorEnabled( ) );
+        ldapConfig.setBindDn( newConfig.getBindDn() );
+        ldapConfig.setSsl( newConfig.isSslEnabled( ) );
+        ldapConfig.setBaseGroupsDn( newConfig.getGroupsBaseDn() );
+        ldapConfig.setHostName( newConfig.getHostName() );
+        ldapConfig.setPort( newConfig.getPort() );
+        ldapConfig.setPassword( newConfig.getBindPassword() );
+        ldapConfig.setUseRoleNameAsGroup( newConfig.isUseRoleNameAsGroup() );
+        ldapConfig.setWritable( newConfig.isWritable( ) );
+
+        Map<String, String> props = ldapConfig.getExtraProperties( );
+        for ( Map.Entry<String,String> newProp : newConfig.getProperties().entrySet() ) {
+            props.put( newProp.getKey( ), newProp.getValue( ) );
+        }
+    }
+
+    private void updateConfig(CacheConfiguration newConfig, RedbackRuntimeConfiguration rbConfig) {
+        org.apache.archiva.admin.model.beans.CacheConfiguration cacheConfig = rbConfig.getUsersCacheConfiguration( );
+        cacheConfig.setMaxElementsInMemory( newConfig.getMaxEntriesInMemory());
+        cacheConfig.setMaxElementsOnDisk( newConfig.getMaxEntriesOnDisk() );
+        cacheConfig.setTimeToLiveSeconds( newConfig.getTimeToLiveSeconds() );
+        cacheConfig.setTimeToIdleSeconds( newConfig.getTimeToIdleSeconds() );
+    }
+
+    @Override
+    public Response updateConfiguration( SecurityConfiguration newConfiguration ) throws ArchivaRestServiceException
+    {
+        try
+        {
+            RedbackRuntimeConfiguration conf = redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( );
+            boolean userManagerChanged = !CollectionUtils.isEqualCollection( newConfiguration.getActiveUserManagers( ), conf.getUserManagerImpls() );
+            boolean rbacManagerChanged = !CollectionUtils.isEqualCollection( newConfiguration.getActiveRbacManagers( ), conf.getRbacManagerImpls( ) );
+
+            boolean ldapConfigured = false;
+            for (String um : newConfiguration.getActiveUserManagers()) {
+                if (um.contains("ldap")) {
+                    ldapConfigured=true;
+                }
+            }
+            if (!ldapConfigured) {
+                for (String rbm : newConfiguration.getActiveRbacManagers()) {
+                    if (rbm.contains("ldap")) {
+                        ldapConfigured = true;
+                    }
+                }
+            }
+
+            updateConfig( newConfiguration, conf);
+            redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( conf );
+
+            if ( userManagerChanged )
+            {
+                log.info( "user managerImpls changed to {} so reload it",
+                    newConfiguration.getActiveUserManagers() );
+                userManager.initialize();
+            }
+
+            if ( rbacManagerChanged )
+            {
+                log.info( "rbac manager changed to {} so reload it",
+                    newConfiguration.getActiveRbacManagers() );
+                rbacManager.initialize();
+                roleManager.initialize();
+            }
+
+            if (ldapConfigured) {
+                try {
+                    ldapConnectionFactory.initialize();
+                } catch (Exception e) {
+                    log.error( "Could not initialize LDAP connection factory: {}", e.getMessage( ) );
+                    throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.LDAP_CF_INIT_FAILED, e.getMessage() ) );
+                }
+            }
+            Collection<PasswordRule> passwordRules = applicationContext.getBeansOfType( PasswordRule.class ).values();
+
+            for ( PasswordRule passwordRule : passwordRules )
+            {
+                passwordRule.initialize();
+            }
+
+            Collection<CookieSettings> cookieSettingsList =
+                applicationContext.getBeansOfType( CookieSettings.class ).values();
+
+            for ( CookieSettings cookieSettings : cookieSettingsList )
+            {
+                cookieSettings.initialize();
+            }
+
+            Collection<Authenticator> authenticators =
+                applicationContext.getBeansOfType( Authenticator.class ).values();
+
+            for ( Authenticator authenticator : authenticators )
+            {
+                try {
+                    log.debug("Initializing authenticatior "+authenticator.getId());
+                    authenticator.initialize();
+                } catch (Exception e) {
+                    log.error("Initialization of authenticator failed "+authenticator.getId(),e);
+                }
+            }
+
+            if (ldapConfigured) {
+                try {
+                    ldapUserMapper.initialize();
+                } catch (Exception e) {
+                    throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.LDAP_USER_MAPPER_INIT_FAILED, e.getMessage( ) ) );
+                }
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
+        }
+        return Response.ok( ).build();
     }
 
     @Override
@@ -134,6 +298,48 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     }
 
     @Override
+    public PropertyEntry getConfigurationProperty( String propertyName ) throws ArchivaRestServiceException
+    {
+        try
+        {
+            RedbackRuntimeConfiguration conf = redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( );
+            if (conf.getConfigurationProperties().containsKey( propertyName )) {
+                String value = conf.getConfigurationProperties( ).get( propertyName );
+                return new PropertyEntry( propertyName, value );
+            } else {
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.PROPERTY_NOT_FOUND ), 404 );
+            }
+
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
+        }
+
+    }
+
+    @Override
+    public Response updateConfigurationProperty( String propertyName, PropertyEntry propertyValue ) throws ArchivaRestServiceException
+    {
+        try
+        {
+            RedbackRuntimeConfiguration conf = redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( );
+            if (conf.getConfigurationProperties().containsKey( propertyName )) {
+                conf.getConfigurationProperties( ).put( propertyName, propertyValue.getValue( ) );
+                redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( conf );
+                return Response.ok( ).build( );
+            } else {
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.PROPERTY_NOT_FOUND ), 404 );
+            }
+
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
+        }
+    }
+
+    @Override
     public LdapConfiguration getLdapConfiguration( ) throws ArchivaRestServiceException
     {
         try
@@ -153,6 +359,29 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     }
 
     @Override
+    public Response updateLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException
+    {
+        try
+        {
+            RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+                redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( );
+
+            log.debug( "getRedbackRuntimeConfiguration -> {}", redbackRuntimeConfiguration );
+
+            updateConfig( configuration, redbackRuntimeConfiguration );
+
+            redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
+
+            return Response.ok( ).build( );
+
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR ) );
+        }
+    }
+
+    @Override
     public CacheConfiguration getCacheConfiguration( ) throws ArchivaRestServiceException
     {
         try
@@ -169,6 +398,25 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
             throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR ) );
         }
 
+    }
+
+    @Override
+    public Response updateCacheConfiguration( CacheConfiguration cacheConfiguration ) throws ArchivaRestServiceException
+    {
+        try
+        {
+            RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+                redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( );
+
+            log.debug( "getRedbackRuntimeConfiguration -> {}", redbackRuntimeConfiguration );
+            updateConfig( cacheConfiguration, redbackRuntimeConfiguration );
+            redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
+            return Response.ok( ).build( );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR ) );
+        }
     }
 
     @Override

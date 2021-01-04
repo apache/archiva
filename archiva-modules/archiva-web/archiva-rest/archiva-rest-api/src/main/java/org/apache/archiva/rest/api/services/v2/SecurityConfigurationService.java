@@ -18,8 +18,11 @@ package org.apache.archiva.rest.api.services.v2;/*
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,12 +35,16 @@ import org.apache.archiva.rest.api.model.v2.LdapConfiguration;
 import org.apache.archiva.rest.api.model.v2.SecurityConfiguration;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -58,7 +65,7 @@ public interface SecurityConfigurationService
 {
     @Path("config")
     @GET
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({ APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     @Operation( summary = "Returns the security configuration that is currently active.",
         security = {
@@ -76,6 +83,28 @@ public interface SecurityConfigurationService
     )
     SecurityConfiguration getConfiguration()
         throws ArchivaRestServiceException;
+
+    @Path("config")
+    @PUT
+    @Consumes({ APPLICATION_JSON })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    @Operation( summary = "Updates the security configuration.",
+        security = {
+            @SecurityRequirement(
+                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+            )
+        },
+        responses = {
+            @ApiResponse( responseCode = "200",
+                description = "If the configuration was updated"
+            ),
+            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to update the configuration",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+        }
+    )
+    Response updateConfiguration( SecurityConfiguration newConfiguration)
+        throws ArchivaRestServiceException;
+
 
     @Path( "config/properties" )
     @GET
@@ -109,9 +138,64 @@ public interface SecurityConfigurationService
                                                            @QueryParam( "orderBy") @DefaultValue( "key" ) List<String> orderBy,
                                                            @QueryParam("order") @DefaultValue( "asc" ) String order ) throws ArchivaRestServiceException;
 
+    @Path("config/properties/{propertyName}")
+    @GET
+    @Produces({ APPLICATION_JSON })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    @Operation( summary = "Returns a single configuration property value.",
+        security = {
+            @SecurityRequirement(
+                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+            )
+        },
+        parameters = {
+            @Parameter(in = ParameterIn.PATH, name="propertyName", description = "The name of the property to update")
+        },
+        responses = {
+            @ApiResponse( responseCode = "200",
+                description = "If the configuration could be retrieved"
+            ),
+            @ApiResponse( responseCode = "404", description = "The given property name does not exist",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
+            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+        }
+    )
+    PropertyEntry getConfigurationProperty( @PathParam ( "propertyName" )  String propertyName)
+        throws ArchivaRestServiceException;
+
+
+    @Path("config/properties/{propertyName}")
+    @PUT
+    @Consumes({ APPLICATION_JSON})
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    @Operation( summary = "Updates a single property value of the security configuration.",
+        security = {
+            @SecurityRequirement(
+                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+            )
+        },
+        requestBody = @RequestBody(required = true, description = "The property value"),
+        parameters = {
+            @Parameter(in = ParameterIn.PATH, name="propertyName", description = "The name of the property to update")
+        },
+        responses = {
+            @ApiResponse( responseCode = "200",
+                description = "If the property value was updated."
+            ),
+            @ApiResponse( responseCode = "404", description = "The given property name does not exist",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
+            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+        }
+    )
+    Response updateConfigurationProperty( @PathParam ( "propertyName" )  String propertyName, PropertyEntry propertyValue)
+        throws ArchivaRestServiceException;
+
+
     @Path("config/ldap")
     @GET
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({ APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     @Operation( summary = "Returns the LDAP configuration that is currently active.",
         security = {
@@ -129,10 +213,30 @@ public interface SecurityConfigurationService
     )
     LdapConfiguration getLdapConfiguration( ) throws ArchivaRestServiceException;
 
+    @Path("config/ldap")
+    @PUT
+    @Consumes({ APPLICATION_JSON })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    @Operation( summary = "Updates the LDAP configuration that is currently active.",
+        security = {
+            @SecurityRequirement(
+                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+            )
+        },
+        requestBody = @RequestBody(required = true, description = "The LDAP configuration"),
+        responses = {
+            @ApiResponse( responseCode = "200",
+                description = "If the configuration was updated"
+            ),
+            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to update the information",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+        }
+    )
+    Response updateLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException;
 
     @Path("config/cache")
     @GET
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({ APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     @Operation( summary = "Returns the cache configuration that is currently active.",
         security = {
@@ -150,9 +254,31 @@ public interface SecurityConfigurationService
     )
     CacheConfiguration getCacheConfiguration( ) throws ArchivaRestServiceException;
 
+    @Path("config/cache")
+    @PUT
+    @Consumes({ APPLICATION_JSON })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    @Operation( summary = "Updates the LDAP configuration that is currently active.",
+        security = {
+            @SecurityRequirement(
+                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+            )
+        },
+        requestBody = @RequestBody(required = true, description = "The LDAP configuration"),
+        responses = {
+            @ApiResponse( responseCode = "200",
+                description = "If the configuration was updated"
+            ),
+            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to update the information",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+        }
+    )
+    Response updateCacheConfiguration( CacheConfiguration cacheConfiguration ) throws ArchivaRestServiceException;
+
+
     @Path("user_managers")
     @GET
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({ APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     @Operation( summary = "Returns the available user manager implementations.",
         security = {
@@ -173,7 +299,7 @@ public interface SecurityConfigurationService
 
     @Path("rbac_managers")
     @GET
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({ APPLICATION_JSON })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     @Operation( summary = "Returns the available RBAC manager implementations.",
         security = {

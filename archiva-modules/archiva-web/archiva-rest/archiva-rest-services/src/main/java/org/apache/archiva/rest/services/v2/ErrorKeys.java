@@ -21,6 +21,10 @@ package org.apache.archiva.rest.services.v2;/*
  */
 public interface ErrorKeys
 {
-    public static final String REPOSITORY_ADMIN_ERROR = "a.repositoryadmin.error";
+    String REPOSITORY_ADMIN_ERROR = "archiva.repositoryadmin.error";
+    String LDAP_CF_INIT_FAILED = "archiva.ldap.cf.init.failed";
+    String LDAP_USER_MAPPER_INIT_FAILED = "archiva.ldap.usermapper.init.failed";
+
+    String PROPERTY_NOT_FOUND = "archiva.property.not.found";
 
 }
