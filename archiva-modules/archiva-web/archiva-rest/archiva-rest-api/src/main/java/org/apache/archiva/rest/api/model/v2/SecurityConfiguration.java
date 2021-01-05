@@ -30,6 +30,7 @@ import java.util.TreeMap;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @XmlRootElement(name = "securityConfiguration")
+@Schema(name = "SecurityConfiguration", description = "Security configuration attributes.")
 public class SecurityConfiguration implements Serializable
 {
     private static final long serialVersionUID = -4186866365979053029L;
@@ -55,7 +56,7 @@ public class SecurityConfiguration implements Serializable
         return secConfig;
     }
 
-    @Schema(description = "List of ids of the active user managers")
+    @Schema(name="active_user_managers", description = "List of ids of the active user managers")
     public List<String> getActiveUserManagers( )
     {
         return activeUserManagers;
@@ -71,7 +72,7 @@ public class SecurityConfiguration implements Serializable
         this.activeUserManagers.add( userManager );
     }
 
-    @Schema(description = "List of ids of the active rbac managers")
+    @Schema(name="active_rbac_managers", description = "List of ids of the active rbac managers")
     public List<String> getActiveRbacManagers( )
     {
         return activeRbacManagers;
@@ -99,7 +100,7 @@ public class SecurityConfiguration implements Serializable
         this.properties.putAll( properties );
     }
 
-    @Schema(description = "True, if the user cache is active. It caches data from user backend.")
+    @Schema(name="user_cache_enabled", description = "True, if the user cache is active. It caches data from user backend.")
     public boolean isUserCacheEnabled( )
     {
         return userCacheEnabled;
@@ -110,7 +111,7 @@ public class SecurityConfiguration implements Serializable
         this.userCacheEnabled = userCacheEnabled;
     }
 
-    @Schema(description = "True, if LDAP is used as user manager")
+    @Schema(name="ldap_active", description = "True, if LDAP is used as user manager")
     public boolean isLdapActive( )
     {
         return ldapActive;
@@ -152,11 +153,11 @@ public class SecurityConfiguration implements Serializable
     public String toString( )
     {
         final StringBuilder sb = new StringBuilder( "SecurityConfiguration{" );
-        sb.append( "selectedUserManagers=" ).append( activeUserManagers );
-        sb.append( ", selectedRbacManagers=" ).append( activeRbacManagers );
+        sb.append( "active_user_managers=" ).append( activeUserManagers );
+        sb.append( ", active_rbac_managers=" ).append( activeRbacManagers );
         sb.append( ", properties=" ).append( properties );
-        sb.append( ", userCacheEnabled=" ).append( userCacheEnabled );
-        sb.append( ", ldapActive=" ).append( ldapActive );
+        sb.append( ", user_cache_nabled=" ).append( userCacheEnabled );
+        sb.append( ", ldap_active=" ).append( ldapActive );
         sb.append( '}' );
         return sb.toString( );
     }

@@ -53,7 +53,7 @@ public class ArchivaRestError
         }
     }
 
-    @Schema(name="errorMessages", description = "The list of errors that occurred while processing the REST request")
+    @Schema(name="error_messages", description = "The list of errors that occurred while processing the REST request")
     public List<ErrorMessage> getErrorMessages()
     {
         return errorMessages;

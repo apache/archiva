@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -75,10 +76,11 @@ public interface SecurityConfigurationService
         },
         responses = {
             @ApiResponse( responseCode = "200",
-                description = "If the configuration could be retrieved"
+                description = "If the configuration could be retrieved",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = SecurityConfiguration.class))
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     SecurityConfiguration getConfiguration()
@@ -99,9 +101,9 @@ public interface SecurityConfigurationService
                 description = "If the configuration was updated"
             ),
             @ApiResponse( responseCode = "422", description = "Invalid content data",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to update the configuration",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     Response updateConfiguration( SecurityConfiguration newConfiguration)
@@ -131,7 +133,7 @@ public interface SecurityConfigurationService
                 content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = PagedResult.class))
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     PagedResult<PropertyEntry> getConfigurationProperties( @QueryParam("q") @DefaultValue( "" ) String searchTerm,
@@ -151,16 +153,17 @@ public interface SecurityConfigurationService
             )
         },
         parameters = {
-            @Parameter(in = ParameterIn.PATH, name="propertyName", description = "The name of the property to update")
+            @Parameter(in = ParameterIn.PATH, name="propertyName", description = "The name of the property to get the value for")
         },
         responses = {
             @ApiResponse( responseCode = "200",
-                description = "If the configuration could be retrieved"
+                description = "If the configuration could be retrieved",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = PropertyEntry.class))
             ),
             @ApiResponse( responseCode = "404", description = "The given property name does not exist",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     PropertyEntry getConfigurationProperty( @PathParam ( "propertyName" )  String propertyName)
@@ -185,11 +188,11 @@ public interface SecurityConfigurationService
                 description = "If the property value was updated."
             ),
             @ApiResponse( responseCode = "400", description = "The body data is not valid",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
             @ApiResponse( responseCode = "404", description = "The given property name does not exist",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) ),
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     Response updateConfigurationProperty( @PathParam ( "propertyName" )  String propertyName, PropertyEntry propertyValue)
@@ -208,10 +211,11 @@ public interface SecurityConfigurationService
         },
         responses = {
             @ApiResponse( responseCode = "200",
-                description = "If the configuration could be retrieved"
+                description = "If the configuration could be retrieved",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = LdapConfiguration.class))
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     LdapConfiguration getLdapConfiguration( ) throws ArchivaRestServiceException;
@@ -231,7 +235,7 @@ public interface SecurityConfigurationService
                 description = "If the configuration was updated"
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to update the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     Response updateLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException;
@@ -248,10 +252,11 @@ public interface SecurityConfigurationService
         },
         responses = {
             @ApiResponse( responseCode = "200",
-                description = "If the configuration could be retrieved"
+                description = "If the configuration could be retrieved",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = CacheConfiguration.class))
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     CacheConfiguration getCacheConfiguration( ) throws ArchivaRestServiceException;
@@ -271,7 +276,7 @@ public interface SecurityConfigurationService
                 description = "If the configuration was updated"
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to update the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     Response updateCacheConfiguration( CacheConfiguration cacheConfiguration ) throws ArchivaRestServiceException;
@@ -289,10 +294,12 @@ public interface SecurityConfigurationService
         },
         responses = {
             @ApiResponse( responseCode = "200",
-                description = "If the list could be retrieved"
+                description = "If the list could be retrieved",
+                content = @Content(mediaType = APPLICATION_JSON, array = @ArraySchema(
+                    schema = @Schema(implementation = BeanInformation.class)))
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     List<BeanInformation> getAvailableUserManagers()
@@ -310,10 +317,12 @@ public interface SecurityConfigurationService
         },
         responses = {
             @ApiResponse( responseCode = "200",
-                description = "If the list could be retrieved"
+                description = "If the list could be retrieved",
+                content = @Content(mediaType = APPLICATION_JSON, array = @ArraySchema(
+                    schema = @Schema(implementation = BeanInformation.class)))
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestServiceException.class )) )
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
     List<BeanInformation> getAvailableRbacManagers()

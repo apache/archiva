@@ -62,7 +62,7 @@ public class ErrorMessage
         return new ErrorMessage( errorKey, args );
     }
 
-    @Schema(description = "The key of the error message. If this is empty, the message message must be set.")
+    @Schema(name="error_key", description = "The key of the error message. If this is empty, the message message must be set.")
     public String getErrorKey()
     {
         return errorKey;

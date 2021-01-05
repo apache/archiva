@@ -20,11 +20,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @XmlRootElement(name="beanInformation")
+@Schema(name="BeanInformation",description = "Information about a bean instance.")
 public class BeanInformation implements Serializable
 {
     private static final long serialVersionUID = -432385743277355987L;
@@ -58,7 +60,7 @@ public class BeanInformation implements Serializable
         this.id = id;
     }
 
-    @Schema(description = "The display name")
+    @Schema(name="display_name", description = "The display name")
     public String getDisplayName( )
     {
         return displayName;
@@ -69,7 +71,7 @@ public class BeanInformation implements Serializable
         this.displayName = displayName;
     }
 
-    @Schema(description = "The translation key for the description")
+    @Schema(name="description_key", description = "The translation key for the description")
     public String getDescriptionKey( )
     {
         return descriptionKey;
@@ -80,7 +82,7 @@ public class BeanInformation implements Serializable
         this.descriptionKey = descriptionKey;
     }
 
-    @Schema(description = "The description translated in the default language")
+    @Schema(name="default_description", description = "The description translated in the default language")
     public String getDefaultDescription( )
     {
         return defaultDescription;
@@ -100,5 +102,32 @@ public class BeanInformation implements Serializable
     public void setReadonly( boolean readonly )
     {
         this.readonly = readonly;
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o ) return true;
+        if ( o == null || getClass( ) != o.getClass( ) ) return false;
+        BeanInformation that = (BeanInformation) o;
+        return readonly == that.readonly && id.equals( that.id ) && Objects.equals( displayName, that.displayName ) && Objects.equals( descriptionKey, that.descriptionKey ) && Objects.equals( defaultDescription, that.defaultDescription );
+    }
+
+    @Override
+    public int hashCode( )
+    {
+        return Objects.hash( id, displayName, descriptionKey, defaultDescription, readonly );
+    }
+
+    @Override
+    public String toString( )
+    {
+        return "BeanInformation{" +
+            "id='" + id + '\'' +
+            ", display_name='" + displayName + '\'' +
+            ", description_key='" + descriptionKey + '\'' +
+            ", default_description='" + defaultDescription + '\'' +
+            ", readonly=" + readonly +
+            '}';
     }
 }

@@ -29,6 +29,7 @@ import java.io.Serializable;
  * @since 3.0
  */
 @XmlRootElement( name = "cacheConfiguration" )
+@Schema(name="CacheConfiguration",description = "Cache configuration attributes")
 public class CacheConfiguration
     implements Serializable
 {
@@ -67,7 +68,7 @@ public class CacheConfiguration
         return newConfig;
     }
 
-    @Schema(description = "The maximum number of seconds an element can exist in the cache without being accessed. "+
+    @Schema(name="time_to_idle_seconds", description = "The maximum number of seconds an element can exist in the cache without being accessed. "+
         "The element expires at this limit and will no longer be returned from the cache.")
     public int getTimeToIdleSeconds()
     {
@@ -79,7 +80,7 @@ public class CacheConfiguration
         this.timeToIdleSeconds = timeToIdleSeconds;
     }
 
-    @Schema(description = "The maximum number of seconds an element can exist in the cache regardless of use. "+
+    @Schema(name="time_to_live_seconds", description = "The maximum number of seconds an element can exist in the cache regardless of use. "+
         "The element expires at this limit and will no longer be returned from the cache.")
     public int getTimeToLiveSeconds()
     {
@@ -91,7 +92,7 @@ public class CacheConfiguration
         this.timeToLiveSeconds = timeToLiveSeconds;
     }
 
-    @Schema(description = "The maximum cache entries to keep in memory. If the limit is reached, older entries will be evicted, or persisted on disk.")
+    @Schema(name="max_entries_in_memory", description = "The maximum cache entries to keep in memory. If the limit is reached, older entries will be evicted, or persisted on disk.")
     public int getMaxEntriesInMemory()
     {
         return maxEntriesInMemory;
@@ -102,7 +103,7 @@ public class CacheConfiguration
         this.maxEntriesInMemory = maxEntriesInMemory;
     }
 
-    @Schema(description = "The maximum cache entries to keep on disk. If the limit is reached, older entries will be evicted.")
+    @Schema(name="max_entries_on_disk", description = "The maximum cache entries to keep on disk. If the limit is reached, older entries will be evicted.")
     public int getMaxEntriesOnDisk()
     {
         return maxEntriesOnDisk;
@@ -142,10 +143,10 @@ public class CacheConfiguration
     {
         final StringBuilder sb = new StringBuilder();
         sb.append( "CacheConfiguration" );
-        sb.append( "{timeToIdleSeconds=" ).append( timeToIdleSeconds );
-        sb.append( ", timeToLiveSeconds=" ).append( timeToLiveSeconds );
-        sb.append( ", maxElementsInMemory=" ).append( maxEntriesInMemory );
-        sb.append( ", maxElementsOnDisk=" ).append( maxEntriesOnDisk );
+        sb.append( "{time_to_idle_seconds=" ).append( timeToIdleSeconds );
+        sb.append( ", time_to_live_seconds=" ).append( timeToLiveSeconds );
+        sb.append( ", max_elements_in_memory=" ).append( maxEntriesInMemory );
+        sb.append( ", max_elements_on_disk=" ).append( maxEntriesOnDisk );
         sb.append( '}' );
         return sb.toString();
     }

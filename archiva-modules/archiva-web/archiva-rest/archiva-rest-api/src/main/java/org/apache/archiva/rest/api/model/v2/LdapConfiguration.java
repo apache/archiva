@@ -29,6 +29,7 @@ import java.util.TreeMap;
  * @since 3.0
  */
 @XmlRootElement(name="ldapConfiguration")
+@Schema(name="LdapConfiguration", description = "LDAP configuration attributes")
 public class LdapConfiguration implements Serializable
 {
     private static final long serialVersionUID = -4736767846016398583L;
@@ -66,7 +67,7 @@ public class LdapConfiguration implements Serializable
         return newCfg;
     }
 
-    @Schema(description = "The hostname to use to connect to the LDAP server")
+    @Schema(name="host_name", description = "The hostname to use to connect to the LDAP server")
     public String getHostName( )
     {
         return hostName;
@@ -88,7 +89,7 @@ public class LdapConfiguration implements Serializable
         this.port = port;
     }
 
-    @Schema(description = "If SSL should be used for connecting the LDAP server")
+    @Schema(name="ssl_enabled", description = "If SSL should be used for connecting the LDAP server")
     public boolean isSslEnabled( )
     {
         return sslEnabled;
@@ -99,7 +100,7 @@ public class LdapConfiguration implements Serializable
         this.sslEnabled = sslEnabled;
     }
 
-    @Schema(description = "The BASE DN used for the LDAP server")
+    @Schema(name="base_dn", description = "The BASE DN used for the LDAP server")
     public String getBaseDn( )
     {
         return baseDn;
@@ -110,7 +111,7 @@ public class LdapConfiguration implements Serializable
         this.baseDn = baseDn == null ? "" : baseDn;
     }
 
-    @Schema(description = "The distinguished name of the bind user which is used to bind to the LDAP server")
+    @Schema(name="bind_dn", description = "The distinguished name of the bind user which is used to bind to the LDAP server")
     public String getBindDn( )
     {
         return bindDn;
@@ -121,7 +122,7 @@ public class LdapConfiguration implements Serializable
         this.bindDn = bindDn == null ? "" : bindDn;
     }
 
-    @Schema(description = "The password used to bind to the ldap server")
+    @Schema(name="bind_password", description = "The password used to bind to the ldap server")
     public String getBindPassword( )
     {
         return bindPassword;
@@ -132,7 +133,7 @@ public class LdapConfiguration implements Serializable
         this.bindPassword = bindPassword==null?"":bindPassword;
     }
 
-    @Schema(description = "The distinguished name of the base to use for searching group.")
+    @Schema(name="groups_base_dn", description = "The distinguished name of the base to use for searching group.")
     public String getGroupsBaseDn( )
     {
         return groupsBaseDn;
@@ -143,7 +144,7 @@ public class LdapConfiguration implements Serializable
         this.groupsBaseDn = groupsBaseDn==null?"":groupsBaseDn;
     }
 
-    @Schema(description = "The authentication method used to bind to the LDAP server (PLAINTEXT, SASL, ...)")
+    @Schema(name="authentication_method", description = "The authentication method used to bind to the LDAP server (PLAINTEXT, SASL, ...)")
     public String getAuthenticationMethod( )
     {
         return authenticationMethod;
@@ -154,7 +155,7 @@ public class LdapConfiguration implements Serializable
         this.authenticationMethod = authenticationMethod==null?"":authenticationMethod;
     }
 
-    @Schema(description = "True, if the LDAP bind authentication is used for logging in to Archiva")
+    @Schema(name="bind_authenticator_enabled", description = "True, if the LDAP bind authentication is used for logging in to Archiva")
     public boolean isBindAuthenticatorEnabled( )
     {
         return bindAuthenticatorEnabled;
@@ -165,7 +166,7 @@ public class LdapConfiguration implements Serializable
         this.bindAuthenticatorEnabled = bindAuthenticatorEnabled;
     }
 
-    @Schema(description = "True, if the archiva role name is also the LDAP group name")
+    @Schema(name="user_role_name_as_group", description = "True, if the archiva role name is also the LDAP group name")
     public boolean isUseRoleNameAsGroup( )
     {
         return useRoleNameAsGroup;
@@ -246,16 +247,16 @@ public class LdapConfiguration implements Serializable
     public String toString( )
     {
         final StringBuilder sb = new StringBuilder( "LdapConfiguration{" );
-        sb.append( "hostName='" ).append( hostName ).append( '\'' );
+        sb.append( "host_name='" ).append( hostName ).append( '\'' );
         sb.append( ", port=" ).append( port );
-        sb.append( ", sslEnabled=" ).append( sslEnabled );
-        sb.append( ", baseDn='" ).append( baseDn ).append( '\'' );
-        sb.append( ", groupsBaseDn='" ).append( groupsBaseDn ).append( '\'' );
-        sb.append( ", bindDn='" ).append( bindDn ).append( '\'' );
-        sb.append( ", bindPassword='" ).append( bindPassword ).append( '\'' );
-        sb.append( ", authenticationMethod='" ).append( authenticationMethod ).append( '\'' );
-        sb.append( ", bindAuthenticatorEnabled=" ).append( bindAuthenticatorEnabled );
-        sb.append( ", useRoleNameAsGroup=" ).append( useRoleNameAsGroup );
+        sb.append( ", ssl_enabled=" ).append( sslEnabled );
+        sb.append( ", base_dn='" ).append( baseDn ).append( '\'' );
+        sb.append( ", groups_base_dn='" ).append( groupsBaseDn ).append( '\'' );
+        sb.append( ", bind_dn='" ).append( bindDn ).append( '\'' );
+        sb.append( ", bind_password='" ).append( bindPassword ).append( '\'' );
+        sb.append( ", authentication_method='" ).append( authenticationMethod ).append( '\'' );
+        sb.append( ", bind_authenticator_enabled=" ).append( bindAuthenticatorEnabled );
+        sb.append( ", use_role_name_as_group=" ).append( useRoleNameAsGroup );
         sb.append( ", properties=" ).append( properties );
         sb.append( ", writable=" ).append( writable );
         sb.append( '}' );
