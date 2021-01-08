@@ -33,7 +33,7 @@ import {RoutingGuardService as Guard} from "@app/services/routing-guard.service"
 
 const routes: Routes = [
       { path: '', component: ManageUsersComponent,canActivate:[Guard],
-        data: { perm: 'menu.user.manage' },
+        data: { perm: 'menu.security.users' },
         children: [
           {path: 'list', component: ManageUsersListComponent},
           {path: 'add', component: ManageUsersAddComponent},

@@ -18,9 +18,9 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {RoutingGuardService as Guard} from "@app/services/routing-guard.service";
-import {ManageRolesComponent} from "@app/modules/security/roles/manage-roles/manage-roles.component";
-import {ManageRolesListComponent} from "@app/modules/security/roles/manage-roles-list/manage-roles-list.component";
-import {ManageRolesEditComponent} from "@app/modules/security/roles/manage-roles-edit/manage-roles-edit.component";
+import {SecurityConfigurationComponent} from "./security-configuration/security-configuration.component";
+import {BaseSecurityComponent} from "./security-configuration/base-security/base-security.component";
+import {LdapSecurityComponent} from "./security-configuration/ldap-security/ldap-security.component";
 
 
 /**
@@ -29,23 +29,20 @@ import {ManageRolesEditComponent} from "@app/modules/security/roles/manage-roles
  */
 
 const routes: Routes = [
-    {
-        path: '', component: ManageRolesComponent, canActivate: [Guard],
-        data: {perm: 'menu.security.roles'},
+      { path: '', component: SecurityConfigurationComponent,canActivate:[Guard],
+        data: { perm: 'menu.security.config' },
         children: [
-            {path: 'list', component: ManageRolesListComponent},
-            {path: 'edit/:roleid', component: ManageRolesEditComponent},
-            {path: 'edit', component: ManageRolesEditComponent},
-            {path: '', redirectTo: 'list', pathMatch: 'full'}
+          {path: 'base', component: BaseSecurityComponent},
+            {path: 'ldap', component: LdapSecurityComponent},
+          {path: '', redirectTo:'base',pathMatch:'full'}
         ]
-    }
+      }
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [],
-    declarations: []
+  imports: [RouterModule.forChild(routes)],
+  exports: [],
+  declarations: []
 })
-export class RoleRoutingModule {
-}
+export class SecurityConfigurationRoutingModule { }
 

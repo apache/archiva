@@ -45,18 +45,18 @@ export class UserService implements OnInit, OnDestroy {
                 'search': true,
                 'upload': false
             },
+            'security':{
+                'section': false,
+                'roles': false,
+                'users': false,
+                'config': false
+            },
             'admin': {
                 'section': false,
                 'config': false,
                 'status': false,
                 'reports': false
             },
-            'user': {
-                'section': false,
-                'manage': false,
-                'roles': false,
-                'config': false
-            }
         }
     };
     uiPermissions;
@@ -181,21 +181,22 @@ export class UserService implements OnInit, OnDestroy {
                         this.uiPermissions.menu.admin.config = true;
                         this.uiPermissions.menu.admin.reports = true;
                         this.uiPermissions.menu.admin.status = true;
+                        this.uiPermissions.menu.security.section = true;
+                        this.uiPermissions.menu.security.config = true;
                     }
 
                 }
                 case "archiva-manage-users": {
                     if (perm.resource.identifier == '*') {
-                        this.uiPermissions.menu.user.section = true;
-                        this.uiPermissions.menu.user.config = true;
-                        this.uiPermissions.menu.user.manage = true;
-                        this.uiPermissions.menu.user.roles = true;
+                        this.uiPermissions.menu.security.section = true;
+                        this.uiPermissions.menu.security.users = true;
+                        this.uiPermissions.menu.security.roles = true;
                     }
                 }
                 case "redback-configuration-edit": {
                     if (perm.resource.identifier == '*') {
-                        this.uiPermissions.menu.user.section = true;
-                        this.uiPermissions.menu.user.config = true;
+                        this.uiPermissions.menu.security.section = true;
+                        this.uiPermissions.menu.security.config = true;
                     }
                 }
                 case "archiva-upload-file": {

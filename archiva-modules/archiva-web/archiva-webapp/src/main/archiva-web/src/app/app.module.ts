@@ -55,7 +55,6 @@ import {TranslateCompiler, TranslateLoader, TranslateModule} from "@ngx-translat
     SearchComponent,
     BrowseComponent,
     UploadComponent,
-    SecurityConfigurationComponent,
   ],
   imports: [
     TranslateModule.forRoot({

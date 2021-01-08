@@ -44,8 +44,8 @@
       "status": "System Status",
       "reports": "Reports"
     },
-    "user": {
-      "section": "User",
+    "security": {
+      "section": "Security",
       "users": "Manage Users",
       "roles": "Manage Roles",
       "config": "Security Configuration"
@@ -170,6 +170,32 @@
       "template_instance": "Template Instance",
       "resource": "Repository",
       "assignable": "Assignable"
+    }
+  },
+  "security": {
+    "config": {
+      "base": {
+        "head": "Base Configuration",
+        "flags": "Flags",
+        "user_manager" : {
+          "active_list" : "Active User Managers",
+          "available_list" : "Available User Managers"
+        },
+        "rbac_manager" : {
+          "active_list": "Active RBAC Managers",
+          "available_list" : "Available RBAC Managers"
+        },
+        "attributes": {
+          "ldap_active": "LDAP Active",
+          "user_cache_enabled": "User Cache Enabled"
+        },
+        "submit_success": "The Changes were submitted successfully",
+        "submit_error": "There was an error during submit: {error}",
+        "submit_active_empty": "There must be at least on active User and RBAC Manager defined"
+      },
+      "ldap": {
+        "head": "LDAP Configuration"
+      }
     }
   },
   "permissions": {

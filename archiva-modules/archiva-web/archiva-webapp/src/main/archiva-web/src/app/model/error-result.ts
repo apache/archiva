@@ -25,4 +25,32 @@ export class ErrorResult {
     constructor(errorMessages: Array<ErrorMessage>) {
         this.error_messages = errorMessages;
     }
+
+    hasMessages() :boolean {
+        return this.error_messages != null && this.error_messages.length > 0;
+    }
+
+    public firstMessage() : ErrorMessage {
+        if (this.error_messages!=null && this.error_messages.length>0) {
+            return this.error_messages[0];
+        } else {
+            return new ErrorMessage();
+        }
+    }
+
+    public firstMessageString() : string {
+        if (this.error_messages!=null && this.error_messages.length>0) {
+            return this.error_messages[0].message;
+        } else {
+            return '';
+        }
+    }
+
+    public toString() : string {
+        if (this.error_messages!=null && this.error_messages.length>0) {
+            return this.error_messages.join(',');
+        } else {
+            return 'status=' + this.status;
+        }
+    }
 }

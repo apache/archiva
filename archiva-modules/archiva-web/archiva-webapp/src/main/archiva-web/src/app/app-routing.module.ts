@@ -48,11 +48,11 @@ const routes: Routes = [
     },
 
     {
-        path: 'security', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.user.section'},
+        path: 'security', component: HomeComponent,canActivate:[Guard],data:{perm: 'menu.security.section'},
         children: [
-            {path: 'users', loadChildren: () => import('./modules/security/user.module').then(m => m.UserModule)},
-            {path: 'roles', loadChildren: () => import('./modules/security/role.module').then(m => m.RoleModule)},
-            {path: 'config', component: SecurityConfigurationComponent},
+            {path: 'users', loadChildren: () => import('@app/modules/security/user.module').then(m => m.UserModule)},
+            {path: 'roles', loadChildren: () => import('@app/modules/security/role.module').then(m => m.RoleModule)},
+            {path: 'config', loadChildren: () => import('@app/modules/security/security-configuration.module').then(m => m.SecurityConfigurationModule)},
         ]
     },
     {path: 'contact', component: ContactComponent},

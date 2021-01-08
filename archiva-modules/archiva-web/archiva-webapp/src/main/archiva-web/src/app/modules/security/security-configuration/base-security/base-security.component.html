@@ -1,0 +1,83 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<form class="mt-3 mb-3" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="drag-container">
+                <div class="section-heading mb-2">{{'security.config.base.user_manager.active_list'|translate}}</div>
+                <div cdkDropList #activeUserManagersList="cdkDropList" [cdkDropListData]="activeUserManagers" [cdkDropListConnectedTo]="[availableUserManagersList]"
+                     class="drop-list-group" (cdkDropListDropped)="drop($event)">
+                    <div class="list-group-item" *ngFor="let item of activeUserManagers" cdkDrag>{{item.id}} - {{item.display_name}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="drag-container">
+                <div class="section-heading mb-2">{{'security.config.base.user_manager.available_list' |translate}}</div>
+                <div cdkDropList #availableUserManagersList="cdkDropList" [cdkDropListData]="availableUserManagers" [cdkDropListConnectedTo]="[activeUserManagersList]"
+                     class="drop-list-group" (cdkDropListDropped)="drop($event)">
+                    <div class="list-group-item" *ngFor="let item of availableUserManagers" cdkDrag>{{item.id}} - {{item.display_name}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="drag-container">
+                <div class="section-heading mb-2">{{'security.config.base.rbac_manager.active_list'|translate}}</div>
+                <div cdkDropList #activeRbacManagersList="cdkDropList" [cdkDropListData]="activeRbacManagers" [cdkDropListConnectedTo]="[availableRbacManagersList]"
+                     class="drop-list-group" (cdkDropListDropped)="drop($event)">
+                    <div class="list-group-item" *ngFor="let item of activeRbacManagers" cdkDrag>{{item.id}} - {{item.display_name}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="drag-container">
+                <div class="section-heading mb-2">{{'security.config.base.rbac_manager.available_list' |translate}}</div>
+                <div cdkDropList #availableRbacManagersList="cdkDropList" [cdkDropListData]="availableRbacManagers" [cdkDropListConnectedTo]="[activeRbacManagersList]"
+                     class="drop-list-group" (cdkDropListDropped)="drop($event)">
+                    <div class="list-group-item" *ngFor="let item of availableRbacManagers" cdkDrag>{{item.id}} - {{item.display_name}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group row col-md-8">
+        <div class="col-md-2">{{'security.config.base.flags'|translate}}</div>
+        <div class="col-md-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="user_cache_enabled"
+                       id="user_cache_enabled" >
+                <label class="user_cache_enabled " for="user_cache_enabled">
+                    {{'security.config.base.attributes.user_cache_enabled'|translate}}
+                </label>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="form-group row" >
+        <div class="col-md-4">
+            <button class="btn btn-primary" [class.disabled]="enableSubmit()?null:'true'"
+                    type="submit">{{'users.edit.submit'|translate}}</button>
+        </div>
+    </div>
+
+</form>

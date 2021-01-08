@@ -141,7 +141,19 @@ export class ArchivaRequestService {
     }
 
     public getTranslatedErrorResult(httpError : HttpErrorResponse) : ErrorResult {
+        console.log("Error " + httpError);
+        if (httpError == null) {
+            return new ErrorResult([]);
+        }
         let errorResult = httpError.error as ErrorResult;
+        if (errorResult==null) {
+            if (httpError.statusText!=null) {
+                errorResult = new ErrorResult([ErrorMessage.of(httpError.statusText)]);
+            } else {
+                errorResult = new ErrorResult([]);
+            }
+        }
+        console.log("Returning error " + errorResult);
         errorResult.status = httpError.status;
         if (errorResult.error_messages!=null) {
             for (let message of errorResult.error_messages) {

@@ -39,6 +39,7 @@ import { StripLoadingPipe } from './strip-loading.pipe';
 import { ToastComponent } from './toast/toast.component';
 import { UserInfoComponent } from './user-info/user-info.component';
 import {FormsModule} from "@angular/forms";
+import {DragDropModule} from "@angular/cdk/drag-drop";
 
 export { LoadingValue } from './model/loading-value';
 export { PageQuery } from './model/page-query';
@@ -68,9 +69,11 @@ export { PageQuery } from './model/page-query';
         SortedTableHeaderRowComponent,
         WithLoadingPipe,
         StripLoadingPipe,
-        ToastComponent
+        ToastComponent,
+        DragDropModule
     ],
     imports: [
+        DragDropModule,
         CommonModule,
         RouterModule,
         NgbPaginationModule,
