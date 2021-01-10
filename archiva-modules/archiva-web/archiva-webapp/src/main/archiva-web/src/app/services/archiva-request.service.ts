@@ -145,8 +145,11 @@ export class ArchivaRequestService {
         if (httpError == null) {
             return new ErrorResult([]);
         }
-        let errorResult = httpError.error as ErrorResult;
-        if (errorResult==null) {
+
+        let errorResult
+        if (httpError.error) {
+            errorResult = new ErrorResult(httpError.error);
+        } else {
             if (httpError.statusText!=null) {
                 errorResult = new ErrorResult([ErrorMessage.of(httpError.statusText)]);
             } else {

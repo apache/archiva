@@ -208,6 +208,8 @@
       "ldap": {
         "head": "LDAP Configuration",
         "explain": "Settings for the LDAP connection. These settings are only used, if LDAP User Manager and/or LDAP RBAC Manager is activated.",
+        "check_success": "The LDAP settings have been verified successfully",
+        "check_failed": "Could not connect to the LDAP server successfully",
         "attributes": {
           "host_name": "Host Name",
           "port": "Port",

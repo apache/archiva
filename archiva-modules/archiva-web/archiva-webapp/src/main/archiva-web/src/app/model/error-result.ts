@@ -22,8 +22,13 @@ export class ErrorResult {
     error_messages: Array<ErrorMessage>
     status: number;
 
-    constructor(errorMessages: Array<ErrorMessage>) {
-        this.error_messages = errorMessages;
+    constructor(json:any) {
+        if (Array.isArray(json)) {
+            this.error_messages = json;
+        } else {
+            this.error_messages = json.error_messages;
+            this.status = json.status;
+        }
     }
 
     hasMessages() :boolean {
