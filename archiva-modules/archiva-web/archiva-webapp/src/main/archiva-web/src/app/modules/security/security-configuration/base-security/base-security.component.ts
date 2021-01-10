@@ -48,6 +48,17 @@ export class BaseSecurityComponent extends EditBaseComponent<SecurityConfigurati
   rbacInfo: Map<string,BeanInformation> = new Map<string, BeanInformation>();
   userInfo: Map<string,BeanInformation> = new Map<string, BeanInformation>();
 
+  constructor(private route: ActivatedRoute,
+              public fb: FormBuilder, private securityService: SecurityService, private toastService: ToastService) {
+    super(fb);
+    super.init(fb.group({
+      user_cache_enabled:[''],
+    }, {}));
+
+
+
+  }
+
   drop(event: CdkDragDrop<string[]>) {
     console.log("Drop " + event);
     if (event.previousContainer === event.container) {
@@ -60,16 +71,7 @@ export class BaseSecurityComponent extends EditBaseComponent<SecurityConfigurati
     }
   }
 
-  constructor(private route: ActivatedRoute,
-              public fb: FormBuilder, private securityService: SecurityService, private toastService: ToastService) {
-    super(fb);
-    super.init(fb.group({
-      user_cache_enabled:[''],
-    }, {}));
 
-
-
-  }
 
   ngOnInit(): void {
     zip(this.securityService.getRbacManagers(),this.securityService.getUserManagers()).pipe(tap(([rbacInfo,userInfo])=>{

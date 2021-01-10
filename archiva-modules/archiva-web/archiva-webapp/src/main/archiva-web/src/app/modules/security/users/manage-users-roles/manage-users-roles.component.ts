@@ -24,10 +24,9 @@ import {catchError, filter, map, share, switchMap, tap} from "rxjs/operators";
 import {RoleTree} from "@app/model/role-tree";
 import {RoleService} from "@app/services/role.service";
 import {RoleTemplate} from "@app/model/role-template";
-import {Observable} from "rxjs";
+import {from, Observable} from "rxjs";
 import {Util} from "@app/modules/shared/shared.module";
 import {RoleResult} from './role-result';
-import {fromArray} from "rxjs/internal/observable/fromArray";
 import {ErrorResult} from "@app/model/error-result";
 import {HttpResponse} from "@angular/common/http";
 
@@ -309,7 +308,7 @@ export class ManageUsersRolesComponent implements OnInit, AfterViewInit {
           })
         }
     )
-    fromArray(assignments).pipe(switchMap((role) => this.roleService.assignRole(role.id, this.userid)),
+    from(assignments).pipe(switchMap((role) => this.roleService.assignRole(role.id, this.userid)),
         catchError((err: ErrorResult, caught) => {
               this.success = false;
               this.errors.push(err);
@@ -321,7 +320,7 @@ export class ManageUsersRolesComponent implements OnInit, AfterViewInit {
           this.saved=true;
         }
     );
-    fromArray(unassignments).pipe(switchMap((role) => this.roleService.unAssignRole(role.id, this.userid)),
+    from(unassignments).pipe(switchMap((role) => this.roleService.unAssignRole(role.id, this.userid)),
         catchError((err: ErrorResult, caught) => {
               this.success = false;
               this.errors.push(err);

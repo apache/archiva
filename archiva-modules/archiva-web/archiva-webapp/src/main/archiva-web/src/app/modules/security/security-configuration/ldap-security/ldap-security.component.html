@@ -16,4 +16,35 @@
   ~ under the License.
   -->
 
-<p>ldap-security works!</p>
+<form class="mt-3 mb-3" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <p class="row col-md-10">{{'security.config.ldap.explain'|translate}}</p>
+    <div class="form-group row col-md-10" *ngFor="let attName of ['host_name','port','base_dn','groups_base_dn','bind_dn','bind_password']">
+        <label class="col-md-3 col-form-label" for="{{attName}}">{{'security.config.ldap.attributes.'+attName |translate}}</label>
+        <div [attr.class]="attName=='port'?'col-md-3':'col-md-7'">
+            <input [attr.type]="attName=='bind_password'?'password':'text'" formControlName="{{attName}}" id="{{attName}}"
+                   [ngClass]="getInputClasses(attName)"
+            >
+        </div>
+    </div>
+    <div class="form-group row col-md-10" >
+        <label class="col-md-3 col-form-label" for="authentication_method">{{'security.config.ldap.attributes.authentication_method' |translate}}</label>
+        <div class="col-md-2">
+            <select formControlName="authentication_method" id="authentication_method" class="form-control">
+                <option *ngFor="let method of authenticationMethods">{{method}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row col-md-10">
+        <div class="col-md-3">{{'security.config.ldap.flags'|translate}}</div>
+        <div class="col-md-7">
+            <div class="form-check" *ngFor="let flagName of ['writable','ssl_enabled','bind_authenticator_enabled','use_role_name_as_group']">
+                <input class="form-check-input" type="checkbox" formControlName="{{flagName}}"
+                       id="{{flagName}}" >
+                <label class="form-check-label " for="{{flagName}}">
+                    {{'security.config.ldap.attributes.'+flagName|translate}}
+                </label>
+            </div>
+        </div>
+    </div>
+
+</form>

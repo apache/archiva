@@ -176,6 +176,11 @@
     "config": {
       "base": {
         "head": "Base Configuration",
+        "title": "Configure base security settings",
+        "head_managers": "Set the used User and RBAC managers",
+        "head_flags": "Additional flags",
+        "explain_user_manager": "User managers are binding your User IDs and authentication to a persistent storage or repository. You may combine them, but you have to ensure, that user IDs are unique over all repositories.",
+        "explain_rbac_manager": "RBAC managers handle roles and permissions and store them persistently. If you use LDAP, the roles are mapped to LDAP groups.",
         "flags": "Flags",
         "user_manager" : {
           "active_list" : "Active User Managers",
@@ -189,12 +194,28 @@
           "ldap_active": "LDAP Active",
           "user_cache_enabled": "User Cache Enabled"
         },
-        "submit_success": "The Changes were submitted successfully",
+        "submit_success": "The Changes were submitted successfully. A restart may be required to activate the changes.",
         "submit_error": "There was an error during submit: {error}",
         "submit_active_empty": "There must be at least on active User and RBAC Manager defined"
       },
       "ldap": {
-        "head": "LDAP Configuration"
+        "head": "LDAP Configuration",
+        "explain": "Settings for the LDAP connection. These settings are only used, if LDAP User Manager and/or LDAP RBAC Manager is activated.",
+        "attributes": {
+          "host_name": "Host Name",
+          "port": "Port",
+          "base_dn": "Base DN",
+          "groups_base_dn": "Base DN for Group Search",
+          "bind_dn": "Bind User DN",
+          "bind_password":"Bind Password",
+          "authentication_method": "Method used for Bind Authentication",
+          "bind_authenticator_enabled": "Use LDAP Bind during archiva authentication",
+          "use_role_name_as_group": "Archiva role names are LDAP group names",
+          "writable": "Bind User can write to LDAP Server",
+          "ssl_enabled": "Enable SSL"
+
+        },
+        "flags": "Flags"
       }
     }
   },

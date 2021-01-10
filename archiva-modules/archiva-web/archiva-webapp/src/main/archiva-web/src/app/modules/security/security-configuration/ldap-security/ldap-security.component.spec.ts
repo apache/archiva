@@ -18,7 +18,8 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LdapSecurityComponent } from './ldap-security.component';
+import { LdapSecurityComponent, dnValidator } from './ldap-security.component';
+import {ValidatorFn} from "@angular/forms";
 
 describe('LdapSecurityComponent', () => {
   let component: LdapSecurityComponent;
@@ -39,5 +40,18 @@ describe('LdapSecurityComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('Test Custom DN Validator', () => {
+    it('check valid 1', () => {
+      const ctrl = component.userForm.controls['base_dn']
+      ctrl.setValue('cn=abc');
+      expect(ctrl.valid).toBeTruthy();
+    })
+    it('check invalid 1', () => {
+      const ctrl = component.userForm.controls['base_dn']
+      ctrl.setValue('cn=abc,');
+      expect(ctrl.invalid).toBeTruthy()
+    })
   });
 });

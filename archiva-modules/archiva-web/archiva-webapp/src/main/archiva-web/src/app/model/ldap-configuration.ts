@@ -16,10 +16,17 @@
  * under the License.
  */
 
-import { PageQuery } from './page-query';
-
-describe('PageQuery', () => {
-  it('should create an instance', () => {
-    expect(new PageQuery()).toBeTruthy();
-  });
-});
+export class LdapConfiguration {
+    host_name : string = "";
+    port : number = -1;
+    ssl_enabled : boolean  = false;
+    base_dn : string = "";
+    groups_base_dn : string = "";
+    bind_dn : string = "";
+    bind_password : string = "";
+    authentication_method : string = "";
+    bind_authenticator_enabled : boolean = true;
+    use_role_name_as_group : boolean = false;
+    properties : Map<string,string> = new Map<string, string>()
+    writable : boolean = false;
+}

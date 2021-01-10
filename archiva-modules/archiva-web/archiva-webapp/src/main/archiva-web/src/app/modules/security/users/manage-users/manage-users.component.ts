@@ -16,12 +16,10 @@
  * under the License.
  */
 
-import {AfterViewInit, Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Params} from "@angular/router";
-import {iif, Observable, of, pipe, merge, combineLatest} from "rxjs";
-import {combineAll, filter, map, mergeMap, share, switchMap, tap} from 'rxjs/operators';
-import {flatMap} from "rxjs/internal/operators";
-import {fromArray} from "rxjs/internal/observable/fromArray";
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
+import {merge, Observable} from "rxjs";
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-manage-users',

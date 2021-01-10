@@ -16,28 +16,10 @@
  * under the License.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { LdapConfiguration } from './ldap-configuration';
 
-import { PaginatedEntitiesComponent } from './paginated-entities.component';
-
-describe('PaginatedEntitiesComponent', () => {
-  let component: PaginatedEntitiesComponent;
-  let fixture: ComponentFixture<PaginatedEntitiesComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ PaginatedEntitiesComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PaginatedEntitiesComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+describe('LdapConfiguration', () => {
+  it('should create an instance', () => {
+    expect(new LdapConfiguration()).toBeTruthy();
   });
 });
