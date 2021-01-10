@@ -41,6 +41,9 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     ): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(
             catchError((error: HttpErrorResponse) => {
+                if (error.url.includes('security/config/ldap/verify')) {
+                    return  throwError(error);
+                }
                 console.error("Error from HTTP error interceptor", error);
                 if (error.status==0 && error.statusText=="Unknown Error") {
                     console.log("Unknown error");

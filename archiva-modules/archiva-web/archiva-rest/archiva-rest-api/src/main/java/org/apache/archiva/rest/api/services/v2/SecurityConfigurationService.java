@@ -39,6 +39,7 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -239,6 +240,30 @@ public interface SecurityConfigurationService
         }
     )
     Response updateLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException;
+
+    @Path("config/ldap/verify")
+    @POST
+    @Consumes({ APPLICATION_JSON })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    @Operation( summary = "Checks the given LDAP configuration.",
+        security = {
+            @SecurityRequirement(
+                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+            )
+        },
+        responses = {
+            @ApiResponse( responseCode = "200",
+                description = "If the check was successful"
+            ),
+            @ApiResponse( responseCode = "400",
+                description = "If the check was not successful",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class ))
+            ),
+            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to update the information",
+                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
+        }
+    )
+    Response verifyLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException;
 
     @Path("config/cache")
     @GET

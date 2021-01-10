@@ -24,6 +24,13 @@ public interface ErrorKeys
     String REPOSITORY_ADMIN_ERROR = "archiva.repositoryadmin.error";
     String LDAP_CF_INIT_FAILED = "archiva.ldap.cf.init.failed";
     String LDAP_USER_MAPPER_INIT_FAILED = "archiva.ldap.usermapper.init.failed";
+    String LDAP_COMMUNICATION_ERROR = "archiva.ldap.communication_error";
+    String LDAP_INVALID_NAME = "archiva.ldap.invalid_name";
+    String LDAP_GENERIC_ERROR = "archiva.ldap.generic_error";
+    String LDAP_SERVICE_UNAVAILABLE = "archiva.ldap.service_unavailable";
+    String LDAP_SERVICE_AUTHENTICATION_FAILED = "archiva.ldap.authentication.failed";
+    String LDAP_SERVICE_AUTHENTICATION_NOT_SUPPORTED = "archiva.ldap.authentication.not_supported";
+    String LDAP_SERVICE_NO_PERMISSION = "archiva.ldap.no_permissions";
 
     String PROPERTY_NOT_FOUND = "archiva.property.not.found";
 

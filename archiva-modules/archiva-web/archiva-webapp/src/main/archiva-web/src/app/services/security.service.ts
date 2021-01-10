@@ -23,6 +23,7 @@ import {Observable, throwError} from "rxjs";
 import {catchError} from "rxjs/operators";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {BeanInformation} from "@app/model/bean-information";
+import {LdapConfiguration} from "@app/model/ldap-configuration";
 
 @Injectable({
   providedIn: 'root'
@@ -65,5 +66,22 @@ export class SecurityService {
             })
         );
     }
+
+    getLdapConfiguration() : Observable<LdapConfiguration> {
+        return this.rest.executeRestCall<LdapConfiguration>("get", "archiva", "security/config/ldap", null).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            })
+        );
+    }
+
+    verifyLdapConfiguration(ldapConfig : LdapConfiguration) : Observable<HttpResponse<any>> {
+        return this.rest.executeResponseCall<any>("post", "archiva", "security/config/ldap/verify", ldapConfig).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            })
+        );
+    }
+
 
 }

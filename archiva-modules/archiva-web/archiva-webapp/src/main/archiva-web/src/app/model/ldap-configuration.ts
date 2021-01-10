@@ -18,8 +18,9 @@
 
 export class LdapConfiguration {
     host_name : string = "";
-    port : number = -1;
+    port : number = 389;
     ssl_enabled : boolean  = false;
+    context_factory: string = "";
     base_dn : string = "";
     groups_base_dn : string = "";
     bind_dn : string = "";
@@ -29,4 +30,5 @@ export class LdapConfiguration {
     use_role_name_as_group : boolean = false;
     properties : Map<string,string> = new Map<string, string>()
     writable : boolean = false;
+    available_context_factories : string[];
 }

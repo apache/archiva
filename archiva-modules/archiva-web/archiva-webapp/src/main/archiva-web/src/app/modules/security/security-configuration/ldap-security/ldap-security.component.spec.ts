@@ -16,18 +16,32 @@
  * under the License.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LdapSecurityComponent, dnValidator } from './ldap-security.component';
-import {ValidatorFn} from "@angular/forms";
+import {LdapSecurityComponent} from './ldap-security.component';
+import {FormBuilder} from "@angular/forms";
+import {RouterTestingModule} from '@angular/router/testing';
+import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {ActivatedRoute, Router} from "@angular/router";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {TranslateModule} from "@ngx-translate/core";
 
 describe('LdapSecurityComponent', () => {
   let component: LdapSecurityComponent;
   let fixture: ComponentFixture<LdapSecurityComponent>;
+  let router;
+  let route;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LdapSecurityComponent ]
+      declarations: [ LdapSecurityComponent ],
+      providers: [FormBuilder],
+      schemas:[NO_ERRORS_SCHEMA],
+      imports:[
+        TranslateModule.forRoot(),
+        RouterTestingModule.withRoutes([]),
+          HttpClientTestingModule
+      ]
     })
     .compileComponents();
   });
@@ -36,6 +50,8 @@ describe('LdapSecurityComponent', () => {
     fixture = TestBed.createComponent(LdapSecurityComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    router = TestBed.get(Router);
+    route = TestBed.get(ActivatedRoute)
   });
 
   it('should create', () => {
@@ -43,14 +59,29 @@ describe('LdapSecurityComponent', () => {
   });
 
   describe('Test Custom DN Validator', () => {
-    it('check valid 1', () => {
+    it('valid 1', () => {
       const ctrl = component.userForm.controls['base_dn']
       ctrl.setValue('cn=abc');
       expect(ctrl.valid).toBeTruthy();
     })
-    it('check invalid 1', () => {
+    it('valid 2', () => {
+      const ctrl = component.userForm.controls['base_dn']
+      ctrl.setValue('cn=abc,dc=abc');
+      expect(ctrl.valid).toBeTruthy()
+    })
+    it('valid with space', () => {
+      const ctrl = component.userForm.controls['base_dn']
+      ctrl.setValue('cn=abc , dc=abc');
+      expect(ctrl.valid).toBeTruthy()
+    })
+    it('invalid postfix', () => {
       const ctrl = component.userForm.controls['base_dn']
       ctrl.setValue('cn=abc,');
+      expect(ctrl.invalid).toBeTruthy()
+    })
+    it('invalid RDN', () => {
+      const ctrl = component.userForm.controls['base_dn']
+      ctrl.setValue('cn=abc,dc,dc=abc');
       expect(ctrl.invalid).toBeTruthy()
     })
   });

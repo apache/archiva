@@ -63,7 +63,14 @@
     "user.password.violation.numeric": "You must provide a password containing at least {arg0} numeric {arg0, plural, one {character} other {characters}}.",
     "user.password.violation.reuse": "The password must not match any of the previous {arg0} {arg0, plural, one {password} other {passwords}}.",
     "user.password.violation.alphanum.only": "You must provide a password containing all alpha-numeric characters.",
-    "user.password.violation.whitespace.detected": "You must provide a password without whitespace characters."
+    "user.password.violation.whitespace.detected": "You must provide a password without whitespace characters.",
+    "archiva.ldap.communication_error": "Communication to LDAP server failed: {arg0}",
+    "archiva.ldap.invalid_name": "There was a invalid name: {arg0}",
+    "archiva.ldap.generic_error":  "LDAP Error: {arg0}",
+    "archiva.ldap.service_unavailable": "LDAP Server not available: {arg0}",
+    "archiva.ldap.authentication.failed": "LDAP Authentication failed: {arg0}",
+    "archiva.ldap.authentication.not_supported": "LDAP Authentication not supported: {arg0}",
+    "archiva.ldap.no_permissions":  "No permission on LDAP server: {arg0}"
   },
   "users": {
     "attributes": {
@@ -206,13 +213,14 @@
           "port": "Port",
           "base_dn": "Base DN",
           "groups_base_dn": "Base DN for Group Search",
-          "bind_dn": "Bind User DN",
+          "bind_dn": "Bind User",
           "bind_password":"Bind Password",
           "authentication_method": "Method used for Bind Authentication",
-          "bind_authenticator_enabled": "Use LDAP Bind during archiva authentication",
+          "bind_authenticator_enabled": "Use LDAP Bind for Archiva authentication",
           "use_role_name_as_group": "Archiva role names are LDAP group names",
           "writable": "Bind User can write to LDAP Server",
-          "ssl_enabled": "Enable SSL"
+          "ssl_enabled": "Enable SSL",
+          "context_factory": "Context Factory"
 
         },
         "flags": "Flags"
@@ -242,7 +250,8 @@
     "button": {
       "yes": "Yes",
       "no": "No",
-      "save": "Save Changes"
+      "save": "Save Changes",
+      "check": "Check configuration"
     },
     "edit": "Edit",
     "emptyContent": "No values",

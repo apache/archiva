@@ -127,7 +127,7 @@ public class NativeSecurityConfigurationServiceTest extends AbstractNativeRestSe
             .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
         assertEquals( "", response.getBody( ).jsonPath( ).get( "host_name" ) );
-        assertEquals( 13, response.getBody( ).jsonPath( ).getMap( "properties" ).size( ) );
+        assertEquals( 0, response.getBody( ).jsonPath( ).getMap( "properties" ).size( ) );
     }
 
 

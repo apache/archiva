@@ -16,14 +16,14 @@
  * under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {EditBaseComponent} from "@app/modules/shared/edit-base.component";
 import {LdapConfiguration} from "@app/model/ldap-configuration";
 import {ActivatedRoute} from "@angular/router";
 import {AbstractControl, FormBuilder, ValidatorFn, Validators} from "@angular/forms";
 import {SecurityService} from "@app/services/security.service";
 import {ToastService} from "@app/services/toast.service";
-import {propertyDescriptorPatch} from "zone.js/lib/browser/property-descriptor";
+import {ErrorResult} from "@app/model/error-result";
 
 @Component({
   selector: 'app-ldap-security',
@@ -33,6 +33,9 @@ import {propertyDescriptorPatch} from "zone.js/lib/browser/property-descriptor";
 export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> implements OnInit {
 
   authenticationMethods=['none','simple','strong']
+  formFields = ['host_name', 'port', 'ssl_enabled', 'context_factory',
+    'base_dn', 'groups_base_dn', 'bind_dn', 'bind_password', 'authentication_method', 'bind_authenticator_enabled',
+    'use_role_name_as_group', 'writable'];
 
   constructor(private route: ActivatedRoute,
               public fb: FormBuilder, private securityService: SecurityService, private toastService: ToastService) {
@@ -41,9 +44,10 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
       host_name:[''],
       port:['', [Validators.min(1), Validators.max(65535)]],
       ssl_enabled:[false],
+      context_factory:[''],
       base_dn:['',[dnValidator()]],
       groups_base_dn:['',[dnValidator()]],
-      bind_dn:['',[dnValidator()]],
+      bind_dn:[''],
       bind_password:[''],
       authentication_method:['none'],
       bind_authenticator_enabled:[false],
@@ -53,6 +57,23 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
   }
 
   ngOnInit(): void {
+    this.securityService.getLdapConfiguration().subscribe( ldapConfiguration => {
+          this.copyToForm(this.formFields, ldapConfiguration);
+          if ((ldapConfiguration.context_factory==null || ldapConfiguration.context_factory=='') && ldapConfiguration.available_context_factories.length==1) {
+            this.userForm.controls['context_factory'].setValue(ldapConfiguration.available_context_factories[0]);
+          }
+          if (ldapConfiguration.authentication_method=='') {
+            this.userForm.controls['authentication_method'].setValue('none');
+          }
+        }
+    )
+    this.userForm.controls['bind_dn'].valueChanges.subscribe(selectedValue => {
+      if (selectedValue!='' && this.userForm.controls['authentication_method'].value=='none') {
+          this.userForm.controls['authentication_method'].setValue('simple',{emitEvent: false})
+      } else if (selectedValue=='' && this.userForm.controls['authentication_method'].value!='none') {
+        this.userForm.controls['authentication_method'].setValue('none',{emitEvent: false})
+      }
+    })
   }
 
   createEntity(): LdapConfiguration {
@@ -60,6 +81,11 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
   }
 
   onSubmit() {
+    console.log("Saving configuration");
+    let config = this.copyFromForm(this.formFields)
+
+
+
   }
 
   getInputClasses(field: string) : string[] {
@@ -68,15 +94,32 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
       csClasses = [];
     }
     csClasses.push('form-control');
-    console.log("Classes "+field+" " + csClasses);
     return csClasses;
+  }
+
+  checkLdapConnection() {
+    console.log("Checking LDAP connection");
+    let config = this.copyFromForm(this.formFields)
+    this.securityService.verifyLdapConfiguration(config).subscribe(()=>{
+      this.toastService.showSuccessByKey('ldap-security', 'security.config.ldap.check_success');
+    },
+        (error:ErrorResult) =>{
+          this.toastService.showErrorByKey('ldap-security', error.firstMessageString());
+        }
+        );
   }
 }
 
+/**
+ * This validator checks the DN names for valid RDN segments
+ */
 export function dnValidator(): ValidatorFn {
   return (control: AbstractControl): {[key: string]: any} | null => {
     let parts = []
     let value = control.value.toString()
+    if (value=='') {
+      return null;
+    }
     let escape = false;
     let partKey : string = ''
     let partValue : string = ''
@@ -112,6 +155,9 @@ export function dnValidator(): ValidatorFn {
         partValue = partValue + c;
       }
 
+    }
+    if (partKey=='' || partValue=='') {
+      return {'invalidDnBadRdn':{value:value,index:value.length-1}}
     }
     return null;
   };

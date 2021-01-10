@@ -422,7 +422,6 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private void cleanupProperties( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
     {
         Map<String, String> properties = redbackRuntimeConfiguration.getConfigurationProperties();
-        LdapConfiguration ldapConf = redbackRuntimeConfiguration.getLdapConfiguration( );
         LDAP_MAPPER.getAllAttributes( ).stream( ).forEach( att -> properties.remove( att ) );
     }
 

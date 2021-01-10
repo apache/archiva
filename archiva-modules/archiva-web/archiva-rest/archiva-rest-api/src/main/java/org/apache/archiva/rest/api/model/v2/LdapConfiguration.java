@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -36,16 +37,18 @@ public class LdapConfiguration implements Serializable
 
     private String hostName = "";
     private int port = 389;
-    private boolean sslEnabled = false;
     private String baseDn = "";
     private String groupsBaseDn = "";
     private String bindDn = "";
     private String bindPassword = "";
-    private String authenticationMethod = "";
+    private String authenticationMethod = "none";
+    private String contextFactory;
+    private boolean sslEnabled = false;
     private boolean bindAuthenticatorEnabled = true;
     private boolean useRoleNameAsGroup = false;
     private final Map<String, String> properties = new TreeMap<>();
     private boolean writable = false;
+    private List<String> availableContextFactories;
 
     public LdapConfiguration( )
     {
@@ -60,9 +63,14 @@ public class LdapConfiguration implements Serializable
         newCfg.setBindPassword( ldapConfiguration.getPassword() );
         newCfg.setBindAuthenticatorEnabled( ldapConfiguration.isBindAuthenticatorEnabled() );
         newCfg.setHostName( ldapConfiguration.getHostName( ) );
-        newCfg.setPort( ldapConfiguration.getPort( ) );
-        newCfg.setProperties( ldapConfiguration.getExtraProperties( ) );
         newCfg.setSslEnabled( ldapConfiguration.isSsl() );
+        if (ldapConfiguration.getPort()<=0) {
+            newCfg.setPort( newCfg.isSslEnabled() ? 636 : 389 );
+        } else
+        {
+            newCfg.setPort( ldapConfiguration.getPort( ) );
+        }
+        newCfg.setProperties( ldapConfiguration.getExtraProperties( ) );
         newCfg.setWritable( ldapConfiguration.isWritable() );
         return newCfg;
     }
@@ -89,7 +97,19 @@ public class LdapConfiguration implements Serializable
         this.port = port;
     }
 
-    @Schema(name="ssl_enabled", description = "If SSL should be used for connecting the LDAP server")
+    @Schema(name="context_factory",description = "The class name of the LDAP context factory")
+    public String getContextFactory( )
+    {
+        return contextFactory;
+    }
+
+    public void setContextFactory( String contextFactory )
+    {
+        this.contextFactory = contextFactory;
+    }
+
+
+    @Schema(name="ssl_enabled", description = "True, if SSL/TLS should be used for connecting the LDAP server")
     public boolean isSslEnabled( )
     {
         return sslEnabled;
@@ -177,7 +197,7 @@ public class LdapConfiguration implements Serializable
         this.useRoleNameAsGroup = useRoleNameAsGroup;
     }
 
-    @Schema(description = "Map of additional properties")
+    @Schema(description = "LDAP ConnectionFactory environment properties")
     public Map<String, String> getProperties( )
     {
         return properties;
@@ -199,6 +219,19 @@ public class LdapConfiguration implements Serializable
     {
         this.writable = writable;
     }
+
+    @Schema(name="available_context_factories", description = "The LDAP context factories that are known and available")
+    public List<String> getAvailableContextFactories( )
+    {
+        return availableContextFactories;
+    }
+
+    public void setAvailableContextFactories( List<String> availableContextFactories )
+    {
+        this.availableContextFactories = availableContextFactories;
+    }
+
+
 
     @Override
     public boolean equals( Object o )
