@@ -424,16 +424,6 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         Map<String, String> properties = redbackRuntimeConfiguration.getConfigurationProperties();
         LdapConfiguration ldapConf = redbackRuntimeConfiguration.getLdapConfiguration( );
         LDAP_MAPPER.getAllAttributes( ).stream( ).forEach( att -> properties.remove( att ) );
-        List<String> prefixRemove = new ArrayList<>( );
-        for ( String key : properties.keySet()) {
-            boolean prefixMapping = LDAP_MAPPER.isPrefixMapping( key );
-            if (prefixMapping) {
-                prefixRemove.add( key );
-            } else if ( key.startsWith( "ldap" ) && !LDAP_MAPPER.isMapping( key ) ) {
-                ldapConf.getExtraProperties( ).put( key, properties.get( key ) );
-            }
-        }
-        prefixRemove.stream( ).forEach( att -> properties.remove( att ) );
     }
 
     private org.apache.archiva.configuration.RedbackRuntimeConfiguration build(
