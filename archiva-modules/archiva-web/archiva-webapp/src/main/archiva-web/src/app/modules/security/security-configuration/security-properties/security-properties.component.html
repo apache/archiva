@@ -1,0 +1,39 @@
+<app-paginated-entities [service]="service" pageSize="10" [(sortField)]="sortField" [(sortOrder)]="sortOrder"
+                        #parent>
+    <ng-container *ngIf="parent.items$ |async as roleItemLoader" >
+        <ng-template [ngIf]="roleItemLoader.loading" #spinner let-modal>
+            <div class="fixed-top d-flex justify-content-center mt-5 pt-5">
+                <div class="spinner-border text-info mt-5" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </ng-template>
+    </ng-container>
+    <ng-container *ngIf="parent.items$ |stripLoading|async as propertyItem" >
+        <table class="table table-striped table-bordered">
+            <thead class="thead-light">
+            <tr sorted [sortFieldEmitter]="parent.sortFieldChange" [sortOrderEmitter]="parent.sortOrderChange"
+                [toggleObserver]="parent">
+                <app-th-sorted [fieldArray]="['key']" contentText="security.config.properties.attributes.key"></app-th-sorted>
+                <app-th-sorted [fieldArray]="['value']" contentText="security.config.properties.attributes.value"></app-th-sorted>
+                <th>{{'headers.action' |translate}}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let propertyEntry  of propertyItem.data" >
+                <td>{{propertyEntry.key}}</td>
+                <td>{{propertyEntry.value}}</td>
+                <td>
+                    <a [routerLink]="['..','edit', propertyEntry.key]"
+                       [attr.title]="'security.config.properties.edit' |translate"><span class="fas fa-edit"></span></a>
+                    <a class="ml-2" [routerLink]="['..','delete', propertyEntry.key]"
+                       [attr.title]="'security.config.properties.delete' |translate"><span class="fas fa-trash-alt"></span></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </ng-container>
+
+</app-paginated-entities>
+
+

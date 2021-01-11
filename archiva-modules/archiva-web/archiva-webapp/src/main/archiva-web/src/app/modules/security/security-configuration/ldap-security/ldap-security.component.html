@@ -21,7 +21,10 @@
     <div class="form-group row col-md-10"
          *ngFor="let attName of ['host_name','port','base_dn','groups_base_dn','bind_dn','bind_password']">
         <label class="col-md-3 col-form-label"
-               for="{{attName}}">{{'security.config.ldap.attributes.' + attName |translate}}</label>
+               for="{{attName}}"
+               [openDelay]="500"
+               [ngbTooltip]="'security.config.ldap.attdesc.'+attName|translate" placement="top"
+        >{{'security.config.ldap.attributes.' + attName |translate}}</label>
         <div [attr.class]="attName=='port'?'col-md-3':'col-md-7'">
             <input [attr.type]="attName=='bind_password'?'password':'text'" formControlName="{{attName}}"
                    id="{{attName}}"
@@ -31,17 +34,21 @@
     </div>
     <div class="form-group row col-md-10">
         <label class="col-md-3 col-form-label"
-               for="context_factory">{{'security.config.ldap.attributes.context_factory' |translate}}</label>
+               for="context_factory"
+               [openDelay]="500" [ngbTooltip]="'security.config.ldap.attdesc.context_factory'|translate" placement="top"
+        >{{'security.config.ldap.attributes.context_factory' |translate}}</label>
         <div class="col-md-7">
             <input type="text" formControlName="context_factory" id="context_factory"
                    [ngClass]="getInputClasses('context_factory')" [ngbTypeahead]="searchContextFactory"
-                   [placement]="top"
+                   [placement]="'top'"
             >
         </div>
     </div>
     <div class="form-group row col-md-10">
         <label class="col-md-3 col-form-label"
-               for="authentication_method">{{'security.config.ldap.attributes.authentication_method' |translate}}</label>
+               for="authentication_method"
+               [openDelay]="500" [ngbTooltip]="'security.config.ldap.attdesc.authentication_method'|translate" placement="top"
+        >{{'security.config.ldap.attributes.authentication_method' |translate}}</label>
         <div class="col-md-2">
             <select formControlName="authentication_method" id="authentication_method" class="form-control">
                 <option *ngFor="let method of authenticationMethods">{{method}}</option>
@@ -55,14 +62,18 @@
                  *ngFor="let flagName of ['writable','ssl_enabled','bind_authenticator_enabled','use_role_name_as_group']">
                 <input class="form-check-input" type="checkbox" formControlName="{{flagName}}"
                        id="{{flagName}}">
-                <label class="form-check-label " for="{{flagName}}">
+                <label class="form-check-label " for="{{flagName}}"
+                       [openDelay]="500" [ngbTooltip]="'security.config.ldap.attdesc.'+flagName|translate" placement="top"
+                >
                     {{'security.config.ldap.attributes.' + flagName|translate}}
                 </label>
             </div>
         </div>
     </div>
     <div class="form-group row col-md-10" >
-        <div class="col-md-3">{{'security.config.ldap.attributes.properties'|translate}}</div>
+        <div class="col-md-3"
+             [openDelay]="500" [ngbTooltip]="'security.config.ldap.attdesc.properties'|translate" placement="top"
+        >{{'security.config.ldap.attributes.properties'|translate}}</div>
         <div class="col-md-7 form-row">
             <input type="text" id="prop_key" formControlName="prop_key" class="form-control col" placeholder="{{'form.button.key'|translate}}"
 

@@ -226,9 +226,30 @@
           "ssl_enabled": "Enable SSL",
           "context_factory": "Context Factory",
           "properties": "Properties"
-
+        },
+        "attdesc": {
+          "host_name": "Fully qualified LDAP Server Name",
+          "port": "Port, on which the LDAP server is listening (389, 636, ...)",
+          "base_dn": "The Base DN used during bind and ldap queries",
+          "groups_base_dn": "The full DN used as base for searching groups",
+          "bind_dn": "The name or DN of the bind user, which is used to query the LDAP server",
+          "bind_password": "The password to use for binding to the LDAP server",
+          "authentication_method": "The method used to bind to the LDAP server. If strong is used, you may have to set additional properties.",
+          "bind_authenticator_enabled": "If true, LDAP query and bind is used for Archiva Login.",
+          "use_role_name_as_group": "If true, each role as a LDAP group with the same name",
+          "writable": "If true, attributes in the LDAP server can be modified",
+          "ssl_enabled": "If true, SSL/TLS is used for connecting to the LDAP server. You may have to add certificates to the keystore.",
+          "context_factory": "The LDAP JNDI Context Factory to use",
+          "properties": "Add additional environment properties for creating the initial directory context"
         },
         "flags": "Flags"
+      },
+      "properties": {
+        "head": "Properties",
+        "attributes": {
+          "key": "Key",
+          "value": "Value"
+        }
       }
     }
   },

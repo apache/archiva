@@ -24,6 +24,9 @@ import {catchError, map} from "rxjs/operators";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {BeanInformation} from "@app/model/bean-information";
 import {LdapConfiguration} from "@app/model/ldap-configuration";
+import {PagedResult} from "@app/model/paged-result";
+import {Role} from "@app/model/role";
+import {PropertyEntry} from "@app/model/property-entry";
 
 @Injectable({
   providedIn: 'root'
@@ -94,5 +97,23 @@ export class SecurityService {
         );
     }
 
+    queryProperties(searchTerm: string, offset: number = 0, limit: number = 10, orderBy: string[] = ['key'], order: string = 'asc'): Observable<PagedResult<PropertyEntry>> {
+        if (searchTerm == null) {
+            searchTerm = ""
+        }
+        if (orderBy == null || orderBy.length == 0) {
+            orderBy = ['key'];
+        }
+        return this.rest.executeRestCall<PagedResult<PropertyEntry>>("get", "archiva", "security/config/properties", {
+            'q': searchTerm,
+            'offset': offset,
+            'limit': limit,
+            'orderBy': orderBy,
+            'order': order
+        }).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            }));
+    }
 
 }

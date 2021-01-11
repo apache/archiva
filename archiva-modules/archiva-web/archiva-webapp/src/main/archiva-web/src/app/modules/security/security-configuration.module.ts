@@ -24,13 +24,15 @@ import {SecurityConfigurationComponent} from "./security-configuration/security-
 import {SecurityConfigurationRoutingModule} from "@app/modules/security/security-configuration-routing.module";
 import { BaseSecurityComponent } from './security-configuration/base-security/base-security.component';
 import { LdapSecurityComponent } from './security-configuration/ldap-security/ldap-security.component';
+import { SecurityPropertiesComponent } from './security-configuration/security-properties/security-properties.component';
 
 
 @NgModule({
     declarations: [
         SecurityConfigurationComponent,
         BaseSecurityComponent,
-        LdapSecurityComponent
+        LdapSecurityComponent,
+        SecurityPropertiesComponent
     ],
     exports: [
         SecurityConfigurationComponent

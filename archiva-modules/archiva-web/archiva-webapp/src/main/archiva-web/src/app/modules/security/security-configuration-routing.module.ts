@@ -21,6 +21,7 @@ import {RoutingGuardService as Guard} from "@app/services/routing-guard.service"
 import {SecurityConfigurationComponent} from "./security-configuration/security-configuration.component";
 import {BaseSecurityComponent} from "./security-configuration/base-security/base-security.component";
 import {LdapSecurityComponent} from "./security-configuration/ldap-security/ldap-security.component";
+import {SecurityPropertiesComponent} from "@app/modules/security/security-configuration/security-properties/security-properties.component";
 
 
 /**
@@ -29,20 +30,23 @@ import {LdapSecurityComponent} from "./security-configuration/ldap-security/ldap
  */
 
 const routes: Routes = [
-      { path: '', component: SecurityConfigurationComponent,canActivate:[Guard],
-        data: { perm: 'menu.security.config' },
+    {
+        path: '', component: SecurityConfigurationComponent, canActivate: [Guard],
+        data: {perm: 'menu.security.config'},
         children: [
-          {path: 'base', component: BaseSecurityComponent},
+            {path: 'base', component: BaseSecurityComponent},
+            {path: 'properties', component: SecurityPropertiesComponent},
             {path: 'ldap', component: LdapSecurityComponent},
-          {path: '', redirectTo:'base',pathMatch:'full'}
+            {path: '', redirectTo: 'base', pathMatch: 'full'}
         ]
-      }
+    }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [],
-  declarations: []
+    imports: [RouterModule.forChild(routes)],
+    exports: [],
+    declarations: []
 })
-export class SecurityConfigurationRoutingModule { }
+export class SecurityConfigurationRoutingModule {
+}
 
