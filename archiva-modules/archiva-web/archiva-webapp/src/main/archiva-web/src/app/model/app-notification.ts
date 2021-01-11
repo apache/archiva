@@ -23,7 +23,7 @@ export class AppNotification {
     header: string;
     body: string | TemplateRef<any>;
     timestamp: Date;
-    classname: string='';
+    classname: string[]=[''];
     delay:number=5000;
     contextData:any;
     type:string='normal'

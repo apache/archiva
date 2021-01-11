@@ -107,7 +107,7 @@ public interface SecurityConfigurationService
                 content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
-    Response updateConfiguration( SecurityConfiguration newConfiguration)
+    SecurityConfiguration updateConfiguration( SecurityConfiguration newConfiguration)
         throws ArchivaRestServiceException;
 
 
@@ -239,7 +239,7 @@ public interface SecurityConfigurationService
                 content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
-    Response updateLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException;
+    LdapConfiguration updateLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException;
 
     @Path("config/ldap/verify")
     @POST

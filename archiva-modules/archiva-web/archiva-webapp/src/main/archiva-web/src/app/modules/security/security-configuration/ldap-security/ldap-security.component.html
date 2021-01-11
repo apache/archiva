@@ -35,6 +35,7 @@
         <div class="col-md-7">
             <input type="text" formControlName="context_factory" id="context_factory"
                    [ngClass]="getInputClasses('context_factory')" [ngbTypeahead]="searchContextFactory"
+                   [placement]="top"
             >
         </div>
     </div>
@@ -60,14 +61,40 @@
             </div>
         </div>
     </div>
+    <div class="form-group row col-md-10" >
+        <div class="col-md-3">{{'security.config.ldap.attributes.properties'|translate}}</div>
+        <div class="col-md-7 form-row">
+            <input type="text" id="prop_key" formControlName="prop_key" class="form-control col" placeholder="{{'form.button.key'|translate}}"
+
+            >
+            <input type="prop_value" id="prop_value" formControlName="prop_value"
+                   class="form-control col" placeholder="{{'form.button.value'|translate}}">
+            <button type="button" class="ml-2 btn btn-primary col" (click)="addProperty()">{{'form.button.add'|translate}}</button>
+        </div>
+    </div>
+    <div class="form-group row col-md-10" *ngIf="ldapProperties && ldapProperties.size>0">
+        <div class="col-md-3"></div>
+        <div class="col-md-7 pl-2 list-group">
+                <div class="list-group-item" *ngFor="let propEntry of ldapProperties  |keyvalue">
+                    <span class="float-left">{{propEntry.key}}={{propEntry.value}}</span>
+                    <a class="float-right" [routerLink]="" (click)="removeProperty(propEntry.key)" ><i class="fas fa-trash-alt"></i></a>
+                </div>
+        </div>
+    </div>
+
 
     <div class="row col-md-10 mt-4">
         <button class="btn btn-primary col-md-2" type="submit"
-                [disabled]="userForm.invalid || !userForm.dirty">{{'form.button.save'|translate}}</button>
+                [disabled]="checkProgress|| userForm.invalid || !userForm.dirty">{{'form.button.save'|translate}}</button>
         <button class="btn btn-primary col-md-2 offset-1" type="button" (click)="checkLdapConnection()"
-                [disabled]="userForm.invalid || !userForm.dirty">{{'form.button.check'|translate}}</button>
+                [disabled]="checkProgress||userForm.invalid">
+            <span *ngIf="checkProgress" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span *ngIf="checkProgress">&nbsp;{{'form.button.checking'|translate}}</span>
+            <span *ngIf="!checkProgress">{{'form.button.check'|translate}}</span></button>
     </div>
     <div class="row  col-md-10 mt-2">
+        <div class="alert col-md-6 ml-1 alert-success" role="alert"
+             *ngIf="submitError">{{'security.config.ldap.submit_error'|translate:{error:submitError.toString()} }}</div>
         <div class="alert col-md-6 ml-1 alert-success" role="alert"
              *ngIf="checkResult=='success'">{{'security.config.ldap.check_success'|translate}}</div>
         <div class="alert col-md-6 ml-1 alert-warning" role="alert"

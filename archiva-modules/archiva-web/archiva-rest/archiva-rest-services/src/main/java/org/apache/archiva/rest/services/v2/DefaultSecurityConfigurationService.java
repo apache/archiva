@@ -182,6 +182,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
         ldapConfig.setPassword( newConfig.getBindPassword( ) );
         ldapConfig.setUseRoleNameAsGroup( newConfig.isUseRoleNameAsGroup( ) );
         ldapConfig.setWritable( newConfig.isWritable( ) );
+        ldapConfig.setContextFactory( newConfig.getContextFactory( ) );
 
         Map<String, String> props = ldapConfig.getExtraProperties( );
         for ( Map.Entry<String, String> newProp : newConfig.getProperties( ).entrySet( ) )
@@ -200,7 +201,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     }
 
     @Override
-    public Response updateConfiguration( SecurityConfiguration newConfiguration ) throws ArchivaRestServiceException
+    public SecurityConfiguration updateConfiguration( SecurityConfiguration newConfiguration ) throws ArchivaRestServiceException
     {
         if ( newConfiguration == null )
         {
@@ -308,7 +309,15 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
         {
             throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
         }
-        return Response.ok( ).build( );
+        try
+        {
+            return SecurityConfiguration.ofRedbackConfiguration( redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( ) );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( "Error while retrieve updated configuration: {}", e.getMessage( ) );
+            throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
+        }
     }
 
     @Override
@@ -414,7 +423,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     }
 
     @Override
-    public Response updateLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException
+    public LdapConfiguration updateLdapConfiguration( LdapConfiguration configuration ) throws ArchivaRestServiceException
     {
         try
         {
@@ -426,14 +435,22 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
             updateConfig( configuration, redbackRuntimeConfiguration );
 
             redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
-
-            return Response.ok( ).build( );
-
         }
         catch ( RepositoryAdminException e )
         {
             throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR ) );
         }
+
+        try
+        {
+            return LdapConfiguration.of( redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration( ).getLdapConfiguration() );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.error( "Error while retrieve updated configuration: {}", e.getMessage( ) );
+            throw new ArchivaRestServiceException( ErrorMessage.of( REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
+        }
+
     }
 
     static final Properties toProperties( Map<String, String> values )

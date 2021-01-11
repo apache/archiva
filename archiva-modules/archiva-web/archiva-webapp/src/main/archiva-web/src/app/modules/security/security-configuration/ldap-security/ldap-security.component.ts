@@ -26,6 +26,8 @@ import {ToastService} from "@app/services/toast.service";
 import {ErrorResult} from "@app/model/error-result";
 import {Observable} from 'rxjs';
 import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import {HttpResponse} from "@angular/common/http";
+import {PropertyMap} from "@app/model/property-map";
 
 @Component({
     selector: 'app-ldap-security',
@@ -39,7 +41,10 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
         'base_dn', 'groups_base_dn', 'bind_dn', 'bind_password', 'authentication_method', 'bind_authenticator_enabled',
         'use_role_name_as_group', 'writable'];
     availableContextFactories = [];
+    ldapProperties : PropertyMap = new PropertyMap();
     checkResult = null;
+    submitError = null;
+    checkProgress=false;
 
     constructor(private route: ActivatedRoute,
                 public fb: FormBuilder, private securityService: SecurityService, private toastService: ToastService) {
@@ -56,7 +61,9 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
             authentication_method: ['none'],
             bind_authenticator_enabled: [false],
             use_role_name_as_group: [true],
-            writable: [false]
+            writable: [false],
+            prop_key:[''],
+            prop_value:['']
         }, {}));
     }
 
@@ -69,7 +76,13 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
                 if (ldapConfiguration.authentication_method == '') {
                     this.userForm.controls['authentication_method'].setValue('none');
                 }
-                this.availableContextFactories = ldapConfiguration.available_context_factories
+                this.availableContextFactories = ldapConfiguration.available_context_factories;
+            console.log("Props: " + ldapConfiguration.properties + " " + typeof (ldapConfiguration.properties));
+                if (ldapConfiguration.properties) {
+                    this.ldapProperties = ldapConfiguration.properties as PropertyMap;
+                } else {
+                    this.ldapProperties = new PropertyMap();
+                }
             }
         )
         this.userForm.controls['bind_dn'].valueChanges.subscribe(selectedValue => {
@@ -79,7 +92,7 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
                 this.userForm.controls['authentication_method'].setValue('none', {emitEvent: false})
             }
         })
-        this.userForm.valueChanges.subscribe(val => {
+        this.userForm.valueChanges.subscribe(() => {
             this.checkResult = null;
         })
 
@@ -92,6 +105,23 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
     onSubmit() {
         console.log("Saving configuration");
         let config = this.copyFromForm(this.formFields)
+        if (this.ldapProperties) {
+            config.properties = this.ldapProperties;
+        }
+        this.securityService.updateLdapConfiguration(config).subscribe((response: HttpResponse<LdapConfiguration>)=> {
+                this.toastService.showSuccessByKey('ldap-security', 'security.config.ldap.submit_success');
+                this.userForm.reset();
+                this.submitError=null;
+                this.checkResult=null;
+                this.copyToForm(this.formFields, response.body)
+        },
+            (error: ErrorResult) =>{
+                this.toastService.showSuccessByKey('ldap-security', 'security.config.ldap.submit_error', {error:error.toString()});
+                this.submitError = error;
+                this.checkResult=null;
+            }
+
+        );
 
 
     }
@@ -100,7 +130,7 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
         text$.pipe(
             debounceTime(200),
             distinctUntilChanged(),
-            map(term => term.length < 2 ? []
+            map(term => term.length < 1 ? []
                 : this.availableContextFactories.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1).slice(0, 10))
         )
 
@@ -116,15 +146,43 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
     checkLdapConnection() {
         console.log("Checking LDAP connection");
         let config = this.copyFromForm(this.formFields)
+        if (this.ldapProperties) {
+            config.properties = this.ldapProperties;
+        }
+        this.checkProgress=true;
         this.securityService.verifyLdapConfiguration(config).subscribe(() => {
                 this.toastService.showSuccessByKey('ldap-security', 'security.config.ldap.check_success');
                 this.checkResult = 'success';
+                this.checkProgress=false;
             },
             (error: ErrorResult) => {
                 this.toastService.showErrorByKey('ldap-security', error.firstMessageString());
                 this.checkResult = 'error';
+                this.checkProgress=false;
             }
         );
+    }
+
+    addProperty() {
+        let key = this.userForm.controls['prop_key'].value
+        let value = this.userForm.controls['prop_value'].value
+
+        console.log("Prop " + key + " = " + value);
+        if (key && key!='') {
+            setTimeout(() => {
+                this.ldapProperties.set(key, value);
+                this.userForm.markAsDirty();
+            });
+        }
+        this.userForm.controls['prop_key'].setValue('')
+        this.userForm.controls['prop_value'].setValue('')
+    }
+
+    removeProperty(key:string) {
+        setTimeout(()=>{
+            this.ldapProperties.delete(key);
+            this.userForm.markAsDirty();
+        })
     }
 }
 
@@ -134,6 +192,9 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
 export function dnValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
         let parts = []
+        if (control.value==null) {
+            return null;
+        }
         let value = control.value.toString()
         if (value == '') {
             return null;

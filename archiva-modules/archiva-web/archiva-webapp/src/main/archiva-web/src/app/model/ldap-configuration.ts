@@ -16,6 +16,8 @@
  * under the License.
  */
 
+import {PropertyMap} from "@app/model/property-map";
+
 export class LdapConfiguration {
     host_name : string = "";
     port : number = 389;
@@ -28,7 +30,28 @@ export class LdapConfiguration {
     authentication_method : string = "";
     bind_authenticator_enabled : boolean = true;
     use_role_name_as_group : boolean = false;
-    properties : Map<string,string> = new Map<string, string>()
+    properties : PropertyMap;
     writable : boolean = false;
     available_context_factories : string[];
+
+
+    constructor(initObj:any=null) {
+        if (initObj) {
+            this.host_name = initObj.host_name
+            this.port = initObj.port
+            this.ssl_enabled = initObj.ssl_enabled
+            this.context_factory = initObj.context_factory
+            this.base_dn = initObj.base_dn
+            this.groups_base_dn = initObj.groups_base_dn
+            this.bind_dn = initObj.bind_dn
+            this.bind_password = initObj.bind_password
+            this.authentication_method = initObj.authentication_method
+            this.bind_authenticator_enabled = initObj.bind_authenticator_enabled
+            this.use_role_name_as_group = initObj.use_role_name_as_group
+            this.properties = new PropertyMap(Object.entries(initObj.properties))
+            this.writable = initObj.writable
+            this.available_context_factories = initObj.available_context_factories
+        }
+    }
+
 }

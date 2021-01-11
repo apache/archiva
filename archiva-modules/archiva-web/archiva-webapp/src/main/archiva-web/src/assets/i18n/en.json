@@ -210,6 +210,8 @@
         "explain": "Settings for the LDAP connection. These settings are only used, if LDAP User Manager and/or LDAP RBAC Manager is activated.",
         "check_success": "The LDAP settings have been verified successfully",
         "check_failed": "Could not connect to the LDAP server successfully",
+        "submit_success": "The LDAP settings have been updated",
+        "submit_error": "Could not update the LDAP settings: {error}",
         "attributes": {
           "host_name": "Host Name",
           "port": "Port",
@@ -222,7 +224,8 @@
           "use_role_name_as_group": "Archiva role names are LDAP group names",
           "writable": "Bind User can write to LDAP Server",
           "ssl_enabled": "Enable SSL",
-          "context_factory": "Context Factory"
+          "context_factory": "Context Factory",
+          "properties": "Properties"
 
         },
         "flags": "Flags"
@@ -253,7 +256,11 @@
       "yes": "Yes",
       "no": "No",
       "save": "Save Changes",
-      "check": "Check configuration"
+      "check": "Check configuration",
+      "checking": "Checking ...",
+      "add": "Add",
+      "key": "Key",
+      "value": "Value"
     },
     "edit": "Edit",
     "emptyContent": "No values",

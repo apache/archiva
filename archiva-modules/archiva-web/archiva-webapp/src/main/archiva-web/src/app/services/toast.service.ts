@@ -47,7 +47,7 @@ export class ToastService {
   }
 
   public showStandard(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) : void {
-    options.classname='bg-primary'
+    options.classname=['alert','alert-primary']
     if (!options.delay) {
       options.delay=8000
     }
@@ -65,7 +65,7 @@ export class ToastService {
   }
 
   public showError(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) : void {
-    options.classname='bg-warning'
+    options.classname=['alert','alert-danger']
     options.type='error'
     if (!options.delay) {
       options.delay=10000
@@ -84,7 +84,7 @@ export class ToastService {
   }
 
   public showSuccess(origin:string,textOrTpl:string|TemplateRef<any>, options:any={}) : void {
-    options.classname='bg-info'
+    options.classname=['alert','alert-info']
     options.type='success'
     if (!options.delay) {
       options.delay=8000

@@ -64,6 +64,7 @@ public class LdapConfiguration implements Serializable
         newCfg.setBindAuthenticatorEnabled( ldapConfiguration.isBindAuthenticatorEnabled() );
         newCfg.setHostName( ldapConfiguration.getHostName( ) );
         newCfg.setSslEnabled( ldapConfiguration.isSsl() );
+        newCfg.setContextFactory( ldapConfiguration.getContextFactory() );
         if (ldapConfiguration.getPort()<=0) {
             newCfg.setPort( newCfg.isSslEnabled() ? 636 : 389 );
         } else

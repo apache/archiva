@@ -26,7 +26,7 @@ import {AppNotification} from "@app/model/app-notification";
   template: `
     <ngb-toast
         *ngFor="let toast of toastService.toasts"
-        [class]="toast.classname"
+        [ngClass]="toast.classname"
         [autohide]="autohide"
         [delay]="toast.delay || 5000"
         (hidden)="toastService.remove(toast); autohide=true;"
@@ -41,7 +41,7 @@ import {AppNotification} from "@app/model/app-notification";
       <ng-template #text>{{ toast.body }}</ng-template>
     </ngb-toast>
   `,
-  styles: [':host { margin:.5em; padding:1em; position:fixed; right:10px; top:40px; z-index:1200; }']
+  styleUrls:['./toast.component.scss']
 })
 export class ToastComponent implements OnInit {
 
@@ -53,7 +53,6 @@ export class ToastComponent implements OnInit {
   }
 
   isTemplate(toast:AppNotification) {
-    console.log("Context data: "+JSON.stringify(toast.contextData))
     return toast.body instanceof TemplateRef; }
 
 }

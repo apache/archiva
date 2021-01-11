@@ -20,7 +20,7 @@ import { Injectable } from '@angular/core';
 import {ArchivaRequestService} from "@app/services/archiva-request.service";
 import {SecurityConfiguration} from "@app/model/security-configuration";
 import {Observable, throwError} from "rxjs";
-import {catchError} from "rxjs/operators";
+import {catchError, map} from "rxjs/operators";
 import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
 import {BeanInformation} from "@app/model/bean-information";
 import {LdapConfiguration} from "@app/model/ldap-configuration";
@@ -42,10 +42,9 @@ export class SecurityService {
     );
   }
 
-    updateConfiguration(securityConfiguration : SecurityConfiguration) : Observable<HttpResponse<any>> {
-        return this.rest.executeResponseCall<any>("put", "archiva", "security/config", securityConfiguration).pipe(
+    updateConfiguration(securityConfiguration : SecurityConfiguration) : Observable<HttpResponse<SecurityConfiguration>> {
+        return this.rest.executeResponseCall<SecurityConfiguration>("put", "archiva", "security/config", securityConfiguration).pipe(
             catchError((error: HttpErrorResponse) => {
-                console.log("Error thrown " + typeof (error));
                 return throwError(this.rest.getTranslatedErrorResult(error));
             })
         );
@@ -69,11 +68,23 @@ export class SecurityService {
 
     getLdapConfiguration() : Observable<LdapConfiguration> {
         return this.rest.executeRestCall<LdapConfiguration>("get", "archiva", "security/config/ldap", null).pipe(
+            map((ldapConfig:LdapConfiguration)=>
+                new LdapConfiguration(ldapConfig)
+            ) ,
             catchError((error: HttpErrorResponse) => {
                 return throwError(this.rest.getTranslatedErrorResult(error));
             })
         );
     }
+
+    updateLdapConfiguration(ldapConfiguration : LdapConfiguration) : Observable<HttpResponse<LdapConfiguration>> {
+        return this.rest.executeResponseCall<LdapConfiguration>("put", "archiva", "security/config/ldap", ldapConfiguration).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            })
+        );
+    }
+
 
     verifyLdapConfiguration(ldapConfig : LdapConfiguration) : Observable<HttpResponse<any>> {
         return this.rest.executeResponseCall<any>("post", "archiva", "security/config/ldap/verify", ldapConfig).pipe(
