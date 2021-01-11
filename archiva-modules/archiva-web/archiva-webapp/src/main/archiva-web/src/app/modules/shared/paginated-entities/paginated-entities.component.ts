@@ -18,7 +18,17 @@
 
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {concat, merge, Observable, of, Subject} from "rxjs";
-import {debounceTime, distinctUntilChanged, filter, map, pluck, startWith, switchMap} from "rxjs/operators";
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    map,
+    multicast,
+    pluck,
+    refCount,
+    startWith,
+    switchMap
+} from "rxjs/operators";
 import {EntityService} from "@app/model/entity-service";
 import {FieldToggle} from "@app/model/field-toggle";
 import {PageQuery} from "../model/page-query";
@@ -151,7 +161,7 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
     }
 
     ngOnInit(): void {
-        // console.log("Pag Init " + this.id);
+        console.log("Pag Init " + this.id);
         // We combine the sources for the page and the search input field to a observable 'source'
         const pageSource = this.pageStream.pipe(map(pageNumber => {
             return new PageQuery(this.searchTerm, pageNumber);
@@ -171,7 +181,11 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
                     this.service(params.search, (params.page - 1) * this.pageSize, this.pageSize, this.sortField, this.sortOrder)
                         .pipe(map(pagedResult=>LoadingValue.finish<PagedResult<T>>(pagedResult)))
                 )
-            )
+            ),
+            // This is to avoid multiple REST calls, without each subscriber would
+            // cause a REST call.
+            multicast(new Subject()),
+            refCount()
             );
         this.total$ = source.pipe(filter(val=>val.hasValue()),map(val=>val.value),
             pluck('pagination', 'total_count'));
