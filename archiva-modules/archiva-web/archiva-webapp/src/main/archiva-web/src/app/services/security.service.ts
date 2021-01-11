@@ -116,4 +116,11 @@ export class SecurityService {
             }));
     }
 
+    updateProperty(propKey:string, propValue:string) : Observable<HttpResponse<any>> {
+      return this.rest.executeResponseCall('put', 'archiva','security/config/properties/'+encodeURI(propKey), {key:propKey, value:propValue})
+          .pipe(catchError((error: HttpErrorResponse) => {
+              return throwError(this.rest.getTranslatedErrorResult(error));
+          }))
+    }
+
 }

@@ -22,12 +22,11 @@
             <tbody>
             <tr *ngFor="let propertyEntry  of propertyItem.data" >
                 <td>{{propertyEntry.key}}</td>
-                <td>{{propertyEntry.value}}</td>
+                <td *ngIf="isEdit(propertyEntry.key)"><input class="form-control" type="text" [(ngModel)]="propertyValue"></td>
+                <td *ngIf="!isEdit(propertyEntry.key)">{{propertyEntry.value}}</td>
                 <td>
-                    <a [routerLink]="['..','edit', propertyEntry.key]"
+                    <a [routerLink]="" (click)="toggleEditProperty(propertyEntry)"
                        [attr.title]="'security.config.properties.edit' |translate"><span class="fas fa-edit"></span></a>
-                    <a class="ml-2" [routerLink]="['..','delete', propertyEntry.key]"
-                       [attr.title]="'security.config.properties.delete' |translate"><span class="fas fa-trash-alt"></span></a>
                 </td>
             </tr>
             </tbody>

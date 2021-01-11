@@ -249,7 +249,9 @@
         "attributes": {
           "key": "Key",
           "value": "Value"
-        }
+        },
+        "edit_success": "Property has been updated",
+        "edit_error": "Could not save the property value: {error}"
       }
     }
   },

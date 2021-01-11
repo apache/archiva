@@ -37,6 +37,7 @@ import org.apache.archiva.rest.api.model.v2.SecurityConfiguration;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -198,7 +199,6 @@ public interface SecurityConfigurationService
     )
     Response updateConfigurationProperty( @PathParam ( "propertyName" )  String propertyName, PropertyEntry propertyValue)
         throws ArchivaRestServiceException;
-
 
     @Path("config/ldap")
     @GET
