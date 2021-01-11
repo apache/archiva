@@ -70,6 +70,7 @@ import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.apache.archiva.rest.services.v2.ErrorKeys.INVALID_RESULT_SET_ERROR;
 import static org.apache.archiva.rest.services.v2.ErrorKeys.REPOSITORY_ADMIN_ERROR;
 
 /**
@@ -334,7 +335,9 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
             Predicate<PropertyEntry> filter = PROP_QUERY_HELPER.getQueryFilter( searchTerm );
             Comparator<PropertyEntry> comparator = PROP_QUERY_HELPER.getComparator( orderBy, ascending );
             Map<String, String> props = redbackRuntimeConfiguration.getConfigurationProperties( );
-            int totalCount = props.size( );
+            int totalCount = Math.toIntExact( props.entrySet( ).stream( ).map(
+                entry -> new PropertyEntry( entry.getKey( ), entry.getValue( ) )
+            ).filter( filter ).count( ) );
             List<PropertyEntry> result = props.entrySet( ).stream( ).map(
                 entry -> new PropertyEntry( entry.getKey( ), entry.getValue( ) )
             ).filter( filter )
@@ -342,6 +345,9 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
                 .skip( offset ).limit( limit )
                 .collect( Collectors.toList( ) );
             return new PagedResult<>( totalCount, offset, limit, result );
+        } catch (ArithmeticException e) {
+            log.error( "The total count of the result properties is higher than max integer value! {}" );
+            throw new ArchivaRestServiceException( ErrorMessage.of( INVALID_RESULT_SET_ERROR ) );
         }
         catch ( RepositoryAdminException e )
         {

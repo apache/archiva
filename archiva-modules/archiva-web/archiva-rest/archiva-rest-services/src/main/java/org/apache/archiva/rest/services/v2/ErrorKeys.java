@@ -21,6 +21,8 @@ package org.apache.archiva.rest.services.v2;/*
  */
 public interface ErrorKeys
 {
+
+    String INVALID_RESULT_SET_ERROR = "archiva.result_set.invalid";
     String REPOSITORY_ADMIN_ERROR = "archiva.repositoryadmin.error";
     String LDAP_CF_INIT_FAILED = "archiva.ldap.cf.init.failed";
     String LDAP_USER_MAPPER_INIT_FAILED = "archiva.ldap.usermapper.init.failed";
