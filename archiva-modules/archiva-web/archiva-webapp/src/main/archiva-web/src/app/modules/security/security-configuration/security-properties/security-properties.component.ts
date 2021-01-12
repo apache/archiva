@@ -35,6 +35,7 @@ export class SecurityPropertiesComponent extends SortedTableComponent<PropertyEn
 
     editProperty:string='';
     propertyValue:string='';
+    originPropertyValue:string='';
 
     constructor(translator: TranslateService, private securityService: SecurityService, private toastService: ToastService) {
         super(translator, function (searchTerm: string, offset: number, limit: number, orderBy: string[], order: string): Observable<PagedResult<PropertyEntry>> {
@@ -53,14 +54,16 @@ export class SecurityPropertiesComponent extends SortedTableComponent<PropertyEn
 
     updateProperty(key:string, value:string) {
         console.log("Updating "+key+"="+value)
-        this.securityService.updateProperty(key, value).subscribe(
-            ()=>{
-                this.toastService.showSuccessByKey('security-properties', 'security.config.properties.edit_success')
-            },
-            (error: ErrorResult) => {
-                this.toastService.showErrorByKey('security-properties', 'security.config.properties.edit_failure', {error:error.firstMessageString()})
-            }
-        );
+        if (this.propertyValue!=this.originPropertyValue) {
+            this.securityService.updateProperty(key, value).subscribe(
+                () => {
+                    this.toastService.showSuccessByKey('security-properties', 'security.config.properties.edit_success')
+                },
+                (error: ErrorResult) => {
+                    this.toastService.showErrorByKey('security-properties', 'security.config.properties.edit_failure', {error: error.firstMessageString()})
+                }
+            );
+        }
     }
 
     toggleEditProperty(propertyEntry:PropertyEntry) : void {
@@ -69,9 +72,11 @@ export class SecurityPropertiesComponent extends SortedTableComponent<PropertyEn
             this.editProperty='';
             this.updateProperty(propertyEntry.key, this.propertyValue);
             this.propertyValue = '';
+            this.originPropertyValue='';
         } else {
             this.editProperty = propertyEntry.key;
             this.propertyValue = propertyEntry.value;
+            this.originPropertyValue = propertyEntry.value;
         }
     }
 }

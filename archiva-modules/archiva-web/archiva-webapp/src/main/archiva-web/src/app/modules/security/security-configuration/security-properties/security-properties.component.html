@@ -39,10 +39,10 @@
             </thead>
             <tbody>
             <tr *ngFor="let propertyEntry  of propertyItem.data" >
-                <td>{{propertyEntry.key}}</td>
-                <td *ngIf="isEdit(propertyEntry.key)"><input class="form-control" type="text" [(ngModel)]="propertyValue"></td>
-                <td *ngIf="!isEdit(propertyEntry.key)">{{propertyEntry.value}}</td>
-                <td>
+                <td class="align-middle">{{propertyEntry.key}}</td>
+                <td class="align-middle" *ngIf="isEdit(propertyEntry.key)"><input class="form-control" type="text" [(ngModel)]="propertyValue"></td>
+                <td class="align-middle" *ngIf="!isEdit(propertyEntry.key)">{{propertyEntry.value}}</td>
+                <td class="align-middle" >
                     <a [routerLink]="" (click)="toggleEditProperty(propertyEntry)"
                        [attr.title]="'security.config.properties.edit' |translate"><span class="fas fa-edit"></span></a>
                 </td>
