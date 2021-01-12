@@ -252,6 +252,24 @@
         },
         "edit_success": "Property has been updated",
         "edit_error": "Could not save the property value: {error}"
+      },
+      "cache": {
+        "head": "Cache Settings",
+        "explain": "Lifetime and storage settings for the User Cache",
+        "submit_success": "The cache settings have been updated successfully",
+        "submit_error": "Could not update the cache setting: {error}",
+        "attributes" : {
+          "time_to_idle_seconds": "Max. idle time (s)",
+          "time_to_live_seconds": "Time to Live (s)",
+          "max_entries_in_memory": "Maximum entries in memory",
+          "max_entries_on_disk": "Maximum entries stored on disk"
+        },
+        "attdesc": {
+          "time_to_idle_seconds": "Entries will be discarded, if they are not used for this time.",
+          "time_to_live_seconds": "Entries will be discarded after this time.",
+          "max_entries_in_memory": "Maximum number of entries that are kept in memory",
+          "max_entries_on_disk": "Maximum number of entries that will be persistently stored on disk"
+        }
       }
     }
   },

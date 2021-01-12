@@ -22,6 +22,7 @@ import {SecurityConfigurationComponent} from "./security-configuration/security-
 import {BaseSecurityComponent} from "./security-configuration/base-security/base-security.component";
 import {LdapSecurityComponent} from "./security-configuration/ldap-security/ldap-security.component";
 import {SecurityPropertiesComponent} from "@app/modules/security/security-configuration/security-properties/security-properties.component";
+import {CacheSettingComponent} from "@app/modules/security/security-configuration/cache-setting/cache-setting.component";
 
 
 /**
@@ -37,6 +38,7 @@ const routes: Routes = [
             {path: 'base', component: BaseSecurityComponent},
             {path: 'properties', component: SecurityPropertiesComponent},
             {path: 'ldap', component: LdapSecurityComponent},
+            {path: 'cache', component: CacheSettingComponent},
             {path: '', redirectTo: 'base', pathMatch: 'full'}
         ]
     }

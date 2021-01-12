@@ -20,7 +20,7 @@
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/alert';
 
-:host {
+app-toasts {
   margin:.5em;
   padding:1em;
   position:fixed;
@@ -45,5 +45,16 @@ ngb-toast.alert {
 @each $color, $value in $theme-colors {
   ngb-toast.alert-#{$color} {
     @include alert-variant(theme-color-level($color, $alert-bg-level), theme-color-level($color, $alert-border-level), theme-color-level($color, $alert-color-level));
+      .toast-header {
+        display: flex;
+        align-items: center;
+        padding: $toast-padding-y $toast-padding-x;
+        color: theme-color-level($color, $alert-color-level) !important;
+        background-color: theme-color-level($color, $alert-bg-level) !important;
+        background-clip: padding-box;
+        border-bottom: $toast-border-width solid $toast-header-border-color;
+        @include border-top-radius(subtract($toast-border-radius, $toast-border-width));
+      }
   }
+
 }

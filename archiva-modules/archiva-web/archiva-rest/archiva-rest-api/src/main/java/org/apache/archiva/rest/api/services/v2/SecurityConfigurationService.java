@@ -304,7 +304,7 @@ public interface SecurityConfigurationService
                 content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
         }
     )
-    Response updateCacheConfiguration( CacheConfiguration cacheConfiguration ) throws ArchivaRestServiceException;
+    CacheConfiguration updateCacheConfiguration( CacheConfiguration cacheConfiguration ) throws ArchivaRestServiceException;
 
 
     @Path("user_managers")

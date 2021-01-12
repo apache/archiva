@@ -27,6 +27,7 @@ import {LdapConfiguration} from "@app/model/ldap-configuration";
 import {PagedResult} from "@app/model/paged-result";
 import {Role} from "@app/model/role";
 import {PropertyEntry} from "@app/model/property-entry";
+import {CacheConfiguration} from "@app/model/cache-configuration";
 
 @Injectable({
   providedIn: 'root'
@@ -121,6 +122,22 @@ export class SecurityService {
           .pipe(catchError((error: HttpErrorResponse) => {
               return throwError(this.rest.getTranslatedErrorResult(error));
           }))
+    }
+
+    getCacheConfiguration() : Observable<CacheConfiguration> {
+        return this.rest.executeRestCall<CacheConfiguration>("get", "archiva", "security/config/cache", null).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            })
+        );
+    }
+
+    updateCacheConfiguration(cacheConfig:CacheConfiguration) : Observable<HttpResponse<CacheConfiguration>> {
+        return this.rest.executeResponseCall<CacheConfiguration>("put", "archiva", "security/config/cache", cacheConfig).pipe(
+            catchError((error: HttpErrorResponse) => {
+                return throwError(this.rest.getTranslatedErrorResult(error));
+            })
+        );
     }
 
 }

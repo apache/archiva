@@ -1,0 +1,45 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<form class="mt-3 mb-3" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <p class="row col-md-10">{{'security.config.cache.explain'|translate}}</p>
+    <div class="form-group row col-md-10"
+         *ngFor="let attName of formFields">
+        <label class="col-md-3 col-form-label"
+               for="{{attName}}"
+               [openDelay]="500"
+               [ngbTooltip]="'security.config.cache.attdesc.'+attName|translate" placement="top"
+        >{{'security.config.cache.attributes.' + attName |translate}}</label>
+        <div class="col-md-2">
+            <input type="text" formControlName="{{attName}}"
+                   id="{{attName}}"
+                   class="form-control text-right"
+            >
+        </div>
+    </div>
+
+    <div class="row col-md-10 mt-5">
+        <button class="btn btn-primary col-md-2" type="submit"
+                [disabled]="userForm.invalid || !userForm.dirty">{{'form.button.save'|translate}}</button>
+    </div>
+    <div class="row  col-md-10 mt-2">
+        <div class="alert col-md-6 ml-1 alert-success" role="alert"
+             *ngIf="submitError">{{'security.config.cache.submit_error'|translate:{error:submitError.toString()} }}</div>
+    </div>
+
+</form>

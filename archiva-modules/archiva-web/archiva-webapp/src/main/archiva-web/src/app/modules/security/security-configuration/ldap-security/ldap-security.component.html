@@ -25,7 +25,7 @@
                [openDelay]="500"
                [ngbTooltip]="'security.config.ldap.attdesc.'+attName|translate" placement="top"
         >{{'security.config.ldap.attributes.' + attName |translate}}</label>
-        <div [attr.class]="attName=='port'?'col-md-3':'col-md-7'">
+        <div [attr.class]="attName=='port'?'col-md-2':'col-md-7'">
             <input [attr.type]="attName=='bind_password'?'password':'text'" formControlName="{{attName}}"
                    id="{{attName}}"
                    [ngClass]="getInputClasses(attName)"
@@ -94,10 +94,10 @@
     </div>
 
 
-    <div class="row col-md-10 mt-4">
-        <button class="btn btn-primary col-md-2" type="submit"
+    <div class="row col-md-10 mt-5">
+        <button class="btn btn-primary col-md-3" type="submit"
                 [disabled]="checkProgress|| userForm.invalid || !userForm.dirty">{{'form.button.save'|translate}}</button>
-        <button class="btn btn-primary col-md-2 offset-1" type="button" (click)="checkLdapConnection()"
+        <button class="btn btn-primary col-md-3 offset-1" type="button" (click)="checkLdapConnection()"
                 [disabled]="checkProgress||userForm.invalid">
             <span *ngIf="checkProgress" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             <span *ngIf="checkProgress">&nbsp;{{'form.button.checking'|translate}}</span>

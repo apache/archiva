@@ -140,6 +140,9 @@ export class LdapSecurityComponent extends EditBaseComponent<LdapConfiguration> 
             csClasses = [];
         }
         csClasses.push('form-control');
+        if (field=='port') {
+            csClasses.push('text-right')
+        }
         return csClasses;
     }
 

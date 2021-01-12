@@ -596,7 +596,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     }
 
     @Override
-    public Response updateCacheConfiguration( CacheConfiguration cacheConfiguration ) throws ArchivaRestServiceException
+    public CacheConfiguration updateCacheConfiguration( CacheConfiguration cacheConfiguration ) throws ArchivaRestServiceException
     {
         if ( cacheConfiguration == null )
         {
@@ -610,7 +610,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
             log.debug( "getRedbackRuntimeConfiguration -> {}", redbackRuntimeConfiguration );
             updateConfig( cacheConfiguration, redbackRuntimeConfiguration );
             redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
-            return Response.ok( ).build( );
+            return getCacheConfiguration( );
         }
         catch ( RepositoryAdminException e )
         {

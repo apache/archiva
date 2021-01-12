@@ -25,6 +25,7 @@ import {SecurityConfigurationRoutingModule} from "@app/modules/security/security
 import { BaseSecurityComponent } from './security-configuration/base-security/base-security.component';
 import { LdapSecurityComponent } from './security-configuration/ldap-security/ldap-security.component';
 import { SecurityPropertiesComponent } from './security-configuration/security-properties/security-properties.component';
+import { CacheSettingComponent } from './security-configuration/cache-setting/cache-setting.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { SecurityPropertiesComponent } from './security-configuration/security-p
         SecurityConfigurationComponent,
         BaseSecurityComponent,
         LdapSecurityComponent,
-        SecurityPropertiesComponent
+        SecurityPropertiesComponent,
+        CacheSettingComponent
     ],
     exports: [
         SecurityConfigurationComponent

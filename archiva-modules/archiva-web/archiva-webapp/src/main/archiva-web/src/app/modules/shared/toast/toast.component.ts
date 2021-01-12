@@ -16,9 +16,8 @@
  * under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, TemplateRef, ViewEncapsulation} from '@angular/core';
 import {ToastService} from "@app/services/toast.service";
-import {TemplateRef} from "@angular/core";
 import {AppNotification} from "@app/model/app-notification";
 
 @Component({
@@ -33,7 +32,11 @@ import {AppNotification} from "@app/model/app-notification";
         (mouseenter)="autohide = false"
         (mouseleave)="autohide = true"
     >
-      <i *ngIf="toast.type=='error'" class="fas fa-exclamation-triangle"></i>
+      <ng-template ngbToastHeader  >
+        <i class="fas fa-exclamation-triangle" *ngIf="toast.type=='error'" ></i>
+        <i class="fas fa-thumbs-up" *ngIf="toast.type=='success'" ></i>
+        <i class="fas fa-info" *ngIf="toast.type!='success'&&toast.type!='error'" ></i>
+      </ng-template>
       <ng-template [ngIf]="isTemplate(toast)" [ngIfElse]="text">
         <ng-template [ngTemplateOutlet]="toast.body" [ngTemplateOutletContext]="toast.contextData" ></ng-template>
       </ng-template>
@@ -41,7 +44,9 @@ import {AppNotification} from "@app/model/app-notification";
       <ng-template #text>{{ toast.body }}</ng-template>
     </ngb-toast>
   `,
-  styleUrls:['./toast.component.scss']
+  styleUrls:['./toast.component.scss'],
+  // Needed for styling the components
+  encapsulation: ViewEncapsulation.None
 })
 export class ToastComponent implements OnInit {
 
