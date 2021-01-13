@@ -27,7 +27,7 @@ import {
     pluck,
     refCount,
     startWith,
-    switchMap
+    switchMap, tap
 } from "rxjs/operators";
 import {EntityService} from "@app/model/entity-service";
 import {FieldToggle} from "@app/model/field-toggle";
@@ -187,11 +187,11 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
             multicast(new Subject()),
             refCount()
             );
-        this.total$ = source.pipe(filter(val=>val.hasValue()),map(val=>val.value),
-            pluck('pagination', 'total_count'));
-        this.multiplePages$ = source.pipe(filter(val => val.hasValue()),
+        this.total$ = source.pipe(tap((el)=>console.log("Total pipe "+this.id+": "+typeof(el)+" - "+JSON.stringify(el))),filter(val=>val.hasValue()),map(val=>val.value),
+            pluck('pagination', 'total_count'),tap((el)=>console.log("Total end "+this.id+" - "+el)));
+        this.multiplePages$ = source.pipe(tap((el)=>console.log("Multipage pipe "+this.id+": "+typeof(el)+" - "+JSON.stringify(el))),filter(val => val.hasValue()),
             map(val => val.value.pagination.total_count > val.value.pagination.limit));
-        this.items$ = source;
+        this.items$ = source.pipe(tap((el)=>console.log("Item pipe "+this.id+": "+typeof(el)+" - "+JSON.stringify(el))));
     }
 
     search(terms: string) {
