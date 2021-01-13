@@ -83,6 +83,13 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
     }
 
     ngOnInit(): void {
+        this.route.queryParams.subscribe(
+            params => {
+                if (params.editmode) {
+                    this.editMode=true;
+                }
+            }
+        )
         this.route.params.pipe(
             map(params => params.roleid),
             filter(roleid => roleid != null),
