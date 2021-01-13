@@ -26,6 +26,7 @@ import {
     multicast,
     pluck,
     refCount,
+    share,
     startWith,
     switchMap, tap
 } from "rxjs/operators";
@@ -34,6 +35,8 @@ import {FieldToggle} from "@app/model/field-toggle";
 import {PageQuery} from "../model/page-query";
 import {LoadingValue} from '../model/loading-value';
 import {PagedResult} from "@app/model/paged-result";
+import {Multipage} from "@app/model/multipage";
+import {PaginationInfo} from "@app/model/pagination-info";
 
 
 /**
@@ -138,17 +141,11 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
     /**
      * The total number of elements available for the given search term
      */
-    public total$: Observable<number>;
+    public paginationInfo$: Observable<PaginationInfo>;
     /**
      * The entity items retrieved from the service
      */
     public items$: Observable<LoadingValue<PagedResult<T>>>;
-
-    /**
-     * true, if the current page result value represents a result with multiple pages,
-     * otherwise false.
-     */
-    public multiplePages$:Observable<boolean>;
 
     private pageStream: Subject<number> = new Subject<number>();
     private searchTermStream: Subject<string> = new Subject<string>();
@@ -156,8 +153,7 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
     constructor() {
         // console.log("Construct " + this.id);
         this.items$=null;
-        this.total$=null;
-        this.multiplePages$=null;
+        this.paginationInfo$=null;
     }
 
     ngOnInit(): void {
@@ -184,14 +180,13 @@ export class PaginatedEntitiesComponent<T> implements OnInit, FieldToggle, After
             ),
             // This is to avoid multiple REST calls, without each subscriber would
             // cause a REST call.
-            multicast(new Subject()),
+            multicast(()=>new Subject<LoadingValue<PagedResult<T>>>()),
             refCount()
             );
-        this.total$ = source.pipe(tap((el)=>console.log("Total pipe "+this.id+": "+typeof(el)+" - "+JSON.stringify(el))),filter(val=>val.hasValue()),map(val=>val.value),
-            pluck('pagination', 'total_count'),tap((el)=>console.log("Total end "+this.id+" - "+el)));
-        this.multiplePages$ = source.pipe(tap((el)=>console.log("Multipage pipe "+this.id+": "+typeof(el)+" - "+JSON.stringify(el))),filter(val => val.hasValue()),
-            map(val => val.value.pagination.total_count > val.value.pagination.limit));
-        this.items$ = source.pipe(tap((el)=>console.log("Item pipe "+this.id+": "+typeof(el)+" - "+JSON.stringify(el))));
+        this.paginationInfo$ = source.pipe(filter(val => val.hasValue())
+            , map(val => PaginationInfo.of(val.value.pagination.total_count, val.value.pagination.offset, val.value.pagination.limit)),
+            tap((el) => this.page = el.page()));
+        this.items$ = source;
     }
 
     search(terms: string) {

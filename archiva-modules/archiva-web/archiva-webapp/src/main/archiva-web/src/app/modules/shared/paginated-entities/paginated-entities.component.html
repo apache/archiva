@@ -18,34 +18,34 @@
 <!--
 <ng-template [ngIf]="((total$|async)>0 || displayIfEmpty)" [ngIfElse]="noContent" >
 -->
-    <ng-template [ngIf]="true" [ngIfElse]="noContent" >
-
-
+<ng-container *ngIf="(paginationInfo$|async) as paginationInfo; else noContent">
     <form class="mt-3 mb-3">
         <!--
         <div class="form-row align-items-center" *ngIf="(multiplePages$|async)||displayControlsIfSinglePage">
         -->
-    <div class="form-row align-items-center" *ngIf="(multiplePages$|async)==true">
-        <div class="col-lg-4 col-md-2 col-sm-1">
-            <label class="sr-only" for="searchQuery">{{'search.label' |translate}}</label>
-            <input type="text" class="form-control" id="searchQuery" placeholder="{{'search.input'|translate}}" #searchTerm
-                   (keyup)="search(searchTerm.value)">
+        <div class="form-row align-items-center" *ngIf="paginationInfo.multiple()||displayControlsIfSinglePage">
+            <div class="col-lg-4 col-md-2 col-sm-1">
+                <label class="sr-only" for="searchQuery">{{'search.label' |translate}}</label>
+                <input type="text" class="form-control" id="searchQuery" placeholder="{{'search.input'|translate}}"
+                       #searchTerm
+                       (keyup)="search(searchTerm.value)">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">{{'search.button'|translate}}</button>
+            </div>
         </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary">{{'search.button'|translate}}</button>
-        </div>
-    </div>
 
 
-</form>
+    </form>
 
-<ng-content></ng-content>
+    <ng-content></ng-content>
 
-<ngb-pagination *ngIf="(multiplePages$|async)==true"
-                [collectionSize]="total$|async" [pageSize]="pageSize" [maxSize]="pagination.maxSize" [rotate]="pagination.rotate"
-                [boundaryLinks]="pagination.boundaryLinks" [ellipses]="pagination.ellipses"
-                [(page)]="page" (pageChange)="changePage($event)" aria-label="Pagination"></ngb-pagination>
-</ng-template>
+    <ngb-pagination *ngIf="paginationInfo.multiple()||displayControlsIfSinglePage"
+                    [collectionSize]="paginationInfo.total_count" [pageSize]="pageSize" [maxSize]="pagination.maxSize"
+                    [rotate]="pagination.rotate"
+                    [boundaryLinks]="pagination.boundaryLinks" [ellipses]="pagination.ellipses"
+                    [(page)]="page" (pageChange)="changePage($event)" aria-label="Pagination"></ngb-pagination>
+</ng-container>
 <ng-template #noContent>
     {{displayKeyIfEmpty|translate}}
 </ng-template>

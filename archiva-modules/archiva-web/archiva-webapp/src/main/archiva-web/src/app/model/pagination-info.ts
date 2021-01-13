@@ -20,4 +20,23 @@ export class PaginationInfo {
     total_count : number;
     offset: number;
     limit: number;
+
+    multiple() : boolean {
+        return this.total_count>this.limit;
+    }
+
+    page() : number {
+        if (this.limit==0) {
+            return 1;
+        }
+        return Math.floor(this.offset/this.limit )+1;
+    }
+
+    static of(total_count:number, offset:number, limit:number) : PaginationInfo {
+        let info = new PaginationInfo();
+        info.total_count = total_count;
+        info.offset=offset;
+        info.limit=limit;
+        return info;
+    }
 }
