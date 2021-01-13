@@ -87,7 +87,7 @@ export class ToastService {
     options.classname=['alert','alert-info']
     options.type='success'
     if (!options.delay) {
-      options.delay=80000
+      options.delay=8000
     }
     this.show(origin,textOrTpl,options)
   }

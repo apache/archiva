@@ -16,7 +16,7 @@
   ~ under the License.
   -->
 
-<form class="mt-3 mb-3" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+<form class="mt-3 mb-3" [formGroup]="userForm" (ngSubmit)="onSubmit()" autocomplete="off">
     <div class="form-group row col-md-8" *ngIf="!editUser.permanent">
         <div class="col-md-1">{{'form.edit' |translate}} <span class="fas fa-edit"></span></div>
         <div class="col-md-6">
