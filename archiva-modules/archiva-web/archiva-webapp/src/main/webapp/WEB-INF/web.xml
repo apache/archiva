@@ -161,7 +161,18 @@
     <servlet-name>CXFServletV2</servlet-name>
     <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
-  
+
+  <!-- Removing dir-listing from Jetty default-servlet -->
+  <servlet>
+    <servlet-name>default</servlet-name>
+    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
+    <init-param>
+      <param-name>dirAllowed</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
