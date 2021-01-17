@@ -442,6 +442,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
             updateConfig( configuration, redbackRuntimeConfiguration );
 
             redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
+            ldapConnectionFactory.initialize( );
         }
         catch ( RepositoryAdminException e )
         {
