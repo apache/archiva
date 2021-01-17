@@ -56,6 +56,7 @@ import javax.naming.AuthenticationException;
 import javax.naming.AuthenticationNotSupportedException;
 import javax.naming.CommunicationException;
 import javax.naming.InvalidNameException;
+import javax.naming.NamingException;
 import javax.naming.NoPermissionException;
 import javax.naming.ServiceUnavailableException;
 import javax.ws.rs.core.Response;
@@ -512,7 +513,14 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
         {
             if ( ldapConnection != null )
             {
-                ldapConnection.close( );
+                try
+                {
+                    ldapConnection.close( );
+                }
+                catch ( NamingException e )
+                {
+                    log.error( "Could not close connection: {}", e.getMessage( ) );
+                }
             }
             ldapConnection = null;
         }
@@ -545,7 +553,14 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
         {
             if ( ldapConnection != null )
             {
-                ldapConnection.close( );
+                try
+                {
+                    ldapConnection.close( );
+                }
+                catch ( NamingException e )
+                {
+                    log.error( "Could not close connection: {}", e.getMessage( ), e );
+                }
             }
         }
 

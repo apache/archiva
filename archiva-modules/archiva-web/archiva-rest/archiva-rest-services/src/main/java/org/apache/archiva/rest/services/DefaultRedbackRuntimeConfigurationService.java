@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.InvalidNameException;
+import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -320,7 +321,14 @@ public class DefaultRedbackRuntimeConfigurationService
 
             if ( ldapConnection != null )
             {
-                ldapConnection.close();
+                try
+                {
+                    ldapConnection.close();
+                }
+                catch ( NamingException e )
+                {
+                    log.error( "Could not close connection: {}", e.getMessage( ), e );
+                }
             }
         }
 
@@ -370,12 +378,23 @@ public class DefaultRedbackRuntimeConfigurationService
             log.warn( "fail to get ldapConnection: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
+        catch ( NamingException e )
+        {
+            log.error( "Could not close connection: {}", e.getMessage( ), e );
+        }
         finally
         {
 
             if ( ldapConnection != null )
             {
-                ldapConnection.close();
+                try
+                {
+                    ldapConnection.close();
+                }
+                catch ( NamingException e )
+                {
+                    log.error( "Could not close connection: {}", e.getMessage( ), e );
+                }
             }
         }
 
