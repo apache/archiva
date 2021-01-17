@@ -293,7 +293,7 @@
                     <div class="invalid-feedback"
                          *ngIf="groupSearchFailed">{{'roles.edit.groupSearchFailed'|translate}}</div>
                 </div>
-                <button class="btn btn-primary" (click)="assignGroupRole()">{{'roles.edit.assignButton'|translate}}</button>
+                <button class="btn btn-primary" id="addGroupButton" (click)="assignGroupRole()">{{'roles.edit.assignButton'|translate}}</button>
             </form>
         </ng-template>
     </ngb-panel>
