@@ -24,18 +24,16 @@ import {
     filter,
     map,
     multicast,
-    pluck,
     refCount,
-    share,
     startWith,
-    switchMap, tap
+    switchMap,
+    tap
 } from "rxjs/operators";
 import {EntityService} from "@app/model/entity-service";
 import {FieldToggle} from "@app/model/field-toggle";
 import {PageQuery} from "../model/page-query";
 import {LoadingValue} from '../model/loading-value';
 import {PagedResult} from "@app/model/paged-result";
-import {Multipage} from "@app/model/multipage";
 import {PaginationInfo} from "@app/model/pagination-info";
 
 

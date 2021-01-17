@@ -17,6 +17,7 @@
   -->
 
 <app-paginated-entities [service]="service" pageSize="10" [(sortField)]="sortField" [(sortOrder)]="sortOrder"
+                        [id]="'rolesList'"
                         #parent>
     <ng-container *ngIf="parent.items$ |async as roleItemLoader" >
         <ng-template [ngIf]="roleItemLoader.loading" #spinner let-modal>

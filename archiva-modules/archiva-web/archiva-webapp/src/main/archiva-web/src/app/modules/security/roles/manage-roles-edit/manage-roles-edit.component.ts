@@ -20,11 +20,11 @@ import {AfterContentInit, Component, EventEmitter, OnInit, Output, ViewChild} fr
 import {ActivatedRoute} from "@angular/router";
 import {FormBuilder, Validators} from "@angular/forms";
 import {RoleService} from "@app/services/role.service";
-import {catchError, debounceTime, distinctUntilChanged, filter, map, switchMap, tap} from "rxjs/operators";
+import {catchError, concatAll, debounceTime, distinctUntilChanged, filter, map, switchMap, tap} from "rxjs/operators";
 import {Role} from '@app/model/role';
 import {ErrorResult} from "@app/model/error-result";
 import {EditBaseComponent} from "@app/modules/shared/edit-base.component";
-import {forkJoin, Observable, of, zip} from 'rxjs';
+import {EMPTY, forkJoin, Observable, of, zip} from 'rxjs';
 import {RoleUpdate} from "@app/model/role-update";
 import {EntityService} from "@app/model/entity-service";
 import {User} from '@app/model/user';
@@ -34,6 +34,9 @@ import {UserInfo} from '@app/model/user-info';
 import {HttpResponse} from "@angular/common/http";
 import {PaginatedEntitiesComponent} from "@app/modules/shared/paginated-entities/paginated-entities.component";
 import {ToastService} from "@app/services/toast.service";
+import {GroupService} from "@app/services/group.service";
+import {GroupMapping} from "@app/model/group-mapping";
+import { Group } from '@app/model/group';
 
 @Component({
     selector: 'app-manage-roles-edit',
@@ -55,8 +58,11 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
 
     userSearching:boolean=false;
     userSearchFailed:boolean=false;
-
     public userSearchModel:any;
+
+    groupSearching:boolean=false;
+    groupSearchFailed:boolean=false;
+    public groupSearchModel:any;
 
     @ViewChild('userSection') roleUserComponent: PaginatedEntitiesComponent<UserInfo>;
     @ViewChild('userParentSection') roleUserParentComponent: PaginatedEntitiesComponent<UserInfo>;
@@ -64,7 +70,10 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
     @Output()
     roleIdEvent: EventEmitter<string> = new EventEmitter<string>(true);
 
+    private roleMappings$;
+
     constructor(private route: ActivatedRoute, public roleService: RoleService, private userService: UserService,
+                private groupService: GroupService,
                 public fb: FormBuilder, private toastService: ToastService) {
         super(fb);
         super.init(fb.group({
@@ -119,6 +128,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             if (this.roleUserParentComponent) {
                 this.roleUserParentComponent.changeService(this.roleUserParentService);
             }
+            this.roleMappings$ = this.getMappedGroups(role.id);
         }, error => {
             this.editRole = new Role();
         });
@@ -232,8 +242,31 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
             tap(() => this.userSearching = false)
         )
 
+
     getUserId(item:UserInfo) : string {
         return item.user_id;
+    }
+
+    searchGroup = (text$: Observable<string>) =>
+        text$.pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            tap(() => this.groupSearching = true),
+            switchMap(term =>
+                this.groupService.query( term, 0, 10).pipe(
+                    tap(() => this.groupSearchFailed = false),
+                    map(pagedResult=>
+                        pagedResult.data),
+                    catchError(() => {
+                        this.groupSearchFailed = true;
+                        return of([]);
+                    }))
+            ),
+            tap(() => this.groupSearching = false)
+        )
+
+    getGroupName(item:Group) : string {
+        return item.name;
     }
 
     showError(err: ErrorResult, errorKey:string, params:any={}) : void {
@@ -243,7 +276,6 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
     }
 
     showSuccess(successKey:string, params:any={}) : void  {
-        console.log("Success " + successKey + " - " + JSON.stringify(params));
         this.toastService.showSuccessByKey('manage-roles-edit',successKey,params)
     }
 
@@ -262,7 +294,7 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                     this.error = true;
                     this.success = false;
                     this.errorResult = err;
-                    this.showError(err, 'roles.edit.errors.assignFailed', {'role_id':this.editRole.id,'user_id':userId})
+                    this.showError(err, 'roles.edit.errors.userAssignFailed', {'role_id':this.editRole.id,'user_id':userId})
                     return [];
                 })
             ).subscribe((response : HttpResponse<Role>)  => {
@@ -298,6 +330,57 @@ export class ManageRolesEditComponent extends EditBaseComponent<Role> implements
                     this.showSuccess('roles.edit.success.unassign',{'role_id':this.editRole.id,'user_id':user_id})
                 }
             );
+        }
+    }
+
+    assignGroupRole() {
+        let groupName;
+        if (typeof(this.groupSearchModel)=='string') {
+            groupName=this.groupSearchModel;
+        } else {
+            if (this.groupSearchModel.name) {
+                groupName = this.groupSearchModel.name;
+            }
+        }
+        if (this.editRole.id!=null && groupName!=null && groupName.length>0) {
+            this.groupService.assignGroup(groupName, this.editRole.id).pipe(
+                catchError((err: ErrorResult) => {
+                    this.error = true;
+                    this.success = false;
+                    this.errorResult = err;
+                    this.showError(err, 'roles.edit.errors.groupAssignFailed', {'role_id':this.editRole.id,'group_name':groupName})
+                    return [];
+                })
+            ).subscribe((response : HttpResponse<any>)  => {
+                this.error = false;
+                this.success = true;
+                this.errorResult = null;
+                this.result = response.body;
+                this.showSuccess('roles.edit.success.assignGroup',{'role_id':this.editRole.id,'group_name':groupName})
+                this.groupSearchModel=''
+            });
+        }
+    }
+
+
+    getMappedGroups(roleId:string) : Observable<string[]> {
+        console.log("Get mapped groups "+roleId);
+        if (roleId!=null && roleId.length>0) {
+            return this.groupService.getGroupMappings().pipe(
+                map((gMapArray: GroupMapping[]) => {
+                    console.log("Array " + gMapArray + " - " + gMapArray.length);
+                    let result = [];
+                    for (let gMap of gMapArray) {
+                        if (gMap.roles.includes(roleId)) {
+                            result.push(gMap.group_name);
+                        }
+                    }
+                    return result;
+                })
+            );
+        } else {
+            console.log("No role id found");
+            return EMPTY;
         }
     }
 

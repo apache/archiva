@@ -86,9 +86,9 @@
         <ng-template ngbPanelHeader let-opened="opened">
             <div class="d-flex align-items-center justify-content-between">
                 <button ngbPanelToggle class="btn btn-link text-left shadow-none">
-                    <h3>{{'roles.edit.parents'|translate}}</h3></button>
-                <ng-container *ngIf="!opened"><i class="fa fa-eye-slash"></i></ng-container>
-                <ng-container *ngIf="opened"><i class="fa fa-eye"></i></ng-container>
+                    <h4>{{'roles.edit.parents'|translate}}</h4></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="opened"><i class="fa fa-eye-slash"></i></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="!opened"><i class="fa fa-eye"></i></button>
             </div>
         </ng-template>
         <ng-template ngbPanelContent>
@@ -103,9 +103,9 @@
         <ng-template ngbPanelHeader let-opened="opened">
             <div class="d-flex align-items-center justify-content-between">
                 <button ngbPanelToggle class="btn btn-link text-left shadow-none">
-                    <h3>{{'roles.edit.children'|translate}}</h3></button>
-                <ng-container *ngIf="!opened"><i class="fa fa-eye-slash"></i></ng-container>
-                <ng-container *ngIf="opened"><i class="fa fa-eye"></i></ng-container>
+                    <h4>{{'roles.edit.children'|translate}}</h4></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="opened"><i class="fa fa-eye-slash"></i></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="!opened"><i class="fa fa-eye"></i></button>
             </div>
         </ng-template>
         <ng-template ngbPanelContent>
@@ -122,9 +122,9 @@
             <div class="d-flex align-items-center justify-content-between">
 
                 <button ngbPanelToggle class="btn btn-link text-left shadow-none">
-                    <h3>{{'roles.edit.permissions'|translate}}</h3></button>
-                <ng-container *ngIf="!opened"><i class="fa fa-eye-slash"></i></ng-container>
-                <ng-container *ngIf="opened"><i class="fa fa-eye"></i></ng-container>
+                    <h4>{{'roles.edit.permissions'|translate}}</h4></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="opened"><i class="fa fa-eye-slash"></i></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="!opened"><i class="fa fa-eye"></i></button>
             </div>
         </ng-template>
         <ng-template ngbPanelContent>
@@ -154,9 +154,9 @@
         <ng-template ngbPanelHeader let-opened="opened">
             <div class="d-flex align-items-center justify-content-between">
                 <button ngbPanelToggle class="btn btn-link text-left shadow-none">
-                    <h3>{{'roles.edit.users'|translate}}</h3></button>
-                <ng-container *ngIf="!opened"><i class="fa fa-eye-slash"></i></ng-container>
-                <ng-container *ngIf="opened"><i class="fa fa-eye"></i></ng-container>
+                    <h4>{{'roles.edit.users'|translate}}</h4></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="opened"><i class="fa fa-eye-slash"></i></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="!opened"><i class="fa fa-eye"></i></button>
             </div>
         </ng-template>
         <ng-template ngbPanelContent>
@@ -244,8 +244,8 @@
                     <ngb-highlight [result]="r.user_id + ' - ' + r.full_name" [term]="t"></ngb-highlight>
                 </ng-template>
                 <div class="form-group">
-                    <label for="typeahead-http">{{'roles.edit.assignUserSearch'|translate}}</label>
-                    <input id="typeahead-http" type="text" class="form-control col-md-2"
+                    <label for="userSearchField">{{'roles.edit.assignUserSearch'|translate}}</label>
+                    <input id="userSearchField" type="text" class="form-control col-md-2"
                            name="userSearchField"
                            [class.is-invalid]="userSearchFailed" [resultTemplate]="userResultTemplate"
                            [inputFormatter]="getUserId"
@@ -260,12 +260,43 @@
             </form>
 
         </ng-template>
-        <div *ngIf="success">
-            Success
-        </div>
-        <div *ngIf="error">
-            <div>Error {{errorResult.error_messages}}</div>
-        </div>
     </ngb-panel>
+
+    <ngb-panel id="groupMapping">
+        <ng-template ngbPanelHeader let-opened="opened">
+            <div class="d-flex align-items-center justify-content-between">
+                <button ngbPanelToggle class="btn btn-link text-left shadow-none">
+                    <h4>{{'roles.edit.groupMapping'|translate}}</h4></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="opened"><i class="fa fa-eye-slash"></i></button>
+                <button class="btn btn-link shadow-none" ngbPanelToggle *ngIf="!opened"><i class="fa fa-eye"></i></button>
+            </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+            <ul class="list-group" >
+                <li class="list-group-item" *ngFor="let group of roleMappings$ |async">{{group}}</li>
+            </ul>
+            <form class="mt-2">
+                <ng-template #groupResultTemplate let-r="result" let-t="term">
+                    <ngb-highlight [result]="r.name" [term]="t"></ngb-highlight>
+                </ng-template>
+
+                <div class="form-group">
+                    <label for="groupSearchField">{{'roles.edit.assignGroupSearch'|translate}}</label>
+                    <input id="groupSearchField" type="text" class="form-control col-md-2"
+                           name="groupSearchField"
+                           [class.is-invalid]="groupSearchFailed" [resultTemplate]="groupResultTemplate"
+                           [inputFormatter]="getGroupName"
+                           [placement]="'top'"
+                           [(ngModel)]="groupSearchModel" [ngbTypeahead]="searchGroup" placeholder="Group Search"/>
+                    <small *ngIf="groupSearching"
+                           class="form-text text-muted">{{'form.searching'  |translate}}</small>
+                    <div class="invalid-feedback"
+                         *ngIf="groupSearchFailed">{{'roles.edit.groupSearchFailed'|translate}}</div>
+                </div>
+                <button class="btn btn-primary" (click)="assignGroupRole()">{{'roles.edit.assignButton'|translate}}</button>
+            </form>
+        </ng-template>
+    </ngb-panel>
+
 
 </ngb-accordion>
