@@ -19,6 +19,12 @@ package org.apache.archiva.admin.model;
  */
 
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 /**
  * @author Olivier Lamy
  * @since 1.4-M1
@@ -27,12 +33,66 @@ public class RepositoryAdminException
     extends Exception
 {
 
+    private static final ResourceBundle bundle = ResourceBundle.getBundle( "org.apache.archiva.admin.model.error.AdminErrors", Locale.ROOT );
+
     /**
      * can return the field name of bean with issue
      * can be <code>null</code>
      * @since 1.4-M3
      */
     private String fieldName;
+
+    /**
+     * A unique identifier of this error
+     * @since 3.0
+     */
+    private String key;
+    private boolean keyExists = false;
+
+    /**
+     * Message parameters
+     */
+    String[] parameters = new String[0];
+
+
+    public static RepositoryAdminException ofKey(String key, String... params) {
+        String message = getMessage( key, params );
+        RepositoryAdminException ex = new RepositoryAdminException( message );
+        ex.setKey( key );
+        ex.setParameters( params );
+        return ex;
+    }
+
+    protected static String getMessage( String key, String[] params )
+    {
+        return MessageFormat.format( bundle.getString( key ), params );
+    }
+
+    public static RepositoryAdminException ofKey(String key, Throwable cause, String... params) {
+        String message = getMessage( key, params );
+        RepositoryAdminException ex = new RepositoryAdminException( message, cause );
+        ex.setKey( key );
+        ex.setParameters( params );
+        return ex;
+    }
+
+
+    public static RepositoryAdminException ofKeyAndField(String key, String fieldName, String... params) {
+        String message = getMessage( key, params );
+        RepositoryAdminException ex = new RepositoryAdminException( message, fieldName );
+        ex.setKey( key );
+        ex.setParameters( params );
+        return ex;
+    }
+
+    public static RepositoryAdminException ofKeyAndField(String key, Throwable cause, String fieldName, String... params) {
+        String message = getMessage( key, params );
+        RepositoryAdminException ex = new RepositoryAdminException( message, cause, fieldName );
+        ex.setKey( key );
+        ex.setFieldName( fieldName );
+        ex.setParameters( params );
+        return ex;
+    }
 
     public RepositoryAdminException( String s )
     {
@@ -64,5 +124,33 @@ public class RepositoryAdminException
     public void setFieldName( String fieldName )
     {
         this.fieldName = fieldName;
+    }
+
+    public String getKey( )
+    {
+        return key;
+    }
+
+    public void setKey( String key )
+    {
+        this.keyExists=!StringUtils.isEmpty( key );
+        this.key = key;
+    }
+
+    public boolean keyExists() {
+        return this.keyExists;
+    }
+
+    public String[] getParameters( )
+    {
+        return parameters;
+    }
+
+    public void setParameters( String[] parameters )
+    {
+        if (parameters==null) {
+            this.parameters = new String[0];
+        }
+        this.parameters = parameters;
     }
 }

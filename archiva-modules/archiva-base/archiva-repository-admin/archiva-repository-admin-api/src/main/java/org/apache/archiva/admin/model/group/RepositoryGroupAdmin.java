@@ -19,6 +19,7 @@ package org.apache.archiva.admin.model.group;
  */
 
 import org.apache.archiva.admin.model.AuditInformation;
+import org.apache.archiva.admin.model.EntityNotFoundException;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -35,8 +36,17 @@ public interface RepositoryGroupAdmin
     List<RepositoryGroup> getRepositoriesGroups()
         throws RepositoryAdminException;
 
+    /**
+     * Returns the repository group. If it is not found a {@link org.apache.archiva.admin.model.EntityNotFoundException}
+     * will be thrown.
+     *
+     * @param repositoryGroupId the identifier of the repository group
+     * @return the repository group object
+     * @throws RepositoryAdminException
+     * @throws EntityNotFoundException
+     */
     RepositoryGroup getRepositoryGroup( String repositoryGroupId )
-        throws RepositoryAdminException;
+        throws RepositoryAdminException, EntityNotFoundException;
 
     Boolean addRepositoryGroup( RepositoryGroup repositoryGroup, AuditInformation auditInformation )
         throws RepositoryAdminException;

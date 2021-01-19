@@ -19,6 +19,8 @@ package org.apache.archiva.admin.repository.group;
  */
 
 import org.apache.archiva.admin.model.AuditInformation;
+import org.apache.archiva.admin.model.EntityExistsException;
+import org.apache.archiva.admin.model.EntityNotFoundException;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
@@ -125,8 +127,14 @@ public class DefaultRepositoryGroupAdmin
     }
 
     @Override
-    public RepositoryGroup getRepositoryGroup( String repositoryGroupId ) {
-        return convertRepositoryGroupObject( repositoryRegistry.getRepositoryGroup( repositoryGroupId ) );
+    public RepositoryGroup getRepositoryGroup( String repositoryGroupId ) throws EntityNotFoundException
+    {
+        org.apache.archiva.repository.RepositoryGroup group = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
+        if (group==null) {
+            throw new EntityNotFoundException( "Repository group does not exist" );
+        } else {
+            return convertRepositoryGroupObject( group );
+        }
     }
 
     @Override
@@ -146,7 +154,8 @@ public class DefaultRepositoryGroupAdmin
         try {
             repositoryRegistry.putRepositoryGroup(repositoryGroupConfiguration);
         } catch (RepositoryException e) {
-            e.printStackTrace();
+            log.error( "Could not add the repository group to the registry: {}", e.getMessage( ), e );
+            throw RepositoryAdminException.ofKey( "repository_group.registry.add_error", e, repositoryGroup.getId(), e.getMessage() );
         }
 
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
@@ -200,7 +209,8 @@ public class DefaultRepositoryGroupAdmin
         try {
             repositoryRegistry.putRepositoryGroup(repositoryGroupConfiguration);
         } catch (RepositoryException e) {
-            e.printStackTrace();
+            log.error( "Could not update the repository group in the registry: {}", e.getMessage( ), e );
+            throw RepositoryAdminException.ofKey( "repository_group.registry.update_error", e, repositoryGroup.getId(), e.getMessage() );
         }
 
         org.apache.archiva.repository.RepositoryGroup rg = repositoryRegistry.getRepositoryGroup( repositoryGroup.getId( ) );
@@ -349,26 +359,24 @@ public class DefaultRepositoryGroupAdmin
         String repoGroupId = repositoryGroup.getId();
         if ( StringUtils.isBlank( repoGroupId ) )
         {
-            throw new RepositoryAdminException( "repositoryGroup id cannot be empty" );
+            throw RepositoryAdminException.ofKey("repository_group.id.empty" );
         }
 
         if ( repoGroupId.length() > 100 )
         {
-            throw new RepositoryAdminException(
-                "Identifier [" + repoGroupId + "] is over the maximum limit of 100 characters" );
+            throw RepositoryAdminException.ofKey("repository_group.id.max_length",repoGroupId, Integer.toString( 100 ));
 
         }
 
         Matcher matcher = REPO_GROUP_ID_PATTERN.matcher( repoGroupId );
         if ( !matcher.matches() )
         {
-            throw new RepositoryAdminException(
-                "Invalid character(s) found in identifier. Only the following characters are allowed: alphanumeric, '.', '-' and '_'" );
+            throw RepositoryAdminException.ofKey("repository_group.id.invalid_chars","alphanumeric, '.', '-','_'" );
         }
 
         if ( repositoryGroup.getMergedIndexTtl() <= 0 )
         {
-            throw new RepositoryAdminException( "Merged Index TTL must be greater than 0." );
+            throw RepositoryAdminException.ofKey("repository_group.merged_index_ttl.min","0" );
         }
 
         Configuration configuration = getArchivaConfiguration().getConfiguration();
@@ -377,18 +385,18 @@ public class DefaultRepositoryGroupAdmin
         {
             if ( !updateMode )
             {
-                throw new RepositoryAdminException( "Unable to add new repository group with id [" + repoGroupId
+                throw new EntityExistsException( "Unable to add new repository group with id [" + repoGroupId
                                                         + "], that id already exists as a repository group." );
             }
         }
         else if ( configuration.getManagedRepositoriesAsMap().containsKey( repoGroupId ) )
         {
-            throw new RepositoryAdminException( "Unable to add new repository group with id [" + repoGroupId
+            throw new EntityExistsException( "Unable to add new repository group with id [" + repoGroupId
                                                     + "], that id already exists as a managed repository." );
         }
         else if ( configuration.getRemoteRepositoriesAsMap().containsKey( repoGroupId ) )
         {
-            throw new RepositoryAdminException( "Unable to add new repository group with id [" + repoGroupId
+            throw new EntityExistsException( "Unable to add new repository group with id [" + repoGroupId
                                                     + "], that id already exists as a remote repository." );
         }
 
@@ -402,8 +410,7 @@ public class DefaultRepositoryGroupAdmin
         {
             if ( getManagedRepositoryAdmin().getManagedRepository( id ) == null )
             {
-                throw new RepositoryAdminException(
-                    "managedRepository with id " + id + " not exists so cannot be used in a repositoryGroup" );
+                throw RepositoryAdminException.ofKey("repository_group.repository.not_found",id );
             }
         }
     }
@@ -427,6 +434,7 @@ public class DefaultRepositoryGroupAdmin
         }
         rg.setCronExpression( group.getSchedulingDefinition() );
         rg.setMergedIndexTtl( group.getMergedIndexTTL() );
+        rg.setLocation( group.getLocation().toString() );
         return rg;
     }
 }

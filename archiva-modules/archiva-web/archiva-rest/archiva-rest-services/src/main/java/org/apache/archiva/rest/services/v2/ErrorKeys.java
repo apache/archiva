@@ -16,11 +16,18 @@ package org.apache.archiva.rest.services.v2;/*
  * under the License.
  */
 
+import org.apache.archiva.rest.api.services.v2.ErrorMessage;
+
+import java.util.List;
+
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 public interface ErrorKeys
 {
+
+    String PREFIX = "archiva.";
+    String REPOSITORY_GROUP_PREFIX = PREFIX + "repository_group.";
 
     String INVALID_RESULT_SET_ERROR = "archiva.result_set.invalid";
     String REPOSITORY_ADMIN_ERROR = "archiva.repositoryadmin.error";
@@ -37,5 +44,9 @@ public interface ErrorKeys
     String PROPERTY_NOT_FOUND = "archiva.property.not.found";
 
     String MISSING_DATA = "archiva.missing.data";
+
+    String REPOSITORY_GROUP_NOT_EXIST = REPOSITORY_GROUP_PREFIX+"notexist";
+    String REPOSITORY_GROUP_ADD_FAILED = REPOSITORY_GROUP_PREFIX+"add.failed"  ;
+    String REPOSITORY_GROUP_EXIST = REPOSITORY_GROUP_PREFIX+"exists";
 
 }

@@ -59,6 +59,8 @@ public class RepositoryGroup
      */
     private String cronExpression;
 
+    private String location;
+
     public RepositoryGroup()
     {
         // no op
@@ -182,6 +184,16 @@ public class RepositoryGroup
     {
         this.cronExpression = mergedIndexCronExpression;
         return this;
+    }
+
+    public String getLocation( )
+    {
+        return location;
+    }
+
+    public void setLocation( String location )
+    {
+        this.location = location;
     }
 
     @Override
