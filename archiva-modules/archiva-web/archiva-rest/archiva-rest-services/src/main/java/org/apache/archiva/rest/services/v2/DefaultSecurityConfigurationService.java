@@ -19,10 +19,8 @@ package org.apache.archiva.rest.services.v2;/*
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
-import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.model.PropertyEntry;
-import org.apache.archiva.components.rest.util.PagingHelper;
 import org.apache.archiva.components.rest.util.QueryHelper;
 import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
@@ -83,10 +81,9 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     private static final Logger log = LoggerFactory.getLogger( DefaultSecurityConfigurationService.class );
 
     private static final String[] KNOWN_LDAP_CONTEXT_PROVIDERS = {"com.sun.jndi.ldap.LdapCtxFactory","com.ibm.jndi.LDAPCtxFactory"};
-    private List<String> availableContextProviders = new ArrayList<>( );
+    private final List<String> availableContextProviders = new ArrayList<>( );
 
-    private static final QueryHelper<PropertyEntry> PROP_QUERY_HELPER = new QueryHelper( new String[]{"key"} );
-    private static final PagingHelper PROP_PAGING_HELPER = new PagingHelper( );
+    private static final QueryHelper<PropertyEntry> PROP_QUERY_HELPER = new QueryHelper<>( new String[]{"key"} );
 
     static
     {
@@ -123,10 +120,6 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
 
     @Inject
     private LdapUserMapper ldapUserMapper;
-
-    @Inject
-    @Named( value = "cache#users" )
-    private Cache usersCache;
 
 
     @PostConstruct
@@ -215,23 +208,10 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
             boolean userManagerChanged = !CollectionUtils.isEqualCollection( newConfiguration.getActiveUserManagers( ), conf.getUserManagerImpls( ) );
             boolean rbacManagerChanged = !CollectionUtils.isEqualCollection( newConfiguration.getActiveRbacManagers( ), conf.getRbacManagerImpls( ) );
 
-            boolean ldapConfigured = false;
-            for ( String um : newConfiguration.getActiveUserManagers( ) )
-            {
-                if ( um.contains( "ldap" ) )
-                {
-                    ldapConfigured = true;
-                }
-            }
+            boolean ldapConfigured = newConfiguration.getActiveUserManagers( ).stream( ).anyMatch( um -> um.contains( "ldap" ) );
             if ( !ldapConfigured )
             {
-                for ( String rbm : newConfiguration.getActiveRbacManagers( ) )
-                {
-                    if ( rbm.contains( "ldap" ) )
-                    {
-                        ldapConfigured = true;
-                    }
-                }
+                ldapConfigured= newConfiguration.getActiveRbacManagers( ).stream( ).anyMatch( um -> um.contains( "ldap" ) );
             }
 
             updateConfig( newConfiguration, conf );
@@ -347,7 +327,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
                 .collect( Collectors.toList( ) );
             return new PagedResult<>( totalCount, offset, limit, result );
         } catch (ArithmeticException e) {
-            log.error( "The total count of the result properties is higher than max integer value! {}" );
+            log.error( "The total count of the result properties is higher than max integer value!" );
             throw new ArchivaRestServiceException( ErrorMessage.of( INVALID_RESULT_SET_ERROR ) );
         }
         catch ( RepositoryAdminException e )
@@ -461,7 +441,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
 
     }
 
-    static final Properties toProperties( Map<String, String> values )
+    static Properties toProperties( Map<String, String> values )
     {
         Properties result = new Properties( );
         for ( Map.Entry<String, String> entry : values.entrySet( ) )
@@ -471,7 +451,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
         return result;
     }
 
-    private static final boolean isContextFactoryAvailable(final String factoryClass)
+    private static boolean isContextFactoryAvailable( final String factoryClass)
     {
         try
         {
@@ -635,7 +615,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     }
 
     @Override
-    public List<BeanInformation> getAvailableUserManagers( ) throws ArchivaRestServiceException
+    public List<BeanInformation> getAvailableUserManagers( )
     {
         Map<String, UserManager> beans = applicationContext.getBeansOfType( UserManager.class );
 
@@ -656,7 +636,7 @@ public class DefaultSecurityConfigurationService implements SecurityConfiguratio
     }
 
     @Override
-    public List<BeanInformation> getAvailableRbacManagers( ) throws ArchivaRestServiceException
+    public List<BeanInformation> getAvailableRbacManagers( )
     {
         Map<String, RBACManager> beans = applicationContext.getBeansOfType( RBACManager.class );
 

@@ -229,22 +229,22 @@ public class DefaultRepositoryGroupAdmin
         org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
         if ( repositoryGroup == null )
         {
-            throw new RepositoryAdminException(
-                    "repositoryGroup with id " + repositoryGroupId + " doesn't not exists so cannot add repository to it" );
+            throw EntityNotFoundException.ofMessage(
+                    "Repository group with id " + repositoryGroupId + " doesn't not exists so cannot add repository to it", repositoryGroupId );
         }
 
         if (!(repositoryGroup instanceof EditableRepositoryGroup)) {
-            throw new RepositoryAdminException("The repository group is not editable "+repositoryGroupId);
+            throw RepositoryAdminException.ofKey("repository_group.not_editable",repositoryGroupId);
         }
         EditableRepositoryGroup editableRepositoryGroup = (EditableRepositoryGroup) repositoryGroup;
         if ( editableRepositoryGroup.getRepositories().stream().anyMatch( repo -> repositoryId.equals(repo.getId())) )
         {
-            throw new RepositoryAdminException(
-                "repositoryGroup with id " + repositoryGroupId + " already contain repository with id" + repositoryId );
+            throw new EntityExistsException(
+                "Repository group with id " + repositoryGroupId + " already contain repository with id" + repositoryId );
         }
         org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repositoryId);
         if (managedRepo==null) {
-            throw new RepositoryAdminException("Repository with id "+repositoryId+" does not exist" );
+            throw EntityNotFoundException.ofMessage("Repository with id "+repositoryId+" does not exist", repositoryId );
         }
 
         editableRepositoryGroup.addRepository( managedRepo );
@@ -265,19 +265,20 @@ public class DefaultRepositoryGroupAdmin
         org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
         if ( repositoryGroup == null )
         {
-            throw new RepositoryAdminException( "repositoryGroup with id " + repositoryGroupId
-                                                    + " doesn't not exists so cannot remove repository from it" );
+            throw EntityNotFoundException.ofMessage( "Repository group with id " + repositoryGroupId
+                                                    + " doesn't not exists so cannot remove repository from it", repositoryGroupId );
         }
 
         if ( !repositoryGroup.getRepositories().stream().anyMatch( repo -> repositoryId.equals(repo.getId()) ) )
         {
-            throw new RepositoryAdminException(
+            throw EntityNotFoundException.ofMessage(
                 "repositoryGroup with id " + repositoryGroupId + " doesn't not contains repository with id"
-                    + repositoryId
+                    + repositoryId, repositoryId
             );
         }
+
         if (!(repositoryGroup instanceof EditableRepositoryGroup)) {
-            throw new RepositoryAdminException("Repository group is not editable " + repositoryGroupId);
+            throw RepositoryAdminException.ofKey("repository_group.not_editable",repositoryGroupId);
         }
         EditableRepositoryGroup editableRepositoryGroup = (EditableRepositoryGroup) repositoryGroup;
 

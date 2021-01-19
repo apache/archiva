@@ -26,6 +26,9 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
+ *
+ * Base exception class for the admin interfaces. Exceptions should set keys that allows identifying and classifying the error.
+ *
  * @author Olivier Lamy
  * @since 1.4-M1
  */
@@ -54,7 +57,18 @@ public class RepositoryAdminException
      */
     String[] parameters = new String[0];
 
+    protected static String getMessage( String key, String[] params )
+    {
+        return MessageFormat.format( bundle.getString( key ), params );
+    }
 
+    /**
+     * Tries to retrieve a message from the bundle for the given key and returns the
+     * exception.
+     * @param key the identifier of the error
+     * @param params parameters for translating the message
+     * @return the exception
+     */
     public static RepositoryAdminException ofKey(String key, String... params) {
         String message = getMessage( key, params );
         RepositoryAdminException ex = new RepositoryAdminException( message );
@@ -63,11 +77,14 @@ public class RepositoryAdminException
         return ex;
     }
 
-    protected static String getMessage( String key, String[] params )
-    {
-        return MessageFormat.format( bundle.getString( key ), params );
-    }
-
+    /**
+     * Tries to retrieve a message from the bundle for the given key and returns the
+     * exception.
+     * @param key the identifier of the error
+     * @param cause the exception that caused the error
+     * @param params parameters for translating the message
+     * @return the exception
+     */
     public static RepositoryAdminException ofKey(String key, Throwable cause, String... params) {
         String message = getMessage( key, params );
         RepositoryAdminException ex = new RepositoryAdminException( message, cause );
@@ -77,6 +94,14 @@ public class RepositoryAdminException
     }
 
 
+    /**
+     * Tries to retrieve a message from the bundle for the given key and the given field and returns the
+     * exception.
+     * @param key the identifier of the error
+     * @param fieldName the field this exception is for
+     * @param params parameters for translating the message
+     * @return the exception
+     */
     public static RepositoryAdminException ofKeyAndField(String key, String fieldName, String... params) {
         String message = getMessage( key, params );
         RepositoryAdminException ex = new RepositoryAdminException( message, fieldName );
@@ -85,6 +110,15 @@ public class RepositoryAdminException
         return ex;
     }
 
+    /**
+     * Tries to retrieve a message from the bundle for the given key and the given field and returns the
+     * exception.
+     * @param key the identifier of the error
+     * @param fieldName the field this exception is for
+     * @param cause the exception that caused this error
+     * @param params parameters for translating the message
+     * @return the exception
+     */
     public static RepositoryAdminException ofKeyAndField(String key, Throwable cause, String fieldName, String... params) {
         String message = getMessage( key, params );
         RepositoryAdminException ex = new RepositoryAdminException( message, cause, fieldName );

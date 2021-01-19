@@ -28,6 +28,7 @@ public interface ErrorKeys
 
     String PREFIX = "archiva.";
     String REPOSITORY_GROUP_PREFIX = PREFIX + "repository_group.";
+    String REPOSITORY_PREFIX = PREFIX + "repository.";
 
     String INVALID_RESULT_SET_ERROR = "archiva.result_set.invalid";
     String REPOSITORY_ADMIN_ERROR = "archiva.repositoryadmin.error";
@@ -48,5 +49,8 @@ public interface ErrorKeys
     String REPOSITORY_GROUP_NOT_EXIST = REPOSITORY_GROUP_PREFIX+"notexist";
     String REPOSITORY_GROUP_ADD_FAILED = REPOSITORY_GROUP_PREFIX+"add.failed"  ;
     String REPOSITORY_GROUP_EXIST = REPOSITORY_GROUP_PREFIX+"exists";
+
+    String REPOSITORY_GROUP_DELETE_FAILED = REPOSITORY_GROUP_PREFIX + "delete.failed";
+    String REPOSITORY_NOT_EXIST = REPOSITORY_PREFIX + "notexist";
 
 }

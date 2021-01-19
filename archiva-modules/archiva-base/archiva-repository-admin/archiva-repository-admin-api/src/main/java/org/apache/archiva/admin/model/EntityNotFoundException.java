@@ -49,6 +49,10 @@ public class EntityNotFoundException extends RepositoryAdminException
         return new EntityNotFoundException( message, parameters );
     }
 
+    public static EntityNotFoundException ofMessage(String message, String... parameters) {
+        return new EntityNotFoundException( message, parameters );
+    }
+
     public EntityNotFoundException( String s, String... parameters )
     {
         super( s );

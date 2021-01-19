@@ -19,6 +19,7 @@ package org.apache.archiva.admin.model.group;
  */
 
 import org.apache.archiva.admin.model.AuditInformation;
+import org.apache.archiva.admin.model.EntityExistsException;
 import org.apache.archiva.admin.model.EntityNotFoundException;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Methods for administering repository groups (virtual repositories)
  * @author Olivier Lamy
  * @since 1.4-M1
  */
@@ -57,8 +59,19 @@ public interface RepositoryGroupAdmin
     Boolean deleteRepositoryGroup( String repositoryGroupId, AuditInformation auditInformation )
         throws RepositoryAdminException;
 
+    /**
+     * Adds the given managed repository to the repository group.
+     *
+     * @param repositoryGroupId the id of the repository group
+     * @param repositoryId the id of the managed repository
+     * @param auditInformation audit information
+     * @return <code>true</code>, if the repository was added, otherwise <code>false</code>
+     * @throws RepositoryAdminException If an error occurred , while adding the group.
+     * @throws EntityNotFoundException If the repository group or the managed repository with the given id does not exist
+     * @throws EntityExistsException If the managed repository is already member of the group
+     */
     Boolean addRepositoryToGroup( String repositoryGroupId, String repositoryId, AuditInformation auditInformation )
-        throws RepositoryAdminException;
+        throws RepositoryAdminException, EntityNotFoundException, EntityExistsException;
 
     Boolean deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId,
                                        AuditInformation auditInformation )
