@@ -51,7 +51,7 @@ public class RepositoryGroup
     /**
      * The TTL (time to live) of the repo group's merged index.
      */
-    private int mergedIndexTtl = -1;
+    private int mergedIndexTtl = 30;
 
     /**
      * default model value is empty so none

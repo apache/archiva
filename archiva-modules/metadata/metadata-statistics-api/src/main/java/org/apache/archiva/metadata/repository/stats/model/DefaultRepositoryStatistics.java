@@ -20,8 +20,11 @@ package org.apache.archiva.metadata.repository.stats.model;
  */
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -392,6 +395,16 @@ public class DefaultRepositoryStatistics
             createCustomValueMap();
         }
         customValues.put(fieldName, count);
+    }
+
+    @Override
+    public List<String> getAvailableCustomValues( )
+    {
+        if (customValues==null) {
+            return Collections.emptyList( );
+        } else {
+            return new ArrayList<>( customValues.keySet( ) );
+        }
     }
 
     private void createCustomValueMap( )

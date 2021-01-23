@@ -118,6 +118,7 @@
     <jaxrs:serviceBeans>
       <ref bean="v2.defaultSecurityConfigurationService" />
       <ref bean="v2.repositoryGroupService#rest" />
+      <ref bean="v2.repositoryService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:features>

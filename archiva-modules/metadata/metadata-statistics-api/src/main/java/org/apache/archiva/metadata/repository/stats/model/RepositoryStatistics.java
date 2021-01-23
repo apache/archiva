@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository.stats.model;
 import org.apache.archiva.metadata.model.MetadataFacet;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -105,5 +106,11 @@ public interface RepositoryStatistics extends MetadataFacet
      * @param count The statistic counter value
      */
     void setCustomValue(String fieldName, long count);
+
+    /**
+     * Returns the list of field names of custom values stored in this instance.
+     * @return the list of stored custom values
+     */
+    List<String> getAvailableCustomValues();
 
 }

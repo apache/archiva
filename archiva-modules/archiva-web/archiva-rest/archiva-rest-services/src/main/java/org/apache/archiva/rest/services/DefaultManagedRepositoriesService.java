@@ -136,16 +136,17 @@ public class DefaultManagedRepositoriesService
 
 
     @Override
-    public ActionStatus updateManagedRepository( ManagedRepository managedRepository )
+    public Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
 
         try
         {
-            return new ActionStatus( managedRepositoryAdmin.updateManagedRepository( managedRepository,
+            managedRepositoryAdmin.updateManagedRepository( managedRepository,
                 managedRepository.isStageRepoNeeded( ),
                 getAuditInformation( ),
-                managedRepository.isResetStats( ) ) );
+                managedRepository.isResetStats( ) );
+            return true;
         }
         catch ( RepositoryAdminException e )
         {

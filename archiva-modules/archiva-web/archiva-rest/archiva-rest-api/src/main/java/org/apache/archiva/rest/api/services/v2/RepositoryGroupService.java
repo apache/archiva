@@ -45,7 +45,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.apache.archiva.rest.api.services.v2.Configuration.DEFAULT_PAGE_LIMIT;
+import static org.apache.archiva.rest.api.services.v2.RestConfiguration.DEFAULT_PAGE_LIMIT;
 
 /**
  * Endpoint for repository groups that combine multiple repositories into a single virtual repository.
