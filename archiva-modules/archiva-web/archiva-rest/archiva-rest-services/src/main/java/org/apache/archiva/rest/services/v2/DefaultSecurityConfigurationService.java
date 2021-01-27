@@ -56,6 +56,7 @@ import org.apache.archiva.rest.api.model.v2.CacheConfiguration;
 import org.apache.archiva.rest.api.model.v2.LdapConfiguration;
 import org.apache.archiva.rest.api.model.v2.SecurityConfiguration;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
+import org.apache.archiva.rest.api.services.v2.ErrorKeys;
 import org.apache.archiva.rest.api.services.v2.ErrorMessage;
 import org.apache.archiva.rest.api.services.v2.SecurityConfigurationService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -87,8 +88,8 @@ import java.util.ResourceBundle;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.apache.archiva.rest.services.v2.ErrorKeys.INVALID_RESULT_SET_ERROR;
-import static org.apache.archiva.rest.services.v2.ErrorKeys.REPOSITORY_ADMIN_ERROR;
+import static org.apache.archiva.rest.api.services.v2.ErrorKeys.INVALID_RESULT_SET_ERROR;
+import static org.apache.archiva.rest.api.services.v2.ErrorKeys.REPOSITORY_ADMIN_ERROR;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>

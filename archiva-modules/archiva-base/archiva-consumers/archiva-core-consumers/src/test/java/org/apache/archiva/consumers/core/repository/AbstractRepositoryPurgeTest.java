@@ -24,6 +24,8 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.maven.metadata.storage.Maven2RepositoryPathTranslator;
 import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -53,8 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -108,6 +109,8 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected MetadataRepository metadataRepository;
 
+    protected ArchivaRepositoryRegistry repositoryRegistry;
+
     @Inject
     protected ApplicationContext applicationContext;
 
@@ -127,6 +130,8 @@ public abstract class AbstractRepositoryPurgeTest
         repositorySession = sessionControl.createMock( RepositorySession.class );
         metadataRepository = mock( MetadataRepository.class );
         sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
+        repositoryRegistry = applicationContext.getBean( "repositoryRegistry", ArchivaRepositoryRegistry.class );
+        assertNotNull( repositoryRegistry );
         EasyMock.expect( repositorySession.getRepository() ).andStubReturn( metadataRepository );
         EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
 
@@ -138,6 +143,7 @@ public abstract class AbstractRepositoryPurgeTest
     {
         config = null;
         repo = null;
+        repositoryRegistry.destroy();
 
     }
 

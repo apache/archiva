@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.model.v2;
  */
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.archiva.admin.model.beans.MetadataScanTask;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 
@@ -43,30 +44,18 @@ public class ScanStatus implements Serializable
     {
     }
 
-    public void updateScanInfo( RepositoryTask runningRepositoryTask, List<RepositoryTask> taskQueue) {
-        List<ScanTask> newScanQueue = new ArrayList<>( );
-        if (runningRepositoryTask==null) {
-            this.scanRunning=false;
-        } else {
-            this.scanRunning=true;
-            newScanQueue.add( 0, ScanTask.of( runningRepositoryTask ) );
-        }
-        newScanQueue.addAll( taskQueue.stream( ).map( task -> ScanTask.of( task ) ).collect( Collectors.toList( ) ) );
-        this.scanQueued = taskQueue.size( );
-        this.scanQueue = newScanQueue;
-    }
+    public static ScanStatus of( org.apache.archiva.admin.model.beans.ScanStatus modelStatus ) {
+        ScanStatus status = new ScanStatus( );
+        status.setIndexRunning( modelStatus.isIndexScanRunning() );
+        status.setScanRunning( modelStatus.isMetadataScanRunning() );
+        List<org.apache.archiva.admin.model.beans.IndexingTask> indexQueue = modelStatus.getIndexingQueue( );
+        status.setIndexingQueue( indexQueue.stream().map(IndexingTask::of).collect( Collectors.toList()) );
+        status.setIndexQueued( indexQueue.size( ) > 0 ? indexQueue.size( ) - 1 : 0 );
+        List<MetadataScanTask> scanQueue = modelStatus.getScanQueue( );
+        status.setScanQueue( scanQueue.stream().map( ScanTask::of ).collect( Collectors.toList()) );
+        status.setScanQueued( scanQueue.size( ) > 0 ? scanQueue.size( ) - 1 : 0 );
+        return status;
 
-    public void updateIndexInfo( ArtifactIndexingTask runningIndexingTask, List<ArtifactIndexingTask> taskQueue) {
-        List<IndexingTask> newIndexQueue = new ArrayList<>(  );
-        if (runningIndexingTask==null) {
-            this.indexRunning=false;
-        } else {
-            this.indexRunning=true;
-            newIndexQueue.add(IndexingTask.of( runningIndexingTask ) );
-        }
-        newIndexQueue.addAll( taskQueue.stream( ).map( task -> IndexingTask.of( task ) ).collect( Collectors.toList( ) ) );
-        this.indexQueued = taskQueue.size( );
-        this.indexingQueue = newIndexQueue;
     }
 
     @Schema( name = "scan_running", description = "True, if a scan is currently running" )

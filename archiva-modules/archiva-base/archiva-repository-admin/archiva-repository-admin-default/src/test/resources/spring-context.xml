@@ -31,8 +31,9 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.admin.mock,org.apache.archiva.repository.content.maven2"/>
+  <context:component-scan base-package="org.apache.archiva.admin.mock,org.apache.archiva.repository.content.base"/>
 
+  <alias name="archivaTaskScheduler#mock" alias="archivaTaskScheduler#default" />
   <bean name="scheduler" class="org.apache.archiva.components.scheduler.DefaultScheduler">
     <property name="properties">
       <props>

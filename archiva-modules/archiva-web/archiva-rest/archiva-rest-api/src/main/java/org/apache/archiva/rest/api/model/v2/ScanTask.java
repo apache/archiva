@@ -18,6 +18,7 @@ package org.apache.archiva.rest.api.model.v2;
  */
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.archiva.admin.model.beans.MetadataScanTask;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 
 import java.io.Serializable;
@@ -36,12 +37,12 @@ public class ScanTask implements Serializable
     private String resource = "";
     private long maxExecutionTimeMs = 0;
 
-    public static ScanTask of( RepositoryTask repositoryTask ) {
+    public static ScanTask of( MetadataScanTask repositoryTask ) {
         ScanTask scanTask = new ScanTask( );
-        scanTask.setFullRepository( repositoryTask.isScanAll());
+        scanTask.setFullRepository( repositoryTask.isFullScan());
         scanTask.setUpdateRelatedArtifacts( repositoryTask.isUpdateRelatedArtifacts() );
-        scanTask.setResource( repositoryTask.getResourceFile( ).toString( ) );
-        scanTask.setMaxExecutionTimeMs( repositoryTask.getMaxExecutionTime() );
+        scanTask.setResource( repositoryTask.getResource() );
+        scanTask.setMaxExecutionTimeMs( repositoryTask.getMaxExecutionTimeMs() );
         scanTask.setRepositoryId( repositoryTask.getRepositoryId( ) );
         return scanTask;
     }

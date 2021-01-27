@@ -46,6 +46,7 @@ import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.rest.api.model.v2.RepositoryGroup;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
+import org.apache.archiva.rest.api.services.v2.ErrorKeys;
 import org.apache.archiva.rest.api.services.v2.ErrorMessage;
 import org.apache.archiva.rest.api.services.v2.RepositoryGroupService;
 import org.apache.commons.lang3.StringUtils;

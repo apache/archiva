@@ -17,11 +17,10 @@ package org.apache.archiva.rest.services.v2;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.admin.RepositoryTaskAdministration;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
-import org.apache.archiva.components.taskqueue.Task;
-import org.apache.archiva.components.taskqueue.TaskQueueException;
-import org.apache.archiva.components.taskqueue.execution.TaskQueueExecutor;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.repository.RepositoryRegistry;
@@ -33,19 +32,14 @@ import org.apache.archiva.rest.api.model.v2.Repository;
 import org.apache.archiva.rest.api.model.v2.RepositoryStatistics;
 import org.apache.archiva.rest.api.model.v2.ScanStatus;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
+import org.apache.archiva.rest.api.services.v2.ErrorKeys;
 import org.apache.archiva.rest.api.services.v2.ErrorMessage;
 import org.apache.archiva.rest.api.services.v2.RepositoryService;
-import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
-import org.apache.archiva.scheduler.indexing.IndexingArchivaTaskScheduler;
-import org.apache.archiva.scheduler.indexing.maven.ArchivaIndexingTaskExecutor;
-import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
-import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import java.util.Comparator;
@@ -58,49 +52,64 @@ import java.util.stream.Collectors;
  * @author Martin Stockhammer <martin_s@apache.org>
  * @since 3.0
  */
-@Service("v2.repositoryService#rest")
+@Service( "v2.repositoryService#rest" )
 public class DefaultRepositoryService implements RepositoryService
 {
 
-    @Inject
+    final
     RepositoryRegistry repositoryRegistry;
 
-    @Inject
+    final
     RepositoryStatisticsManager repositoryStatisticsManager;
 
-    @Inject
-    @Named(value="taskQueueExecutor#indexing")
-    TaskQueueExecutor<ArtifactIndexingTask> indexingTaskExecutor;
+    private final RepositoryTaskAdministration repositoryTaskAdministration;
 
-    @Inject
-    @Named(value="taskQueueExecutor#repository-scanning")
-    TaskQueueExecutor<RepositoryTask> scanningTaskExecutor;
-
-    @Inject
-    @Named(value = "archivaTaskScheduler#repository")
-    private RepositoryArchivaTaskScheduler repositoryArchivaTaskScheduler;
-
-    @Inject
-    @Named( value = "archivaTaskScheduler#indexing" )
-    private IndexingArchivaTaskScheduler indexingArchivaTaskScheduler;
-
-    @Inject
-    private RepositoryScanner repoScanner;
+    private final RepositoryScanner repoScanner;
 
 
     private static final Logger log = LoggerFactory.getLogger( DefaultRepositoryService.class );
     private static final QueryHelper<org.apache.archiva.repository.Repository> QUERY_HELPER = new QueryHelper<>( new String[]{"id", "name"} );
+
     static
     {
         QUERY_HELPER.addStringFilter( "id", org.apache.archiva.repository.Repository::getId );
         QUERY_HELPER.addStringFilter( "name", org.apache.archiva.repository.Repository::getName );
+        QUERY_HELPER.addStringFilter( "description", org.apache.archiva.repository.Repository::getDescription );
+        QUERY_HELPER.addStringFilter( "type", repo -> repo.getType( ).name( ) );
+        QUERY_HELPER.addBooleanFilter( "scanned", org.apache.archiva.repository.Repository::isScanned );
         QUERY_HELPER.addNullsafeFieldComparator( "id", org.apache.archiva.repository.Repository::getId );
         QUERY_HELPER.addNullsafeFieldComparator( "name", org.apache.archiva.repository.Repository::getName );
+        QUERY_HELPER.addNullsafeFieldComparator( "type", repo -> repo.getType( ).name( ) );
+        QUERY_HELPER.addNullsafeFieldComparator( "boolean", org.apache.archiva.repository.Repository::isScanned );
     }
+
+    public DefaultRepositoryService( RepositoryRegistry repositoryRegistry, RepositoryStatisticsManager repositoryStatisticsManager,
+                                     @Named( value = "repositoryTaskAdministration#default") RepositoryTaskAdministration repositoryTaskAdministration,
+                                     RepositoryScanner repoScanner )
+    {
+        this.repositoryRegistry = repositoryRegistry;
+        this.repositoryStatisticsManager = repositoryStatisticsManager;
+        this.repoScanner = repoScanner;
+        this.repositoryTaskAdministration = repositoryTaskAdministration;
+    }
+
+    private void handleAdminException( RepositoryAdminException e ) throws ArchivaRestServiceException
+    {
+        log.error( "Repository admin error: {}", e.getMessage( ), e );
+        if ( e.keyExists( ) )
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.PREFIX + e.getKey( ), e.getParameters( ) ) );
+        }
+        else
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
+        }
+    }
+
 
     @Override
     public PagedResult<Repository> getRepositories( String searchTerm, Integer offset, Integer limit, List<String> orderBy, String order,
-                                                    String localeString) throws ArchivaRestServiceException
+                                                    String localeString ) throws ArchivaRestServiceException
     {
         final Locale locale = StringUtils.isNotEmpty( localeString ) ? Locale.forLanguageTag( localeString ) : Locale.getDefault( );
         boolean isAscending = QUERY_HELPER.isAscending( order );
@@ -123,7 +132,8 @@ public class DefaultRepositoryService implements RepositoryService
     @Override
     public RepositoryStatistics getManagedRepositoryStatistics( String repositoryId ) throws ArchivaRestServiceException
     {
-        if (repositoryRegistry.getManagedRepository( repositoryId )==null) {
+        if ( repositoryRegistry.getManagedRepository( repositoryId ) == null )
+        {
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_MANAGED_NOT_FOUND, repositoryId ), 404 );
         }
         try
@@ -142,17 +152,13 @@ public class DefaultRepositoryService implements RepositoryService
     {
         try
         {
-            org.apache.archiva.repository.ManagedRepository repository = repositoryRegistry.getManagedRepository( repositoryId );
-            ArtifactIndexingTask task =
-                new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, repository.getIndexingContext() );
-            task.setExecuteOnEntireRepo( true );
-            task.setOnlyUpdate( !fullScan );
-            indexingArchivaTaskScheduler.queueTask( task );
-            repositoryArchivaTaskScheduler.queueTask( new RepositoryTask( repositoryId, fullScan ) );
+            repositoryTaskAdministration.scheduleFullScan( repositoryId );
             return Response.ok( ).build( );
-        }  catch ( TaskQueueException e ) {
-            log.error( "Could not queue the task: {}", e.getMessage( ), e );
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.TASK_QUEUE_FAILED, e.getMessage( ) ) );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            handleAdminException( e );
+            return Response.serverError( ).build( );
         }
     }
 
@@ -166,34 +172,22 @@ public class DefaultRepositoryService implements RepositoryService
         }
         catch ( RepositoryScannerException e )
         {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_SCAN_FAILED, e.getMessage() ));
+            log.error( e.getMessage( ), e );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_SCAN_FAILED, e.getMessage( ) ) );
         }
     }
 
     @Override
     public ScanStatus getScanStatus( String repositoryId ) throws ArchivaRestServiceException
     {
-        ScanStatus status = new ScanStatus( );
         try
         {
-            RepositoryTask scanTask = scanningTaskExecutor.getCurrentTask( );
-            if ( !repositoryId.equals( scanTask.getRepositoryId( ) ) )
-            {
-                scanTask=null;
-            }
-            ArtifactIndexingTask indexTask = indexingTaskExecutor.getCurrentTask( );
-            if (!repositoryId.equals(indexTask.getRepository().getId())) {
-                indexTask = null;
-            }
-            status.updateScanInfo( scanTask, scanningTaskExecutor.getQueue( ).getQueueSnapshot( ).stream( ).filter( task -> repositoryId.equals(task.getRepositoryId()) ).collect( Collectors.toList() ) );
-            status.updateIndexInfo( indexTask, indexingTaskExecutor.getQueue( ).getQueueSnapshot( ).stream().filter( task -> repositoryId.equals(task.getRepository().getId())).collect( Collectors.toList()) );
-            return status;
+            return ScanStatus.of( repositoryTaskAdministration.getCurrentScanStatus( ) );
         }
-        catch ( TaskQueueException e )
+        catch ( RepositoryAdminException e )
         {
-            log.error( "Could not get task information: {}", e.getMessage( ), e );
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.TASK_QUEUE_FAILED, e.getMessage( ) ) );
+            handleAdminException( e );
+            return null;
         }
     }
 

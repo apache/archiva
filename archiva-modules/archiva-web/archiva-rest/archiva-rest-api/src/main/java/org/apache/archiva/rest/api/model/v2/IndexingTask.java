@@ -37,13 +37,13 @@ public class IndexingTask implements Serializable
     private boolean running = false;
     private long maxExecutionTimeMs = 0;
 
-    public static IndexingTask of( ArtifactIndexingTask repositoryTask ) {
+    public static IndexingTask of( org.apache.archiva.admin.model.beans.IndexingTask repositoryTask ) {
         IndexingTask indexingTask = new IndexingTask( );
-        indexingTask.setFullRepository( repositoryTask.isExecuteOnEntireRepo());
-        indexingTask.setUpdateOnly( repositoryTask.isOnlyUpdate() );
-        indexingTask.setResource( repositoryTask.getResourceFile( ).toString( ) );
-        indexingTask.setMaxExecutionTimeMs( repositoryTask.getMaxExecutionTime() );
-        indexingTask.setRepositoryId( repositoryTask.getRepository().getId() );
+        indexingTask.setFullRepository( repositoryTask.isFullScan());
+        indexingTask.setUpdateOnly( repositoryTask.isUpdateOnly() );
+        indexingTask.setResource( repositoryTask.getResource() );
+        indexingTask.setMaxExecutionTimeMs( repositoryTask.getMaxExecutionTimeMs() );
+        indexingTask.setRepositoryId( repositoryTask.getRepositoryId() );
         return indexingTask;
     }
 

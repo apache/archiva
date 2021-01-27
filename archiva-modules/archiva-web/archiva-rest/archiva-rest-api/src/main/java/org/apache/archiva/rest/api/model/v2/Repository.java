@@ -97,10 +97,18 @@ public class Repository implements Serializable
         } else {
             myLocale = locale;
         }
+        String repoName = repository.getName( myLocale );
+        if (repoName==null) {
+            repoName = repository.getName( );
+        }
+        String description = repository.getDescription( myLocale );
+        if (description==null)  {
+            description = repository.getDescription( );
+        }
         Repository newRepo = new Repository( );
         newRepo.setId( repository.getId() );
-        newRepo.setName( repository.getName( myLocale ) );
-        newRepo.setDescription( repository.getDescription( myLocale ) );
+        newRepo.setName( repoName );
+        newRepo.setDescription( description );
         newRepo.setLocation( repository.getLocation().toASCIIString() );
         newRepo.setIndex( repository.hasIndex() );
         newRepo.setLayout( repository.getLayout() );

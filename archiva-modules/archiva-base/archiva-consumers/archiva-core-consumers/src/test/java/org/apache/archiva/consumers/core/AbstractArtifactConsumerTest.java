@@ -25,8 +25,10 @@ import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,8 +39,7 @@ import javax.inject.Inject;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
@@ -54,6 +55,8 @@ public abstract class AbstractArtifactConsumerTest
     @Inject
     ArchivaConfiguration archivaConfiguration;
 
+    ArchivaRepositoryRegistry repositoryRegistry;
+
 
     @Before
     public void setUp()
@@ -68,6 +71,14 @@ public abstract class AbstractArtifactConsumerTest
         archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().addChecksumType("SHA256");
 
         repoLocation = Paths.get( "target/test-" + getName() + "/test-repo" );
+
+        repositoryRegistry = applicationContext.getBean( "repositoryRegistry", ArchivaRepositoryRegistry.class );
+        assertNotNull( repositoryRegistry );
+    }
+
+    @After
+    public void destroy() {
+        repositoryRegistry.destroy();
     }
 
 

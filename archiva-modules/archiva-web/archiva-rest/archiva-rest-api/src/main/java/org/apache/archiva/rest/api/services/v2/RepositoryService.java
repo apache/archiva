@@ -144,10 +144,6 @@ public interface RepositoryService
         throws ArchivaRestServiceException;
 
 
-    /**
-     * scan directories
-     * @since 1.4-M3
-     */
     @Path ("managed/{id}/scan/now")
     @POST
     @Produces ({ APPLICATION_JSON })

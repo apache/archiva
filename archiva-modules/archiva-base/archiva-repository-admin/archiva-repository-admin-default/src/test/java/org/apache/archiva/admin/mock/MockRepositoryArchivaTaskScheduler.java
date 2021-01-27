@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 /**
  * @author Olivier Lamy
  */
-@Service("archivaTaskScheduler#repository")
+@Service("archivaTaskScheduler#mock")
 public class MockRepositoryArchivaTaskScheduler
     implements RepositoryArchivaTaskScheduler
 {

@@ -24,6 +24,7 @@ import org.apache.archiva.components.rest.util.QueryHelper;
 import org.apache.archiva.rest.api.model.v2.FileInfo;
 import org.apache.archiva.rest.api.model.v2.MavenManagedRepository;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
+import org.apache.archiva.rest.api.services.v2.ErrorKeys;
 import org.apache.archiva.rest.api.services.v2.ErrorMessage;
 import org.apache.archiva.rest.api.services.v2.MavenManagedRepositoryService;
 import org.slf4j.Logger;

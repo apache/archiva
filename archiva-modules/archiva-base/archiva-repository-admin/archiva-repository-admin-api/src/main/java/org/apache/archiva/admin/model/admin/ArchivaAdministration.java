@@ -29,6 +29,7 @@ import org.apache.archiva.admin.model.beans.UiConfiguration;
 import java.util.List;
 
 /**
+ * Base administration interface for Archiva. Provides methods for managing archiva base tasks.
  * @author Olivier Lamy
  * @since 1.4-M1
  */
