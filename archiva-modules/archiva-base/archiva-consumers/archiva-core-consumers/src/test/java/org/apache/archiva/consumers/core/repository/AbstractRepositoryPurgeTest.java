@@ -42,6 +42,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
@@ -109,8 +110,6 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected MetadataRepository metadataRepository;
 
-    protected ArchivaRepositoryRegistry repositoryRegistry;
-
     @Inject
     protected ApplicationContext applicationContext;
 
@@ -130,8 +129,6 @@ public abstract class AbstractRepositoryPurgeTest
         repositorySession = sessionControl.createMock( RepositorySession.class );
         metadataRepository = mock( MetadataRepository.class );
         sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
-        repositoryRegistry = applicationContext.getBean( "repositoryRegistry", ArchivaRepositoryRegistry.class );
-        assertNotNull( repositoryRegistry );
         EasyMock.expect( repositorySession.getRepository() ).andStubReturn( metadataRepository );
         EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
 
@@ -143,8 +140,6 @@ public abstract class AbstractRepositoryPurgeTest
     {
         config = null;
         repo = null;
-        repositoryRegistry.destroy();
-
     }
 
 

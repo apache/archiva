@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -41,7 +42,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml"} )
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase

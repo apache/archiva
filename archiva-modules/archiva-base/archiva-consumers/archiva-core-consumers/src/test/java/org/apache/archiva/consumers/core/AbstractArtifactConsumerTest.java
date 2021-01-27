@@ -33,6 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
@@ -55,15 +56,12 @@ public abstract class AbstractArtifactConsumerTest
     @Inject
     ArchivaConfiguration archivaConfiguration;
 
-    ArchivaRepositoryRegistry repositoryRegistry;
-
-
     @Before
     public void setUp()
         throws Exception
     {
         FileType fileType =
-            (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+            archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
         assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
         fileType.addPattern( "**/*.xml" );
         archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().addChecksumType("MD5");
@@ -71,14 +69,6 @@ public abstract class AbstractArtifactConsumerTest
         archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().addChecksumType("SHA256");
 
         repoLocation = Paths.get( "target/test-" + getName() + "/test-repo" );
-
-        repositoryRegistry = applicationContext.getBean( "repositoryRegistry", ArchivaRepositoryRegistry.class );
-        assertNotNull( repositoryRegistry );
-    }
-
-    @After
-    public void destroy() {
-        repositoryRegistry.destroy();
     }
 
 

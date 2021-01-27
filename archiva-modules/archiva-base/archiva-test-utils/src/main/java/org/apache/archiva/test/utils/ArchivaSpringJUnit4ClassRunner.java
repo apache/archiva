@@ -18,6 +18,8 @@ package org.apache.archiva.test.utils;
 
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.Statement;
+import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
@@ -57,4 +59,18 @@ public class ArchivaSpringJUnit4ClassRunner
     }
 
 
+    @Override
+    protected Statement withAfterClasses( final Statement statement )
+    {
+        final TestContextManager cm = getTestContextManager( );
+        return new Statement( )
+        {
+            @Override
+            public void evaluate( ) throws Throwable
+            {
+                statement.evaluate();
+                cm.getTestContext( ).markApplicationContextDirty( null );
+            }
+        };
+    }
 }
