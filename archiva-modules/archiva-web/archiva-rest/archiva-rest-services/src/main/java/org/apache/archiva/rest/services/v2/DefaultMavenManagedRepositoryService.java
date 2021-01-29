@@ -21,6 +21,9 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.rest.api.model.v2.Artifact;
 import org.apache.archiva.rest.api.model.v2.FileInfo;
 import org.apache.archiva.rest.api.model.v2.MavenManagedRepository;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
@@ -29,14 +32,17 @@ import org.apache.archiva.rest.api.services.v2.ErrorMessage;
 import org.apache.archiva.rest.api.services.v2.MavenManagedRepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
+@Service("v2.managedMavenRepositoryService#rest")
 public class DefaultMavenManagedRepositoryService implements MavenManagedRepositoryService
 {
     private static final Logger log = LoggerFactory.getLogger( DefaultMavenManagedRepositoryService.class );
@@ -52,9 +58,13 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         QUERY_HELPER.addNullsafeFieldComparator( "name", org.apache.archiva.admin.model.beans.ManagedRepository::getName );
     }
 
-    @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
+    private RepositoryRegistry repositoryRegistry;
 
+    public DefaultMavenManagedRepositoryService( RepositoryRegistry repositoryRegistry, ManagedRepositoryAdmin managedRepositoryAdmin )
+    {
+        this.managedRepositoryAdmin = managedRepositoryAdmin;
+    }
 
     @Override
     public PagedResult<MavenManagedRepository> getManagedRepositories( String searchTerm, Integer offset, Integer limit, List<String> orderBy, String order ) throws ArchivaRestServiceException
@@ -105,6 +115,33 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
     {
         return null;
     }
+
+    @Override
+    public Response copyArtifact( String srcRepositoryId, String dstRepositoryId,
+                                  String path ) throws ArchivaRestServiceException
+    {
+        ManagedRepository srcRepo = repositoryRegistry.getManagedRepository( srcRepositoryId );
+        if (srcRepo==null) {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, srcRepositoryId ), 404 );
+        }
+        ManagedRepository dstRepo = repositoryRegistry.getManagedRepository( dstRepositoryId );
+        if (dstRepo==null) {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, dstRepositoryId ), 404 );
+        }
+        if (dstRepo.getAsset( path ).exists()) {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.ARTIFACT_EXISTS_AT_DEST, path ) );
+        }
+
+
+        return null;
+    }
+
+    @Override
+    public Response deleteArtifact( String repositoryId, String path ) throws ArchivaRestServiceException
+    {
+        return null;
+    }
+
 
     @Override
     public Response removeProjectVersion( String repositoryId, String namespace, String projectId, String version ) throws org.apache.archiva.rest.api.services.ArchivaRestServiceException

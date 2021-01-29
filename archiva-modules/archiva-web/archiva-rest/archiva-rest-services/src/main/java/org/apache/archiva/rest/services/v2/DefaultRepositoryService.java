@@ -21,13 +21,13 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.RepositoryTaskAdministration;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
+import org.apache.archiva.components.rest.util.RestUtil;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
+import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
-import org.apache.archiva.rest.api.model.v2.Artifact;
-import org.apache.archiva.rest.api.model.v2.ArtifactTransferRequest;
 import org.apache.archiva.rest.api.model.v2.Repository;
 import org.apache.archiva.rest.api.model.v2.RepositoryStatistics;
 import org.apache.archiva.rest.api.model.v2.ScanStatus;
@@ -35,6 +35,8 @@ import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.v2.ErrorKeys;
 import org.apache.archiva.rest.api.services.v2.ErrorMessage;
 import org.apache.archiva.rest.api.services.v2.RepositoryService;
+import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexException;
+import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +44,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -66,6 +69,7 @@ public class DefaultRepositoryService implements RepositoryService
 
     private final RepositoryScanner repoScanner;
 
+    private final DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     private static final Logger log = LoggerFactory.getLogger( DefaultRepositoryService.class );
     private static final QueryHelper<org.apache.archiva.repository.Repository> QUERY_HELPER = new QueryHelper<>( new String[]{"id", "name"} );
@@ -85,12 +89,13 @@ public class DefaultRepositoryService implements RepositoryService
 
     public DefaultRepositoryService( RepositoryRegistry repositoryRegistry, RepositoryStatisticsManager repositoryStatisticsManager,
                                      @Named( value = "repositoryTaskAdministration#default") RepositoryTaskAdministration repositoryTaskAdministration,
-                                     RepositoryScanner repoScanner )
+                                     RepositoryScanner repoScanner, DownloadRemoteIndexScheduler downloadRemoteIndexScheduler )
     {
         this.repositoryRegistry = repositoryRegistry;
         this.repositoryStatisticsManager = repositoryStatisticsManager;
         this.repoScanner = repoScanner;
         this.repositoryTaskAdministration = repositoryTaskAdministration;
+        this.downloadRemoteIndexScheduler = downloadRemoteIndexScheduler;
     }
 
     private void handleAdminException( RepositoryAdminException e ) throws ArchivaRestServiceException
@@ -187,37 +192,53 @@ public class DefaultRepositoryService implements RepositoryService
         catch ( RepositoryAdminException e )
         {
             handleAdminException( e );
-            return null;
+            return new ScanStatus();
         }
     }
 
     @Override
     public Response removeScanningTaskFromQueue( String repositoryId ) throws ArchivaRestServiceException
     {
-        return null;
+        try
+        {
+            repositoryTaskAdministration.cancelTasks( repositoryId );
+            return Response.ok( ).build( );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            handleAdminException( e );
+            return Response.serverError( ).build( );
+        }
     }
 
-    @Override
-    public Response copyArtifact( ArtifactTransferRequest artifactTransferRequest ) throws ArchivaRestServiceException
-    {
-        return null;
-    }
 
     @Override
-    public Response scheduleDownloadRemoteIndex( String repositoryId, boolean now, boolean fullDownload ) throws ArchivaRestServiceException
+    public Response scheduleDownloadRemoteIndex( String repositoryId, boolean immediately, boolean full,
+                                                 UriInfo uriInfo ) throws ArchivaRestServiceException
     {
-        return null;
+        boolean immediateSet = RestUtil.isFlagSet( uriInfo, "immediate" );
+        boolean fullSet = RestUtil.isFlagSet( uriInfo, "full" );
+        RemoteRepository repo = repositoryRegistry.getRemoteRepository( repositoryId );
+        if (repo==null) {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_REMOTE_NOT_FOUND, repositoryId ), 404 );
+        }
+        try
+        {
+            downloadRemoteIndexScheduler.scheduleDownloadRemote( repositoryId, immediateSet, fullSet );
+            return Response.ok( ).build( );
+        }
+        catch ( DownloadRemoteIndexException e )
+        {
+            log.error( "Could not schedule index download for repository {}: {}", repositoryId, e.getMessage(), e );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_REMOTE_INDEX_DOWNLOAD_FAILED, e.getMessage( ) ) );
+        }
     }
 
-    @Override
-    public Response deleteArtifact( Artifact artifact ) throws ArchivaRestServiceException
-    {
-        return null;
-    }
+
 
     @Override
     public List<String> getRunningRemoteDownloads( )
     {
-        return null;
+        return downloadRemoteIndexScheduler.getRunningRemoteDownloadIds( );
     }
 }

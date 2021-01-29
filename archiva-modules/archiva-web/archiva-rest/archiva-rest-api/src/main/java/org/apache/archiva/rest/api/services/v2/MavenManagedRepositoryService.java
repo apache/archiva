@@ -27,6 +27,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.v2.Artifact;
 import org.apache.archiva.rest.api.model.v2.FileInfo;
 import org.apache.archiva.rest.api.model.v2.MavenManagedRepository;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -202,7 +203,7 @@ public interface MavenManagedRepositoryService
         throws ArchivaRestServiceException;
 
 
-    @Path( "{id}/files/{filePath: .+}" )
+    @Path( "{id}/a/{filePath: .+}" )
     @GET
     @Produces( {MediaType.APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
@@ -227,7 +228,59 @@ public interface MavenManagedRepositoryService
         throws ArchivaRestServiceException;
 
 
-    @Path ("{id}/content/{namespace}/{projectId}/{version}")
+    /**
+     * permissions are checked in impl
+     * will copy an artifact from the source repository to the target repository
+     */
+    @Path ("{srcId}/a/{path: .+}/copyto/{dstId}")
+    @POST
+    @Produces({APPLICATION_JSON})
+    @RedbackAuthorization (noPermission = true)
+    @Operation( summary = "Copies a artifact from the source repository to the destination repository",
+        security = {
+            @SecurityRequirement(
+                name = ArchivaRoleConstants.OPERATION_RUN_INDEXER
+            )
+        },
+        responses = {
+            @ApiResponse( responseCode = "200",
+                description = "If the artifact was copied"
+            ),
+            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
+            @ApiResponse( responseCode = "404", description = "The repository does not exist, or if the artifact was not found",
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
+        }
+    )
+    Response copyArtifact( @PathParam( "srcId" ) String srcRepositoryId, @PathParam( "dstId" ) String dstRepositoryId,
+                           @PathParam( "path" ) String path )
+        throws ArchivaRestServiceException;
+
+
+    @Path ("{id}/a/{path: .+}")
+    @DELETE
+    @Consumes ({ APPLICATION_JSON })
+    @RedbackAuthorization (noPermission = true)
+    @Operation( summary = "Deletes a artifact in the repository.",
+        security = {
+            @SecurityRequirement(
+                name = ArchivaRoleConstants.OPERATION_RUN_INDEXER
+            )
+        },
+        responses = {
+            @ApiResponse( responseCode = "200",
+                description = "If the artifact was deleted"
+            ),
+            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
+            @ApiResponse( responseCode = "404", description = "The repository or the artifact does not exist",
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
+        }
+    )
+    Response deleteArtifact( @PathParam( "id" ) String repositoryId, @PathParam( "path" ) String path )
+        throws ArchivaRestServiceException;
+
+    @Path ("{id}/c/{namespace}/{projectId}/{version}")
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (noPermission = true)
@@ -253,7 +306,7 @@ public interface MavenManagedRepositoryService
         throws org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 
 
-    @Path ( "{id}/content/{namespace}/{projectId}" )
+    @Path ( "{id}/c/{namespace}/{projectId}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (noPermission = true)
@@ -276,7 +329,7 @@ public interface MavenManagedRepositoryService
     Response deleteProject( @PathParam ("id") String repositoryId, @PathParam ( "namespace" ) String namespace, @PathParam ("projectId") String projectId )
         throws org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 
-    @Path ( "{id}/content/{namespace}" )
+    @Path ( "{id}/c/{namespace}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (noPermission = true)

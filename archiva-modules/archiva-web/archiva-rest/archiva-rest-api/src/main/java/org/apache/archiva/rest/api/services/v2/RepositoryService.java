@@ -26,8 +26,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.apache.archiva.rest.api.model.v2.Artifact;
-import org.apache.archiva.rest.api.model.v2.ArtifactTransferRequest;
 import org.apache.archiva.rest.api.model.v2.Repository;
 import org.apache.archiva.rest.api.model.v2.RepositoryStatistics;
 import org.apache.archiva.rest.api.model.v2.ScanStatus;
@@ -42,8 +40,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -170,13 +169,6 @@ public interface RepositoryService
         throws ArchivaRestServiceException;
 
 
-    /**
-     * Returns the scan status of the given repository
-     * @param repositoryId the repository identifier
-     * @return the status
-     * @throws ArchivaRestServiceException
-     * @since 3.0
-     */
     @Path ("managed/{id}/scan/status")
     @GET
     @Produces ({ APPLICATION_JSON })
@@ -205,7 +197,7 @@ public interface RepositoryService
     @DELETE
     @Produces ({ APPLICATION_JSON })
     @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER)
-    @Operation( summary = "Removes a scan task from the queue.",
+    @Operation( summary = "Cancels and removes all tasks for the given repository.",
         security = {
             @SecurityRequirement(
                 name = ArchivaRoleConstants.OPERATION_RUN_INDEXER
@@ -224,40 +216,17 @@ public interface RepositoryService
     Response removeScanningTaskFromQueue( @PathParam ("id") String repositoryId )
         throws ArchivaRestServiceException;
 
-    /**
-     * permissions are checked in impl
-     * will copy an artifact from the source repository to the target repository
-     */
-    @Path ("managed/{id}/artifact/copy")
-    @POST
-    @Produces({APPLICATION_JSON})
-    @Consumes({ APPLICATION_JSON })
-    @RedbackAuthorization (noPermission = true)
-    @Operation( summary = "Copies a artifact between repositories.",
-        security = {
-            @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_RUN_INDEXER
-            )
-        },
-        responses = {
-            @ApiResponse( responseCode = "200",
-                description = "If the artifact was copied"
-            ),
-            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
-            @ApiResponse( responseCode = "404", description = "The repository does not exist, or if the artifact was not found",
-                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
-        }
-    )
-    Response copyArtifact( ArtifactTransferRequest artifactTransferRequest )
-        throws ArchivaRestServiceException;
 
-    @Path ("managed/{id}/index/download/start")
+
+    @Path ("remote/{id}/index/download/start")
     @POST
     @Produces ({ APPLICATION_JSON })
     @Consumes({ APPLICATION_JSON })
     @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER)
     @Operation( summary = "Schedules a task for remote index download.",
+        parameters = {
+            @Parameter( name = "full", description = "If true, download the full index, otherwise try a update download." )
+        },
         security = {
             @SecurityRequirement(
                 name = ArchivaRoleConstants.OPERATION_RUN_INDEXER
@@ -274,38 +243,15 @@ public interface RepositoryService
         }
     )
     Response scheduleDownloadRemoteIndex( @PathParam ("id") String repositoryId,
-                                              @QueryParam ("now") boolean now,
-                                              @QueryParam ("fullDownload") boolean fullDownload )
+                                              @QueryParam( "immediate" ) boolean immediately,
+                                              @QueryParam ("full") boolean full, @Context UriInfo uriInfo )
         throws ArchivaRestServiceException;
 
 
-    @Path ("managed/{id}/artifact")
-    @DELETE
-    @Consumes ({ APPLICATION_JSON })
-    @RedbackAuthorization (noPermission = true)
-    @Operation( summary = "Deletes a artifact in the repository.",
-        security = {
-            @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_RUN_INDEXER
-            )
-        },
-        responses = {
-            @ApiResponse( responseCode = "200",
-                description = "If the artifact was deleted"
-            ),
-            @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
-            @ApiResponse( responseCode = "404", description = "The repository or the artifact does not exist",
-                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
-        }
-    )
-    Response deleteArtifact( Artifact artifact )
-        throws ArchivaRestServiceException;
-
-    @Path ("index_downloads")
+    @Path ("remote/index/downloads")
     @GET
     @Produces ({ APPLICATION_JSON })
-    @RedbackAuthorization (noPermission = true)
+    @RedbackAuthorization (permissions = ArchivaRoleConstants.OPERATION_RUN_INDEXER)
     @Operation( summary = "Returns a list of running downloads from the remote repository.",
         security = {
             @SecurityRequirement(

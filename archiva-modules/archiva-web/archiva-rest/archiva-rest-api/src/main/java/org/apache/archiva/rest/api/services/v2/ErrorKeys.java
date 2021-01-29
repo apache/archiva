@@ -70,10 +70,16 @@ public interface ErrorKeys
 
     String REPOSITORY_GROUP_DELETE_FAILED = REPOSITORY_GROUP_PREFIX + "delete.failed";
     String REPOSITORY_NOT_FOUND = REPOSITORY_PREFIX + "notfound";
-    String REPOSITORY_MANAGED_NOT_FOUND = REPOSITORY_PREFIX + ".managed.notfound";
+    String REPOSITORY_MANAGED_NOT_FOUND = REPOSITORY_PREFIX + "managed.notfound";
+    String REPOSITORY_REMOTE_NOT_FOUND = REPOSITORY_PREFIX + "remote.notfound";
 
     String REPOSITORY_METADATA_ERROR = REPOSITORY_PREFIX + "metadata_error";
 
     String TASK_QUEUE_FAILED = PREFIX + "task.queue_failed";
     String REPOSITORY_SCAN_FAILED = REPOSITORY_PREFIX + "scan.failed";
+    String ARTIFACT_EXISTS_AT_DEST = REPOSITORY_PREFIX + "artifact.dest.exists";
+
+    String REPOSITORY_REMOTE_INDEX_DOWNLOAD_FAILED = REPOSITORY_PREFIX + "remote.index.download_failed";
+
+
 }

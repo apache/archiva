@@ -159,4 +159,33 @@ public class NativeRepositoryServiceTest extends AbstractNativeRestServices
         assertNotNull( response );
 
     }
+
+    @Test
+    void scheduleIndexDownload() {
+        String token = getAdminToken( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .post( "remote/central/index/download/start" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+    }
+
+    @Test
+    void getIndexDownloadList() {
+        String token = getAdminToken( );
+        given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .queryParam( "immediate", "true" )
+            .post( "remote/central/index/download/start" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .get( "remote/index/downloads" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+        List<String> downloads = response.getBody( ).jsonPath( ).getList( "", String.class );
+        assertEquals( 1, downloads.size() );
+        assertEquals( "central", downloads.get( 0 ) );
+    }
+
 }
