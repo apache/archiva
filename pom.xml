@@ -54,7 +54,7 @@
 
 
 
-    <maven3x.version>3.5.4</maven3x.version>
+    <maven3x.version>3.8.1</maven3x.version>
     <maven.resolver.version>1.4.1</maven.resolver.version>
     <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
     <maven-model-converter.version>2.3</maven-model-converter.version>
@@ -91,7 +91,7 @@
     <modelmapper.version>2.3.5</modelmapper.version>
 
     <sisu-inject-plexus.version>0.3.3</sisu-inject-plexus.version>
-    <plexus-utils.version>3.1.0</plexus-utils.version>
+    <plexus-utils.version>3.2.1</plexus-utils.version>
     <html.unit.version>2.27</html.unit.version>
 
     <springockito.version>1.0.9</springockito.version>
