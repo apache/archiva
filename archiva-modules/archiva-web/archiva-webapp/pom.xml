@@ -45,17 +45,6 @@
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
 
 
-    <webjars.bootstrap.version>4.5.0</webjars.bootstrap.version>
-    <webjars.jquery.version>3.5.1</webjars.jquery.version>
-    <webjars.jquery-ui.version>1.12.1</webjars.jquery-ui.version>
-    <webjars.requirejs.version>2.3.6</webjars.requirejs.version>
-    <webjars.font-awesome.version>5.13.0</webjars.font-awesome.version>
-    <webjars.d3js.version>5.16.0</webjars.d3js.version>
-    <webjars.locator.version>0.40</webjars.locator.version>
-    <webjars.sammy.version>0.7.4</webjars.sammy.version>
-    <webjars.jquery.typeahead.version>2.10.4</webjars.jquery.typeahead.version>
-    <webjars.jquery.fileupload.version>9.10.1</webjars.jquery.fileupload.version>
-    <webjars.jquery.i18nproperties.version>1.2.7</webjars.jquery.i18nproperties.version>
   </properties>
 
   <dependencies>
@@ -588,72 +577,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>${spring.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>bootstrap</artifactId>
-      <version>${webjars.bootstrap.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery</artifactId>
-      <version>${webjars.jquery.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery-ui</artifactId>
-      <version>${webjars.jquery-ui.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>requirejs</artifactId>
-      <version>${webjars.requirejs.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>font-awesome</artifactId>
-      <version>${webjars.font-awesome.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>d3js</artifactId>
-      <version>${webjars.d3js.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>webjars-locator</artifactId>
-      <version>${webjars.locator.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>sammy</artifactId>
-      <version>${webjars.sammy.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery-file-upload</artifactId>
-      <version>${webjars.jquery.fileupload.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>jquery-i18n-properties</artifactId>
-      <version>${webjars.jquery.i18nproperties.version}</version>
       <scope>runtime</scope>
     </dependency>
 
