@@ -161,8 +161,10 @@
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-core</artifactId>
         </exclusion>
-
-
+        <exclusion>
+          <groupId>com.addthis.metrics</groupId>
+          <artifactId>reporter-config3</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -204,6 +206,7 @@
           </exclusion>
       </exclusions>
     </dependency>
+    <!-- Transient dependencies of cassandra that are selected to use a higher version -->
     <dependency>
       <groupId>org.apache.thrift</groupId>
       <artifactId>libthrift</artifactId>
@@ -214,6 +217,11 @@
           <artifactId>javax.annotation-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.mindrot</groupId>
+      <artifactId>jbcrypt</artifactId>
+      <version>0.4</version>
     </dependency>
     <!--
     <dependency>
@@ -245,6 +253,7 @@
       <artifactId>jboss-logging</artifactId>
     </dependency>
     <!-- Dependency of cassandra -> replacing by new version -->
+<!--
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
@@ -256,8 +265,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-
+-->
     <!-- TEST Scope -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
