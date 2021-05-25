@@ -161,9 +161,15 @@
           <groupId>com.fasterxml.jackson.core</groupId>
           <artifactId>jackson-core</artifactId>
         </exclusion>
+        <!-- Brings hibernate-validator dependency with ancient version, which is vulnerable. Not necessary for archiva. -->
         <exclusion>
           <groupId>com.addthis.metrics</groupId>
           <artifactId>reporter-config3</artifactId>
+        </exclusion>
+        <!-- Version upgrade, see below -->
+        <exclusion>
+          <groupId>org.apache.tika</groupId>
+          <artifactId>tika-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -223,18 +229,11 @@
       <artifactId>jbcrypt</artifactId>
       <version>0.4</version>
     </dependency>
-    <!--
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.13</version>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <version>1.26</version>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.13</version>
-    </dependency>
-    -->
 
     <!-- Transitive dependency. Declared here to increase the version. -->
     <dependency>
@@ -252,20 +251,7 @@
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
     </dependency>
-    <!-- Dependency of cassandra -> replacing by new version -->
-<!--
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <version>4.3.2.Final</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.validation</groupId>
-          <artifactId>validation-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
--->
+
     <!-- TEST Scope -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
