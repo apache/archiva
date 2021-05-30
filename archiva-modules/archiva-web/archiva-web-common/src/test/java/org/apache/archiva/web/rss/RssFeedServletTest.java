@@ -231,6 +231,18 @@ public class RssFeedServletTest
         }
 
         @Override
+        public <T> ObjectProvider<T> getBeanProvider( Class<T> aClass, boolean b )
+        {
+            return null;
+        }
+
+        @Override
+        public <T> ObjectProvider<T> getBeanProvider( ResolvableType resolvableType, boolean b )
+        {
+            return null;
+        }
+
+        @Override
         public String[] getBeanNamesForType( Class<?> aClass )
         {
             return applicationContext.getBeanNamesForType( aClass );

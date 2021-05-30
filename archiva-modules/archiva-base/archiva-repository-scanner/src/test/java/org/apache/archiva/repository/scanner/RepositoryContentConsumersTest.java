@@ -431,6 +431,18 @@ public class RepositoryContentConsumersTest
         }
 
         @Override
+        public <T> ObjectProvider<T> getBeanProvider( Class<T> aClass, boolean b )
+        {
+            return null;
+        }
+
+        @Override
+        public <T> ObjectProvider<T> getBeanProvider( ResolvableType resolvableType, boolean b )
+        {
+            return null;
+        }
+
+        @Override
         public String[] getBeanNamesForType( Class type )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
