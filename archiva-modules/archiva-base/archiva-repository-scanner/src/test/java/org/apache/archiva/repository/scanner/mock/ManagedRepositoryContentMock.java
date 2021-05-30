@@ -125,7 +125,19 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public void deleteItem( ContentItem item ) throws ItemNotFoundException, ContentAccessException
+    public void deleteItem( ContentItem item ) throws ContentAccessException
+    {
+
+    }
+
+    @Override
+    public void copyItem( ContentItem item, ManagedRepository destinationRepository ) throws ContentAccessException
+    {
+
+    }
+
+    @Override
+    public void copyItem( ContentItem item, ManagedRepository destinationRepository, boolean updateMetadata ) throws ContentAccessException
     {
 
     }
@@ -161,7 +173,7 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public Artifact getArtifact( String path ) throws LayoutException, ContentAccessException
+    public Artifact getArtifact( String path ) throws ContentAccessException
     {
         return null;
     }
@@ -252,13 +264,13 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
     }
 
     @Override
-    public <T extends ContentItem> T applyCharacteristic( Class<T> clazz, ContentItem item ) throws LayoutException
+    public <T extends ContentItem> T applyCharacteristic( Class<T> clazz, ContentItem item )
     {
         return null;
     }
 
     @Override
-    public <T extends ManagedRepositoryContentLayout> T getLayout( Class<T> clazz ) throws LayoutException
+    public <T extends ManagedRepositoryContentLayout> T getLayout( Class<T> clazz )
     {
         return null;
     }
@@ -296,7 +308,7 @@ public class ManagedRepositoryContentMock implements BaseRepositoryContentLayout
 
 
     @Override
-    public ContentItem toItem( String path ) throws LayoutException
+    public ContentItem toItem( String path )
     {
         return null;
     }

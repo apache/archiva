@@ -18,12 +18,14 @@ package org.apache.archiva.repository.storage.fs;
  * under the License.
  */
 
+import org.apache.archiva.repository.storage.AssetType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -89,7 +91,7 @@ public class FilesystemAsset implements StorageAsset, Comparable {
     boolean supportsAcl = false;
     boolean supportsPosix = false;
     final boolean setPermissionsForNew;
-    final RepositoryStorage storage;
+    final FilesystemStorage storage;
 
     boolean directoryHint = false;
 
@@ -97,7 +99,7 @@ public class FilesystemAsset implements StorageAsset, Comparable {
     private static final OpenOption[] APPEND_OPTIONS = new OpenOption[]{StandardOpenOption.APPEND};
 
 
-    FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath) {
+    FilesystemAsset(FilesystemStorage storage, String path, Path assetPath, Path basePath) {
         this.assetPath = assetPath;
         this.relativePath = normalizePath(path);
         this.setPermissionsForNew=false;
@@ -113,7 +115,7 @@ public class FilesystemAsset implements StorageAsset, Comparable {
      * @param path The logical path for the asset relative to the repository.
      * @param assetPath The asset path.
      */
-    public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath) {
+    public FilesystemAsset(FilesystemStorage storage, String path, Path assetPath) {
         this.assetPath = assetPath;
         this.relativePath = normalizePath(path);
         this.setPermissionsForNew = false;
@@ -135,7 +137,7 @@ public class FilesystemAsset implements StorageAsset, Comparable {
      * @param directory This is only relevant, if the represented file or directory does not exist yet and
      *                  is a hint.
      */
-    public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath, boolean directory) {
+    public FilesystemAsset(FilesystemStorage storage, String path, Path assetPath, Path basePath, boolean directory) {
         this.assetPath = assetPath;
         this.relativePath = normalizePath(path);
         this.directoryHint = directory;
@@ -154,7 +156,7 @@ public class FilesystemAsset implements StorageAsset, Comparable {
      * @param directory This is only relevant, if the represented file or directory does not exist yet and
      *                  is a hint.
      */
-    public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath, boolean directory, boolean setPermissionsForNew) {
+    public FilesystemAsset(FilesystemStorage storage, String path, Path assetPath, Path basePath, boolean directory, boolean setPermissionsForNew) {
         this.assetPath = assetPath;
         this.relativePath = normalizePath(path);
         this.directoryHint = directory;
@@ -231,7 +233,7 @@ public class FilesystemAsset implements StorageAsset, Comparable {
 
     @Override
     public String getName() {
-        return assetPath.getFileName().toString();
+        return hasParent( ) ? assetPath.getFileName( ).toString( ) : "";
     }
 
     @Override
@@ -277,7 +279,9 @@ public class FilesystemAsset implements StorageAsset, Comparable {
     @Override
     public List<StorageAsset> list() {
         try {
-            return Files.list(assetPath).map(p -> new FilesystemAsset(storage, relativePath + "/" + p.getFileName().toString(), assetPath.resolve(p), this.basePath))
+            return Files.list(assetPath)
+                .sorted()
+                .map(p -> new FilesystemAsset(storage, relativePath + "/" + p.getFileName().toString(), assetPath.resolve(p), this.basePath))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             return Collections.EMPTY_LIST;
@@ -503,6 +507,37 @@ public class FilesystemAsset implements StorageAsset, Comparable {
                 applyDefaultPermissions(assetPath);
             }
         }
+    }
+
+    @Override
+    public void create( AssetType type ) throws IOException {
+        if (!Files.exists(assetPath)) {
+            if (type.equals( AssetType.CONTAINER ) || directoryHint) {
+                Files.createDirectories(assetPath);
+            } else {
+                if (!Files.exists( assetPath.getParent() )) {
+                    Files.createDirectories( assetPath.getParent( ) );
+                }
+                Files.createFile(assetPath);
+            }
+            if (setPermissionsForNew) {
+                applyDefaultPermissions(assetPath);
+            }
+        }
+    }
+
+    @Override
+    public String relativize( StorageAsset asset )
+    {
+        if (asset instanceof FilesystemAsset ) {
+            return this.relativize( (FilesystemAsset) asset );
+        } else {
+            return StringUtils.removeStart( asset.getPath( ), this.getPath( ) );
+        }
+    }
+
+    public String relativize( FilesystemAsset asset) {
+        return this.getFilePath( ).relativize( asset.getFilePath( ) ).toString();
     }
 
     @Override

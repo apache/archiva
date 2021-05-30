@@ -19,21 +19,29 @@ package org.apache.archiva.repository.storage.mock;
  * under the License.
  */
 
+import org.apache.archiva.repository.storage.AssetType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.util.StorageUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.mockito.ArgumentMatcher;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+
+import static org.mockito.Matchers.any;
 
 public class MockAsset implements StorageAsset
 {
@@ -43,22 +51,35 @@ public class MockAsset implements StorageAsset
     private LinkedHashMap<String, MockAsset> children = new LinkedHashMap<>( );
     private boolean container = false;
     private RepositoryStorage storage;
-
+    private boolean exists = false;
 
 
     private boolean throwException;
 
     public MockAsset( String name ) {
+        this.parent = null;
         this.name = name;
         this.path = "/";
     }
 
     public MockAsset( MockAsset parent, String name ) {
+        if (parent!=null && "".equals(name)) {
+            throw new RuntimeException( "Bad asset creation with empty name and parent" );
+        }
         this.parent = parent;
-        this.path = (parent.hasParent()?parent.getPath( ):"") + "/" + name;
+        this.path = getPath( parent, name );
         this.name = name;
         this.storage = parent.getStorage( );
         parent.registerChild( this );
+    }
+
+    private String getPath(MockAsset parent, String name) {
+
+        if (parent.hasParent() && !parent.getPath(  ).equals( "/" )) {
+            return parent.getPath( ) + "/" + name;
+        } else {
+            return "/" + name;
+        }
     }
 
     public void registerChild(MockAsset child) {
@@ -136,25 +157,28 @@ public class MockAsset implements StorageAsset
     @Override
     public InputStream getReadStream( ) throws IOException
     {
-        return null;
+        return Mockito.mock( InputStream.class );
     }
 
     @Override
     public ReadableByteChannel getReadChannel( ) throws IOException
     {
-        return null;
+        ReadableByteChannel channel = Mockito.mock( ReadableByteChannel.class );
+        Mockito.when( channel.read( any( ByteBuffer.class ) ) ).thenReturn( -1 );
+        return channel;
     }
 
     @Override
     public OutputStream getWriteStream( boolean replace ) throws IOException
     {
-        return null;
+        return Mockito.mock( OutputStream.class );
     }
 
     @Override
     public WritableByteChannel getWriteChannel( boolean replace ) throws IOException
     {
-        return null;
+        this.exists = true;
+        return Mockito.mock( WritableByteChannel.class );
     }
 
     @Override
@@ -166,13 +190,22 @@ public class MockAsset implements StorageAsset
     @Override
     public boolean exists( )
     {
-        return false;
+        return exists;
     }
 
     @Override
     public void create( ) throws IOException
     {
+        this.exists = true;
+    }
 
+    @Override
+    public void create( AssetType type ) throws IOException
+    {
+        if (type.equals( AssetType.CONTAINER )) {
+            this.container = true;
+        }
+        this.exists = true;
     }
 
     @Override
@@ -205,7 +238,39 @@ public class MockAsset implements StorageAsset
         if (children.containsKey( toPath )) {
             return children.get( toPath );
         } else {
-            return null;
+            if (toPath.startsWith( "/" )) {
+                toPath = StringUtils.removeStart( toPath, "/" );
+            }
+            if ( "".equals( toPath ) )
+            {
+                return this;
+            }
+            String[] destPath = toPath.split( "/" );
+            StringBuilder destPathStr = new StringBuilder( );
+            MockAsset destParent = this;
+            for (int i=0; i<destPath.length; i++) {
+                destPathStr.append( "/" ).append( destPath[i] );
+                StorageAsset child = storage.getAsset( destPathStr.toString( ) );
+                if (child!=null) {
+                    destParent = (MockAsset) child;
+                } else
+                {
+                    System.out.println( "Resolve " + destParent.getPath( ) + " -- " + destPath[i] );
+                    destParent = new MockAsset( destParent, destPath[i] );
+                }
+            }
+            return destParent;
+        }
+    }
+
+    @Override
+    public String relativize( StorageAsset asset )
+    {
+        System.out.println( "relativize this " + this.getPath( ) + " -> other " + asset.getPath( ) );
+        if (asset.isFileBased()) {
+            return Paths.get( getPath( ) ).relativize( asset.getFilePath( ) ).toString();
+        } else {
+            return StringUtils.removeStart( asset.getPath( ), this.getPath( ) );
         }
     }
 

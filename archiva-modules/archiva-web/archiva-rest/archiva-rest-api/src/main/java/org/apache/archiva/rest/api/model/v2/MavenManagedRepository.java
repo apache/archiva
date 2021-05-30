@@ -35,9 +35,17 @@ package org.apache.archiva.rest.api.model.v2;/*
  */
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.features.ArtifactCleanupFeature;
+import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.features.StagingRepositoryFeature;
 
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -49,6 +57,52 @@ public class MavenManagedRepository extends Repository
 
     boolean blocksRedeployments;
     List<String> releaseSchemes = new ArrayList<>(  );
+    boolean deleteSnapshotsOfRelease = false;
+    private Period retentionPeriod;
+    private int retentionCount;
+    private String indexPath;
+    private String packedIndexPath;
+    private boolean skipPackedIndexCreation;
+    private boolean hasStagingRepository;
+    private String stagingRepository;
+
+
+    public MavenManagedRepository( )
+    {
+        super.setCharacteristic( Repository.CHARACTERISTIC_MANAGED );
+        super.setType( RepositoryType.MAVEN.name( ) );
+    }
+
+    protected static void update(MavenManagedRepository repo, ManagedRepository beanRepo) {
+        repo.setDescription( beanRepo.getDescription() );
+        repo.setId( beanRepo.getId() );
+        repo.setIndex( true );
+        repo.setLayout( beanRepo.getLayout() );
+        repo.setBlocksRedeployments( beanRepo.blocksRedeployments() );
+        repo.setReleaseSchemes( beanRepo.getActiveReleaseSchemes().stream().map( Objects::toString).collect( Collectors.toList()) );
+        repo.setLocation( beanRepo.getLocation().toString() );
+        repo.setName( beanRepo.getName());
+        repo.setScanned( beanRepo.isScanned() );
+        repo.setSchedulingDefinition( beanRepo.getSchedulingDefinition() );
+        ArtifactCleanupFeature artifactCleanupFeature = beanRepo.getFeature( ArtifactCleanupFeature.class ).get( );
+        repo.setDeleteSnapshotsOfRelease( artifactCleanupFeature.isDeleteReleasedSnapshots());
+        repo.setRetentionCount( artifactCleanupFeature.getRetentionCount());
+        repo.setRetentionPeriod( artifactCleanupFeature.getRetentionPeriod() );
+        IndexCreationFeature icf = beanRepo.getFeature( IndexCreationFeature.class ).get( );
+        repo.setIndex( icf.hasIndex( ) );
+        repo.setIndexPath( icf.getIndexPath( ).getPath( ) );
+        repo.setPackedIndexPath( icf.getPackedIndexPath( ).getPath( ) );
+        repo.setSkipPackedIndexCreation( icf.isSkipPackedIndexCreation() );
+        StagingRepositoryFeature srf = beanRepo.getFeature( StagingRepositoryFeature.class ).get( );
+        repo.setHasStagingRepository( srf.isStageRepoNeeded( ) );
+        repo.setStagingRepository( srf.getStagingRepository()!=null?srf.getStagingRepository().getId():"" );
+    }
+
+    public static MavenManagedRepository of( ManagedRepository beanRepo ) {
+        MavenManagedRepository repo = new MavenManagedRepository( );
+        update( repo, beanRepo );
+        return repo;
+    }
 
     @Schema(name="blocks_redeployments",description = "True, if redeployments to this repository are not allowed")
     public boolean isBlocksRedeployments( )
@@ -70,6 +124,101 @@ public class MavenManagedRepository extends Repository
     public void setReleaseSchemes( List<String> releaseSchemes )
     {
         this.releaseSchemes = new ArrayList<>( releaseSchemes );
+    }
+
+    public void addReleaseScheme(String scheme) {
+        if (!this.releaseSchemes.contains( scheme ))
+        {
+            this.releaseSchemes.add( scheme );
+        }
+    }
+
+    @Schema(name="delete_snaphots_of_release", description = "True, if snapshots are deleted, after a version is released")
+    public boolean isDeleteSnapshotsOfRelease( )
+    {
+        return deleteSnapshotsOfRelease;
+    }
+
+    public void setDeleteSnapshotsOfRelease( boolean deleteSnapshotsOfRelease )
+    {
+        this.deleteSnapshotsOfRelease = deleteSnapshotsOfRelease;
+    }
+
+    @Schema(name="retention_period", description = "The period after which snapshots are deleted.")
+    public Period getRetentionPeriod( )
+    {
+        return retentionPeriod;
+    }
+
+    public void setRetentionPeriod( Period retentionPeriod )
+    {
+        this.retentionPeriod = retentionPeriod;
+    }
+
+    @Schema(name="retention_count", description = "Number of snapshot artifacts to keep.")
+    public int getRetentionCount( )
+    {
+        return retentionCount;
+    }
+
+    public void setRetentionCount( int retentionCount )
+    {
+        this.retentionCount = retentionCount;
+    }
+
+    @Schema( name = "index_path", description = "Path to the directory that contains the index, relative to the repository base directory" )
+    public String getIndexPath( )
+    {
+        return indexPath;
+    }
+
+    public void setIndexPath( String indexPath )
+    {
+        this.indexPath = indexPath;
+    }
+
+    @Schema( name = "packed_index_path", description = "Path to the directory that contains the packed index, relative to the repository base directory" )
+    public String getPackedIndexPath( )
+    {
+        return packedIndexPath;
+    }
+
+    public void setPackedIndexPath( String packedIndexPath )
+    {
+        this.packedIndexPath = packedIndexPath;
+    }
+
+    @Schema(name="skip_packed_index_creation", description = "True, if packed index is not created during index update")
+    public boolean isSkipPackedIndexCreation( )
+    {
+        return skipPackedIndexCreation;
+    }
+
+    public void setSkipPackedIndexCreation( boolean skipPackedIndexCreation )
+    {
+        this.skipPackedIndexCreation = skipPackedIndexCreation;
+    }
+
+    @Schema(name="has_staging_repository", description = "True, if this repository has a staging repository assigned")
+    public boolean isHasStagingRepository( )
+    {
+        return hasStagingRepository;
+    }
+
+    public void setHasStagingRepository( boolean hasStagingRepository )
+    {
+        this.hasStagingRepository = hasStagingRepository;
+    }
+
+    @Schema(name="staging_repository", description = "The id of the assigned staging repository")
+    public String getStagingRepository( )
+    {
+        return stagingRepository;
+    }
+
+    public void setStagingRepository( String stagingRepository )
+    {
+        this.stagingRepository = stagingRepository;
     }
 
     @Override

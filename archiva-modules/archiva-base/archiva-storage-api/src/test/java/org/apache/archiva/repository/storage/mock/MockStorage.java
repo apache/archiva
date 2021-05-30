@@ -18,6 +18,7 @@ package org.apache.archiva.repository.storage.mock;
  * under the License.
  */
 
+import org.apache.archiva.repository.storage.AssetType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.util.VisitStatus;
@@ -48,12 +49,30 @@ public class MockStorage implements RepositoryStorage
     public MockStorage( MockAsset root )
     {
         this.root = root;
+        try
+        {
+            this.root.create( AssetType.CONTAINER );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace( );
+        }
         root.setStorage( this );
+        assets.put( "/", root );
     }
 
     public MockStorage() {
-        this.root = new MockAsset( "" );
+        this.root = new MockAsset( "/" );
+        try
+        {
+            this.root.create( AssetType.CONTAINER );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace( );
+        }
         this.root.setStorage( this );
+        assets.put( "/", this.root );
     }
 
     public VisitStatus getStatus() {
@@ -85,8 +104,9 @@ public class MockStorage implements RepositoryStorage
     }
 
     @Override
-    public StorageAsset getAsset( String path )
+    public StorageAsset getAsset( final String requestedPath )
     {
+        String path =  requestedPath.startsWith( "/" ) ? requestedPath : "/"+requestedPath;
         if (assets.containsKey( path )) {
             return assets.get( path );
         }

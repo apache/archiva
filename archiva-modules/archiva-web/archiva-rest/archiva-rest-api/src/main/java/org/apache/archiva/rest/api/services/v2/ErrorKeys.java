@@ -78,8 +78,48 @@ public interface ErrorKeys
     String TASK_QUEUE_FAILED = PREFIX + "task.queue_failed";
     String REPOSITORY_SCAN_FAILED = REPOSITORY_PREFIX + "scan.failed";
     String ARTIFACT_EXISTS_AT_DEST = REPOSITORY_PREFIX + "artifact.dest.exists";
-
     String REPOSITORY_REMOTE_INDEX_DOWNLOAD_FAILED = REPOSITORY_PREFIX + "remote.index.download_failed";
+    String REPOSITORY_WRONG_TYPE = REPOSITORY_PREFIX + "wrong_type";
+    String REPOSITORY_DELETE_FAILED = REPOSITORY_PREFIX + "delete.failed";
+    String REPOSITORY_INVALID_ID = REPOSITORY_PREFIX + "invalid.id";
+    String REPOSITORY_ID_EXISTS = REPOSITORY_PREFIX + "id.exists";
+    String REPOSITORY_UPDATE_FAILED = REPOSITORY_PREFIX + "update.failed";
+    String ARTIFACT_NOT_FOUND = REPOSITORY_PREFIX + "artifact.notfound";
+    String REPOSITORY_LAYOUT_ERROR = REPOSITORY_PREFIX + "layout.error";
 
+    String ARTIFACT_COPY_ERROR = REPOSITORY_PREFIX + "artifact.copy.error";
 
+    /**
+     * The given user was not found
+     * Parameters:
+     * - User Id
+     */
+    String USER_NOT_FOUND = PREFIX+"user.not_found";
+
+    /**
+     * Error from UserManager
+     * Parameters:
+     * - Error Message
+     */
+    String USER_MANAGER_ERROR = PREFIX+"user_manager.error";
+
+    /**
+     * Permission to the repository denied.
+     * Parameters:
+     * - Repository Id
+     * - Permission ID
+     */
+    String PERMISSION_REPOSITORY_DENIED = PREFIX + "permission.repository.denied";
+
+    /**
+     * A generic authorization error thrown during the authorization check.
+     * Parameters:
+     * - Error message
+     */
+    String AUTHORIZATION_ERROR = PREFIX + "authorization.error";
+
+    /**
+     * When the operation needs authentication, but not authenticated user was found in the request context.
+     */
+    String NOT_AUTHENTICATED = PREFIX + "user.not_authenticated";
 }

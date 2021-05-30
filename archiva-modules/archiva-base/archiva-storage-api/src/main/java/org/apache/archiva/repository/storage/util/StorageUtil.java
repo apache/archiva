@@ -18,6 +18,7 @@ package org.apache.archiva.repository.storage.util;
  * under the License.
  */
 
+import org.apache.archiva.repository.storage.AssetType;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
@@ -31,8 +32,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -135,42 +142,118 @@ public class StorageUtil
         final RepositoryStorage storage = baseDir.getStorage( );
         try(Stream<StorageAsset> stream = newAssetStream( baseDir ))
         {
-            if ( stopOnError )
+            try
             {
                 // Return true, if no exception occurred
                 // anyMatch is short-circuiting, that means it stops if the condition matches
-                return !stream.map( a -> {
-                    try
-                    {
-                        storage.removeAsset( a );
-                        // Returning false, if OK
-                        return Boolean.FALSE;
-                    }
-                    catch ( IOException e )
-                    {
-                        LOG.error( "Could not delete asset {}: {}", a.getPath( ), e.getMessage( ), e );
-                        // Returning true, if exception
-                        return Boolean.TRUE;
-                    }
-                } ).anyMatch( r -> r );
-            } else {
-                // Return true, if all removals were OK
-                // We want to consume all, so we use allMatch
                 return stream.map( a -> {
                     try
                     {
                         storage.removeAsset( a );
-                        // Returning true, if OK
                         return Boolean.TRUE;
                     }
                     catch ( IOException e )
                     {
                         LOG.error( "Could not delete asset {}: {}", a.getPath( ), e.getMessage( ), e );
-                        // Returning false, if exception
-                        return Boolean.FALSE;
+                        if (stopOnError)  {
+                            throw new RuntimeException( e );
+                        } else
+                        {
+                            return Boolean.FALSE;
+                        }
                     }
-                } ).allMatch( r -> r );
+                } ).reduce( (a,b)->Boolean.logicalAnd( a,b ) ).orElse( Boolean.FALSE );
+            } catch ( RuntimeException e ) {
+                return false;
             }
+        }
+    }
+
+    /**
+     * Deletes the given asset and all child assets recursively.
+     * @param srcAsset The source directory
+     * @param destAsset The destination directory
+     * @param stopOnError if <code>true</code> the traversal stops, if an exception is encountered
+     * @return returns <code>true</code>, if every item was removed. If an IOException was encountered during
+     * traversal it returns <code>false</code>
+     */
+    public static final boolean copyRecursively(final StorageAsset srcAsset, final StorageAsset destAsset, final boolean stopOnError) throws IOException
+    {
+        try
+        {
+            if ( srcAsset.isFileBased( ) && destAsset.isFileBased( ) )
+            {
+                Path src = srcAsset.getFilePath( );
+                Path dest = destAsset.getFilePath( );
+                return Files.walk( src )
+                    .map( source -> {
+                        try
+                        {
+                            Files.copy( source, dest.resolve( src.relativize( source ) ),
+                                StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES );
+                            return Boolean.TRUE;
+                        }
+                        catch ( IOException e )
+                        {
+                            if ( stopOnError )
+                            {
+                                throw new RuntimeException( e );
+                            }
+                            else
+                            {
+                                return Boolean.FALSE;
+                            }
+                        }
+                    } ).reduce( ( a, b ) -> Boolean.logicalAnd( a, b ) ).get();
+            }
+            else
+            {
+                try ( Stream<StorageAsset> stream = newAssetStream( srcAsset ) )
+                {
+
+                    if (!destAsset.exists() && srcAsset.isContainer()) {
+                        destAsset.create( AssetType.CONTAINER );
+                    }
+                    return stream.map( a -> {
+                        try
+                        {
+                            String relativePath = destAsset.relativize( a );
+                            System.out.println( "Destination relative: " + relativePath );
+                            StorageAsset destFile = destAsset.resolve( relativePath );
+                            assert destFile != null;
+                            System.out.println( "Destination " + destFile.getPath( ) + " " + a.isContainer() );
+                            if (a.isContainer()) {
+                                destFile.create( AssetType.CONTAINER);
+                            } else {
+                                if (!destFile.getParent( ).exists() ) {
+                                    System.out.println( "Creating parent " + destFile.getParent( ) );
+                                    destFile.getParent().create( AssetType.CONTAINER );
+                                }
+                                System.out.println( "Copying " + a.getPath( ) + "->" + destFile.getPath( ) );
+                                copy( a.getReadChannel( ), destFile.getWriteChannel( true ) );
+                            }
+                            return Boolean.TRUE;
+                        }
+                        catch ( IOException e )
+                        {
+                            LOG.error( "Could not copy asset {}: {}", a.getPath( ), e.getMessage( ), e );
+                            // Returning true, if exception
+                            if ( stopOnError )
+                            {
+                                throw new RuntimeException( e );
+                            }
+                            else
+                            {
+                                return Boolean.FALSE;
+                            }
+                        }
+                    } ).reduce( ( a, b ) -> Boolean.logicalAnd( a, b ) ).orElse(Boolean.FALSE);
+                }
+            }
+        } catch (RuntimeException e) {
+            System.err.println( "Exception " + e.getMessage( ) );
+            e.printStackTrace( );
+            return false;
         }
     }
 

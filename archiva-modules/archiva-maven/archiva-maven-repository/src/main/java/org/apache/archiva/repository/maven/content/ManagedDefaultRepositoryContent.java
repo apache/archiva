@@ -287,6 +287,18 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
+    public void copyItem( ContentItem item, ManagedRepository destinationRepository ) throws ItemNotFoundException, ContentAccessException
+    {
+
+    }
+
+    @Override
+    public void copyItem( ContentItem item, ManagedRepository destinationRepository, boolean updateMetadata ) throws ItemNotFoundException, ContentAccessException
+    {
+
+    }
+
+    @Override
     public ContentItem getItem( ItemSelector selector ) throws ContentAccessException, IllegalArgumentException
     {
         if ( selector.hasVersion( ) && selector.hasArtifactId( ) )

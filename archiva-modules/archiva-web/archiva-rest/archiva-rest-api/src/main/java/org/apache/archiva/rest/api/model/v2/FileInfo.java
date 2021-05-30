@@ -35,9 +35,11 @@ package org.apache.archiva.rest.api.model.v2;/*
  */
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -50,7 +52,19 @@ public class FileInfo implements Serializable
     private String fileName;
     private String path;
 
-    @Schema(description = "Time when the file was last modified")
+    public FileInfo( )
+    {
+    }
+
+    public static FileInfo of( StorageAsset asset ) {
+        FileInfo fileInfo = new FileInfo( );
+        fileInfo.setFileName( asset.getName() );
+        fileInfo.setPath( asset.getPath() );
+        fileInfo.setModified( asset.getModificationTime( ).atOffset( ZoneOffset.UTC ) );
+        return fileInfo;
+    }
+
+                               @Schema(description = "Time when the file was last modified")
     public OffsetDateTime getModified( )
     {
         return modified;

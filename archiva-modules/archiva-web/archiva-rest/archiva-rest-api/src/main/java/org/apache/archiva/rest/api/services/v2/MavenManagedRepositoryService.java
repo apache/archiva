@@ -23,13 +23,14 @@ import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.OAuthScope;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.apache.archiva.rest.api.model.v2.Artifact;
 import org.apache.archiva.rest.api.model.v2.FileInfo;
 import org.apache.archiva.rest.api.model.v2.MavenManagedRepository;
+import org.apache.archiva.rest.api.model.v2.MavenManagedRepositoryUpdate;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
@@ -199,14 +200,14 @@ public interface MavenManagedRepositoryService
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
-    MavenManagedRepository updateManagedRepository( MavenManagedRepository managedRepository )
+    MavenManagedRepository updateManagedRepository( @PathParam( "id" ) String repositoryId,  MavenManagedRepositoryUpdate managedRepository )
         throws ArchivaRestServiceException;
 
 
-    @Path( "{id}/a/{filePath: .+}" )
+    @Path( "{id}/path/{filePath: .+}" )
     @GET
     @Produces( {MediaType.APPLICATION_JSON} )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, resource = "{id}")
     @Operation( summary = "Returns the status of a given file in the repository",
         security = {
             @SecurityRequirement(
@@ -229,18 +230,28 @@ public interface MavenManagedRepositoryService
 
 
     /**
-     * permissions are checked in impl
+     * Permissions are checked in impl
      * will copy an artifact from the source repository to the target repository
      */
-    @Path ("{srcId}/a/{path: .+}/copyto/{dstId}")
+    @Path ("{srcId}/path/{path: .+}/copyto/{dstId}")
     @POST
     @Produces({APPLICATION_JSON})
     @RedbackAuthorization (noPermission = true)
     @Operation( summary = "Copies a artifact from the source repository to the destination repository",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_RUN_INDEXER
+                name = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
+                scopes = {
+                    "{srcId}"
+                }
+            ),
+            @SecurityRequirement(
+                name= ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
+                scopes = {
+                    "{dstId}"
+                }
             )
+
         },
         responses = {
             @ApiResponse( responseCode = "200",
@@ -257,7 +268,7 @@ public interface MavenManagedRepositoryService
         throws ArchivaRestServiceException;
 
 
-    @Path ("{id}/a/{path: .+}")
+    @Path ("{id}/path/{path: .+}")
     @DELETE
     @Consumes ({ APPLICATION_JSON })
     @RedbackAuthorization (noPermission = true)
@@ -280,7 +291,7 @@ public interface MavenManagedRepositoryService
     Response deleteArtifact( @PathParam( "id" ) String repositoryId, @PathParam( "path" ) String path )
         throws ArchivaRestServiceException;
 
-    @Path ("{id}/c/{namespace}/{projectId}/{version}")
+    @Path ( "{id}/co/{group}/{project}/{version}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (noPermission = true)
@@ -301,12 +312,12 @@ public interface MavenManagedRepositoryService
         }
     )
     Response removeProjectVersion( @PathParam ( "id" ) String repositoryId,
-                                       @PathParam ( "namespace" ) String namespace, @PathParam ( "projectId" ) String projectId,
-                                       @PathParam ( "version" ) String version )
+                                   @PathParam ( "group" ) String namespace, @PathParam ( "project" ) String projectId,
+                                   @PathParam ( "version" ) String version )
         throws org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 
 
-    @Path ( "{id}/c/{namespace}/{projectId}" )
+    @Path ( "{id}/co/{group}/{project}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (noPermission = true)
@@ -326,10 +337,10 @@ public interface MavenManagedRepositoryService
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
-    Response deleteProject( @PathParam ("id") String repositoryId, @PathParam ( "namespace" ) String namespace, @PathParam ("projectId") String projectId )
+    Response deleteProject( @PathParam ("id") String repositoryId, @PathParam ( "group" ) String namespace, @PathParam ( "project" ) String projectId )
         throws org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 
-    @Path ( "{id}/c/{namespace}" )
+    @Path ( "{id}/co/{namespace}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (noPermission = true)

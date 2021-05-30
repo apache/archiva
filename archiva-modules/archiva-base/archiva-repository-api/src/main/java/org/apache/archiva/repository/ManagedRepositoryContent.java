@@ -91,6 +91,30 @@ public interface ManagedRepositoryContent extends RepositoryContent
     void deleteItem( ContentItem item ) throws ItemNotFoundException, ContentAccessException;
 
     /**
+     * Copies the given item to the destination repository. The destination repository must be of the same type
+     * as this repository. Metadata is updated only if there is no metadata scan consumer is active.
+     *
+     * @param item the item to copy
+     * @param destinationRepository the destination repository
+     * @throws ItemNotFoundException if the given item does not exist
+     * @throws ContentAccessException if an error occurred during the copy process
+     */
+    void copyItem(ContentItem item, ManagedRepository destinationRepository) throws ItemNotFoundException, ContentAccessException;
+
+    /**
+     * Copies the given item to the destination repository. The destination repository must be of the same type
+     * as this repository.
+     *
+     * @param item the item to copy
+     * @param destinationRepository the destination repository
+     * @param updateMetadata <code>true</code>, if the metadata will be updated immediately after copying. <code>false</code>
+     *                       if metadata is not updated after copying, but it may be updated by the metadata scan consumer, if it is configured.
+     * @throws ItemNotFoundException if the given item does not exist
+     * @throws ContentAccessException if an error occurred during the copy process
+     */
+    void copyItem(ContentItem item, ManagedRepository destinationRepository, boolean updateMetadata) throws ItemNotFoundException, ContentAccessException;
+
+    /**
      * Returns a item for the given selector. The type of the returned item depends on the
      * selector.
      *
