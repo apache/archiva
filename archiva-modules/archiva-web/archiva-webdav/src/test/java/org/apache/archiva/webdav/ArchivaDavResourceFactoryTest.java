@@ -34,6 +34,7 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.base.RepositoryGroupHandler;
 import org.apache.archiva.repository.maven.content.MavenContentHelper;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.proxy.ProxyRegistry;
@@ -158,6 +159,10 @@ public class ArchivaDavResourceFactoryTest
     @Inject
     FileTypes fileTypes;
 
+    @SuppressWarnings( "unused" )
+    @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
+
     public Path getProjectBase() {
         if (this.projectBase.get()==null) {
             String pathVal = System.getProperty("mvn.project.base.dir");
@@ -194,8 +199,9 @@ public class ArchivaDavResourceFactoryTest
         expect (archivaConfiguration.getDefaultLocale()).andReturn( Locale.getDefault() ).anyTimes();
         archivaConfiguration.addListener( EasyMock.anyObject(  ) );
         expectLastCall().times(0, 4);
-        archivaConfiguration.save( config );
-
+        archivaConfiguration.save( eq(config));
+        expectLastCall().times( 0, 5 );
+        archivaConfiguration.save( eq(config), EasyMock.anyString());
         expectLastCall().times( 0, 5 );
         archivaConfigurationControl.replay();
 

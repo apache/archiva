@@ -31,6 +31,8 @@ import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.base.RepositoryGroupHandler;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.SystemUtils;
@@ -93,6 +95,9 @@ public abstract class AbstractMavenRepositorySearch
     ArchivaRepositoryRegistry repositoryRegistry;
 
     @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
+
+    @Inject
     ProxyRegistry proxyRegistry;
 
     @Inject
@@ -143,7 +148,7 @@ public abstract class AbstractMavenRepositorySearch
         archivaConfig.addListener( EasyMock.anyObject( ConfigurationListener.class ) );
         EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn(config).anyTimes();
-        archivaConfig.save(EasyMock.anyObject(Configuration.class));
+        archivaConfig.save(EasyMock.anyObject(Configuration.class), EasyMock.anyString());
         EasyMock.expectLastCall().anyTimes();
         archivaConfigControl.replay();
         repositoryRegistry.reload();
@@ -158,7 +163,7 @@ public abstract class AbstractMavenRepositorySearch
         archivaConfigControl.reset();
         EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn(config).anyTimes();
-        archivaConfig.save(EasyMock.anyObject(Configuration.class));
+        archivaConfig.save(EasyMock.anyObject(Configuration.class), EasyMock.anyString());
         EasyMock.expectLastCall().anyTimes();
         archivaConfigControl.replay();
         repositoryRegistry.removeRepository(TEST_REPO_1);
@@ -259,7 +264,7 @@ public abstract class AbstractMavenRepositorySearch
         archivaConfigControl.reset();
         archivaConfig.addListener( EasyMock.anyObject( ConfigurationListener.class ) );
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn(config).anyTimes();
-        archivaConfig.save(EasyMock.anyObject(Configuration.class));
+        archivaConfig.save(EasyMock.anyObject(Configuration.class), EasyMock.anyString());
         EasyMock.expectLastCall().anyTimes();
         archivaConfigControl.replay();
         repositoryRegistry.reload();

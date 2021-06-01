@@ -410,7 +410,20 @@ public class DefaultArchivaConfiguration
 
     @SuppressWarnings("unchecked")
     @Override
-    public synchronized void save(Configuration configuration)
+    public synchronized void save(Configuration configuration) throws IndeterminateConfigurationException, RegistryException
+    {
+        save( configuration, "" );
+    }
+
+    /**
+     * Saves the configuration and adds the given tag to the event.
+     * @param configuration the configuration to save
+     * @param eventTag the tag to add to the configuration saved event
+     * @throws IndeterminateConfigurationException if the
+     * @throws RegistryException
+     */
+    @Override
+    public synchronized void save(Configuration configuration, String eventTag)
             throws IndeterminateConfigurationException, RegistryException {
         Registry section = registry.getSection(KEY + ".user");
         Registry baseSection = registry.getSection(KEY + ".base");
@@ -491,7 +504,7 @@ public class DefaultArchivaConfiguration
         this.configuration = unescapeExpressions(configuration);
         isConfigurationDefaulted = false;
 
-        triggerEvent(ConfigurationEvent.SAVED);
+        triggerEvent(ConfigurationEvent.SAVED, eventTag);
     }
 
     private void escapeCronExpressions(Configuration configuration) {
@@ -530,7 +543,7 @@ public class DefaultArchivaConfiguration
             addRegistryChangeListener(regListener);
         }
 
-        triggerEvent(ConfigurationEvent.SAVED);
+        triggerEvent(ConfigurationEvent.SAVED, "default-file");
 
         Registry section = registry.getSection(KEY + ".user");
         if (section == null) {
@@ -580,8 +593,8 @@ public class DefaultArchivaConfiguration
         }
     }
 
-    private void triggerEvent(int type) {
-        ConfigurationEvent evt = new ConfigurationEvent(type);
+    private void triggerEvent(int type, String eventTag) {
+        ConfigurationEvent evt = new ConfigurationEvent(type, eventTag);
         for (ConfigurationListener listener : listeners) {
             listener.configurationEvent(evt);
         }

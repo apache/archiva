@@ -66,6 +66,10 @@ public class ArchivaRepositoryRegistryTest
     @Inject
     ArchivaConfiguration archivaConfiguration;
 
+    @SuppressWarnings( "unused" )
+    @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
+
     private static final Path userCfg = Paths.get(System.getProperty( "user.home" ), ".m2/archiva.xml");
 
     private static Path cfgCopy;

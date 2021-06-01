@@ -378,7 +378,7 @@ public abstract class AbstractNativeRestServices
         }
         else
         {
-            log.error( "Serer is not in STARTED state!" );
+            log.error( "Server is not in STARTED state!" );
         }
     }
 
@@ -410,15 +410,11 @@ public abstract class AbstractNativeRestServices
         this.requestSpec = getRequestSpecBuilder( ).build( );
         RestAssured.basePath = basePath;
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
-            new Jackson2ObjectMapperFactory() {
-                @Override
-                public ObjectMapper create( Type cls, String charset) {
-                    ObjectMapper om = new ObjectMapper().findAndRegisterModules();
-                    om.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                    om.setPropertyNamingStrategy( PropertyNamingStrategy.SNAKE_CASE );
-                    return om;
-                }
-
+            ( cls, charset ) -> {
+                ObjectMapper om = new ObjectMapper().findAndRegisterModules();
+                om.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                om.setPropertyNamingStrategy( PropertyNamingStrategy.SNAKE_CASE );
+                return om;
             }
         ));
     }

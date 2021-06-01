@@ -26,6 +26,7 @@ import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.base.RepositoryGroupHandler;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -43,6 +44,9 @@ public class RepositoryGroupAdminTest
 
     @Inject
     RepositoryRegistry repositoryRegistry;
+
+    @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
 
     @Test
     public void addAndDeleteGroup()

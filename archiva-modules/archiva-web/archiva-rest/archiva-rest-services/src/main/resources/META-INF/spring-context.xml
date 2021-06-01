@@ -29,11 +29,8 @@
            http://cxf.apache.org/jaxrs
            http://cxf.apache.org/schemas/jaxrs.xsd" default-lazy-init="true">
 
-  <import resource="classpath:META-INF/cxf/cxf.xml"/>
-  <!--
-  <import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml"/>
-  -->
-  <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+  <import resource="classpath*:META-INF/cxf/cxf.xml"/>
+  <import resource="classpath*:META-INF/cxf/cxf-servlet.xml"/>
 
   <context:annotation-config/>
   <context:component-scan
@@ -119,6 +116,7 @@
       <ref bean="v2.defaultSecurityConfigurationService" />
       <ref bean="v2.repositoryGroupService#rest" />
       <ref bean="v2.repositoryService#rest"/>
+      <ref bean="v2.managedMavenRepositoryService#rest"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:features>

@@ -35,35 +35,28 @@ import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.LayoutException;
-import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.fs.FsStorageUtil;
-import org.apache.archiva.repository.storage.util.StorageUtil;
-import org.apache.archiva.rest.api.model.v2.Artifact;
 import org.apache.archiva.rest.api.model.v2.FileInfo;
 import org.apache.archiva.rest.api.model.v2.MavenManagedRepository;
 import org.apache.archiva.rest.api.model.v2.MavenManagedRepositoryUpdate;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.v2.ErrorKeys;
 import org.apache.archiva.rest.api.services.v2.ErrorMessage;
-import org.apache.archiva.rest.api.services.v2.MavenManagedRepositoryService;
+import org.apache.archiva.rest.api.services.v2.maven.MavenManagedRepositoryService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
@@ -103,7 +96,9 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
     private RepositoryRegistry repositoryRegistry;
     private SecuritySystem securitySystem;
 
-    public DefaultMavenManagedRepositoryService( SecuritySystem securitySystem, RepositoryRegistry repositoryRegistry, ManagedRepositoryAdmin managedRepositoryAdmin )
+    public DefaultMavenManagedRepositoryService( SecuritySystem securitySystem,
+                                                 RepositoryRegistry repositoryRegistry,
+                                                 ManagedRepositoryAdmin managedRepositoryAdmin )
     {
         this.securitySystem = securitySystem;
         this.repositoryRegistry = repositoryRegistry;
@@ -113,8 +108,16 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
     protected AuditInformation getAuditInformation( )
     {
         RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get( );
-        User user = redbackRequestInformation == null ? null : redbackRequestInformation.getUser( );
-        String remoteAddr = redbackRequestInformation == null ? null : redbackRequestInformation.getRemoteAddr( );
+        User user;
+        String remoteAddr;
+        if (redbackRequestInformation==null) {
+            user = null;
+            remoteAddr = null;
+        } else
+        {
+            user = redbackRequestInformation.getUser( );
+            remoteAddr = redbackRequestInformation.getRemoteAddr( );
+        }
         return new AuditInformation( user, remoteAddr );
     }
 

@@ -22,6 +22,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.ConfigurationHandler;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,6 +31,11 @@ public class RepositoryRegistryMock extends ArchivaRepositoryRegistry
 {
 
     private Map<String, ManagedRepository> managedRepositories = new TreeMap<>();
+
+    public RepositoryRegistryMock( ConfigurationHandler configurationHandler )
+    {
+        super( configurationHandler );
+    }
 
     @Override
     public ManagedRepository putRepository(ManagedRepository managedRepository) throws RepositoryException

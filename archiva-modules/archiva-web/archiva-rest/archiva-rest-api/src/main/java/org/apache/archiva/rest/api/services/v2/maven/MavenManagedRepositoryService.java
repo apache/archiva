@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.api.services.v2;
+package org.apache.archiva.rest.api.services.v2.maven;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -31,6 +31,8 @@ import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.v2.FileInfo;
 import org.apache.archiva.rest.api.model.v2.MavenManagedRepository;
 import org.apache.archiva.rest.api.model.v2.MavenManagedRepositoryUpdate;
+import org.apache.archiva.rest.api.services.v2.ArchivaRestError;
+import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
@@ -51,6 +53,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.archiva.rest.api.services.v2.RestConfiguration.DEFAULT_PAGE_LIMIT;
 
 /**
+ * Service interface for managing managed maven repositories
+ *
  * @author Martin Stockhammer <martin_s@apache.org>
  * @since 3.0
  */

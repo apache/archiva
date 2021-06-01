@@ -27,6 +27,7 @@ import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.base.RepositoryGroupHandler;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -96,6 +97,9 @@ public class NexusIndexerConsumerTest
     @Inject
     ArchivaRepositoryRegistry repositoryRegistry;
 
+    @SuppressWarnings( "unused" )
+    @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
 
     @Override
     @Before

@@ -47,6 +47,21 @@ public class RepositoryRegistryEvent extends Event
      */
     public static EventType<RepositoryRegistryEvent> INITIALIZED = new EventType(ANY, "REGISTRY.INITIALIZED");
 
+    /**
+     * When the repository groups are initialized
+     */
+    public static EventType<RepositoryRegistryEvent> GROUPS_INITIALIZED = new EventType(ANY, "REGISTRY.GROUPS_INITIALIZED");
+
+    /**
+     * When the managed repositories are initialized
+     */
+    public static EventType<RepositoryRegistryEvent> MANAGED_REPOS_INITIALIZED = new EventType(ANY, "REGISTRY.MANAGED_REPOS_INITIALIZED");
+
+    /**
+     * When the remote repositories are initialized
+     */
+    public static EventType<RepositoryRegistryEvent> REMOTE_REPOS_INITIALIZED = new EventType(ANY, "REGISTRY.REMOTE_REPOS_INITIALIZED");
+
     public RepositoryRegistryEvent(EventType<? extends RepositoryRegistryEvent> type, Object origin) {
         super(type, origin);
     }

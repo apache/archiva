@@ -32,9 +32,17 @@ public class ConfigurationEvent
 
     private int type;
 
+    private String tag;
+
     public ConfigurationEvent( int type )
     {
         this.type = type;
+        tag = "";
+    }
+
+    public ConfigurationEvent(int type, String tag) {
+        this.type = type;
+        this.tag = tag;
     }
 
     public int getType()
@@ -42,35 +50,33 @@ public class ConfigurationEvent
         return type;
     }
 
-    @Override
-    public int hashCode()
+    public String getTag( )
     {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + type;
-        return result;
+        return tag;
+    }
+
+    public void setTag( String tag )
+    {
+        this.tag = tag;
     }
 
     @Override
-    public boolean equals( Object obj )
+    public boolean equals( Object o )
     {
-        if ( this == obj )
-        {
-            return true;
-        }
-        if ( obj == null )
-        {
-            return false;
-        }
-        if ( getClass() != obj.getClass() )
-        {
-            return false;
-        }
-        final ConfigurationEvent other = (ConfigurationEvent) obj;
-        if ( type != other.type )
-        {
-            return false;
-        }
-        return true;
+        if ( this == o ) return true;
+        if ( o == null || getClass( ) != o.getClass( ) ) return false;
+
+        ConfigurationEvent that = (ConfigurationEvent) o;
+
+        if ( type != that.type ) return false;
+        return tag.equals( that.tag );
+    }
+
+    @Override
+    public int hashCode( )
+    {
+        int result = type;
+        result = 31 * result + tag.hashCode( );
+        return result;
     }
 }

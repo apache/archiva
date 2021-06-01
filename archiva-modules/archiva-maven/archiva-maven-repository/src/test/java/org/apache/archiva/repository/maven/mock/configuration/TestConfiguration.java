@@ -52,6 +52,12 @@ public class TestConfiguration
     }
 
     @Override
+    public void save( Configuration configuration, String eventTag ) throws RegistryException, IndeterminateConfigurationException
+    {
+        this.configuration = configuration;
+    }
+
+    @Override
     public boolean isDefaulted()
     {
         return false;

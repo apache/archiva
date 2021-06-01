@@ -55,20 +55,20 @@ import static org.apache.archiva.rest.api.services.v2.RestConfiguration.DEFAULT_
  * @since 3.0
  */
 @Path( "/repository_groups" )
-@Schema( name="RepositoryGroups", description = "Managing of repository groups or virtual repositories")
+@Schema( name = "RepositoryGroups", description = "Managing of repository groups or virtual repositories" )
 public interface RepositoryGroupService
 {
     @Path( "" )
     @GET
-    @Produces( { APPLICATION_JSON } )
+    @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     @Operation( summary = "Returns all repository group entries.",
         parameters = {
-            @Parameter(name = "q", description = "Search term"),
-            @Parameter(name = "offset", description = "The offset of the first element returned"),
-            @Parameter(name = "limit", description = "Maximum number of items to return in the response"),
-            @Parameter(name = "orderBy", description = "List of attribute used for sorting (key, value)"),
-            @Parameter(name = "order", description = "The sort order. Either ascending (asc) or descending (desc)")
+            @Parameter( name = "q", description = "Search term" ),
+            @Parameter( name = "offset", description = "The offset of the first element returned" ),
+            @Parameter( name = "limit", description = "Maximum number of items to return in the response" ),
+            @Parameter( name = "orderBy", description = "List of attribute used for sorting (key, value)" ),
+            @Parameter( name = "order", description = "The sort order. Either ascending (asc) or descending (desc)" )
         },
         security = {
             @SecurityRequirement(
@@ -78,22 +78,22 @@ public interface RepositoryGroupService
         responses = {
             @ApiResponse( responseCode = "200",
                 description = "If the list could be returned",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = PagedResult.class))
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = PagedResult.class ) )
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
-    PagedResult<RepositoryGroup> getRepositoriesGroups(@QueryParam("q") @DefaultValue( "" ) String searchTerm,
-                                                       @QueryParam( "offset" ) @DefaultValue( "0" ) Integer offset,
-                                                       @QueryParam( "limit" ) @DefaultValue( value = DEFAULT_PAGE_LIMIT ) Integer limit,
-                                                       @QueryParam( "orderBy") @DefaultValue( "id" ) List<String> orderBy,
-                                                       @QueryParam("order") @DefaultValue( "asc" ) String order)
+    PagedResult<RepositoryGroup> getRepositoriesGroups( @QueryParam( "q" ) @DefaultValue( "" ) String searchTerm,
+                                                        @QueryParam( "offset" ) @DefaultValue( "0" ) Integer offset,
+                                                        @QueryParam( "limit" ) @DefaultValue( value = DEFAULT_PAGE_LIMIT ) Integer limit,
+                                                        @QueryParam( "orderBy" ) @DefaultValue( "id" ) List<String> orderBy,
+                                                        @QueryParam( "order" ) @DefaultValue( "asc" ) String order )
         throws ArchivaRestServiceException;
 
     @Path( "{repositoryGroupId}" )
     @GET
-    @Produces( { APPLICATION_JSON } )
+    @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     @Operation( summary = "Returns a single repository group configuration.",
         security = {
@@ -104,12 +104,12 @@ public interface RepositoryGroupService
         responses = {
             @ApiResponse( responseCode = "200",
                 description = "If the configuration is returned",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = RepositoryGroup.class))
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = RepositoryGroup.class ) )
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
             @ApiResponse( responseCode = "404", description = "The repository group with the given id does not exist",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
     RepositoryGroup getRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
@@ -117,14 +117,14 @@ public interface RepositoryGroupService
 
     @Path( "" )
     @POST
-    @Consumes( { APPLICATION_JSON } )
-    @Produces( { APPLICATION_JSON } )
+    @Consumes( {APPLICATION_JSON} )
+    @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     @Operation( summary = "Creates a new group entry.",
         requestBody =
-            @RequestBody(required = true, description = "The configuration of the repository group.",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = RepositoryGroup.class))
-            )
+        @RequestBody( required = true, description = "The configuration of the repository group.",
+            content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = RepositoryGroup.class ) )
+        )
         ,
         security = {
             @SecurityRequirement(
@@ -134,17 +134,17 @@ public interface RepositoryGroupService
         responses = {
             @ApiResponse( responseCode = "201",
                 description = "If the list could be returned",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = RepositoryGroup.class))
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = RepositoryGroup.class ) )
             ),
             @ApiResponse( responseCode = "303", description = "The repository group exists already",
                 headers = {
-                    @Header( name="Location", description = "The URL of existing group", schema = @Schema(type="string"))
+                    @Header( name = "Location", description = "The URL of existing group", schema = @Schema( type = "string" ) )
                 }
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
             @ApiResponse( responseCode = "422", description = "The body data is not valid",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
     RepositoryGroup addRepositoryGroup( RepositoryGroup repositoryGroup )
@@ -152,13 +152,13 @@ public interface RepositoryGroupService
 
     @Path( "{repositoryGroupId}" )
     @PUT
-    @Consumes( { APPLICATION_JSON } )
-    @Produces( { APPLICATION_JSON } )
+    @Consumes( {APPLICATION_JSON} )
+    @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     @Operation( summary = "Returns all repository group entries.",
         requestBody =
-        @RequestBody(required = true, description = "The configuration of the repository group.",
-            content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = RepositoryGroup.class))
+        @RequestBody( required = true, description = "The configuration of the repository group.",
+            content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = RepositoryGroup.class ) )
         )
         ,
         security = {
@@ -169,14 +169,14 @@ public interface RepositoryGroupService
         responses = {
             @ApiResponse( responseCode = "200",
                 description = "If the group is returned",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = RepositoryGroup.class))
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = RepositoryGroup.class ) )
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to gather the information",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
             @ApiResponse( responseCode = "404", description = "The group with the given id does not exist",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
             @ApiResponse( responseCode = "422", description = "The body data is not valid",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) )
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
     RepositoryGroup updateRepositoryGroup( @PathParam( "repositoryGroupId" ) String groupId, RepositoryGroup repositoryGroup )
@@ -184,7 +184,7 @@ public interface RepositoryGroupService
 
     @Path( "{repositoryGroupId}" )
     @DELETE
-    @Produces( { APPLICATION_JSON } )
+    @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     @Operation( summary = "Deletes the repository group entry with the given id.",
         security = {
@@ -197,9 +197,9 @@ public interface RepositoryGroupService
                 description = "If the group was deleted"
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to delete the group",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
             @ApiResponse( responseCode = "404", description = "The group with the given id does not exist",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
         }
     )
     Response deleteRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
@@ -207,7 +207,7 @@ public interface RepositoryGroupService
 
     @Path( "{repositoryGroupId}/repositories/{repositoryId}" )
     @PUT
-    @Produces( { APPLICATION_JSON } )
+    @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     @Operation( summary = "Adds the repository with the given id to the repository group.",
         security = {
@@ -220,18 +220,18 @@ public interface RepositoryGroupService
                 description = "If the repository was added or if it was already part of the group"
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to delete the group",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
             @ApiResponse( responseCode = "404", description = "The group with the given id does not exist",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
         }
     )
     RepositoryGroup addRepositoryToGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId,
-                                  @PathParam( "repositoryId" ) String repositoryId )
+                                          @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
     @Path( "{repositoryGroupId}/repositories/{repositoryId}" )
     @DELETE
-    @Produces( { APPLICATION_JSON } )
+    @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
     @Operation( summary = "Removes the repository with the given id from the repository group.",
         security = {
@@ -244,13 +244,13 @@ public interface RepositoryGroupService
                 description = "If the repository was removed."
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to delete the group",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
             @ApiResponse( responseCode = "404", description = "The group with the given id does not exist, or the repository was not part of the group.",
-                content = @Content(mediaType = APPLICATION_JSON, schema = @Schema(implementation = ArchivaRestError.class )) ),
+                content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
         }
     )
     RepositoryGroup deleteRepositoryFromGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId,
-                                       @PathParam( "repositoryId" ) String repositoryId )
+                                               @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
 

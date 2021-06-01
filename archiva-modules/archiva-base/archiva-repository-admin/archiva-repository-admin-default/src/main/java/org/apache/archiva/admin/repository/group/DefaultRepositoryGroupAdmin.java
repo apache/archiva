@@ -29,11 +29,15 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventHandler;
+import org.apache.archiva.event.EventType;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.event.RepositoryRegistryEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang3.StringUtils;
@@ -62,7 +66,7 @@ import java.util.stream.Collectors;
 @Service("repositoryGroupAdmin#default")
 public class DefaultRepositoryGroupAdmin
     extends AbstractRepositoryAdmin
-    implements RepositoryGroupAdmin
+    implements RepositoryGroupAdmin, EventHandler<Event>
 {
 
     private Logger log = LoggerFactory.getLogger( getClass() );
@@ -82,6 +86,10 @@ public class DefaultRepositoryGroupAdmin
     private Path groupsDirectory;
 
     @PostConstruct
+    public void baseInit() {
+        this.repositoryRegistry.registerEventHandler( EventType.ROOT, this );
+    }
+
     public void initialize()
     {
         String appServerBase = getRegistry().getString( "appserver.base" );
@@ -437,5 +445,15 @@ public class DefaultRepositoryGroupAdmin
         rg.setMergedIndexTtl( group.getMergedIndexTTL() );
         rg.setLocation( group.getLocation().toString() );
         return rg;
+    }
+
+    @Override
+    public void handle( Event event )
+    {
+        if ( EventType.isInstanceOf( event.getType( ), RepositoryRegistryEvent.INITIALIZED ) )
+        {
+            log.debug( "Initializing RepositoryGroupAdmin" );
+            initialize();
+        }
     }
 }

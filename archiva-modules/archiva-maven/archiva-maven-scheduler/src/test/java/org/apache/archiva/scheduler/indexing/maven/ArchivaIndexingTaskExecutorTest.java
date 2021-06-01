@@ -26,6 +26,7 @@ import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.base.RepositoryGroupHandler;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
@@ -72,6 +73,9 @@ public class ArchivaIndexingTaskExecutorTest
 
     @Inject
     ArchivaRepositoryRegistry repositoryRegistry;
+
+    @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
 
     @Inject
     private IndexUpdater indexUpdater;

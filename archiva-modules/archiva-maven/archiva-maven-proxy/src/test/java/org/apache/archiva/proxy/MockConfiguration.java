@@ -111,6 +111,12 @@ public class MockConfiguration
         /* do nothing */
     }
 
+    @Override
+    public void save( Configuration configuration, String eventTag ) throws RegistryException, IndeterminateConfigurationException
+    {
+        // do nothing
+    }
+
     public void triggerChange( String name, String value )
     {
         for ( org.apache.archiva.components.registry.RegistryListener listener : registryListeners )

@@ -27,6 +27,7 @@ import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.FileType;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.easymock.IMocksControl;
@@ -107,6 +108,12 @@ public class MockConfiguration
         throws RegistryException
     {
         /* do nothing */
+    }
+
+    @Override
+    public void save( Configuration configuration, String eventTag ) throws RegistryException, IndeterminateConfigurationException
+    {
+        // do nothing
     }
 
     public void triggerChange( String name, String value )

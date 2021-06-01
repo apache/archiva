@@ -56,6 +56,20 @@ public interface ArchivaConfiguration
         throws RegistryException, IndeterminateConfigurationException;
 
     /**
+     * Save any updated configuration. This method allows to add a tag to the thrown event.
+     * This allows to verify the origin if the caller is the same as the listener.
+     *
+     * @param configuration the configuration to save
+     * @param eventTag the tag to add to the thrown event
+     * @throws org.apache.archiva.components.registry.RegistryException
+     *          if there is a problem saving the registry data
+     * @throws IndeterminateConfigurationException
+     *          if the configuration cannot be saved because it was read from two sources
+     */
+    void save( Configuration configuration, String eventTag )
+        throws RegistryException, IndeterminateConfigurationException;
+
+    /**
      * Determines if the configuration in use was as a result of a defaulted configuration.
      *
      * @return true if the configuration was created from the default-archiva.xml as opposed

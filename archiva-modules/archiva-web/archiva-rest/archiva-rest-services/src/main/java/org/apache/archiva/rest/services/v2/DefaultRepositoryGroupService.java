@@ -34,16 +34,12 @@ package org.apache.archiva.rest.services.v2;/*
  * under the License.
  */
 
-import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.EntityExistsException;
 import org.apache.archiva.admin.model.EntityNotFoundException;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
-import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
-import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
-import org.apache.archiva.redback.users.User;
 import org.apache.archiva.rest.api.model.v2.RepositoryGroup;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.v2.ErrorKeys;
@@ -54,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -64,6 +59,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static org.apache.archiva.rest.services.utils.AuditHelper.getAuditData;
 
 /**
  * REST V2 Implementation for repository groups.
@@ -81,8 +78,7 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     @Context
     UriInfo uriInfo;
 
-    @Inject
-    private RepositoryGroupAdmin repositoryGroupAdmin;
+    final private RepositoryGroupAdmin repositoryGroupAdmin;
 
     private static final Logger log = LoggerFactory.getLogger( DefaultRepositoryGroupService.class );
     private static final QueryHelper<org.apache.archiva.admin.model.beans.RepositoryGroup> QUERY_HELPER = new QueryHelper<>( new String[]{"id"} );
@@ -93,12 +89,8 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     }
 
 
-    protected AuditInformation getAuditInformation( )
-    {
-        RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get( );
-        User user = redbackRequestInformation == null ? null : redbackRequestInformation.getUser( );
-        String remoteAddr = redbackRequestInformation == null ? null : redbackRequestInformation.getRemoteAddr( );
-        return new AuditInformation( user, remoteAddr );
+    public DefaultRepositoryGroupService(RepositoryGroupAdmin repositoryGroupAdmin) {
+        this.repositoryGroupAdmin = repositoryGroupAdmin;
     }
 
     @Override
@@ -166,7 +158,7 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     {
         try
         {
-            Boolean result = repositoryGroupAdmin.addRepositoryGroup( toModel( repositoryGroup ), getAuditInformation( ) );
+            Boolean result = repositoryGroupAdmin.addRepositoryGroup( toModel( repositoryGroup ), getAuditData() );
             if ( result )
             {
                 org.apache.archiva.admin.model.beans.RepositoryGroup newGroup = repositoryGroupAdmin.getRepositoryGroup( repositoryGroup.getId( ) );
@@ -243,7 +235,7 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
             {
                 updateGroup.setMergedIndexTtl( originGroup.getMergedIndexTtl( ) );
             }
-            repositoryGroupAdmin.updateRepositoryGroup( updateGroup, getAuditInformation( ) );
+            repositoryGroupAdmin.updateRepositoryGroup( updateGroup, getAuditData( ) );
             return RepositoryGroup.of( repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId ) );
         }
         catch ( EntityNotFoundException e )
@@ -265,7 +257,7 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         try
         {
-            Boolean deleted = repositoryGroupAdmin.deleteRepositoryGroup( repositoryGroupId, getAuditInformation( ) );
+            Boolean deleted = repositoryGroupAdmin.deleteRepositoryGroup( repositoryGroupId, getAuditData( ) );
             if ( !deleted )
             {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_DELETE_FAILED ) );
@@ -297,7 +289,7 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         try
         {
-            repositoryGroupAdmin.addRepositoryToGroup( repositoryGroupId, repositoryId, getAuditInformation( ) );
+            repositoryGroupAdmin.addRepositoryToGroup( repositoryGroupId, repositoryId, getAuditData( ) );
             return RepositoryGroup.of( repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId ) );
         }
         catch ( EntityNotFoundException e )
@@ -335,7 +327,7 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         try
         {
-            repositoryGroupAdmin.deleteRepositoryFromGroup( repositoryGroupId, repositoryId, getAuditInformation( ) );
+            repositoryGroupAdmin.deleteRepositoryFromGroup( repositoryGroupId, repositoryId, getAuditData( ) );
             return RepositoryGroup.of( repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId ) );
         }
         catch ( EntityNotFoundException e )

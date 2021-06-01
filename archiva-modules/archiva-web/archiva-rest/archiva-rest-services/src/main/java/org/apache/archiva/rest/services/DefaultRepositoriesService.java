@@ -47,6 +47,7 @@ import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.repository.base.RepositoryGroupHandler;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.ContentNotFoundException;
 import org.apache.archiva.repository.content.LayoutException;
@@ -127,6 +128,10 @@ public class DefaultRepositoriesService
 
     @Inject
     private RepositoryRegistry repositoryRegistry;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    private RepositoryGroupHandler repositoryGroupHandler;
 
     @Inject
     private SecuritySystem securitySystem;

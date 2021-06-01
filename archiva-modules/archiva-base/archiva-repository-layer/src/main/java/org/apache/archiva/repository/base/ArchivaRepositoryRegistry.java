@@ -28,7 +28,6 @@ import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.EditableRepository;
-import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.Repository;
@@ -55,11 +54,10 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
 
 /**
  * Registry for repositories. This is the central entry point for repositories. It provides methods for
@@ -78,6 +76,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
 {
 
     private static final Logger log = LoggerFactory.getLogger(RepositoryRegistry.class);
+    private final ConfigurationHandler configurationHandler;
 
     /**
      * We inject all repository providers
@@ -89,14 +88,13 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     IndexManagerFactory indexManagerFactory;
 
     @Inject
-    ArchivaConfiguration archivaConfiguration;
-
-    @Inject
     List<MetadataReader> metadataReaderList;
 
     @Inject
     @Named("repositoryContentFactory#default")
     RepositoryContentFactory repositoryContentFactory;
+
+
 
     private final EventManager eventManager;
 
@@ -107,20 +105,23 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     private Map<String, RemoteRepository> remoteRepositories = new HashMap<>();
     private Map<String, RemoteRepository> uRemoteRepositories = Collections.unmodifiableMap(remoteRepositories);
 
-    private Map<String, RepositoryGroup> repositoryGroups = new HashMap<>();
-    private Map<String, RepositoryGroup> uRepositoryGroups = Collections.unmodifiableMap(repositoryGroups);
-
     private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
 
-    private volatile boolean ignoreConfigEvents = false;
+    private RepositoryGroupHandler groupHandler;
 
-    public ArchivaRepositoryRegistry() {
+    private AtomicBoolean groups_initalized = new AtomicBoolean( false );
+    private AtomicBoolean managed_initialized = new AtomicBoolean( false );
+    private AtomicBoolean remote_initialized = new AtomicBoolean( false );
+
+
+    public ArchivaRepositoryRegistry(ConfigurationHandler configurationHandler) {
         this.eventManager = new EventManager(this);
+        this.configurationHandler = configurationHandler;
     }
 
     @Override
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration ) {
-        this.archivaConfiguration = archivaConfiguration;
+        this.configurationHandler.setArchivaConfiguration( archivaConfiguration );
     }
 
     @PostConstruct
@@ -128,20 +129,40 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         rwLock.writeLock().lock();
         try {
             log.debug("Initializing repository registry");
-            updateManagedRepositoriesFromConfig();
-            updateRemoteRepositoriesFromConfig();
+            updateManagedRepositoriesFromConfig( );
+            pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.MANAGED_REPOS_INITIALIZED, this ) );
+            managed_initialized.set( true );
+            updateRemoteRepositoriesFromConfig( );
+            pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.REMOTE_REPOS_INITIALIZED, this ) );
+            remote_initialized.set( true );
 
-            repositoryGroups.clear();
-            Map<String, RepositoryGroup> repositoryGroups = getRepositorGroupsFromConfig();
-            this.repositoryGroups.putAll(repositoryGroups);
-
-            // archivaConfiguration.addChangeListener(this);
-            archivaConfiguration.addListener(this);
+            initializeRepositoryGroups();
+            this.configurationHandler.addListener(this);
         } finally {
             rwLock.writeLock().unlock();
         }
         pushEvent(new RepositoryRegistryEvent(RepositoryRegistryEvent.RELOADED, this));
+        if (managed_initialized.get() && remote_initialized.get() && groups_initalized.get( )) {
+            pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.INITIALIZED, this ) );
+        }
     }
+
+    private void initializeRepositoryGroups() {
+        if (this.groupHandler!=null) {
+            this.groupHandler.initializeFromConfig();
+            this.groups_initalized.set( true );
+            pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.GROUPS_INITIALIZED, this ) );
+        }
+    }
+
+    public void registerGroupHandler(RepositoryGroupHandler groupHandler) {
+        this.groupHandler = groupHandler;
+        initializeRepositoryGroups();
+        if (managed_initialized.get() && remote_initialized.get() && groups_initalized.get( )) {
+            pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.INITIALIZED, this ) );
+        }
+    }
+
 
     @PreDestroy
     public void destroy() {
@@ -153,11 +174,12 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             repo.close();
         }
         remoteRepositories.clear();
+        groupHandler.close();
         pushEvent(new RepositoryRegistryEvent(RepositoryRegistryEvent.DESTROYED, this));
     }
 
 
-    private Map<RepositoryType, RepositoryProvider> createProviderMap() {
+    protected Map<RepositoryType, RepositoryProvider> getRepositoryProviderMap() {
         Map<RepositoryType, RepositoryProvider> map = new HashMap<>();
         if (repositoryProviders != null) {
             for (RepositoryProvider provider : repositoryProviders) {
@@ -169,7 +191,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         return map;
     }
 
-    private RepositoryProvider getProvider(RepositoryType type) throws RepositoryException
+    protected RepositoryProvider getProvider(RepositoryType type) throws RepositoryException
     {
         return repositoryProviders.stream().filter(repositoryProvider -> repositoryProvider.provides().contains(type)).findFirst().orElseThrow(() -> new RepositoryException("Repository type cannot be handled: " + type));
     }
@@ -182,7 +204,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
 
             Set<String> configRepoIds = new HashSet<>();
             List<ManagedRepositoryConfiguration> managedRepoConfigs =
-                    getArchivaConfiguration().getConfiguration().getManagedRepositories();
+                    configurationHandler.getBaseConfiguration().getManagedRepositories();
 
             if (managedRepoConfigs == null) {
                 return;
@@ -299,7 +321,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     private void updateRemoteRepositoriesFromConfig() {
         try {
             List<RemoteRepositoryConfiguration> remoteRepoConfigs =
-                    getArchivaConfiguration().getConfiguration().getRemoteRepositories();
+                    configurationHandler.getBaseConfiguration().getRemoteRepositories();
 
             if (remoteRepoConfigs == null) {
                 return;
@@ -341,53 +363,8 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         repo.registerEventHandler(RepositoryEvent.ANY, this);
     }
 
-    private Map<String, RepositoryGroup> getRepositorGroupsFromConfig() {
-        try {
-            List<RepositoryGroupConfiguration> repositoryGroupConfigurations =
-                    getArchivaConfiguration().getConfiguration().getRepositoryGroups();
 
-            if (repositoryGroupConfigurations == null) {
-                return Collections.emptyMap();
-            }
 
-            Map<String, RepositoryGroup> repositoryGroupMap = new LinkedHashMap<>(repositoryGroupConfigurations.size());
-
-            Map<RepositoryType, RepositoryProvider> providerMap = createProviderMap();
-            for (RepositoryGroupConfiguration repoConfig : repositoryGroupConfigurations) {
-                RepositoryType repositoryType = RepositoryType.valueOf(repoConfig.getType());
-                if (providerMap.containsKey(repositoryType)) {
-                    try {
-                        RepositoryGroup repo = createNewRepositoryGroup(providerMap.get(repositoryType), repoConfig);
-                        repositoryGroupMap.put(repo.getId(), repo);
-                    } catch (Exception e) {
-                        log.error("Could not create repository group {}: {}", repoConfig.getId(), e.getMessage(), e);
-                    }
-                }
-            }
-            return repositoryGroupMap;
-        } catch (Throwable e) {
-            log.error("Could not initialize repositories from config: {}", e.getMessage(), e);
-            return Collections.emptyMap();
-        }
-    }
-
-    private RepositoryGroup createNewRepositoryGroup(RepositoryProvider provider, RepositoryGroupConfiguration config) throws RepositoryException {
-        RepositoryGroup repositoryGroup = provider.createRepositoryGroup(config);
-        repositoryGroup.registerEventHandler(RepositoryEvent.ANY, this);
-        updateRepositoryReferences(provider, repositoryGroup, config);
-        return repositoryGroup;
-    }
-
-    private void updateRepositoryReferences(RepositoryProvider provider, RepositoryGroup group, RepositoryGroupConfiguration configuration) {
-        if (group instanceof EditableRepositoryGroup ) {
-            EditableRepositoryGroup eGroup = (EditableRepositoryGroup) group;
-            eGroup.setRepositories(configuration.getRepositories().stream().map(r -> getManagedRepository(r)).collect(Collectors.toList()));
-        }
-    }
-
-    private ArchivaConfiguration getArchivaConfiguration() {
-        return this.archivaConfiguration;
-    }
 
     /**
      * Returns all repositories that are registered. There is no defined order of the returned repositories.
@@ -438,7 +415,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     public Collection<RepositoryGroup> getRepositoryGroups( ) {
         rwLock.readLock().lock();
         try {
-            return uRepositoryGroups.values();
+            return groupHandler.getRepositoryGroups( );
         } finally {
             rwLock.readLock().unlock();
         }
@@ -462,8 +439,8 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             } else if (remoteRepositories.containsKey(repoId)) {
                 log.debug("Remote repo");
                 return remoteRepositories.get(repoId);
-            } else if (repositoryGroups.containsKey(repoId)) {
-                return repositoryGroups.get(repoId);
+            } else if (groupHandler.hasRepositoryGroup(repoId)) {
+                return groupHandler.getRepositoryGroup(repoId);
             } else {
                 return null;
             }
@@ -510,23 +487,14 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     public RepositoryGroup getRepositoryGroup( String groupId ) {
         rwLock.readLock().lock();
         try {
-            return repositoryGroups.get(groupId);
+            return groupHandler.getRepositoryGroup(groupId);
         } finally {
             rwLock.readLock().unlock();
         }
     }
 
-    /*
-     * The <code>ignoreConfigEvents</code> works only for synchronized configuration events.
-     * If the configuration throws async events, we cannot know, if the event is caused by this instance or another thread.
-     */
-    private void saveConfiguration(Configuration configuration) throws IndeterminateConfigurationException, RegistryException {
-        ignoreConfigEvents = true;
-        try {
-            getArchivaConfiguration().save(configuration);
-        } finally {
-            ignoreConfigEvents = false;
-        }
+    protected void saveConfiguration(Configuration configuration) throws IndeterminateConfigurationException, RegistryException {
+        configurationHandler.save(configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
     }
 
     /**
@@ -552,7 +520,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
                 }
                 RepositoryProvider provider = getProvider(managedRepository.getType());
                 ManagedRepositoryConfiguration newCfg = provider.getManagedConfiguration(managedRepository);
-                Configuration configuration = getArchivaConfiguration().getConfiguration();
+                Configuration configuration = configurationHandler.getBaseConfiguration();
                 updateRepositoryReferences(provider, managedRepository, newCfg, configuration);
                 ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById(id);
                 if (oldCfg != null) {
@@ -595,7 +563,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         try {
             final String id = managedRepositoryConfiguration.getId();
             final RepositoryType repositoryType = RepositoryType.valueOf(managedRepositoryConfiguration.getType());
-            Configuration configuration = getArchivaConfiguration().getConfiguration();
+            Configuration configuration = configurationHandler.getBaseConfiguration();
             ManagedRepository repo = managedRepositories.get(id);
             ManagedRepositoryConfiguration oldCfg = repo != null ? getProvider(repositoryType).getManagedConfiguration(repo) : null;
             repo = putRepository(managedRepositoryConfiguration, configuration);
@@ -670,33 +638,10 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     public RepositoryGroup putRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
-            final String id = repositoryGroup.getId();
-            RepositoryGroup originRepoGroup = repositoryGroups.put(id, repositoryGroup);
-            try {
-                if (originRepoGroup != null && originRepoGroup != repositoryGroup) {
-                    originRepoGroup.close();
-                }
-                RepositoryProvider provider = getProvider(repositoryGroup.getType());
-                RepositoryGroupConfiguration newCfg = provider.getRepositoryGroupConfiguration(repositoryGroup);
-                Configuration configuration = getArchivaConfiguration().getConfiguration();
-                updateRepositoryReferences(provider, repositoryGroup, newCfg);
-                RepositoryGroupConfiguration oldCfg = configuration.findRepositoryGroupById(id);
-                if (oldCfg != null) {
-                    configuration.removeRepositoryGroup(oldCfg);
-                }
-                configuration.addRepositoryGroup(newCfg);
-                saveConfiguration(configuration);
-                return repositoryGroup;
-            } catch (Exception e) {
-                // Rollback
-                if (originRepoGroup != null) {
-                    repositoryGroups.put(id, originRepoGroup);
-                } else {
-                    repositoryGroups.remove(id);
-                }
-                log.error("Exception during configuration update {}", e.getMessage(), e);
-                throw new RepositoryException("Could not save the configuration" + (e.getMessage() == null ? "" : ": " + e.getMessage()));
+            if (this.groupHandler==null) {
+                throw new RepositoryException( "Fatal error. RepositoryGroupHandler not registered!" );
             }
+            return this.groupHandler.putRepositoryGroup( repositoryGroup );
         } finally {
             rwLock.writeLock().unlock();
         }
@@ -714,22 +659,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
-            final String id = repositoryGroupConfiguration.getId();
-            final RepositoryType repositoryType = RepositoryType.valueOf(repositoryGroupConfiguration.getType());
-            Configuration configuration = getArchivaConfiguration().getConfiguration();
-            RepositoryGroup repo = repositoryGroups.get(id);
-            RepositoryGroupConfiguration oldCfg = repo != null ? getProvider(repositoryType).getRepositoryGroupConfiguration(repo) : null;
-            repo = putRepositoryGroup(repositoryGroupConfiguration, configuration);
-            try {
-                saveConfiguration(configuration);
-            } catch (IndeterminateConfigurationException | RegistryException e) {
-                if (oldCfg != null) {
-                    getProvider(repositoryType).updateRepositoryGroupInstance((EditableRepositoryGroup) repo, oldCfg);
-                }
-                log.error("Could not save the configuration for repository group {}: {}", id, e.getMessage(), e);
-                throw new RepositoryException("Could not save the configuration for repository group " + id + ": " + e.getMessage());
-            }
-            return repo;
+            return groupHandler.putRepositoryGroup( repositoryGroupConfiguration );
         } finally {
             rwLock.writeLock().unlock();
         }
@@ -749,38 +679,9 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
-            final String id = repositoryGroupConfiguration.getId();
-            final RepositoryType repoType = RepositoryType.valueOf(repositoryGroupConfiguration.getType());
-            RepositoryGroup repo;
-            setRepositoryGroupDefaults(repositoryGroupConfiguration);
-            if (repositoryGroups.containsKey(id)) {
-                repo = repositoryGroups.get(id);
-                if (repo instanceof EditableRepositoryGroup) {
-                    getProvider(repoType).updateRepositoryGroupInstance((EditableRepositoryGroup) repo, repositoryGroupConfiguration);
-                } else {
-                    throw new RepositoryException("The repository is not editable " + id);
-                }
-            } else {
-                repo = getProvider(repoType).createRepositoryGroup(repositoryGroupConfiguration);
-                repositoryGroups.put(id, repo);
-            }
-            updateRepositoryReferences(getProvider(repoType), repo, repositoryGroupConfiguration);
-            replaceOrAddRepositoryConfig(repositoryGroupConfiguration, configuration);
-            return repo;
+            return groupHandler.putRepositoryGroup( repositoryGroupConfiguration, configuration );
         } finally {
             rwLock.writeLock().unlock();
-        }
-    }
-
-    private void setRepositoryGroupDefaults(RepositoryGroupConfiguration repositoryGroupConfiguration) {
-        if (StringUtils.isEmpty(repositoryGroupConfiguration.getMergedIndexPath())) {
-            repositoryGroupConfiguration.setMergedIndexPath(DEFAULT_INDEX_PATH);
-        }
-        if (repositoryGroupConfiguration.getMergedIndexTtl() <= 0) {
-            repositoryGroupConfiguration.setMergedIndexTtl(300);
-        }
-        if (StringUtils.isEmpty(repositoryGroupConfiguration.getCronExpression())) {
-            repositoryGroupConfiguration.setCronExpression("0 0 03 ? * MON");
         }
     }
 
@@ -874,7 +775,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     public RemoteRepository putRepository( RemoteRepository remoteRepository ) throws RepositoryException {
         rwLock.writeLock().lock();
         try {
-            Configuration configuration = getArchivaConfiguration().getConfiguration();
+            Configuration configuration = configurationHandler.getBaseConfiguration();
             try {
                 RemoteRepository repo = putRepository(remoteRepository, configuration);
                 saveConfiguration(configuration);
@@ -902,7 +803,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         try {
             final String id = remoteRepositoryConfiguration.getId();
             final RepositoryType repositoryType = RepositoryType.valueOf(remoteRepositoryConfiguration.getType());
-            Configuration configuration = getArchivaConfiguration().getConfiguration();
+            Configuration configuration = configurationHandler.getBaseConfiguration();
             RemoteRepository repo = remoteRepositories.get(id);
             RemoteRepositoryConfiguration oldCfg = repo != null ? getProvider(repositoryType).getRemoteConfiguration(repo) : null;
             repo = putRepository(remoteRepositoryConfiguration, configuration);
@@ -1012,8 +913,8 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
                 repo = managedRepositories.remove(id);
                 if (repo != null) {
                     repo.close();
-                    removeRepositoryFromGroups(repo);
-                    Configuration configuration = getArchivaConfiguration().getConfiguration();
+                    this.groupHandler.removeRepositoryFromGroups(repo);
+                    Configuration configuration = configurationHandler.getBaseConfiguration();
                     ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById(id);
                     if (cfg != null) {
                         configuration.removeManagedRepository(cfg);
@@ -1032,12 +933,6 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         }
     }
 
-    private void removeRepositoryFromGroups(ManagedRepository repo) {
-        if (repo != null) {
-            repositoryGroups.values().stream().filter(repoGroup -> repoGroup instanceof EditableRepository).
-                    map(repoGroup -> (EditableRepositoryGroup) repoGroup).forEach(repoGroup -> repoGroup.removeRepository(repo));
-        }
-    }
 
     @Override
     public void removeRepository( ManagedRepository managedRepository, Configuration configuration ) throws RepositoryException {
@@ -1052,7 +947,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
                 repo = managedRepositories.remove(id);
                 if (repo != null) {
                     repo.close();
-                    removeRepositoryFromGroups(repo);
+                    this.groupHandler.removeRepositoryFromGroups(repo);
                     ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById(id);
                     if (cfg != null) {
                         configuration.removeManagedRepository(cfg);
@@ -1080,26 +975,10 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             return;
         }
         final String id = repositoryGroup.getId();
-        RepositoryGroup repo = getRepositoryGroup(id);
-        if (repo != null) {
+        if (groupHandler.hasRepositoryGroup( id )) {
             rwLock.writeLock().lock();
             try {
-                repo = repositoryGroups.remove(id);
-                if (repo != null) {
-                    repo.close();
-                    Configuration configuration = getArchivaConfiguration().getConfiguration();
-                    RepositoryGroupConfiguration cfg = configuration.findRepositoryGroupById(id);
-                    if (cfg != null) {
-                        configuration.removeRepositoryGroup(cfg);
-                    }
-                    saveConfiguration(configuration);
-                }
-
-            } catch (RegistryException | IndeterminateConfigurationException e) {
-                // Rollback
-                log.error("Could not save config after repository removal: {}", e.getMessage(), e);
-                repositoryGroups.put(repo.getId(), repo);
-                throw new RepositoryException("Could not save configuration after repository removal: " + e.getMessage());
+            groupHandler.removeRepositoryGroup( id );
             } finally {
                 rwLock.writeLock().unlock();
             }
@@ -1112,23 +991,14 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             return;
         }
         final String id = repositoryGroup.getId();
-        RepositoryGroup repo = getRepositoryGroup(id);
-        if (repo != null) {
+        if (groupHandler.hasRepositoryGroup( id )) {
             rwLock.writeLock().lock();
             try {
-                repo = repositoryGroups.remove(id);
-                if (repo != null) {
-                    repo.close();
-                    RepositoryGroupConfiguration cfg = configuration.findRepositoryGroupById(id);
-                    if (cfg != null) {
-                        configuration.removeRepositoryGroup(cfg);
-                    }
-                }
+                groupHandler.removeRepositoryGroup( id, configuration );
             } finally {
                 rwLock.writeLock().unlock();
             }
         }
-
     }
 
     private void doRemoveRepo(RemoteRepository repo, Configuration configuration) {
@@ -1164,7 +1034,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             try {
                 repo = remoteRepositories.remove(id);
                 if (repo != null) {
-                    Configuration configuration = getArchivaConfiguration().getConfiguration();
+                    Configuration configuration = configurationHandler.getBaseConfiguration();
                     doRemoveRepo(repo, configuration);
                     saveConfiguration(configuration);
                 }
@@ -1292,8 +1162,9 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
 
     @Override
     public void configurationEvent(ConfigurationEvent event) {
-        // Note: the ignoreConfigEvents flag does not work, if the config events are asynchronous.
-        if (!ignoreConfigEvents) {
+        // We ignore the event, if the save was triggered by ourself
+        if ( !ConfigurationHandler.REGISTRY_EVENT_TAG.equals( event.getTag( ) ) )
+        {
             reload();
         }
     }

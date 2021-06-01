@@ -24,6 +24,7 @@ import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.RepositoryGroupHandler;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.After;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 
 /**
@@ -42,8 +44,11 @@ public class MavenRepositorySearchPaginateTest
     extends TestCase
 {
 
-    @Autowired
+    @Inject
     ArchivaRepositoryRegistry repositoryRegistry;
+
+    @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
 
     @After
     public void endTests() {
