@@ -23,6 +23,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.event.EventHandler;
+import org.apache.archiva.repository.event.RepositoryEvent;
 
 import java.io.IOException;
 import java.util.Set;
@@ -180,4 +181,12 @@ public interface RepositoryProvider extends EventHandler
      * @throws RepositoryException if the data cannot be converted
      */
     RepositoryGroupConfiguration getRepositoryGroupConfiguration(RepositoryGroup repositoryGroup) throws RepositoryException;
+
+    /**
+     * This event handler is registered to all newly created repositories immediately after creation. This may be needed by
+     * some components to get events right after creation of the instance.
+     *
+     * @param eventHandler the event handler instance
+     */
+    void addRepositoryEventHandler( EventHandler<? super RepositoryEvent> eventHandler);
 }

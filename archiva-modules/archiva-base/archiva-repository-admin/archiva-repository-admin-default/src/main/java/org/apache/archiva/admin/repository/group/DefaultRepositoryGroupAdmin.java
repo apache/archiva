@@ -77,13 +77,7 @@ public class DefaultRepositoryGroupAdmin
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
-    @Named("mergedRemoteIndexesScheduler#default")
-    private MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
-
-    @Inject
     private RepositoryRegistry repositoryRegistry;
-
-    private Path groupsDirectory;
 
     @PostConstruct
     public void baseInit() {
@@ -92,29 +86,6 @@ public class DefaultRepositoryGroupAdmin
 
     public void initialize()
     {
-        String appServerBase = getRegistry().getString( "appserver.base" );
-        groupsDirectory = Paths.get( appServerBase, "groups" );
-        if ( !Files.exists(groupsDirectory) )
-        {
-            Files.exists(groupsDirectory);
-        }
-
-        for ( org.apache.archiva.repository.RepositoryGroup repositoryGroup : repositoryRegistry.getRepositoryGroups() )
-        {
-            mergedRemoteIndexesScheduler.schedule( repositoryGroup,
-                                                   getMergedIndexDirectory( repositoryGroup.getId() ));
-            // create the directory for each group if not exists
-            Path groupPath = groupsDirectory.resolve(repositoryGroup.getId() );
-            if ( !Files.exists(groupPath) )
-            {
-                try {
-                    Files.createDirectories(groupPath);
-                } catch (IOException e) {
-                    log.error("Could not create directory {}", groupPath);
-                }
-            }
-        }
-
     }
 
 
@@ -167,7 +138,6 @@ public class DefaultRepositoryGroupAdmin
         }
 
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
-        mergedRemoteIndexesScheduler.schedule( repositoryRegistry.getRepositoryGroup( repositoryGroup.getId()), getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 
@@ -183,10 +153,7 @@ public class DefaultRepositoryGroupAdmin
             log.error("Removal of repository group {} failed: {}", repositoryGroup.getId(), e.getMessage(), e);
             throw new RepositoryAdminException("Removal of repository failed: " + e.getMessage(), e);
         }
-        mergedRemoteIndexesScheduler.unschedule(
-            repositoryGroup );
         triggerAuditEvent( repositoryGroupId, null, AuditEvent.DELETE_REPO_GROUP, auditInformation );
-
         return Boolean.TRUE;
     }
 
@@ -222,8 +189,6 @@ public class DefaultRepositoryGroupAdmin
         }
 
         org.apache.archiva.repository.RepositoryGroup rg = repositoryRegistry.getRepositoryGroup( repositoryGroup.getId( ) );
-        mergedRemoteIndexesScheduler.unschedule( rg );
-        mergedRemoteIndexesScheduler.schedule( rg, getMergedIndexDirectory( repositoryGroup.getId() ) );
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.MODIFY_REPO_GROUP, auditInformation );
         return Boolean.TRUE;
     }

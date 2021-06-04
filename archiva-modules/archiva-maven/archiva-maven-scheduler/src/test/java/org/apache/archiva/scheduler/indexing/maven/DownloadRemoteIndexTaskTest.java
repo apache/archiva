@@ -109,7 +109,7 @@ public class DownloadRemoteIndexTaskTest
         server = new Server( );
         serverConnector = new ServerConnector( server, new HttpConnectionFactory());
         server.addConnector( serverConnector );
-        createContext( server, Paths.get( "src/test/" ) );
+        createContext( server, Paths.get( "src/test" ) );
         this.server.start();
         this.port = serverConnector.getLocalPort();
         log.info( "start server on port {}", this.port );
@@ -185,13 +185,13 @@ public class DownloadRemoteIndexTaskTest
         Files.createDirectories( indexDirectory );
         remoteRepository.setLocation( new URI( "http://localhost:" + port ) );
         repoDirectory.toFile().deleteOnExit();
-        createIndexingContext( remoteRepository );
-
         RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get();
         rif.setDownloadRemoteIndex( true );
         rif.setIndexUri( new URI("http://localhost:" + port + "/index-updates/" ) );
-        IndexCreationFeature icf = remoteRepository.getFeature( IndexCreationFeature.class ).get( );
-        icf.setLocalIndexPath( remoteRepository.getAsset(  "index" ) );
+        createIndexingContext( remoteRepository );
+
+        // IndexCreationFeature icf = remoteRepository.getFeature( IndexCreationFeature.class ).get( );
+        // icf.setLocalIndexPath( remoteRepository.getAsset(  "index" ) );
         return remoteRepository;
     }
 

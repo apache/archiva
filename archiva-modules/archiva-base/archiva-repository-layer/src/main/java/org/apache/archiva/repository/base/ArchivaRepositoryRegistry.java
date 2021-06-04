@@ -19,12 +19,25 @@ package org.apache.archiva.repository.base;
  * under the License.
  */
 
-import org.apache.archiva.configuration.*;
+import org.apache.archiva.components.registry.RegistryException;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationEvent;
+import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.event.EventManager;
 import org.apache.archiva.event.EventType;
-import org.apache.archiva.indexer.*;
-import org.apache.archiva.components.registry.RegistryException;
+import org.apache.archiva.indexer.ArchivaIndexManager;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.indexer.IndexCreationFailedException;
+import org.apache.archiva.indexer.IndexManagerFactory;
+import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.EditableRepository;
@@ -38,8 +51,10 @@ import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
-import org.apache.archiva.repository.event.*;
-import org.apache.archiva.event.EventHandler;
+import org.apache.archiva.repository.event.LifecycleEvent;
+import org.apache.archiva.repository.event.RepositoryEvent;
+import org.apache.archiva.repository.event.RepositoryIndexEvent;
+import org.apache.archiva.repository.event.RepositoryRegistryEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.archiva.repository.metadata.MetadataReader;
@@ -53,7 +68,14 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -70,12 +92,12 @@ import java.util.stream.Stream;
  *
  * @since 3.0
  */
-@Service("repositoryRegistry")
+@Service( "repositoryRegistry" )
 public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHandler<Event>,
     RepositoryRegistry
 {
 
-    private static final Logger log = LoggerFactory.getLogger(RepositoryRegistry.class);
+    private static final Logger log = LoggerFactory.getLogger( RepositoryRegistry.class );
     private final ConfigurationHandler configurationHandler;
 
     /**
@@ -91,21 +113,20 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     List<MetadataReader> metadataReaderList;
 
     @Inject
-    @Named("repositoryContentFactory#default")
+    @Named( "repositoryContentFactory#default" )
     RepositoryContentFactory repositoryContentFactory;
-
 
 
     private final EventManager eventManager;
 
 
-    private Map<String, ManagedRepository> managedRepositories = new HashMap<>();
-    private Map<String, ManagedRepository> uManagedRepository = Collections.unmodifiableMap(managedRepositories);
+    private Map<String, ManagedRepository> managedRepositories = new HashMap<>( );
+    private Map<String, ManagedRepository> uManagedRepository = Collections.unmodifiableMap( managedRepositories );
 
-    private Map<String, RemoteRepository> remoteRepositories = new HashMap<>();
-    private Map<String, RemoteRepository> uRemoteRepositories = Collections.unmodifiableMap(remoteRepositories);
+    private Map<String, RemoteRepository> remoteRepositories = new HashMap<>( );
+    private Map<String, RemoteRepository> uRemoteRepositories = Collections.unmodifiableMap( remoteRepositories );
 
-    private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+    private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock( );
 
     private RepositoryGroupHandler groupHandler;
 
@@ -114,21 +135,25 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     private AtomicBoolean remote_initialized = new AtomicBoolean( false );
 
 
-    public ArchivaRepositoryRegistry(ConfigurationHandler configurationHandler) {
-        this.eventManager = new EventManager(this);
+    public ArchivaRepositoryRegistry( ConfigurationHandler configurationHandler )
+    {
+        this.eventManager = new EventManager( this );
         this.configurationHandler = configurationHandler;
     }
 
     @Override
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration ) {
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
         this.configurationHandler.setArchivaConfiguration( archivaConfiguration );
     }
 
     @PostConstruct
-    private void initialize() {
-        rwLock.writeLock().lock();
-        try {
-            log.debug("Initializing repository registry");
+    private void initialize( )
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            log.debug( "Initializing repository registry" );
             updateManagedRepositoriesFromConfig( );
             pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.MANAGED_REPOS_INITIALIZED, this ) );
             managed_initialized.set( true );
@@ -136,234 +161,293 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.REMOTE_REPOS_INITIALIZED, this ) );
             remote_initialized.set( true );
 
-            initializeRepositoryGroups();
-            this.configurationHandler.addListener(this);
-        } finally {
-            rwLock.writeLock().unlock();
+            initializeRepositoryGroups( );
+
+            for ( RepositoryProvider provider : repositoryProviders )
+            {
+                provider.addRepositoryEventHandler( this );
+            }
+            this.configurationHandler.addListener( this );
         }
-        pushEvent(new RepositoryRegistryEvent(RepositoryRegistryEvent.RELOADED, this));
-        if (managed_initialized.get() && remote_initialized.get() && groups_initalized.get( )) {
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+        pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.RELOADED, this ) );
+        if ( managed_initialized.get( ) && remote_initialized.get( ) && groups_initalized.get( ) )
+        {
             pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.INITIALIZED, this ) );
         }
     }
 
-    private void initializeRepositoryGroups() {
-        if (this.groupHandler!=null) {
-            this.groupHandler.initializeFromConfig();
+    private void initializeRepositoryGroups( )
+    {
+        if ( this.groupHandler != null )
+        {
+            this.groupHandler.initializeFromConfig( );
             this.groups_initalized.set( true );
             pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.GROUPS_INITIALIZED, this ) );
         }
     }
 
-    public void registerGroupHandler(RepositoryGroupHandler groupHandler) {
+    public void registerGroupHandler( RepositoryGroupHandler groupHandler )
+    {
         this.groupHandler = groupHandler;
-        initializeRepositoryGroups();
-        if (managed_initialized.get() && remote_initialized.get() && groups_initalized.get( )) {
+        initializeRepositoryGroups( );
+        if ( managed_initialized.get( ) && remote_initialized.get( ) && groups_initalized.get( ) )
+        {
             pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.INITIALIZED, this ) );
         }
     }
 
 
     @PreDestroy
-    public void destroy() {
-        for (ManagedRepository rep : managedRepositories.values()) {
-            rep.close();
+    public void destroy( )
+    {
+        for ( ManagedRepository rep : managedRepositories.values( ) )
+        {
+            rep.close( );
         }
-        managedRepositories.clear();
-        for (RemoteRepository repo : remoteRepositories.values()) {
-            repo.close();
+        managedRepositories.clear( );
+        for ( RemoteRepository repo : remoteRepositories.values( ) )
+        {
+            repo.close( );
         }
-        remoteRepositories.clear();
-        groupHandler.close();
-        pushEvent(new RepositoryRegistryEvent(RepositoryRegistryEvent.DESTROYED, this));
+        remoteRepositories.clear( );
+        groupHandler.close( );
+        pushEvent( new RepositoryRegistryEvent( RepositoryRegistryEvent.DESTROYED, this ) );
     }
 
 
-    protected Map<RepositoryType, RepositoryProvider> getRepositoryProviderMap() {
-        Map<RepositoryType, RepositoryProvider> map = new HashMap<>();
-        if (repositoryProviders != null) {
-            for (RepositoryProvider provider : repositoryProviders) {
-                for (RepositoryType type : provider.provides()) {
-                    map.put(type, provider);
+    protected Map<RepositoryType, RepositoryProvider> getRepositoryProviderMap( )
+    {
+        Map<RepositoryType, RepositoryProvider> map = new HashMap<>( );
+        if ( repositoryProviders != null )
+        {
+            for ( RepositoryProvider provider : repositoryProviders )
+            {
+                for ( RepositoryType type : provider.provides( ) )
+                {
+                    map.put( type, provider );
                 }
             }
         }
         return map;
     }
 
-    protected RepositoryProvider getProvider(RepositoryType type) throws RepositoryException
+    protected RepositoryProvider getProvider( RepositoryType type ) throws RepositoryException
     {
-        return repositoryProviders.stream().filter(repositoryProvider -> repositoryProvider.provides().contains(type)).findFirst().orElseThrow(() -> new RepositoryException("Repository type cannot be handled: " + type));
+        return repositoryProviders.stream( ).filter( repositoryProvider -> repositoryProvider.provides( ).contains( type ) ).findFirst( ).orElseThrow( ( ) -> new RepositoryException( "Repository type cannot be handled: " + type ) );
     }
 
     /*
      * Updates the repositories
      */
-    private void updateManagedRepositoriesFromConfig() {
-        try {
+    private void updateManagedRepositoriesFromConfig( )
+    {
+        try
+        {
 
-            Set<String> configRepoIds = new HashSet<>();
+            Set<String> configRepoIds = new HashSet<>( );
             List<ManagedRepositoryConfiguration> managedRepoConfigs =
-                    configurationHandler.getBaseConfiguration().getManagedRepositories();
+                configurationHandler.getBaseConfiguration( ).getManagedRepositories( );
 
-            if (managedRepoConfigs == null) {
+            if ( managedRepoConfigs == null )
+            {
                 return;
             }
 
-            for (ManagedRepositoryConfiguration repoConfig : managedRepoConfigs) {
-                ManagedRepository repo = putRepository(repoConfig, null);
-                configRepoIds.add(repoConfig.getId());
-                if (repo.supportsFeature(StagingRepositoryFeature.class)) {
-                    StagingRepositoryFeature stagF = repo.getFeature(StagingRepositoryFeature.class).get();
-                    if (stagF.getStagingRepository() != null) {
-                        configRepoIds.add(stagF.getStagingRepository().getId());
+            for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
+            {
+                ManagedRepository repo = putRepository( repoConfig, null );
+                configRepoIds.add( repoConfig.getId( ) );
+                if ( repo.supportsFeature( StagingRepositoryFeature.class ) )
+                {
+                    StagingRepositoryFeature stagF = repo.getFeature( StagingRepositoryFeature.class ).get( );
+                    if ( stagF.getStagingRepository( ) != null )
+                    {
+                        configRepoIds.add( stagF.getStagingRepository( ).getId( ) );
                     }
                 }
             }
-            List<String> toRemove = managedRepositories.keySet().stream().filter(id -> !configRepoIds.contains(id)).collect(Collectors.toList());
-            for (String id : toRemove) {
-                ManagedRepository removed = managedRepositories.remove(id);
-                removed.close();
+            List<String> toRemove = managedRepositories.keySet( ).stream( ).filter( id -> !configRepoIds.contains( id ) ).collect( Collectors.toList( ) );
+            for ( String id : toRemove )
+            {
+                ManagedRepository removed = managedRepositories.remove( id );
+                removed.close( );
             }
-        } catch (Throwable e) {
-            log.error("Could not initialize repositories from config: {}", e.getMessage(), e);
+        }
+        catch ( Throwable e )
+        {
+            log.error( "Could not initialize repositories from config: {}", e.getMessage( ), e );
             return;
         }
     }
 
-    private ManagedRepository createNewManagedRepository(RepositoryProvider provider, ManagedRepositoryConfiguration cfg) throws RepositoryException {
-        log.debug("Creating repo {}", cfg.getId());
-        ManagedRepository repo = provider.createManagedInstance(cfg);
-        repo.registerEventHandler(RepositoryEvent.ANY,  this);
-        updateRepositoryReferences(provider, repo, cfg, null);
+    private ManagedRepository createNewManagedRepository( RepositoryProvider provider, ManagedRepositoryConfiguration cfg ) throws RepositoryException
+    {
+        log.debug( "Creating repo {}", cfg.getId( ) );
+        ManagedRepository repo = provider.createManagedInstance( cfg );
+        repo.registerEventHandler( RepositoryEvent.ANY, this );
+        updateRepositoryReferences( provider, repo, cfg, null );
         return repo;
 
     }
 
-    private String getStagingId(String repoId) {
+    private String getStagingId( String repoId )
+    {
         return repoId + StagingRepositoryFeature.STAGING_REPO_POSTFIX;
     }
 
-    @SuppressWarnings("unchecked")
-    private void updateRepositoryReferences(RepositoryProvider provider, ManagedRepository repo, ManagedRepositoryConfiguration cfg, Configuration configuration) throws RepositoryException {
-        log.debug("Updating references of repo {}", repo.getId());
-        if (repo.supportsFeature(StagingRepositoryFeature.class)) {
-            StagingRepositoryFeature feature = repo.getFeature(StagingRepositoryFeature.class).get();
-            if (feature.isStageRepoNeeded() && feature.getStagingRepository() == null) {
-                ManagedRepository stageRepo = getManagedRepository(getStagingId(repo.getId()));
-                if (stageRepo == null) {
-                    stageRepo = getStagingRepository(provider, cfg, configuration);
-                    managedRepositories.put(stageRepo.getId(), stageRepo);
-                    if (configuration != null) {
-                        replaceOrAddRepositoryConfig(provider.getManagedConfiguration(stageRepo), configuration);
+    @SuppressWarnings( "unchecked" )
+    private void updateRepositoryReferences( RepositoryProvider provider, ManagedRepository repo, ManagedRepositoryConfiguration cfg, Configuration configuration ) throws RepositoryException
+    {
+        log.debug( "Updating references of repo {}", repo.getId( ) );
+        if ( repo.supportsFeature( StagingRepositoryFeature.class ) )
+        {
+            StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get( );
+            if ( feature.isStageRepoNeeded( ) && feature.getStagingRepository( ) == null )
+            {
+                ManagedRepository stageRepo = getManagedRepository( getStagingId( repo.getId( ) ) );
+                if ( stageRepo == null )
+                {
+                    stageRepo = getStagingRepository( provider, cfg, configuration );
+                    managedRepositories.put( stageRepo.getId( ), stageRepo );
+                    if ( configuration != null )
+                    {
+                        replaceOrAddRepositoryConfig( provider.getManagedConfiguration( stageRepo ), configuration );
                     }
-                    pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, stageRepo));
+                    pushEvent( new LifecycleEvent( LifecycleEvent.REGISTERED, this, stageRepo ) );
                 }
-                feature.setStagingRepository(stageRepo);
+                feature.setStagingRepository( stageRepo );
             }
         }
-        if (repo instanceof EditableManagedRepository ) {
+        if ( repo instanceof EditableManagedRepository )
+        {
             EditableManagedRepository editableRepo = (EditableManagedRepository) repo;
-            if (repo.getContent() == null) {
-                editableRepo.setContent(repositoryContentFactory.getManagedRepositoryContent(repo));
-                editableRepo.getContent().setRepository(editableRepo);
+            if ( repo.getContent( ) == null )
+            {
+                editableRepo.setContent( repositoryContentFactory.getManagedRepositoryContent( repo ) );
+                editableRepo.getContent( ).setRepository( editableRepo );
             }
-            log.debug("Index repo: " + repo.hasIndex());
-            if (repo.hasIndex() && ( repo.getIndexingContext() == null || !repo.getIndexingContext().isOpen() )) {
-                log.debug("Creating indexing context for {}", repo.getId());
-                createIndexingContext(editableRepo);
+            log.debug( "Index repo: " + repo.hasIndex( ) );
+            if ( repo.hasIndex( ) && ( repo.getIndexingContext( ) == null || !repo.getIndexingContext( ).isOpen( ) ) )
+            {
+                log.debug( "Creating indexing context for {}", repo.getId( ) );
+                createIndexingContext( editableRepo );
             }
         }
-        repo.registerEventHandler(RepositoryEvent.ANY, this);
+        repo.registerEventHandler( RepositoryEvent.ANY, this );
     }
 
     @Override
-    public ArchivaIndexManager getIndexManager( RepositoryType type ) {
-        return indexManagerFactory.getIndexManager(type);
+    public ArchivaIndexManager getIndexManager( RepositoryType type )
+    {
+        return indexManagerFactory.getIndexManager( type );
     }
 
     @Override
     public MetadataReader getMetadataReader( final RepositoryType type ) throws UnsupportedRepositoryTypeException
     {
-        if (metadataReaderList!=null) {
+        if ( metadataReaderList != null )
+        {
             return metadataReaderList.stream( ).filter( mr -> mr.isValidForType( type ) ).findFirst( ).orElseThrow( ( ) -> new UnsupportedRepositoryTypeException( type ) );
-        } else {
+        }
+        else
+        {
             throw new UnsupportedRepositoryTypeException( type );
         }
     }
 
-    private void createIndexingContext( EditableRepository editableRepo) throws RepositoryException {
-        if (editableRepo.supportsFeature(IndexCreationFeature.class)) {
-            ArchivaIndexManager idxManager = getIndexManager(editableRepo.getType());
-            try {
-                editableRepo.setIndexingContext(idxManager.createContext(editableRepo));
-                idxManager.updateLocalIndexPath(editableRepo);
-            } catch (IndexCreationFailedException e) {
-                throw new RepositoryException("Could not create index for repository " + editableRepo.getId() + ": " + e.getMessage(), e);
+    private void createIndexingContext( EditableRepository editableRepo ) throws RepositoryException
+    {
+        if ( editableRepo.supportsFeature( IndexCreationFeature.class ) )
+        {
+            ArchivaIndexManager idxManager = getIndexManager( editableRepo.getType( ) );
+            try
+            {
+                editableRepo.setIndexingContext( idxManager.createContext( editableRepo ) );
+                idxManager.updateLocalIndexPath( editableRepo );
+            }
+            catch ( IndexCreationFailedException e )
+            {
+                throw new RepositoryException( "Could not create index for repository " + editableRepo.getId( ) + ": " + e.getMessage( ), e );
             }
         }
     }
 
-    private ManagedRepository getStagingRepository(RepositoryProvider provider, ManagedRepositoryConfiguration baseRepoCfg, Configuration configuration) throws RepositoryException {
-        ManagedRepository stageRepo = getManagedRepository(getStagingId(baseRepoCfg.getId()));
-        if (stageRepo == null) {
-            stageRepo = provider.createStagingInstance(baseRepoCfg);
-            if (stageRepo.supportsFeature(StagingRepositoryFeature.class)) {
-                stageRepo.getFeature(StagingRepositoryFeature.class).get().setStageRepoNeeded(false);
+    private ManagedRepository getStagingRepository( RepositoryProvider provider, ManagedRepositoryConfiguration baseRepoCfg, Configuration configuration ) throws RepositoryException
+    {
+        ManagedRepository stageRepo = getManagedRepository( getStagingId( baseRepoCfg.getId( ) ) );
+        if ( stageRepo == null )
+        {
+            stageRepo = provider.createStagingInstance( baseRepoCfg );
+            if ( stageRepo.supportsFeature( StagingRepositoryFeature.class ) )
+            {
+                stageRepo.getFeature( StagingRepositoryFeature.class ).get( ).setStageRepoNeeded( false );
             }
-            ManagedRepositoryConfiguration stageCfg = provider.getManagedConfiguration(stageRepo);
-            updateRepositoryReferences(provider, stageRepo, stageCfg, configuration);
+            ManagedRepositoryConfiguration stageCfg = provider.getManagedConfiguration( stageRepo );
+            updateRepositoryReferences( provider, stageRepo, stageCfg, configuration );
         }
         return stageRepo;
     }
 
 
-    private void updateRemoteRepositoriesFromConfig() {
-        try {
+    private void updateRemoteRepositoriesFromConfig( )
+    {
+        try
+        {
             List<RemoteRepositoryConfiguration> remoteRepoConfigs =
-                    configurationHandler.getBaseConfiguration().getRemoteRepositories();
+                configurationHandler.getBaseConfiguration( ).getRemoteRepositories( );
 
-            if (remoteRepoConfigs == null) {
+            if ( remoteRepoConfigs == null )
+            {
                 return;
             }
-            Set<String> repoIds = new HashSet<>();
-            for (RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs) {
-                putRepository(repoConfig, null);
-                repoIds.add(repoConfig.getId());
+            Set<String> repoIds = new HashSet<>( );
+            for ( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
+            {
+                putRepository( repoConfig, null );
+                repoIds.add( repoConfig.getId( ) );
             }
 
-            List<String> toRemove = remoteRepositories.keySet().stream().filter(id -> !repoIds.contains(id)).collect(Collectors.toList());
-            for (String id : toRemove) {
-                RemoteRepository removed = remoteRepositories.remove(id);
-                removed.close();
+            List<String> toRemove = remoteRepositories.keySet( ).stream( ).filter( id -> !repoIds.contains( id ) ).collect( Collectors.toList( ) );
+            for ( String id : toRemove )
+            {
+                RemoteRepository removed = remoteRepositories.remove( id );
+                removed.close( );
             }
 
-        } catch (Throwable e) {
-            log.error("Could not initialize remote repositories from config: {}", e.getMessage(), e);
+        }
+        catch ( Throwable e )
+        {
+            log.error( "Could not initialize remote repositories from config: {}", e.getMessage( ), e );
             return;
         }
     }
 
-    private RemoteRepository createNewRemoteRepository(RepositoryProvider provider, RemoteRepositoryConfiguration cfg) throws RepositoryException {
-        log.debug("Creating remote repo {}", cfg.getId());
-        RemoteRepository repo = provider.createRemoteInstance(cfg);
-        updateRepositoryReferences(provider, repo, cfg, null);
+    private RemoteRepository createNewRemoteRepository( RepositoryProvider provider, RemoteRepositoryConfiguration cfg ) throws RepositoryException
+    {
+        log.debug( "Creating remote repo {}", cfg.getId( ) );
+        RemoteRepository repo = provider.createRemoteInstance( cfg );
+        updateRepositoryReferences( provider, repo, cfg, null );
         return repo;
 
     }
 
-    private void updateRepositoryReferences(RepositoryProvider provider, RemoteRepository repo, RemoteRepositoryConfiguration cfg, Configuration configuration) throws RepositoryException {
-        if (repo instanceof EditableRemoteRepository && repo.getContent() == null) {
+    private void updateRepositoryReferences( RepositoryProvider provider, RemoteRepository repo, RemoteRepositoryConfiguration cfg, Configuration configuration ) throws RepositoryException
+    {
+        if ( repo instanceof EditableRemoteRepository && repo.getContent( ) == null )
+        {
             EditableRemoteRepository editableRepo = (EditableRemoteRepository) repo;
-            editableRepo.setContent(repositoryContentFactory.getRemoteRepositoryContent(repo));
-            if (repo.supportsFeature(IndexCreationFeature.class) && repo.getIndexingContext() == null) {
-                createIndexingContext(editableRepo);
+            editableRepo.setContent( repositoryContentFactory.getRemoteRepositoryContent( repo ) );
+            if ( repo.supportsFeature( IndexCreationFeature.class ) && repo.getIndexingContext( ) == null )
+            {
+                createIndexingContext( editableRepo );
             }
         }
-        repo.registerEventHandler(RepositoryEvent.ANY, this);
+        repo.registerEventHandler( RepositoryEvent.ANY, this );
     }
-
-
 
 
     /**
@@ -372,12 +456,16 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @return a list of managed and remote repositories
      */
     @Override
-    public Collection<Repository> getRepositories( ) {
-        rwLock.readLock().lock();
-        try {
-            return Stream.concat(managedRepositories.values().stream(), remoteRepositories.values().stream()).collect(Collectors.toList());
-        } finally {
-            rwLock.readLock().unlock();
+    public Collection<Repository> getRepositories( )
+    {
+        rwLock.readLock( ).lock( );
+        try
+        {
+            return Stream.concat( managedRepositories.values( ).stream( ), remoteRepositories.values( ).stream( ) ).collect( Collectors.toList( ) );
+        }
+        finally
+        {
+            rwLock.readLock( ).unlock( );
         }
     }
 
@@ -387,12 +475,16 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @return a list of managed repositories
      */
     @Override
-    public Collection<ManagedRepository> getManagedRepositories( ) {
-        rwLock.readLock().lock();
-        try {
-            return uManagedRepository.values();
-        } finally {
-            rwLock.readLock().unlock();
+    public Collection<ManagedRepository> getManagedRepositories( )
+    {
+        rwLock.readLock( ).lock( );
+        try
+        {
+            return uManagedRepository.values( );
+        }
+        finally
+        {
+            rwLock.readLock( ).unlock( );
         }
     }
 
@@ -402,22 +494,30 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @return a list of remote repositories
      */
     @Override
-    public Collection<RemoteRepository> getRemoteRepositories( ) {
-        rwLock.readLock().lock();
-        try {
-            return uRemoteRepositories.values();
-        } finally {
-            rwLock.readLock().unlock();
+    public Collection<RemoteRepository> getRemoteRepositories( )
+    {
+        rwLock.readLock( ).lock( );
+        try
+        {
+            return uRemoteRepositories.values( );
+        }
+        finally
+        {
+            rwLock.readLock( ).unlock( );
         }
     }
 
     @Override
-    public Collection<RepositoryGroup> getRepositoryGroups( ) {
-        rwLock.readLock().lock();
-        try {
+    public Collection<RepositoryGroup> getRepositoryGroups( )
+    {
+        rwLock.readLock( ).lock( );
+        try
+        {
             return groupHandler.getRepositoryGroups( );
-        } finally {
-            rwLock.readLock().unlock();
+        }
+        finally
+        {
+            rwLock.readLock( ).unlock( );
         }
     }
 
@@ -429,23 +529,34 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @return the repository if found, otherwise null
      */
     @Override
-    public Repository getRepository( String repoId ) {
-        rwLock.readLock().lock();
-        try {
-            log.debug("getRepository {}", repoId);
-            if (managedRepositories.containsKey(repoId)) {
-                log.debug("Managed repo");
-                return managedRepositories.get(repoId);
-            } else if (remoteRepositories.containsKey(repoId)) {
-                log.debug("Remote repo");
-                return remoteRepositories.get(repoId);
-            } else if (groupHandler.hasRepositoryGroup(repoId)) {
-                return groupHandler.getRepositoryGroup(repoId);
-            } else {
+    public Repository getRepository( String repoId )
+    {
+        rwLock.readLock( ).lock( );
+        try
+        {
+            log.debug( "getRepository {}", repoId );
+            if ( managedRepositories.containsKey( repoId ) )
+            {
+                log.debug( "Managed repo" );
+                return managedRepositories.get( repoId );
+            }
+            else if ( remoteRepositories.containsKey( repoId ) )
+            {
+                log.debug( "Remote repo" );
+                return remoteRepositories.get( repoId );
+            }
+            else if ( groupHandler.hasRepositoryGroup( repoId ) )
+            {
+                return groupHandler.getRepositoryGroup( repoId );
+            }
+            else
+            {
                 return null;
             }
-        } finally {
-            rwLock.readLock().unlock();
+        }
+        finally
+        {
+            rwLock.readLock( ).unlock( );
         }
     }
 
@@ -457,12 +568,16 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @return the managed repository if found, otherwise null
      */
     @Override
-    public ManagedRepository getManagedRepository( String repoId ) {
-        rwLock.readLock().lock();
-        try {
-            return managedRepositories.get(repoId);
-        } finally {
-            rwLock.readLock().unlock();
+    public ManagedRepository getManagedRepository( String repoId )
+    {
+        rwLock.readLock( ).lock( );
+        try
+        {
+            return managedRepositories.get( repoId );
+        }
+        finally
+        {
+            rwLock.readLock( ).unlock( );
         }
     }
 
@@ -474,27 +589,36 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @return the remote repository if found, otherwise null
      */
     @Override
-    public RemoteRepository getRemoteRepository( String repoId ) {
-        rwLock.readLock().lock();
-        try {
-            return remoteRepositories.get(repoId);
-        } finally {
-            rwLock.readLock().unlock();
+    public RemoteRepository getRemoteRepository( String repoId )
+    {
+        rwLock.readLock( ).lock( );
+        try
+        {
+            return remoteRepositories.get( repoId );
+        }
+        finally
+        {
+            rwLock.readLock( ).unlock( );
         }
     }
 
     @Override
-    public RepositoryGroup getRepositoryGroup( String groupId ) {
-        rwLock.readLock().lock();
-        try {
-            return groupHandler.getRepositoryGroup(groupId);
-        } finally {
-            rwLock.readLock().unlock();
+    public RepositoryGroup getRepositoryGroup( String groupId )
+    {
+        rwLock.readLock( ).lock( );
+        try
+        {
+            return groupHandler.getRepositoryGroup( groupId );
+        }
+        finally
+        {
+            rwLock.readLock( ).unlock( );
         }
     }
 
-    protected void saveConfiguration(Configuration configuration) throws IndeterminateConfigurationException, RegistryException {
-        configurationHandler.save(configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
+    protected void saveConfiguration( Configuration configuration ) throws IndeterminateConfigurationException, RegistryException
+    {
+        configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
     }
 
     /**
@@ -506,46 +630,62 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if the new repository could not be saved to the configuration.
      */
     @Override
-    public ManagedRepository putRepository( ManagedRepository managedRepository ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
-            final String id = managedRepository.getId();
-            if (remoteRepositories.containsKey(id)) {
-                throw new RepositoryException("There exists a remote repository with id " + id + ". Could not update with managed repository.");
+    public ManagedRepository putRepository( ManagedRepository managedRepository ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = managedRepository.getId( );
+            if ( remoteRepositories.containsKey( id ) )
+            {
+                throw new RepositoryException( "There exists a remote repository with id " + id + ". Could not update with managed repository." );
             }
-            ManagedRepository originRepo = managedRepositories.put(id, managedRepository);
-            try {
-                if (originRepo != null && originRepo != managedRepository) {
-                    originRepo.close();
+            ManagedRepository originRepo = managedRepositories.put( id, managedRepository );
+            try
+            {
+                if ( originRepo != null && originRepo != managedRepository )
+                {
+                    originRepo.close( );
                 }
-                RepositoryProvider provider = getProvider(managedRepository.getType());
-                ManagedRepositoryConfiguration newCfg = provider.getManagedConfiguration(managedRepository);
-                Configuration configuration = configurationHandler.getBaseConfiguration();
-                updateRepositoryReferences(provider, managedRepository, newCfg, configuration);
-                ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById(id);
-                if (oldCfg != null) {
-                    configuration.removeManagedRepository(oldCfg);
+                RepositoryProvider provider = getProvider( managedRepository.getType( ) );
+                ManagedRepositoryConfiguration newCfg = provider.getManagedConfiguration( managedRepository );
+                Configuration configuration = configurationHandler.getBaseConfiguration( );
+                updateRepositoryReferences( provider, managedRepository, newCfg, configuration );
+                ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById( id );
+                if ( oldCfg != null )
+                {
+                    configuration.removeManagedRepository( oldCfg );
                 }
-                configuration.addManagedRepository(newCfg);
-                saveConfiguration(configuration);
-                if (originRepo != managedRepository) {
-                    pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, managedRepository));
-                } else {
-                    pushEvent(new LifecycleEvent(LifecycleEvent.UPDATED, this, managedRepository));
+                configuration.addManagedRepository( newCfg );
+                saveConfiguration( configuration );
+                if ( originRepo != managedRepository )
+                {
+                    pushEvent( new LifecycleEvent( LifecycleEvent.REGISTERED, this, managedRepository ) );
+                }
+                else
+                {
+                    pushEvent( new LifecycleEvent( LifecycleEvent.UPDATED, this, managedRepository ) );
                 }
                 return managedRepository;
-            } catch (Exception e) {
-                // Rollback only partly, because repository is closed already
-                if (originRepo != null) {
-                    managedRepositories.put(id, originRepo);
-                } else {
-                    managedRepositories.remove(id);
-                }
-                log.error("Exception during configuration update {}", e.getMessage(), e);
-                throw new RepositoryException("Could not save the configuration" + (e.getMessage() == null ? "" : ": " + e.getMessage()));
             }
-        } finally {
-            rwLock.writeLock().unlock();
+            catch ( Exception e )
+            {
+                // Rollback only partly, because repository is closed already
+                if ( originRepo != null )
+                {
+                    managedRepositories.put( id, originRepo );
+                }
+                else
+                {
+                    managedRepositories.remove( id );
+                }
+                log.error( "Exception during configuration update {}", e.getMessage( ), e );
+                throw new RepositoryException( "Could not save the configuration" + ( e.getMessage( ) == null ? "" : ": " + e.getMessage( ) ) );
+            }
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
     }
 
@@ -558,27 +698,35 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if an error occurs, or the configuration is not valid.
      */
     @Override
-    public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
-            final String id = managedRepositoryConfiguration.getId();
-            final RepositoryType repositoryType = RepositoryType.valueOf(managedRepositoryConfiguration.getType());
-            Configuration configuration = configurationHandler.getBaseConfiguration();
-            ManagedRepository repo = managedRepositories.get(id);
-            ManagedRepositoryConfiguration oldCfg = repo != null ? getProvider(repositoryType).getManagedConfiguration(repo) : null;
-            repo = putRepository(managedRepositoryConfiguration, configuration);
-            try {
-                saveConfiguration(configuration);
-            } catch (IndeterminateConfigurationException | RegistryException e) {
-                if (oldCfg != null) {
-                    getProvider(repositoryType).updateManagedInstance((EditableManagedRepository) repo, oldCfg);
+    public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = managedRepositoryConfiguration.getId( );
+            final RepositoryType repositoryType = RepositoryType.valueOf( managedRepositoryConfiguration.getType( ) );
+            Configuration configuration = configurationHandler.getBaseConfiguration( );
+            ManagedRepository repo = managedRepositories.get( id );
+            ManagedRepositoryConfiguration oldCfg = repo != null ? getProvider( repositoryType ).getManagedConfiguration( repo ) : null;
+            repo = putRepository( managedRepositoryConfiguration, configuration );
+            try
+            {
+                saveConfiguration( configuration );
+            }
+            catch ( IndeterminateConfigurationException | RegistryException e )
+            {
+                if ( oldCfg != null )
+                {
+                    getProvider( repositoryType ).updateManagedInstance( (EditableManagedRepository) repo, oldCfg );
                 }
-                log.error("Could not save the configuration for repository {}: {}", id, e.getMessage(), e);
-                throw new RepositoryException("Could not save the configuration for repository " + id + ": " + e.getMessage());
+                log.error( "Could not save the configuration for repository {}: {}", id, e.getMessage( ), e );
+                throw new RepositoryException( "Could not save the configuration for repository " + id + ": " + e.getMessage( ) );
             }
             return repo;
-        } finally {
-            rwLock.writeLock().unlock();
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
 
     }
@@ -593,35 +741,48 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if the configuration cannot be saved or updated
      */
     @Override
-    public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
-            final String id = managedRepositoryConfiguration.getId();
-            final RepositoryType repoType = RepositoryType.valueOf(managedRepositoryConfiguration.getType());
+    public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = managedRepositoryConfiguration.getId( );
+            final RepositoryType repoType = RepositoryType.valueOf( managedRepositoryConfiguration.getType( ) );
             ManagedRepository repo;
             boolean registeredNew = false;
-            repo = managedRepositories.get(id);
-            if (repo != null && repo.isOpen()) {
-                if (repo instanceof EditableManagedRepository) {
-                    getProvider(repoType).updateManagedInstance((EditableManagedRepository) repo, managedRepositoryConfiguration);
-                } else {
-                    throw new RepositoryException("The repository is not editable " + id);
+            repo = managedRepositories.get( id );
+            if ( repo != null && repo.isOpen( ) )
+            {
+                if ( repo instanceof EditableManagedRepository )
+                {
+                    getProvider( repoType ).updateManagedInstance( (EditableManagedRepository) repo, managedRepositoryConfiguration );
                 }
-            } else {
-                repo = getProvider(repoType).createManagedInstance(managedRepositoryConfiguration);
-                managedRepositories.put(id, repo);
+                else
+                {
+                    throw new RepositoryException( "The repository is not editable " + id );
+                }
+            }
+            else
+            {
+                repo = getProvider( repoType ).createManagedInstance( managedRepositoryConfiguration );
+                managedRepositories.put( id, repo );
                 registeredNew = true;
             }
-            updateRepositoryReferences(getProvider(repoType), repo, managedRepositoryConfiguration, configuration);
-            replaceOrAddRepositoryConfig(managedRepositoryConfiguration, configuration);
-            if (registeredNew) {
-                pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, repo));
-            } else {
-                pushEvent(new LifecycleEvent(LifecycleEvent.UPDATED, this, repo));
+            updateRepositoryReferences( getProvider( repoType ), repo, managedRepositoryConfiguration, configuration );
+            replaceOrAddRepositoryConfig( managedRepositoryConfiguration, configuration );
+            if ( registeredNew )
+            {
+                pushEvent( new LifecycleEvent( LifecycleEvent.REGISTERED, this, repo ) );
+            }
+            else
+            {
+                pushEvent( new LifecycleEvent( LifecycleEvent.UPDATED, this, repo ) );
             }
             return repo;
-        } finally {
-            rwLock.writeLock().unlock();
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
     }
 
@@ -635,15 +796,20 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if the new repository group could not be saved to the configuration.
      */
     @Override
-    public RepositoryGroup putRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
-            if (this.groupHandler==null) {
+    public RepositoryGroup putRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            if ( this.groupHandler == null )
+            {
                 throw new RepositoryException( "Fatal error. RepositoryGroupHandler not registered!" );
             }
             return this.groupHandler.putRepositoryGroup( repositoryGroup );
-        } finally {
-            rwLock.writeLock().unlock();
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
     }
 
@@ -656,12 +822,16 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if an error occurs, or the configuration is not valid.
      */
     @Override
-    public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
+    public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
             return groupHandler.putRepositoryGroup( repositoryGroupConfiguration );
-        } finally {
-            rwLock.writeLock().unlock();
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
 
     }
@@ -676,91 +846,121 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if the configuration cannot be saved or updated
      */
     @Override
-    public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
+    public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
             return groupHandler.putRepositoryGroup( repositoryGroupConfiguration, configuration );
-        } finally {
-            rwLock.writeLock().unlock();
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
     }
 
-    private void replaceOrAddRepositoryConfig(ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration) {
-        if (configuration != null) {
-            ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById(managedRepositoryConfiguration.getId());
-            if (oldCfg != null) {
-                configuration.removeManagedRepository(oldCfg);
+    private void replaceOrAddRepositoryConfig( ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration )
+    {
+        if ( configuration != null )
+        {
+            ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById( managedRepositoryConfiguration.getId( ) );
+            if ( oldCfg != null )
+            {
+                configuration.removeManagedRepository( oldCfg );
             }
-            configuration.addManagedRepository(managedRepositoryConfiguration);
+            configuration.addManagedRepository( managedRepositoryConfiguration );
         }
     }
 
-    private void replaceOrAddRepositoryConfig(RemoteRepositoryConfiguration remoteRepositoryConfiguration, Configuration configuration) {
-        if (configuration != null) {
-            RemoteRepositoryConfiguration oldCfg = configuration.findRemoteRepositoryById(remoteRepositoryConfiguration.getId());
-            if (oldCfg != null) {
-                configuration.removeRemoteRepository(oldCfg);
+    private void replaceOrAddRepositoryConfig( RemoteRepositoryConfiguration remoteRepositoryConfiguration, Configuration configuration )
+    {
+        if ( configuration != null )
+        {
+            RemoteRepositoryConfiguration oldCfg = configuration.findRemoteRepositoryById( remoteRepositoryConfiguration.getId( ) );
+            if ( oldCfg != null )
+            {
+                configuration.removeRemoteRepository( oldCfg );
             }
-            configuration.addRemoteRepository(remoteRepositoryConfiguration);
+            configuration.addRemoteRepository( remoteRepositoryConfiguration );
         }
     }
 
-    private void replaceOrAddRepositoryConfig(RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration) {
-        RepositoryGroupConfiguration oldCfg = configuration.findRepositoryGroupById(repositoryGroupConfiguration.getId());
-        if (oldCfg != null) {
-            configuration.removeRepositoryGroup(oldCfg);
+    private void replaceOrAddRepositoryConfig( RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration )
+    {
+        RepositoryGroupConfiguration oldCfg = configuration.findRepositoryGroupById( repositoryGroupConfiguration.getId( ) );
+        if ( oldCfg != null )
+        {
+            configuration.removeRepositoryGroup( oldCfg );
         }
-        configuration.addRepositoryGroup(repositoryGroupConfiguration);
+        configuration.addRepositoryGroup( repositoryGroupConfiguration );
     }
 
     @Override
-    public RemoteRepository putRepository( RemoteRepository remoteRepository, Configuration configuration ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
-            final String id = remoteRepository.getId();
-            if (managedRepositories.containsKey(id)) {
-                throw new RepositoryException("There exists a managed repository with id " + id + ". Could not update with remote repository.");
+    public RemoteRepository putRepository( RemoteRepository remoteRepository, Configuration configuration ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = remoteRepository.getId( );
+            if ( managedRepositories.containsKey( id ) )
+            {
+                throw new RepositoryException( "There exists a managed repository with id " + id + ". Could not update with remote repository." );
             }
-            RemoteRepository originRepo = remoteRepositories.put(id, remoteRepository);
+            RemoteRepository originRepo = remoteRepositories.put( id, remoteRepository );
             RemoteRepositoryConfiguration oldCfg = null;
             RemoteRepositoryConfiguration newCfg;
-            try {
-                if (originRepo != null && originRepo != remoteRepository) {
-                    originRepo.close();
+            try
+            {
+                if ( originRepo != null && originRepo != remoteRepository )
+                {
+                    originRepo.close( );
                 }
-                final RepositoryProvider provider = getProvider(remoteRepository.getType());
-                newCfg = provider.getRemoteConfiguration(remoteRepository);
-                updateRepositoryReferences(provider, remoteRepository, newCfg, configuration);
-                oldCfg = configuration.findRemoteRepositoryById(id);
-                if (oldCfg != null) {
-                    configuration.removeRemoteRepository(oldCfg);
+                final RepositoryProvider provider = getProvider( remoteRepository.getType( ) );
+                newCfg = provider.getRemoteConfiguration( remoteRepository );
+                updateRepositoryReferences( provider, remoteRepository, newCfg, configuration );
+                oldCfg = configuration.findRemoteRepositoryById( id );
+                if ( oldCfg != null )
+                {
+                    configuration.removeRemoteRepository( oldCfg );
                 }
-                configuration.addRemoteRepository(newCfg);
-                if (remoteRepository != originRepo) {
-                    pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, remoteRepository));
-                } else {
-                    pushEvent(new LifecycleEvent(LifecycleEvent.UPDATED, this, remoteRepository));
+                configuration.addRemoteRepository( newCfg );
+                if ( remoteRepository != originRepo )
+                {
+                    pushEvent( new LifecycleEvent( LifecycleEvent.REGISTERED, this, remoteRepository ) );
+                }
+                else
+                {
+                    pushEvent( new LifecycleEvent( LifecycleEvent.UPDATED, this, remoteRepository ) );
                 }
                 return remoteRepository;
-            } catch (Exception e) {
+            }
+            catch ( Exception e )
+            {
                 // Rollback
-                if (originRepo != null) {
-                    remoteRepositories.put(id, originRepo);
-                } else {
-                    remoteRepositories.remove(id);
+                if ( originRepo != null )
+                {
+                    remoteRepositories.put( id, originRepo );
                 }
-                if (oldCfg != null) {
-                    RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById(id);
-                    if (cfg != null) {
-                        configuration.removeRemoteRepository(cfg);
-                        configuration.addRemoteRepository(oldCfg);
+                else
+                {
+                    remoteRepositories.remove( id );
+                }
+                if ( oldCfg != null )
+                {
+                    RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById( id );
+                    if ( cfg != null )
+                    {
+                        configuration.removeRemoteRepository( cfg );
+                        configuration.addRemoteRepository( oldCfg );
                     }
                 }
-                log.error("Error while adding remote repository {}", e.getMessage(), e);
-                throw new RepositoryException("Could not save the configuration" + (e.getMessage() == null ? "" : ": " + e.getMessage()));
+                log.error( "Error while adding remote repository {}", e.getMessage( ), e );
+                throw new RepositoryException( "Could not save the configuration" + ( e.getMessage( ) == null ? "" : ": " + e.getMessage( ) ) );
             }
-        } finally {
-            rwLock.writeLock().unlock();
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
     }
 
@@ -772,20 +972,27 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if an error occurs during configuration save
      */
     @Override
-    public RemoteRepository putRepository( RemoteRepository remoteRepository ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
-            Configuration configuration = configurationHandler.getBaseConfiguration();
-            try {
-                RemoteRepository repo = putRepository(remoteRepository, configuration);
-                saveConfiguration(configuration);
+    public RemoteRepository putRepository( RemoteRepository remoteRepository ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            Configuration configuration = configurationHandler.getBaseConfiguration( );
+            try
+            {
+                RemoteRepository repo = putRepository( remoteRepository, configuration );
+                saveConfiguration( configuration );
                 return repo;
-            } catch (RegistryException | IndeterminateConfigurationException e) {
-                log.error("Error while saving remote repository {}", e.getMessage(), e);
-                throw new RepositoryException("Could not save the configuration" + (e.getMessage() == null ? "" : ": " + e.getMessage()));
             }
-        } finally {
-            rwLock.writeLock().unlock();
+            catch ( RegistryException | IndeterminateConfigurationException e )
+            {
+                log.error( "Error while saving remote repository {}", e.getMessage( ), e );
+                throw new RepositoryException( "Could not save the configuration" + ( e.getMessage( ) == null ? "" : ": " + e.getMessage( ) ) );
+            }
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
     }
 
@@ -798,27 +1005,35 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if an error occurs, or the configuration is not valid.
      */
     @Override
-    public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
-            final String id = remoteRepositoryConfiguration.getId();
-            final RepositoryType repositoryType = RepositoryType.valueOf(remoteRepositoryConfiguration.getType());
-            Configuration configuration = configurationHandler.getBaseConfiguration();
-            RemoteRepository repo = remoteRepositories.get(id);
-            RemoteRepositoryConfiguration oldCfg = repo != null ? getProvider(repositoryType).getRemoteConfiguration(repo) : null;
-            repo = putRepository(remoteRepositoryConfiguration, configuration);
-            try {
-                saveConfiguration(configuration);
-            } catch (IndeterminateConfigurationException | RegistryException e) {
-                if (oldCfg != null) {
-                    getProvider(repositoryType).updateRemoteInstance((EditableRemoteRepository) repo, oldCfg);
+    public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = remoteRepositoryConfiguration.getId( );
+            final RepositoryType repositoryType = RepositoryType.valueOf( remoteRepositoryConfiguration.getType( ) );
+            Configuration configuration = configurationHandler.getBaseConfiguration( );
+            RemoteRepository repo = remoteRepositories.get( id );
+            RemoteRepositoryConfiguration oldCfg = repo != null ? getProvider( repositoryType ).getRemoteConfiguration( repo ) : null;
+            repo = putRepository( remoteRepositoryConfiguration, configuration );
+            try
+            {
+                saveConfiguration( configuration );
+            }
+            catch ( IndeterminateConfigurationException | RegistryException e )
+            {
+                if ( oldCfg != null )
+                {
+                    getProvider( repositoryType ).updateRemoteInstance( (EditableRemoteRepository) repo, oldCfg );
                 }
-                log.error("Could not save the configuration for repository {}: {}", id, e.getMessage(), e);
-                throw new RepositoryException("Could not save the configuration for repository " + id + ": " + e.getMessage());
+                log.error( "Could not save the configuration for repository {}: {}", id, e.getMessage( ), e );
+                throw new RepositoryException( "Could not save the configuration for repository " + id + ": " + e.getMessage( ) );
             }
             return repo;
-        } finally {
-            rwLock.writeLock().unlock();
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
 
     }
@@ -833,63 +1048,87 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if the configuration cannot be saved or updated
      */
     @Override
-    @SuppressWarnings("unchecked")
-    public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration, Configuration configuration ) throws RepositoryException {
-        rwLock.writeLock().lock();
-        try {
-            final String id = remoteRepositoryConfiguration.getId();
-            final RepositoryType repoType = RepositoryType.valueOf(remoteRepositoryConfiguration.getType());
+    @SuppressWarnings( "unchecked" )
+    public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration, Configuration configuration ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = remoteRepositoryConfiguration.getId( );
+            final RepositoryType repoType = RepositoryType.valueOf( remoteRepositoryConfiguration.getType( ) );
             RemoteRepository repo;
             boolean registeredNew = false;
-            repo = remoteRepositories.get(id);
-            if (repo != null && repo.isOpen()) {
-                if (repo instanceof EditableRemoteRepository) {
-                    getProvider(repoType).updateRemoteInstance((EditableRemoteRepository) repo, remoteRepositoryConfiguration);
-                } else {
-                    throw new RepositoryException("The repository is not editable " + id);
+            repo = remoteRepositories.get( id );
+            if ( repo != null && repo.isOpen( ) )
+            {
+                if ( repo instanceof EditableRemoteRepository )
+                {
+                    getProvider( repoType ).updateRemoteInstance( (EditableRemoteRepository) repo, remoteRepositoryConfiguration );
                 }
-            } else {
-                repo = getProvider(repoType).createRemoteInstance(remoteRepositoryConfiguration);
-                remoteRepositories.put(id, repo);
+                else
+                {
+                    throw new RepositoryException( "The repository is not editable " + id );
+                }
+            }
+            else
+            {
+                repo = getProvider( repoType ).createRemoteInstance( remoteRepositoryConfiguration );
+                remoteRepositories.put( id, repo );
                 registeredNew = true;
             }
-            updateRepositoryReferences(getProvider(repoType), repo, remoteRepositoryConfiguration, configuration);
-            replaceOrAddRepositoryConfig(remoteRepositoryConfiguration, configuration);
-            if (registeredNew) {
-                pushEvent(new LifecycleEvent(LifecycleEvent.REGISTERED, this, repo));
-            } else {
-                pushEvent(new LifecycleEvent(LifecycleEvent.UPDATED, this, repo));
+            updateRepositoryReferences( getProvider( repoType ), repo, remoteRepositoryConfiguration, configuration );
+            replaceOrAddRepositoryConfig( remoteRepositoryConfiguration, configuration );
+            if ( registeredNew )
+            {
+                pushEvent( new LifecycleEvent( LifecycleEvent.REGISTERED, this, repo ) );
+            }
+            else
+            {
+                pushEvent( new LifecycleEvent( LifecycleEvent.UPDATED, this, repo ) );
             }
             return repo;
-        } finally {
-            rwLock.writeLock().unlock();
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
         }
 
 
     }
 
     @Override
-    public void removeRepository( String repoId ) throws RepositoryException {
-        Repository repo = getRepository(repoId);
-        if (repo != null) {
-            removeRepository(repo);
+    public void removeRepository( String repoId ) throws RepositoryException
+    {
+        Repository repo = getRepository( repoId );
+        if ( repo != null )
+        {
+            removeRepository( repo );
         }
     }
 
     @Override
-    public void removeRepository( Repository repo ) throws RepositoryException {
-        if (repo == null) {
-            log.warn("Trying to remove null repository");
+    public void removeRepository( Repository repo ) throws RepositoryException
+    {
+        if ( repo == null )
+        {
+            log.warn( "Trying to remove null repository" );
             return;
         }
-        if (repo instanceof RemoteRepository) {
-            removeRepository((RemoteRepository) repo);
-        } else if (repo instanceof ManagedRepository) {
-            removeRepository((ManagedRepository) repo);
-        } else if (repo instanceof RepositoryGroup) {
-            removeRepositoryGroup((RepositoryGroup) repo);
-        } else {
-            throw new RepositoryException("Repository type not known: " + repo.getClass());
+        if ( repo instanceof RemoteRepository )
+        {
+            removeRepository( (RemoteRepository) repo );
+        }
+        else if ( repo instanceof ManagedRepository )
+        {
+            removeRepository( (ManagedRepository) repo );
+        }
+        else if ( repo instanceof RepositoryGroup )
+        {
+            removeRepositoryGroup( (RepositoryGroup) repo );
+        }
+        else
+        {
+            throw new RepositoryException( "Repository type not known: " + repo.getClass( ) );
         }
     }
 
@@ -901,61 +1140,79 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if a error occurs during configuration save
      */
     @Override
-    public void removeRepository( ManagedRepository managedRepository ) throws RepositoryException {
-        if (managedRepository == null) {
+    public void removeRepository( ManagedRepository managedRepository ) throws RepositoryException
+    {
+        if ( managedRepository == null )
+        {
             return;
         }
-        final String id = managedRepository.getId();
-        ManagedRepository repo = getManagedRepository(id);
-        if (repo != null) {
-            rwLock.writeLock().lock();
-            try {
-                repo = managedRepositories.remove(id);
-                if (repo != null) {
-                    repo.close();
-                    this.groupHandler.removeRepositoryFromGroups(repo);
-                    Configuration configuration = configurationHandler.getBaseConfiguration();
-                    ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById(id);
-                    if (cfg != null) {
-                        configuration.removeManagedRepository(cfg);
+        final String id = managedRepository.getId( );
+        ManagedRepository repo = getManagedRepository( id );
+        if ( repo != null )
+        {
+            rwLock.writeLock( ).lock( );
+            try
+            {
+                repo = managedRepositories.remove( id );
+                if ( repo != null )
+                {
+                    repo.close( );
+                    this.groupHandler.removeRepositoryFromGroups( repo );
+                    Configuration configuration = configurationHandler.getBaseConfiguration( );
+                    ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById( id );
+                    if ( cfg != null )
+                    {
+                        configuration.removeManagedRepository( cfg );
                     }
-                    saveConfiguration(configuration);
+                    saveConfiguration( configuration );
                 }
-                pushEvent(new LifecycleEvent(LifecycleEvent.UNREGISTERED, this, repo));
-            } catch (RegistryException | IndeterminateConfigurationException e) {
+                pushEvent( new LifecycleEvent( LifecycleEvent.UNREGISTERED, this, repo ) );
+            }
+            catch ( RegistryException | IndeterminateConfigurationException e )
+            {
                 // Rollback
-                log.error("Could not save config after repository removal: {}", e.getMessage(), e);
-                managedRepositories.put(repo.getId(), repo);
-                throw new RepositoryException("Could not save configuration after repository removal: " + e.getMessage());
-            } finally {
-                rwLock.writeLock().unlock();
+                log.error( "Could not save config after repository removal: {}", e.getMessage( ), e );
+                managedRepositories.put( repo.getId( ), repo );
+                throw new RepositoryException( "Could not save configuration after repository removal: " + e.getMessage( ) );
+            }
+            finally
+            {
+                rwLock.writeLock( ).unlock( );
             }
         }
     }
 
 
     @Override
-    public void removeRepository( ManagedRepository managedRepository, Configuration configuration ) throws RepositoryException {
-        if (managedRepository == null) {
+    public void removeRepository( ManagedRepository managedRepository, Configuration configuration ) throws RepositoryException
+    {
+        if ( managedRepository == null )
+        {
             return;
         }
-        final String id = managedRepository.getId();
-        ManagedRepository repo = getManagedRepository(id);
-        if (repo != null) {
-            rwLock.writeLock().lock();
-            try {
-                repo = managedRepositories.remove(id);
-                if (repo != null) {
-                    repo.close();
-                    this.groupHandler.removeRepositoryFromGroups(repo);
-                    ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById(id);
-                    if (cfg != null) {
-                        configuration.removeManagedRepository(cfg);
+        final String id = managedRepository.getId( );
+        ManagedRepository repo = getManagedRepository( id );
+        if ( repo != null )
+        {
+            rwLock.writeLock( ).lock( );
+            try
+            {
+                repo = managedRepositories.remove( id );
+                if ( repo != null )
+                {
+                    repo.close( );
+                    this.groupHandler.removeRepositoryFromGroups( repo );
+                    ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById( id );
+                    if ( cfg != null )
+                    {
+                        configuration.removeManagedRepository( cfg );
                     }
                 }
-                pushEvent(new LifecycleEvent(LifecycleEvent.UNREGISTERED, this, repo));
-            } finally {
-                rwLock.writeLock().unlock();
+                pushEvent( new LifecycleEvent( LifecycleEvent.UNREGISTERED, this, repo ) );
+            }
+            finally
+            {
+                rwLock.writeLock( ).unlock( );
             }
         }
 
@@ -970,47 +1227,63 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if a error occurs during configuration save
      */
     @Override
-    public void removeRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException {
-        if (repositoryGroup == null) {
+    public void removeRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException
+    {
+        if ( repositoryGroup == null )
+        {
             return;
         }
-        final String id = repositoryGroup.getId();
-        if (groupHandler.hasRepositoryGroup( id )) {
-            rwLock.writeLock().lock();
-            try {
-            groupHandler.removeRepositoryGroup( id );
-            } finally {
-                rwLock.writeLock().unlock();
+        final String id = repositoryGroup.getId( );
+        if ( groupHandler.hasRepositoryGroup( id ) )
+        {
+            rwLock.writeLock( ).lock( );
+            try
+            {
+                groupHandler.removeRepositoryGroup( id );
+            }
+            finally
+            {
+                rwLock.writeLock( ).unlock( );
             }
         }
     }
 
     @Override
-    public void removeRepositoryGroup( RepositoryGroup repositoryGroup, Configuration configuration ) throws RepositoryException {
-        if (repositoryGroup == null) {
+    public void removeRepositoryGroup( RepositoryGroup repositoryGroup, Configuration configuration ) throws RepositoryException
+    {
+        if ( repositoryGroup == null )
+        {
             return;
         }
-        final String id = repositoryGroup.getId();
-        if (groupHandler.hasRepositoryGroup( id )) {
-            rwLock.writeLock().lock();
-            try {
+        final String id = repositoryGroup.getId( );
+        if ( groupHandler.hasRepositoryGroup( id ) )
+        {
+            rwLock.writeLock( ).lock( );
+            try
+            {
                 groupHandler.removeRepositoryGroup( id, configuration );
-            } finally {
-                rwLock.writeLock().unlock();
+            }
+            finally
+            {
+                rwLock.writeLock( ).unlock( );
             }
         }
     }
 
-    private void doRemoveRepo(RemoteRepository repo, Configuration configuration) {
-        repo.close();
-        RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById(repo.getId());
-        if (cfg != null) {
-            configuration.removeRemoteRepository(cfg);
+    private void doRemoveRepo( RemoteRepository repo, Configuration configuration )
+    {
+        repo.close( );
+        RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById( repo.getId( ) );
+        if ( cfg != null )
+        {
+            configuration.removeRemoteRepository( cfg );
         }
-        List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>(configuration.getProxyConnectors());
-        for (ProxyConnectorConfiguration proxyConnector : proxyConnectors) {
-            if (StringUtils.equals(proxyConnector.getTargetRepoId(), repo.getId())) {
-                configuration.removeProxyConnector(proxyConnector);
+        List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>( configuration.getProxyConnectors( ) );
+        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+        {
+            if ( StringUtils.equals( proxyConnector.getTargetRepoId( ), repo.getId( ) ) )
+            {
+                configuration.removeProxyConnector( proxyConnector );
             }
         }
     }
@@ -1023,50 +1296,66 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws RepositoryException if a error occurs during configuration save
      */
     @Override
-    public void removeRepository( RemoteRepository remoteRepository ) throws RepositoryException {
-        if (remoteRepository == null) {
+    public void removeRepository( RemoteRepository remoteRepository ) throws RepositoryException
+    {
+        if ( remoteRepository == null )
+        {
             return;
         }
-        final String id = remoteRepository.getId();
-        RemoteRepository repo = getRemoteRepository(id);
-        if (repo != null) {
-            rwLock.writeLock().lock();
-            try {
-                repo = remoteRepositories.remove(id);
-                if (repo != null) {
-                    Configuration configuration = configurationHandler.getBaseConfiguration();
-                    doRemoveRepo(repo, configuration);
-                    saveConfiguration(configuration);
+        final String id = remoteRepository.getId( );
+        RemoteRepository repo = getRemoteRepository( id );
+        if ( repo != null )
+        {
+            rwLock.writeLock( ).lock( );
+            try
+            {
+                repo = remoteRepositories.remove( id );
+                if ( repo != null )
+                {
+                    Configuration configuration = configurationHandler.getBaseConfiguration( );
+                    doRemoveRepo( repo, configuration );
+                    saveConfiguration( configuration );
                 }
-                pushEvent(new LifecycleEvent(LifecycleEvent.UNREGISTERED, this, repo));
-            } catch (RegistryException | IndeterminateConfigurationException e) {
+                pushEvent( new LifecycleEvent( LifecycleEvent.UNREGISTERED, this, repo ) );
+            }
+            catch ( RegistryException | IndeterminateConfigurationException e )
+            {
                 // Rollback
-                log.error("Could not save config after repository removal: {}", e.getMessage(), e);
-                remoteRepositories.put(repo.getId(), repo);
-                throw new RepositoryException("Could not save configuration after repository removal: " + e.getMessage());
-            } finally {
-                rwLock.writeLock().unlock();
+                log.error( "Could not save config after repository removal: {}", e.getMessage( ), e );
+                remoteRepositories.put( repo.getId( ), repo );
+                throw new RepositoryException( "Could not save configuration after repository removal: " + e.getMessage( ) );
+            }
+            finally
+            {
+                rwLock.writeLock( ).unlock( );
             }
         }
     }
 
     @Override
-    public void removeRepository( RemoteRepository remoteRepository, Configuration configuration ) throws RepositoryException {
-        if (remoteRepository == null) {
+    public void removeRepository( RemoteRepository remoteRepository, Configuration configuration ) throws RepositoryException
+    {
+        if ( remoteRepository == null )
+        {
             return;
         }
-        final String id = remoteRepository.getId();
-        RemoteRepository repo = getRemoteRepository(id);
-        if (repo != null) {
-            rwLock.writeLock().lock();
-            try {
-                repo = remoteRepositories.remove(id);
-                if (repo != null) {
-                    doRemoveRepo(repo, configuration);
+        final String id = remoteRepository.getId( );
+        RemoteRepository repo = getRemoteRepository( id );
+        if ( repo != null )
+        {
+            rwLock.writeLock( ).lock( );
+            try
+            {
+                repo = remoteRepositories.remove( id );
+                if ( repo != null )
+                {
+                    doRemoveRepo( repo, configuration );
                 }
-                pushEvent(new LifecycleEvent(LifecycleEvent.UNREGISTERED, this, repo));
-            } finally {
-                rwLock.writeLock().unlock();
+                pushEvent( new LifecycleEvent( LifecycleEvent.UNREGISTERED, this, repo ) );
+            }
+            finally
+            {
+                rwLock.writeLock( ).unlock( );
             }
         }
 
@@ -1076,8 +1365,9 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * Reloads the registry from the configuration.
      */
     @Override
-    public void reload( ) {
-        initialize();
+    public void reload( )
+    {
+        initialize( );
     }
 
     /**
@@ -1087,11 +1377,13 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @throws IndexUpdateFailedException If the index could not be resetted.
      */
     @Override
-    public void resetIndexingContext( Repository repository ) throws IndexUpdateFailedException {
-        if (repository.hasIndex() && repository instanceof EditableRepository) {
+    public void resetIndexingContext( Repository repository ) throws IndexUpdateFailedException
+    {
+        if ( repository.hasIndex( ) && repository instanceof EditableRepository )
+        {
             EditableRepository eRepo = (EditableRepository) repository;
-            ArchivaIndexingContext newCtx = getIndexManager(repository.getType()).reset(repository.getIndexingContext());
-            eRepo.setIndexingContext(newCtx);
+            ArchivaIndexingContext newCtx = getIndexManager( repository.getType( ) ).reset( repository.getIndexingContext( ) );
+            eRepo.setIndexingContext( newCtx );
         }
     }
 
@@ -1104,26 +1396,34 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @return The cloned repository.
      */
     @Override
-    public ManagedRepository clone( ManagedRepository repo, String newId ) throws RepositoryException {
-        if (managedRepositories.containsKey(newId) || remoteRepositories.containsKey(newId)) {
-            throw new RepositoryException("The given id exists already " + newId);
+    public ManagedRepository clone( ManagedRepository repo, String newId ) throws RepositoryException
+    {
+        if ( managedRepositories.containsKey( newId ) || remoteRepositories.containsKey( newId ) )
+        {
+            throw new RepositoryException( "The given id exists already " + newId );
         }
-        RepositoryProvider provider = getProvider(repo.getType());
-        ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration(repo);
-        cfg.setId(newId);
-        ManagedRepository cloned = provider.createManagedInstance(cfg);
-        cloned.registerEventHandler(RepositoryEvent.ANY, this);
+        RepositoryProvider provider = getProvider( repo.getType( ) );
+        ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration( repo );
+        cfg.setId( newId );
+        ManagedRepository cloned = provider.createManagedInstance( cfg );
+        cloned.registerEventHandler( RepositoryEvent.ANY, this );
         return cloned;
     }
 
     @Override
-    public <T extends Repository> Repository clone( T repo, String newId ) throws RepositoryException {
-        if (repo instanceof RemoteRepository) {
-            return this.clone((RemoteRepository) repo, newId);
-        } else if (repo instanceof ManagedRepository) {
-            return this.clone((ManagedRepository) repo, newId);
-        } else {
-            throw new RepositoryException("This repository class is not supported " + repo.getClass().getName());
+    public <T extends Repository> Repository clone( T repo, String newId ) throws RepositoryException
+    {
+        if ( repo instanceof RemoteRepository )
+        {
+            return this.clone( (RemoteRepository) repo, newId );
+        }
+        else if ( repo instanceof ManagedRepository )
+        {
+            return this.clone( (ManagedRepository) repo, newId );
+        }
+        else
+        {
+            throw new RepositoryException( "This repository class is not supported " + repo.getClass( ).getName( ) );
         }
     }
 
@@ -1135,101 +1435,130 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @return The cloned repository.
      */
     @Override
-    public RemoteRepository clone( RemoteRepository repo, String newId ) throws RepositoryException {
-        if (managedRepositories.containsKey(newId) || remoteRepositories.containsKey(newId)) {
-            throw new RepositoryException("The given id exists already " + newId);
+    public RemoteRepository clone( RemoteRepository repo, String newId ) throws RepositoryException
+    {
+        if ( managedRepositories.containsKey( newId ) || remoteRepositories.containsKey( newId ) )
+        {
+            throw new RepositoryException( "The given id exists already " + newId );
         }
-        RepositoryProvider provider = getProvider(repo.getType());
-        RemoteRepositoryConfiguration cfg = provider.getRemoteConfiguration(repo);
-        cfg.setId(newId);
-        RemoteRepository cloned = provider.createRemoteInstance(cfg);
-        cloned.registerEventHandler(RepositoryEvent.ANY, this);
+        RepositoryProvider provider = getProvider( repo.getType( ) );
+        RemoteRepositoryConfiguration cfg = provider.getRemoteConfiguration( repo );
+        cfg.setId( newId );
+        RemoteRepository cloned = provider.createRemoteInstance( cfg );
+        cloned.registerEventHandler( RepositoryEvent.ANY, this );
         return cloned;
     }
 
     @Override
     public Repository getRepositoryOfAsset( StorageAsset asset )
     {
-        if (asset instanceof Repository) {
-            return (Repository)asset;
-        } else
+        if ( asset instanceof Repository )
         {
-            return getRepositories( ).stream( ).filter( r -> r.getRoot()
+            return (Repository) asset;
+        }
+        else
+        {
+            return getRepositories( ).stream( ).filter( r -> r.getRoot( )
                 .getStorage( ).equals( asset.getStorage( ) ) ).findFirst( ).orElse( null );
         }
     }
 
 
     @Override
-    public void configurationEvent(ConfigurationEvent event) {
+    public void configurationEvent( ConfigurationEvent event )
+    {
         // We ignore the event, if the save was triggered by ourself
         if ( !ConfigurationHandler.REGISTRY_EVENT_TAG.equals( event.getTag( ) ) )
         {
-            reload();
+            reload( );
         }
     }
 
 
     @Override
-    public <T extends Event> void registerEventHandler( EventType<T> type, EventHandler<? super T> eventHandler) {
-        eventManager.registerEventHandler(type, eventHandler);
+    public <T extends Event> void registerEventHandler( EventType<T> type, EventHandler<? super T> eventHandler )
+    {
+        eventManager.registerEventHandler( type, eventHandler );
     }
 
 
     @Override
-    public <T extends Event> void unregisterEventHandler(EventType<T> type, EventHandler<? super T> eventHandler) {
-        eventManager.unregisterEventHandler(type, eventHandler);
+    public <T extends Event> void unregisterEventHandler( EventType<T> type, EventHandler<? super T> eventHandler )
+    {
+        eventManager.unregisterEventHandler( type, eventHandler );
     }
 
 
     @Override
-    public void handle(Event event) {
+    public void handle( Event event )
+    {
         // To avoid event cycles:
-        if (sameOriginator(event)) {
+        if ( sameOriginator( event ) )
+        {
             return;
         }
-        if (event instanceof RepositoryIndexEvent) {
-            handleIndexCreationEvent((RepositoryIndexEvent) event);
+        if ( event instanceof RepositoryIndexEvent )
+        {
+            handleIndexCreationEvent( (RepositoryIndexEvent) event );
         }
         // We propagate all events to our listeners, but with context of repository registry
-        pushEvent(event);
+        pushEvent( event );
     }
 
-    private void handleIndexCreationEvent(RepositoryIndexEvent event) {
+    private void handleIndexCreationEvent( RepositoryIndexEvent event )
+    {
         RepositoryIndexEvent idxEvent = event;
-        if (managedRepositories.containsKey(idxEvent.getRepository().getId()) ||
-                remoteRepositories.containsKey(idxEvent.getRepository().getId())) {
-            EditableRepository repo = (EditableRepository) idxEvent.getRepository();
-            if (repo != null && repo.getIndexingContext() != null) {
-                try {
-                    ArchivaIndexManager idxmgr = getIndexManager(repo.getType());
-                    if (idxmgr != null) {
-                        ArchivaIndexingContext newCtx = idxmgr.move(repo.getIndexingContext(), repo);
-                        repo.setIndexingContext(newCtx);
-                        idxmgr.updateLocalIndexPath(repo);
-                    }
+        EditableRepository repo = (EditableRepository) idxEvent.getRepository( );
+        if ( repo != null ) {
+            ArchivaIndexManager idxmgr = getIndexManager( repo.getType( ) );
+            if ( repo.getIndexingContext( ) != null )
+            {
+                try
+                {
+                        ArchivaIndexingContext newCtx = idxmgr.move( repo.getIndexingContext( ), repo );
+                        repo.setIndexingContext( newCtx );
+                        idxmgr.updateLocalIndexPath( repo );
 
-                } catch (IndexCreationFailedException e) {
-                    log.error("Could not move index to new directory {}", e.getMessage(), e);
+                }
+                catch ( IndexCreationFailedException e )
+                {
+                    log.error( "Could not move index to new directory: '{}'", e.getMessage( ), e );
+                }
+            } else {
+                try
+                {
+                    ArchivaIndexingContext context = idxmgr.createContext( repo );
+                    repo.setIndexingContext( context );
+                    idxmgr.updateLocalIndexPath( repo );
+                }
+                catch ( IndexCreationFailedException e )
+                {
+                    log.error( "Could not create index:  '{}'", e.getMessage( ), e );
                 }
             }
         }
     }
 
-    private boolean sameOriginator(Event event) {
-        if (event.getSource() == this) {
+    private boolean sameOriginator( Event event )
+    {
+        if ( event.getSource( ) == this )
+        {
             return true;
-        } else if (event.hasPreviousEvent()) {
-            return sameOriginator(event.getPreviousEvent());
-        } else {
+        }
+        else if ( event.hasPreviousEvent( ) )
+        {
+            return sameOriginator( event.getPreviousEvent( ) );
+        }
+        else
+        {
             return false;
         }
     }
 
-    private void pushEvent(Event event) {
-        eventManager.fireEvent(event);
+    private void pushEvent( Event event )
+    {
+        eventManager.fireEvent( event );
     }
-
 
 
 }

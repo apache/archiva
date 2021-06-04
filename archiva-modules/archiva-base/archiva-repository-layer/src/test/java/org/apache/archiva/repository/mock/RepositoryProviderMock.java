@@ -22,8 +22,10 @@ package org.apache.archiva.repository.mock;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.event.Event;
+import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -230,6 +232,12 @@ public class RepositoryProviderMock implements RepositoryProvider
     @Override
     public RepositoryGroupConfiguration getRepositoryGroupConfiguration(RepositoryGroup repositoryGroup) throws RepositoryException {
         return null;
+    }
+
+    @Override
+    public void addRepositoryEventHandler( EventHandler<? super RepositoryEvent> eventHandler )
+    {
+        // do nothing
     }
 
 

@@ -26,6 +26,9 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventHandler;
+import org.apache.archiva.event.EventManager;
+import org.apache.archiva.event.EventType;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.EditableRepository;
@@ -33,6 +36,7 @@ import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryGroup;
@@ -41,6 +45,7 @@ import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedURIException;
 import org.apache.archiva.repository.base.BasicManagedRepository;
 import org.apache.archiva.repository.base.PasswordCredentials;
+import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -61,7 +66,9 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -80,6 +87,29 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Inject
     private FileLockManager fileLockManager;
+
+    private class EventHandlerInfo {
+        EventType<?> type;
+        EventHandler<?> handler;
+
+        public EventHandlerInfo( EventType<?> type, EventHandler<?> handler )
+        {
+            this.type = type;
+            this.handler = handler;
+        }
+
+        public EventType<?> getType( )
+        {
+            return type;
+        }
+
+        public EventHandler<?> getHandler( )
+        {
+            return handler;
+        }
+    }
+
+    private List<EventHandler<? super RepositoryEvent>> repositoryEventHandlers = new ArrayList<>( );
 
     private static final Logger log = LoggerFactory.getLogger(MavenRepositoryProvider.class);
 
@@ -100,14 +130,16 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     }
 
     public MavenManagedRepository createManagedInstance(String id, String name, Path baseDir) {
-        FilesystemStorage storage = null;
+        FilesystemStorage storage;
         try {
             storage = new FilesystemStorage(baseDir.resolve(id), fileLockManager);
         } catch (IOException e) {
             log.error("Could not initialize fileystem for repository {}", id);
             throw new RuntimeException(e);
         }
-        return new MavenManagedRepository(id, name, storage);
+        MavenManagedRepository repo = new MavenManagedRepository( id, name, storage );
+        registerEventHandler( repo );
+        return repo;
     }
 
     @Override
@@ -116,14 +148,16 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     }
 
     public MavenRemoteRepository createRemoteInstance(String id, String name, Path baseDir) {
-        FilesystemStorage storage = null;
+        FilesystemStorage storage;
         try {
             storage = new FilesystemStorage(baseDir.resolve(id), fileLockManager);
         } catch (IOException e) {
             log.error("Could not initialize fileystem for repository {}", id);
             throw new RuntimeException(e);
         }
-        return new MavenRemoteRepository(id, name, storage);
+        MavenRemoteRepository repo = new MavenRemoteRepository( id, name, storage );
+        registerEventHandler( repo );
+        return repo;
     }
 
     @Override
@@ -132,14 +166,22 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     }
 
     public MavenRepositoryGroup createRepositoryGroup(String id, String name, Path baseDir) {
-        FilesystemStorage storage = null;
+        FilesystemStorage storage;
         try {
             storage = new FilesystemStorage(baseDir.resolve(id), fileLockManager);
         } catch (IOException e) {
             log.error("Could not initialize fileystem for repository {}", id);
             throw new RuntimeException(e);
         }
-        return new MavenRepositoryGroup(id, name, storage);
+        MavenRepositoryGroup group = new MavenRepositoryGroup( id, name, storage );
+        registerEventHandler( group );
+        return group;
+    }
+
+    private void registerEventHandler( Repository repo ) {
+        for (EventHandler<? super RepositoryEvent> eventHandler : repositoryEventHandlers) {
+            repo.registerEventHandler( RepositoryEvent.ANY, eventHandler );
+        }
     }
 
     private URI getURIFromString(String uriStr) throws RepositoryException {
@@ -166,7 +208,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             try {
                 uri = new URI(newCfg);
             } catch (URISyntaxException e1) {
-                log.error("Could not create URI from {} -> ", uriStr, newCfg);
+                log.error("Could not create URI from {} -> {}", uriStr, newCfg);
                 throw new RepositoryException("The config entry " + uriStr + " cannot be converted to URI.");
             }
         }
@@ -421,16 +463,8 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         cfg.setRetentionPeriod(artifactCleanupFeature.getRetentionPeriod().getDays());
         cfg.setDeleteReleasedSnapshots(artifactCleanupFeature.isDeleteReleasedSnapshots());
 
-        if (managedRepository.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE)) {
-            cfg.setReleases(true);
-        } else {
-            cfg.setReleases(false);
-        }
-        if (managedRepository.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT)) {
-            cfg.setSnapshots(true);
-        } else {
-            cfg.setSnapshots(false);
-        }
+        cfg.setReleases( managedRepository.getActiveReleaseSchemes( ).contains( ReleaseScheme.RELEASE ) );
+        cfg.setSnapshots( managedRepository.getActiveReleaseSchemes( ).contains( ReleaseScheme.SNAPSHOT ) );
         return cfg;
 
     }
@@ -450,9 +484,15 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             cfg.setMergedIndexPath( indexCreationFeature.getIndexPath().toString() );
         }
         cfg.setMergedIndexTtl(repositoryGroup.getMergedIndexTTL());
-        cfg.setRepositories(repositoryGroup.getRepositories().stream().map(r -> r.getId()).collect(Collectors.toList()));
+        cfg.setRepositories(repositoryGroup.getRepositories().stream().map( Repository::getId ).collect(Collectors.toList()));
         cfg.setCronExpression(repositoryGroup.getSchedulingDefinition());
         return cfg;
+    }
+
+    @Override
+    public void addRepositoryEventHandler( EventHandler<? super RepositoryEvent> eventHandler )
+    {
+        this.repositoryEventHandlers.add( eventHandler );
     }
 
     private ManagedRepositoryConfiguration getStageRepoConfig(ManagedRepositoryConfiguration repository) {
@@ -470,7 +510,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         stagingRepository.setLocation(path.substring(0, lastIndex) + "/" + stagingRepository.getId());
 
         if (StringUtils.isNotBlank(repository.getIndexDir())) {
-            Path indexDir = null;
+            Path indexDir;
             try {
                 indexDir = Paths.get(new URI(repository.getIndexDir().startsWith("file://") ? repository.getIndexDir() : "file://" + repository.getIndexDir()));
                 if (indexDir.isAbsolute()) {
@@ -488,7 +528,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             // in case of absolute dir do not use the same
         }
         if (StringUtils.isNotBlank(repository.getPackedIndexDir())) {
-            Path packedIndexDir = null;
+            Path packedIndexDir;
             packedIndexDir = Paths.get(repository.getPackedIndexDir());
             if (packedIndexDir.isAbsolute()) {
                 Path newDir = packedIndexDir.getParent().resolve(packedIndexDir.getFileName() + StagingRepositoryFeature.STAGING_REPO_POSTFIX);

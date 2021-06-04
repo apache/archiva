@@ -23,9 +23,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.Optional;
@@ -217,5 +219,23 @@ public class FileUtils {
                 }
             });
         }
+    }
+
+
+    public static void copyContent(Path srcDir, Path destinationDir, boolean overwrite) throws IOException
+    {
+        CopyOption[] copyOption = overwrite ? new CopyOption[]{StandardCopyOption.REPLACE_EXISTING} : new CopyOption[]{};
+        Files.walk(srcDir).forEach(a -> {
+            Path b = destinationDir.resolve(srcDir.relativize( a ));
+            try {
+                Files.copy(a, b, copyOption);
+            } catch (IOException e) {
+                log.error( "Could not copy file {} to {}: {}", a, b, e.getMessage( ) );
+            }
+        });
+    }
+
+    public static void copyContent(Path srcDir, Path destinationDir) throws IOException {
+        copyContent( srcDir, destinationDir, true );
     }
 }

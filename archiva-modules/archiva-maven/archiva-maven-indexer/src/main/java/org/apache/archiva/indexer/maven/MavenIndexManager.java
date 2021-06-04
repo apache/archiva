@@ -19,6 +19,7 @@ package org.apache.archiva.indexer.maven;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexManager;
@@ -38,6 +39,7 @@ import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
+import org.apache.archiva.repository.storage.AssetType;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -499,7 +501,8 @@ public class MavenIndexManager implements ArchivaIndexManager {
                 StorageAsset newPath = getIndexPath(repo);
                 IndexingContext ctx = context.getBaseContext(IndexingContext.class);
                 Path oldPath = ctx.getIndexDirectoryFile().toPath();
-                if (oldPath.equals(newPath)) {
+                Path newFilePath = newPath.getFilePath( );
+                if (oldPath.equals(newFilePath)) {
                     // Nothing to do, if path does not change
                     return context;
                 }
@@ -510,7 +513,13 @@ public class MavenIndexManager implements ArchivaIndexManager {
                     return createContext(repo);
                 } else {
                     context.close(false);
-                    Files.move(oldPath, newPath.getFilePath());
+                    if (Files.exists( newFilePath )) {
+                        FileUtils.copyContent( oldPath, newFilePath );
+                        FileUtils.deleteDirectory( oldPath );
+                    } else
+                    {
+                        Files.move( oldPath, newFilePath );
+                    }
                     return createContext(repo);
                 }
             } catch (IOException e) {
@@ -629,7 +638,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
         if ( !indexDir.exists() )
         {
-            indexDir = storage.addAsset(indexDir.getPath(), true);
+            indexDir.create( AssetType.CONTAINER );
         }
         return indexDir;
     }
@@ -758,11 +767,23 @@ public class MavenIndexManager implements ArchivaIndexManager {
     {
         if ( rif.getIndexUri( ) == null )
         {
-            return baseUri.resolve( DEFAULT_INDEX_PATH ).toString( );
+            return baseUri.resolve( "/"+DEFAULT_INDEX_PATH ).toString( );
         }
         else
         {
-            return baseUri.resolve( rif.getIndexUri( ) ).toString( );
+            URI rifUri = rif.getIndexUri( );
+            if (rifUri.isAbsolute()) {
+                return rifUri.toString( );
+            } else
+            {
+                if (baseUri.getScheme().toLowerCase().equals( "file" )) {
+                    return Paths.get( baseUri ).resolve( rifUri.getPath() ).toUri( ).toString( );
+                } else
+                {
+                    String pathString = rifUri.getPath( ).startsWith( "/" ) ? rifUri.getPath( ) : "/" + rifUri.getPath( );
+                    return baseUri.resolve( pathString ).toString( );
+                }
+            }
         }
     }
 
