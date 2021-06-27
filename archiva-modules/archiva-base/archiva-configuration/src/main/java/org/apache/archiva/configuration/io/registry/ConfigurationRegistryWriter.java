@@ -425,6 +425,9 @@ public class ConfigurationRegistryWriter {
             if (value.getType() != null) {
                 registry.setString(prefix + "type", value.getType());
             }
+            if (value.getLocation()!=null) {
+                registry.setString( prefix+"location", value.getType( ) );
+            }
             if (value.getMergedIndexPath() != null && !value.getMergedIndexPath().equals(".indexer")
             ) {
                 String mergedIndexPath = "mergedIndexPath";

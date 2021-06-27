@@ -24,6 +24,8 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * This is just a simple wrapper to access the archiva configuration used by the registry and associated classes
  *
@@ -35,6 +37,8 @@ public class ConfigurationHandler
     public static final String REGISTRY_EVENT_TAG = "repositoryRegistry";
 
     private ArchivaConfiguration archivaConfiguration;
+
+    final ReentrantReadWriteLock lock = new ReentrantReadWriteLock( );
 
     public ConfigurationHandler( ArchivaConfiguration archivaConfiguration ) {
         this.archivaConfiguration = archivaConfiguration;
@@ -68,4 +72,7 @@ public class ConfigurationHandler
         archivaConfiguration.save( configuration, "" );
     }
 
+    ReentrantReadWriteLock getLock() {
+        return lock;
+    }
 }

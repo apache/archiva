@@ -27,8 +27,6 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventHandler;
-import org.apache.archiva.event.EventManager;
-import org.apache.archiva.event.EventType;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.EditableRepository;
@@ -76,7 +74,7 @@ import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
 import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_PACKED_INDEX_PATH;
 
 /**
- * Provider for the maven2 repository implementations
+ * Provider for the maven2 repository implementation
  */
 @Service("mavenRepositoryProvider")
 public class MavenRepositoryProvider implements RepositoryProvider {
@@ -88,28 +86,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     @Inject
     private FileLockManager fileLockManager;
 
-    private class EventHandlerInfo {
-        EventType<?> type;
-        EventHandler<?> handler;
-
-        public EventHandlerInfo( EventType<?> type, EventHandler<?> handler )
-        {
-            this.type = type;
-            this.handler = handler;
-        }
-
-        public EventType<?> getType( )
-        {
-            return type;
-        }
-
-        public EventHandler<?> getHandler( )
-        {
-            return handler;
-        }
-    }
-
-    private List<EventHandler<? super RepositoryEvent>> repositoryEventHandlers = new ArrayList<>( );
+    private final List<EventHandler<? super RepositoryEvent>> repositoryEventHandlers = new ArrayList<>( );
 
     private static final Logger log = LoggerFactory.getLogger(MavenRepositoryProvider.class);
 
@@ -152,7 +129,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         try {
             storage = new FilesystemStorage(baseDir.resolve(id), fileLockManager);
         } catch (IOException e) {
-            log.error("Could not initialize fileystem for repository {}", id);
+            log.error("Could not initialize filesystem for repository {}: '{}'", id, e.getMessage());
             throw new RuntimeException(e);
         }
         MavenRemoteRepository repo = new MavenRemoteRepository( id, name, storage );
@@ -162,15 +139,15 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Override
     public EditableRepositoryGroup createRepositoryGroup(String id, String name) {
-        return createRepositoryGroup(id, name, archivaConfiguration.getRepositoryBaseDir());
+        return createRepositoryGroup(id, name, archivaConfiguration.getRepositoryGroupBaseDir().resolve( id ));
     }
 
-    public MavenRepositoryGroup createRepositoryGroup(String id, String name, Path baseDir) {
+    public MavenRepositoryGroup createRepositoryGroup(String id, String name, Path repositoryPath) {
         FilesystemStorage storage;
         try {
-            storage = new FilesystemStorage(baseDir.resolve(id), fileLockManager);
+            storage = new FilesystemStorage(repositoryPath, fileLockManager);
         } catch (IOException e) {
-            log.error("Could not initialize fileystem for repository {}", id);
+            log.error("Could not initialize filesystem for repository {}: '{}'", id, e.getMessage());
             throw new RuntimeException(e);
         }
         MavenRepositoryGroup group = new MavenRepositoryGroup( id, name, storage );
@@ -349,11 +326,19 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Override
     public RepositoryGroup createRepositoryGroup(RepositoryGroupConfiguration configuration) throws RepositoryException {
-        Path repositoryGroupBase = getArchivaConfiguration().getRepositoryGroupBaseDir();
+        Path repositoryPath = getRepositoryGroupPath( configuration );
         MavenRepositoryGroup newGrp = createRepositoryGroup(configuration.getId(), configuration.getName(),
-                repositoryGroupBase);
+                repositoryPath);
         updateRepositoryGroupInstance(newGrp, configuration);
         return newGrp;
+    }
+
+    private Path getRepositoryGroupPath(RepositoryGroupConfiguration configuration) {
+        if (StringUtils.isNotEmpty( configuration.getLocation() )) {
+            return Paths.get( configuration.getLocation( ) );
+        } else {
+            return getArchivaConfiguration( ).getRepositoryGroupBaseDir( ).resolve( configuration.getId( ) );
+        }
     }
 
     @Override
@@ -551,7 +536,8 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         return stagingRepository;
     }
 
-    private void setBaseConfig(EditableRepository repo, AbstractRepositoryConfiguration cfg) throws RepositoryException {
+    private void setBaseConfig( EditableRepository repo, AbstractRepositoryConfiguration cfg)
+    {
 
         URI baseUri = archivaConfiguration.getRepositoryBaseDir().toUri();
         repo.setBaseUri(baseUri);

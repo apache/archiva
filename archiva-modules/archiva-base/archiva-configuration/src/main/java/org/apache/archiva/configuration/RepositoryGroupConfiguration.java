@@ -78,10 +78,36 @@ public class RepositoryGroupConfiguration
      */
     private List<String> repositories;
 
+    /**
+     * The path for local data
+     */
+    private String location;
+
 
       //-----------/
      //- Methods -/
     //-----------/
+
+
+    /**
+     * Return the local path for group data. If the merged index property is set to a non absolute path,
+     * it is relative to this location.
+     *
+     * @return the path for group data storage
+     */
+    public String getLocation( )
+    {
+        return location;
+    }
+
+    /**
+     * Set the local path for group data
+     * @param location
+     */
+    public void setLocation( String location )
+    {
+        this.location = location;
+    }
 
     /**
      * Method addRepository.

@@ -19,11 +19,13 @@ package org.apache.archiva.rest.api.services.v2;
  */
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.archiva.rest.api.model.v2.ValidationError;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,7 +39,8 @@ public class ArchivaRestError
 {
 
     private static final long serialVersionUID = -8892617571273167067L;
-    private List<ErrorMessage> errorMessages = new ArrayList<ErrorMessage>( 1 );
+    private List<ErrorMessage> errorMessages = new ArrayList<>( 1 );
+    private List<ValidationError> validationErrors;
 
     public ArchivaRestError()
     {
@@ -51,6 +54,19 @@ public class ArchivaRestError
         {
             errorMessages.add( new ErrorMessage( e.getMessage(), null ) );
         }
+        if (e instanceof ValidationException) {
+            this.validationErrors = ( (ValidationException) e ).getValidationErrors( );
+        }
+    }
+
+    public ArchivaRestError( ValidationException e )
+    {
+        errorMessages.addAll( e.getErrorMessages() );
+        if ( e.getErrorMessages().isEmpty() && StringUtils.isNotEmpty( e.getMessage() ) )
+        {
+            errorMessages.add( new ErrorMessage( e.getMessage(), null ) );
+        }
+        this.validationErrors = e.getValidationErrors( );
     }
 
     @Schema(name="error_messages", description = "The list of errors that occurred while processing the REST request")
@@ -67,5 +83,16 @@ public class ArchivaRestError
     public void addErrorMessage( ErrorMessage errorMessage )
     {
         this.errorMessages.add( errorMessage );
+    }
+
+    @Schema( name = "has_validation_errors", description = "True, if the error contains validation errors" )
+    public boolean hasValidationErrors( )
+    {
+        return this.validationErrors != null && this.validationErrors.size( ) > 0;
+    }
+
+    @Schema( name = "validation_errors", description = "The list of validation errors")
+    public List<ValidationError> getValidationErrors() {
+        return hasValidationErrors() ? this.validationErrors : Collections.emptyList( );
     }
 }

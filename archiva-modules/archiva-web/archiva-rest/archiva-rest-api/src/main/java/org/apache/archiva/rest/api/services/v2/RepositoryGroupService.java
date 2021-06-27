@@ -91,7 +91,7 @@ public interface RepositoryGroupService
                                                         @QueryParam( "order" ) @DefaultValue( "asc" ) String order )
         throws ArchivaRestServiceException;
 
-    @Path( "{repositoryGroupId}" )
+    @Path( "{id}" )
     @GET
     @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
@@ -112,7 +112,7 @@ public interface RepositoryGroupService
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
-    RepositoryGroup getRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
+    RepositoryGroup getRepositoryGroup( @PathParam( "id" ) String repositoryGroupId )
         throws ArchivaRestServiceException;
 
     @Path( "" )
@@ -133,7 +133,7 @@ public interface RepositoryGroupService
         },
         responses = {
             @ApiResponse( responseCode = "201",
-                description = "If the list could be returned",
+                description = "If the repository group was created",
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = RepositoryGroup.class ) )
             ),
             @ApiResponse( responseCode = "303", description = "The repository group exists already",
@@ -150,7 +150,7 @@ public interface RepositoryGroupService
     RepositoryGroup addRepositoryGroup( RepositoryGroup repositoryGroup )
         throws ArchivaRestServiceException;
 
-    @Path( "{repositoryGroupId}" )
+    @Path( "{id}" )
     @PUT
     @Consumes( {APPLICATION_JSON} )
     @Produces( {APPLICATION_JSON} )
@@ -179,10 +179,10 @@ public interface RepositoryGroupService
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
-    RepositoryGroup updateRepositoryGroup( @PathParam( "repositoryGroupId" ) String groupId, RepositoryGroup repositoryGroup )
+    RepositoryGroup updateRepositoryGroup( @PathParam( "id" ) String groupId, RepositoryGroup repositoryGroup )
         throws ArchivaRestServiceException;
 
-    @Path( "{repositoryGroupId}" )
+    @Path( "{id}" )
     @DELETE
     @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
@@ -202,10 +202,10 @@ public interface RepositoryGroupService
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
         }
     )
-    Response deleteRepositoryGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId )
+    Response deleteRepositoryGroup( @PathParam( "id" ) String repositoryGroupId )
         throws ArchivaRestServiceException;
 
-    @Path( "{repositoryGroupId}/repositories/{repositoryId}" )
+    @Path( "{id}/repositories/{repositoryId}" )
     @PUT
     @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
@@ -225,11 +225,11 @@ public interface RepositoryGroupService
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
         }
     )
-    RepositoryGroup addRepositoryToGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId,
+    RepositoryGroup addRepositoryToGroup( @PathParam( "id" ) String repositoryGroupId,
                                           @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 
-    @Path( "{repositoryGroupId}/repositories/{repositoryId}" )
+    @Path( "{id}/repositories/{repositoryId}" )
     @DELETE
     @Produces( {APPLICATION_JSON} )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
@@ -249,7 +249,7 @@ public interface RepositoryGroupService
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
         }
     )
-    RepositoryGroup deleteRepositoryFromGroup( @PathParam( "repositoryGroupId" ) String repositoryGroupId,
+    RepositoryGroup deleteRepositoryFromGroup( @PathParam( "id" ) String repositoryGroupId,
                                                @PathParam( "repositoryId" ) String repositoryId )
         throws ArchivaRestServiceException;
 

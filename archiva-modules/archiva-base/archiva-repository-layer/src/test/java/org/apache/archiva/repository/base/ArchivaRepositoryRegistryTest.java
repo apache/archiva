@@ -30,15 +30,14 @@ import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -50,12 +49,13 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Test for RepositoryRegistry
  */
-@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ExtendWith( SpringExtension.class)
 @ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public class ArchivaRepositoryRegistryTest
 {
@@ -75,7 +75,7 @@ public class ArchivaRepositoryRegistryTest
     private static Path cfgCopy;
     private static Path archivaCfg;
 
-    @BeforeClass
+    @BeforeAll
     public static void classSetup() throws IOException, URISyntaxException
     {
         URL archivaCfgUri = Thread.currentThread().getContextClassLoader().getResource( "archiva.xml" );
@@ -86,7 +86,7 @@ public class ArchivaRepositoryRegistryTest
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void classTearDown() throws IOException
     {
         if (cfgCopy!=null) {
@@ -94,7 +94,7 @@ public class ArchivaRepositoryRegistryTest
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp( ) throws Exception
     {
         assertNotNull( repositoryRegistry );
@@ -111,7 +111,7 @@ public class ArchivaRepositoryRegistryTest
         repositoryRegistry.reload();
     }
 
-    @After
+    @AfterEach
     public void tearDown( ) throws Exception
     {
         Files.deleteIfExists( userCfg );
@@ -160,7 +160,7 @@ public class ArchivaRepositoryRegistryTest
         assertTrue(repo instanceof ManagedRepository);
         assertTrue( repo.hasIndex( ) );
         assertTrue(repo.isScanned());
-        Assert.assertEquals( RepositoryType.MAVEN, repo.getType());
+        assertEquals( RepositoryType.MAVEN, repo.getType());
     }
 
     @Test
@@ -213,7 +213,7 @@ public class ArchivaRepositoryRegistryTest
 
         managedRepository = BasicManagedRepository.newFilesystemInstance("central", "Test repo", archivaConfiguration.getRepositoryBaseDir().resolve("central"));
         managedRepository.setDescription( managedRepository.getPrimaryLocale(), "This is just a test" );
-        ManagedRepository updatedRepo = null;
+        ManagedRepository updatedRepo;
         try {
             repositoryRegistry.putRepository( managedRepository );
             throw new RuntimeException("Repository exception should be thrown, if there exists a remote repository already with that id");
@@ -224,12 +224,12 @@ public class ArchivaRepositoryRegistryTest
         managedRepository.setDescription( managedRepository.getPrimaryLocale(), "This is just a test" );
         updatedRepo = repositoryRegistry.putRepository( managedRepository );
 
-        assertTrue(updatedRepo==managedRepository);
+        assertSame( updatedRepo, managedRepository );
         assertNotNull(managedRepository.getContent());
         assertEquals(6, repositoryRegistry.getRepositories().size());
         ManagedRepository managedRepository1 = repositoryRegistry.getManagedRepository( "internal" );
         assertEquals("Test repo", managedRepository1.getName());
-        assertTrue(managedRepository1==managedRepository);
+        assertSame( managedRepository1, managedRepository );
 
     }
 
@@ -253,7 +253,7 @@ public class ArchivaRepositoryRegistryTest
         cfg.setId("internal");
         cfg.setName("This is internal test 002");
         repo = repositoryRegistry.putRepository( cfg );
-        assertTrue(internalRepo==repo);
+        assertSame( internalRepo, repo );
         assertEquals("This is internal test 002",repo.getName());
         assertEquals(5, repositoryRegistry.getManagedRepositories().size());
 
@@ -284,7 +284,7 @@ public class ArchivaRepositoryRegistryTest
         cfg.setId("internal");
         cfg.setName("This is internal test 002");
         repo = repositoryRegistry.putRepository( cfg, configuration );
-        assertTrue(internalRepo==repo);
+        assertSame( internalRepo, repo );
         assertEquals("This is internal test 002",repo.getName());
         assertEquals(5, repositoryRegistry.getManagedRepositories().size());
 
@@ -299,16 +299,17 @@ public class ArchivaRepositoryRegistryTest
         remoteRepository.setDescription( remoteRepository.getPrimaryLocale(), "This is just a test" );
         RemoteRepository newRepo = repositoryRegistry.putRepository(remoteRepository);
 
-        assertTrue(remoteRepository==newRepo);
+        assertSame( remoteRepository, newRepo );
         assertNotNull(remoteRepository.getContent());
         assertEquals(6, repositoryRegistry.getRepositories().size());
 
         remoteRepository = BasicRemoteRepository.newFilesystemInstance( "internal", "Test repo", archivaConfiguration.getRemoteRepositoryBaseDir() );
         remoteRepository.setDescription( remoteRepository.getPrimaryLocale(), "This is just a test" );
-        RemoteRepository updatedRepo = null;
+        RemoteRepository updatedRepo;
         try
         {
             updatedRepo = repositoryRegistry.putRepository( remoteRepository );
+            assertSame( remoteRepository, updatedRepo );
             throw new RuntimeException("Should throw repository exception, if repository exists already and is not the same type.");
         } catch (RepositoryException e) {
             // OK
@@ -318,12 +319,12 @@ public class ArchivaRepositoryRegistryTest
         remoteRepository.setDescription( remoteRepository.getPrimaryLocale(), "This is just a test" );
         updatedRepo = repositoryRegistry.putRepository( remoteRepository );
 
-        assertTrue(updatedRepo==remoteRepository);
+        assertSame( updatedRepo, remoteRepository );
         assertNotNull(remoteRepository.getContent());
         assertEquals(6, repositoryRegistry.getRepositories().size());
         RemoteRepository remoteRepository1 = repositoryRegistry.getRemoteRepository( "central" );
         assertEquals("Test repo", remoteRepository1.getName());
-        assertTrue(remoteRepository1==remoteRepository);
+        assertSame( remoteRepository1, remoteRepository );
     }
 
     @Test
@@ -346,7 +347,7 @@ public class ArchivaRepositoryRegistryTest
         cfg.setId("central");
         cfg.setName("This is central test 002");
         repo = repositoryRegistry.putRepository( cfg );
-        assertTrue(internalRepo==repo);
+        assertSame( internalRepo, repo );
         assertEquals("This is central test 002",repo.getName());
         assertEquals(2, repositoryRegistry.getRemoteRepositories().size());
 
@@ -376,7 +377,7 @@ public class ArchivaRepositoryRegistryTest
         cfg.setId("central");
         cfg.setName("This is central test 002");
         repo = repositoryRegistry.putRepository( cfg, configuration );
-        assertTrue(internalRepo==repo);
+        assertSame( internalRepo, repo );
         assertEquals("This is central test 002",repo.getName());
         assertEquals(2, repositoryRegistry.getRemoteRepositories().size());
 
@@ -483,7 +484,7 @@ public class ArchivaRepositoryRegistryTest
         assertNotNull(clone);
         assertNull(clone.getContent());
         assertEquals("Archiva Managed Internal Repository", clone.getName());
-        assertFalse(managedRepository==clone);
+        assertNotSame( managedRepository, clone );
 
     }
 
@@ -516,8 +517,15 @@ public class ArchivaRepositoryRegistryTest
         assertNotNull(clone);
         assertNull(clone.getContent());
         assertEquals("Central Repository", clone.getName());
-        assertFalse(remoteRepository==clone);
+        assertNotSame( remoteRepository, clone );
 
+    }
+
+    @Test
+    void validateRepository() {
+        Repository repo = repositoryRegistry.getRepository( "internal" );
+        assertNotNull( repo );
+        assertTrue( repositoryRegistry.validateRepository( repo ).isValid() );
     }
 
 }

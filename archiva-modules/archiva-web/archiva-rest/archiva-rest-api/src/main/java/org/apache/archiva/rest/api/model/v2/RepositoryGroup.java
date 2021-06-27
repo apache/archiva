@@ -35,12 +35,16 @@ package org.apache.archiva.rest.api.model.v2;/*
  */
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.features.RepositoryFeature;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -63,16 +67,19 @@ public class RepositoryGroup implements Serializable
         this.id = id;
     }
 
-    public static RepositoryGroup of( org.apache.archiva.admin.model.beans.RepositoryGroup modelObj ) {
+    public static RepositoryGroup of( org.apache.archiva.repository.RepositoryGroup modelObj ) {
         RepositoryGroup result = new RepositoryGroup( );
         MergeConfiguration mergeConfig = new MergeConfiguration( );
         result.setMergeConfiguration( mergeConfig );
         result.setId( modelObj.getId() );
-        result.setLocation( modelObj.getLocation() );
-        result.setRepositories( modelObj.getRepositories() );
-        mergeConfig.setMergedIndexPath( modelObj.getMergedIndexPath() );
-        mergeConfig.setMergedIndexTtlMinutes( modelObj.getMergedIndexTtl( ) );
-        mergeConfig.setIndexMergeSchedule( modelObj.getCronExpression( ) );
+        result.setLocation( modelObj.getLocation().toString() );
+        result.setRepositories( modelObj.getRepositories().stream().map( Repository::getId ).collect( Collectors.toList()) );
+        if (modelObj.supportsFeature( IndexCreationFeature.class )) {
+            IndexCreationFeature icf = modelObj.getFeature( IndexCreationFeature.class ).get();
+            mergeConfig.setMergedIndexPath( icf.getIndexPath( ).toString() );
+            mergeConfig.setMergedIndexTtlMinutes( modelObj.getMergedIndexTTL( ) );
+            mergeConfig.setIndexMergeSchedule( modelObj.getSchedulingDefinition() );
+        }
         return result;
     }
 

@@ -753,6 +753,8 @@ public class ConfigurationRegistryReader {
         value.setMergedIndexTtl(mergedIndexTtl);
         //String cronExpression = registry.getString( prefix + "cronExpression", value.getCronExpression() );
 
+        value.setLocation( registry.getString( prefix + "location" ) );
+
         List<String> cronExpressionList = registry.getList(prefix + "cronExpression");
         String cronExpression = value.getCronExpression();
         if (cronExpressionList != null && !cronExpressionList.isEmpty()) {

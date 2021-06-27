@@ -38,6 +38,7 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexManagerFactory;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
+import org.apache.archiva.repository.CheckedResult;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.EditableRepository;
@@ -59,6 +60,11 @@ import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.validation.RepositoryChecker;
+import org.apache.archiva.repository.validation.RepositoryValidator;
+import org.apache.archiva.repository.validation.ValidationError;
+import org.apache.archiva.repository.validation.ValidationResponse;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +82,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -98,7 +105,6 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
 {
 
     private static final Logger log = LoggerFactory.getLogger( RepositoryRegistry.class );
-    private final ConfigurationHandler configurationHandler;
 
     /**
      * We inject all repository providers
@@ -129,16 +135,52 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock( );
 
     private RepositoryGroupHandler groupHandler;
+    private final Set<RepositoryValidator<? extends Repository>> validators;
+    private final RepositoryChecker<RepositoryGroup, Map<String, List<ValidationError>>> groupChecker;
+    private final RepositoryChecker<ManagedRepository, Map<String, List<ValidationError>>> managedChecker;
+    private final RepositoryChecker<RemoteRepository, Map<String, List<ValidationError>>> remoteChecker;
+    private final ConfigurationHandler configurationHandler;
+
 
     private AtomicBoolean groups_initalized = new AtomicBoolean( false );
     private AtomicBoolean managed_initialized = new AtomicBoolean( false );
     private AtomicBoolean remote_initialized = new AtomicBoolean( false );
 
 
-    public ArchivaRepositoryRegistry( ConfigurationHandler configurationHandler )
+    public ArchivaRepositoryRegistry( ConfigurationHandler configurationHandler, List<RepositoryValidator<? extends Repository>> validatorList )
     {
         this.eventManager = new EventManager( this );
         this.configurationHandler = configurationHandler;
+        this.validators = initValidatorList( validatorList );
+        this.groupChecker = initChecker( RepositoryGroup.class );
+        this.managedChecker = initChecker( ManagedRepository.class );
+        this.remoteChecker = initChecker( RemoteRepository.class );
+    }
+
+    private <R extends Repository> RepositoryChecker<R, Map<String, List<ValidationError>>> initChecker(Class<R> clazz) {
+        return new RepositoryChecker<R, Map<String, List<ValidationError>>>( )
+        {
+            @Override
+            public CheckedResult<R, Map<String, List<ValidationError>>> apply( R repositoryGroup )
+            {
+                return this.apply( repositoryGroup );
+            }
+
+            @Override
+            public CheckedResult<R, Map<String, List<ValidationError>>> applyForUpdate( R repo )
+            {
+                return this.applyForUpdate( repo );
+            }
+        };
+    }
+
+    private Set<RepositoryValidator<? extends Repository>> initValidatorList( List<RepositoryValidator<? extends Repository>> validators )
+    {
+        TreeSet<RepositoryValidator<? extends Repository>> val = new TreeSet<>( );
+        for (RepositoryValidator<? extends Repository> validator : validators) {
+            val.add( validator );
+        }
+        return val;
     }
 
     @Override
@@ -513,7 +555,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         rwLock.readLock( ).lock( );
         try
         {
-            return groupHandler.getRepositoryGroups( );
+            return groupHandler.getAll( );
         }
         finally
         {
@@ -545,9 +587,9 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
                 log.debug( "Remote repo" );
                 return remoteRepositories.get( repoId );
             }
-            else if ( groupHandler.hasRepositoryGroup( repoId ) )
+            else if ( groupHandler.has( repoId ) )
             {
-                return groupHandler.getRepositoryGroup( repoId );
+                return groupHandler.get( repoId );
             }
             else
             {
@@ -608,12 +650,36 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         rwLock.readLock( ).lock( );
         try
         {
-            return groupHandler.getRepositoryGroup( groupId );
+            return groupHandler.get( groupId );
         }
         finally
         {
             rwLock.readLock( ).unlock( );
         }
+    }
+
+    @Override
+    public boolean hasRepository( String repoId )
+    {
+        return this.managedRepositories.containsKey( repoId ) || this.remoteRepositories.containsKey( repoId ) || groupHandler.has( repoId );
+    }
+
+    @Override
+    public boolean hasManagedRepository( String repoId )
+    {
+        return this.managedRepositories.containsKey( repoId );
+    }
+
+    @Override
+    public boolean hasRemoteRepository( String repoId )
+    {
+        return this.remoteRepositories.containsKey( repoId );
+    }
+
+    @Override
+    public boolean hasRepositoryGroup( String groupId )
+    {
+        return groupHandler.has( groupId );
     }
 
     protected void saveConfiguration( Configuration configuration ) throws IndeterminateConfigurationException, RegistryException
@@ -805,7 +871,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             {
                 throw new RepositoryException( "Fatal error. RepositoryGroupHandler not registered!" );
             }
-            return this.groupHandler.putRepositoryGroup( repositoryGroup );
+            return this.groupHandler.put( repositoryGroup );
         }
         finally
         {
@@ -827,13 +893,28 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         rwLock.writeLock( ).lock( );
         try
         {
-            return groupHandler.putRepositoryGroup( repositoryGroupConfiguration );
+            return groupHandler.put( repositoryGroupConfiguration );
         }
         finally
         {
             rwLock.writeLock( ).unlock( );
         }
 
+    }
+
+    @Override
+    public CheckedResult<RepositoryGroup, Map<String, List<ValidationError>>> putRepositoryGroupAndValidate( RepositoryGroupConfiguration repositoryGroupConfiguration )
+        throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            return groupHandler.putWithCheck( repositoryGroupConfiguration, this.groupChecker );
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
     }
 
     /**
@@ -851,7 +932,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         rwLock.writeLock( ).lock( );
         try
         {
-            return groupHandler.putRepositoryGroup( repositoryGroupConfiguration, configuration );
+            return groupHandler.put( repositoryGroupConfiguration, configuration );
         }
         finally
         {
@@ -1234,12 +1315,12 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             return;
         }
         final String id = repositoryGroup.getId( );
-        if ( groupHandler.hasRepositoryGroup( id ) )
+        if ( groupHandler.has( id ) )
         {
             rwLock.writeLock( ).lock( );
             try
             {
-                groupHandler.removeRepositoryGroup( id );
+                groupHandler.remove( id );
             }
             finally
             {
@@ -1256,12 +1337,12 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             return;
         }
         final String id = repositoryGroup.getId( );
-        if ( groupHandler.hasRepositoryGroup( id ) )
+        if ( groupHandler.has( id ) )
         {
             rwLock.writeLock( ).lock( );
             try
             {
-                groupHandler.removeRepositoryGroup( id, configuration );
+                groupHandler.remove( id, configuration );
             }
             finally
             {
@@ -1395,7 +1476,6 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @param repo The origin repository
      * @return The cloned repository.
      */
-    @Override
     public ManagedRepository clone( ManagedRepository repo, String newId ) throws RepositoryException
     {
         if ( managedRepositories.containsKey( newId ) || remoteRepositories.containsKey( newId ) )
@@ -1411,15 +1491,15 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     }
 
     @Override
-    public <T extends Repository> Repository clone( T repo, String newId ) throws RepositoryException
+    public <T extends Repository> T clone( T repo, String newId ) throws RepositoryException
     {
         if ( repo instanceof RemoteRepository )
         {
-            return this.clone( (RemoteRepository) repo, newId );
+            return (T) this.clone( (RemoteRepository) repo, newId );
         }
         else if ( repo instanceof ManagedRepository )
         {
-            return this.clone( (ManagedRepository) repo, newId );
+            return (T) this.clone( (ManagedRepository) repo, newId );
         }
         else
         {
@@ -1434,7 +1514,6 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
      * @param repo The origin repository
      * @return The cloned repository.
      */
-    @Override
     public RemoteRepository clone( RemoteRepository repo, String newId ) throws RepositoryException
     {
         if ( managedRepositories.containsKey( newId ) || remoteRepositories.containsKey( newId ) )
@@ -1463,6 +1542,35 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         }
     }
 
+    @Override
+    public <R extends Repository> ValidationResponse<R> validateRepository( R repository )
+    {
+        Map<String, List<ValidationError>> errorMap = this.validators.stream( )
+            .filter( ( validator ) -> validator.getType( ).equals( RepositoryType.ALL ) || repository.getType( ).equals( validator.getType( ) ) )
+            .filter( val -> val.isFlavour( repository.getClass() ))
+            .flatMap( validator -> ((RepositoryValidator<R>)validator).apply( repository ).getResult().entrySet( ).stream( ) )
+            .collect( Collectors.toMap(
+                entry -> entry.getKey( ),
+                entry -> entry.getValue( ),
+                ( list1, list2 ) -> ListUtils.union( list1, list2 )
+            ) );
+        return new ValidationResponse( repository, errorMap );
+    }
+
+    @Override
+    public <R extends Repository> ValidationResponse<R> validateRepositoryForUpdate( R repository )
+    {
+        Map<String, List<ValidationError>> errorMap = this.validators.stream( )
+            .filter( ( validator ) -> validator.getType( ).equals( RepositoryType.ALL ) || repository.getType( ).equals( validator.getType( ) ) )
+            .filter( val -> val.isFlavour( repository.getClass() ))
+            .flatMap( validator -> ((RepositoryValidator<R>)validator).applyForUpdate( repository ).getResult().entrySet( ).stream( ) )
+            .collect( Collectors.toMap(
+                entry -> entry.getKey( ),
+                entry -> entry.getValue( ),
+                ( list1, list2 ) -> ListUtils.union( list1, list2 )
+            ) );
+        return new ValidationResponse( repository, errorMap );
+    }
 
     @Override
     public void configurationEvent( ConfigurationEvent event )
@@ -1509,22 +1617,25 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     {
         RepositoryIndexEvent idxEvent = event;
         EditableRepository repo = (EditableRepository) idxEvent.getRepository( );
-        if ( repo != null ) {
+        if ( repo != null )
+        {
             ArchivaIndexManager idxmgr = getIndexManager( repo.getType( ) );
             if ( repo.getIndexingContext( ) != null )
             {
                 try
                 {
-                        ArchivaIndexingContext newCtx = idxmgr.move( repo.getIndexingContext( ), repo );
-                        repo.setIndexingContext( newCtx );
-                        idxmgr.updateLocalIndexPath( repo );
+                    ArchivaIndexingContext newCtx = idxmgr.move( repo.getIndexingContext( ), repo );
+                    repo.setIndexingContext( newCtx );
+                    idxmgr.updateLocalIndexPath( repo );
 
                 }
                 catch ( IndexCreationFailedException e )
                 {
                     log.error( "Could not move index to new directory: '{}'", e.getMessage( ), e );
                 }
-            } else {
+            }
+            else
+            {
                 try
                 {
                     ArchivaIndexingContext context = idxmgr.createContext( repo );

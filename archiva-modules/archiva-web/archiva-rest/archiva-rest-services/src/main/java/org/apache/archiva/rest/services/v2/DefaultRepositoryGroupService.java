@@ -34,17 +34,23 @@ package org.apache.archiva.rest.services.v2;/*
  * under the License.
  */
 
-import org.apache.archiva.admin.model.EntityExistsException;
-import org.apache.archiva.admin.model.EntityNotFoundException;
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
+import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.repository.EditableRepositoryGroup;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.validation.ValidationResponse;
 import org.apache.archiva.rest.api.model.v2.RepositoryGroup;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.v2.ErrorKeys;
 import org.apache.archiva.rest.api.services.v2.ErrorMessage;
 import org.apache.archiva.rest.api.services.v2.RepositoryGroupService;
+import org.apache.archiva.rest.api.services.v2.ValidationException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,13 +60,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static org.apache.archiva.rest.services.utils.AuditHelper.getAuditData;
 
 /**
  * REST V2 Implementation for repository groups.
@@ -72,25 +75,30 @@ import static org.apache.archiva.rest.services.utils.AuditHelper.getAuditData;
 @Service("v2.repositoryGroupService#rest")
 public class DefaultRepositoryGroupService implements RepositoryGroupService
 {
+    private final ConfigurationHandler configurationHandler;
+
     @Context
     HttpServletResponse httpServletResponse;
 
     @Context
     UriInfo uriInfo;
 
-    final private RepositoryGroupAdmin repositoryGroupAdmin;
+    final private RepositoryRegistry repositoryRegistry;
+
+
 
     private static final Logger log = LoggerFactory.getLogger( DefaultRepositoryGroupService.class );
-    private static final QueryHelper<org.apache.archiva.admin.model.beans.RepositoryGroup> QUERY_HELPER = new QueryHelper<>( new String[]{"id"} );
+    private static final QueryHelper<org.apache.archiva.repository.RepositoryGroup> QUERY_HELPER = new QueryHelper<>( new String[]{"id"} );
     static
     {
-        QUERY_HELPER.addStringFilter( "id", org.apache.archiva.admin.model.beans.RepositoryGroup::getId );
-        QUERY_HELPER.addNullsafeFieldComparator( "id", org.apache.archiva.admin.model.beans.RepositoryGroup::getId );
+        QUERY_HELPER.addStringFilter( "id", org.apache.archiva.repository.RepositoryGroup::getId );
+        QUERY_HELPER.addNullsafeFieldComparator( "id", org.apache.archiva.repository.RepositoryGroup::getId );
     }
 
 
-    public DefaultRepositoryGroupService(RepositoryGroupAdmin repositoryGroupAdmin) {
-        this.repositoryGroupAdmin = repositoryGroupAdmin;
+    public DefaultRepositoryGroupService( RepositoryRegistry repositoryRegistry, ConfigurationHandler configurationHandler ) {
+        this.repositoryRegistry = repositoryRegistry;
+        this.configurationHandler = configurationHandler;
     }
 
     @Override
@@ -98,18 +106,13 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     {
         try
         {
-            Predicate<org.apache.archiva.admin.model.beans.RepositoryGroup> filter = QUERY_HELPER.getQueryFilter( searchTerm );
-            Comparator<org.apache.archiva.admin.model.beans.RepositoryGroup> ordering = QUERY_HELPER.getComparator( orderBy, QUERY_HELPER.isAscending( order ) );
-            int totalCount = Math.toIntExact( repositoryGroupAdmin.getRepositoriesGroups( ).stream( ).filter( filter ).count( ) );
-            List<RepositoryGroup> result = repositoryGroupAdmin.getRepositoriesGroups( ).stream( ).filter( filter ).sorted( ordering ).skip( offset ).limit( limit ).map(
+            Predicate<org.apache.archiva.repository.RepositoryGroup> filter = QUERY_HELPER.getQueryFilter( searchTerm );
+            Comparator<org.apache.archiva.repository.RepositoryGroup> ordering = QUERY_HELPER.getComparator( orderBy, QUERY_HELPER.isAscending( order ) );
+            int totalCount = Math.toIntExact( repositoryRegistry.getRepositoryGroups( ).stream( ).filter( filter ).count( ) );
+            List<RepositoryGroup> result = repositoryRegistry.getRepositoryGroups( ).stream( ).filter( filter ).sorted( ordering ).skip( offset ).limit( limit ).map(
                 RepositoryGroup::of
             ).collect( Collectors.toList( ) );
             return new PagedResult<>( totalCount, offset, limit, result );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.error( "Repository admin error: {}", e.getMessage( ), e );
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
         }
         catch ( ArithmeticException e )
         {
@@ -126,27 +129,16 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         {
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
         }
-        try
-        {
-            org.apache.archiva.admin.model.beans.RepositoryGroup group = repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId );
-            return RepositoryGroup.of( group );
-        }
-        catch ( EntityNotFoundException e )
-        {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, repositoryGroupId ), 404 );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
-        }
+        org.apache.archiva.repository.RepositoryGroup group = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
+        return RepositoryGroup.of( group );
     }
 
-    private org.apache.archiva.admin.model.beans.RepositoryGroup toModel( RepositoryGroup group )
+    private RepositoryGroupConfiguration toConfig( RepositoryGroup group )
     {
-        org.apache.archiva.admin.model.beans.RepositoryGroup result = new org.apache.archiva.admin.model.beans.RepositoryGroup( );
+        RepositoryGroupConfiguration result = new RepositoryGroupConfiguration( );
         result.setId( group.getId( ) );
         result.setLocation( group.getLocation( ) );
-        result.setRepositories( new ArrayList<>( group.getRepositories( ) ) );
+        result.setRepositories( group.getRepositories( ) );
         result.setMergedIndexPath( group.getMergeConfiguration( ).getMergedIndexPath( ) );
         result.setMergedIndexTtl( group.getMergeConfiguration( ).getMergedIndexTtlMinutes( ) );
         result.setCronExpression( group.getMergeConfiguration( ).getIndexMergeSchedule( ) );
@@ -156,19 +148,29 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     @Override
     public RepositoryGroup addRepositoryGroup( RepositoryGroup repositoryGroup ) throws ArchivaRestServiceException
     {
+        final String groupId = repositoryGroup.getId( );
+        if ( StringUtils.isEmpty( groupId ) ) {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_INVALID_ID, groupId ), 422 );
+        }
+        if (repositoryRegistry.hasRepositoryGroup( groupId )) {
+            httpServletResponse.setHeader( "Location", uriInfo.getAbsolutePathBuilder( ).path( groupId ).build( ).toString( ) );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_ID_EXISTS, groupId ), 303 );
+        }
         try
         {
-            Boolean result = repositoryGroupAdmin.addRepositoryGroup( toModel( repositoryGroup ), getAuditData() );
-            if ( result )
+            RepositoryGroupConfiguration configuration = toConfig( repositoryGroup );
+            Configuration config = configurationHandler.getBaseConfiguration( );
+            org.apache.archiva.repository.RepositoryGroup repo = repositoryRegistry.putRepositoryGroup( configuration, config);
+            if ( repo!=null )
             {
-                org.apache.archiva.admin.model.beans.RepositoryGroup newGroup = repositoryGroupAdmin.getRepositoryGroup( repositoryGroup.getId( ) );
-                if ( newGroup != null )
+                ValidationResponse<org.apache.archiva.repository.RepositoryGroup> validationResult = repositoryRegistry.validateRepository( repo );
+                if ( validationResult.isValid( ) )
                 {
-                    return RepositoryGroup.of( newGroup );
-                }
-                else
-                {
-                    throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_ADD_FAILED ) );
+                    httpServletResponse.setStatus( 201 );
+                    configurationHandler.save( config );
+                    return RepositoryGroup.of( repo );
+                } else {
+                    throw ValidationException.of( validationResult );
                 }
             }
             else
@@ -176,75 +178,54 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_ADD_FAILED ) );
             }
         }
-        catch ( EntityExistsException e )
+        catch ( RepositoryException | IndeterminateConfigurationException | RegistryException e )
         {
-            httpServletResponse.setHeader( "Location", uriInfo.getAbsolutePathBuilder( ).path( repositoryGroup.getId( ) ).build( ).toString( ) );
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_EXIST, repositoryGroup.getId( ) ), 303 );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            return handleAdminException( e );
-        }
-    }
-
-    private RepositoryGroup handleAdminException( RepositoryAdminException e ) throws ArchivaRestServiceException
-    {
-        log.error( "Repository admin error: {}", e.getMessage( ), e );
-        if ( e.keyExists( ) )
-        {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.PREFIX + e.getKey( ), e.getParameters( ) ) );
-        }
-        else
-        {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_ADD_FAILED ) );
         }
     }
 
     @Override
-    public RepositoryGroup updateRepositoryGroup( String repositoryGroupId, RepositoryGroup repositoryGroup ) throws ArchivaRestServiceException
+    public RepositoryGroup updateRepositoryGroup( final String repositoryGroupId, final RepositoryGroup repositoryGroup ) throws ArchivaRestServiceException
     {
         if ( StringUtils.isEmpty( repositoryGroupId ) )
         {
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
         }
-        org.apache.archiva.admin.model.beans.RepositoryGroup updateGroup = toModel( repositoryGroup );
+        if ( !repositoryRegistry.hasRepositoryGroup( repositoryGroupId ) )
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND ), 404 );
+        }
+        repositoryGroup.setId( repositoryGroupId );
+
         try
         {
-            org.apache.archiva.admin.model.beans.RepositoryGroup originGroup = repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId );
-            if ( StringUtils.isEmpty( updateGroup.getId( ) ) )
+            RepositoryGroupConfiguration configuration = toConfig( repositoryGroup );
+            Configuration config = configurationHandler.getBaseConfiguration( );
+            org.apache.archiva.repository.RepositoryGroup repo = repositoryRegistry.putRepositoryGroup( configuration, config);
+            if ( repo!=null )
             {
-                updateGroup.setId( repositoryGroupId );
+                ValidationResponse<org.apache.archiva.repository.RepositoryGroup> validationResult = repositoryRegistry.validateRepository( repo );
+                if ( validationResult.isValid( ) )
+                {
+                    httpServletResponse.setStatus( 201 );
+                    configurationHandler.save( config );
+                    return RepositoryGroup.of( repo );
+                } else {
+                    throw ValidationException.of( validationResult );
+                }
             }
-            if ( StringUtils.isEmpty( updateGroup.getLocation( ) ) )
+            else
             {
-                updateGroup.setLocation( originGroup.getLocation( ) );
+                log.error( "Returned repository group was null {}", repositoryGroupId );
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED ) );
             }
-            if ( StringUtils.isEmpty( updateGroup.getMergedIndexPath( ) ) )
-            {
-                updateGroup.setMergedIndexPath( originGroup.getMergedIndexPath( ) );
-            }
-            if ( updateGroup.getCronExpression( ) == null )
-            {
-                updateGroup.setCronExpression( originGroup.getCronExpression( ) );
-            }
-            if ( updateGroup.getRepositories( ) == null || updateGroup.getRepositories( ).size( ) == 0 )
-            {
-                updateGroup.setRepositories( originGroup.getRepositories( ) );
-            }
-            if ( updateGroup.getMergedIndexTtl( ) <= 0 )
-            {
-                updateGroup.setMergedIndexTtl( originGroup.getMergedIndexTtl( ) );
-            }
-            repositoryGroupAdmin.updateRepositoryGroup( updateGroup, getAuditData( ) );
-            return RepositoryGroup.of( repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId ) );
+
         }
-        catch ( EntityNotFoundException e )
+        catch ( RepositoryException | IndeterminateConfigurationException | RegistryException e )
         {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, repositoryGroupId ), 404 );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            return handleAdminException( e );
+            log.error( "Exception during repository group update: {}", e.getMessage( ), e );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage() ) );
+
         }
     }
 
@@ -257,22 +238,16 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         try
         {
-            Boolean deleted = repositoryGroupAdmin.deleteRepositoryGroup( repositoryGroupId, getAuditData( ) );
-            if ( !deleted )
-            {
-                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_DELETE_FAILED ) );
+            org.apache.archiva.repository.RepositoryGroup group = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
+            if (group==null) {
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
             }
+            repositoryRegistry.removeRepositoryGroup( group );
             return Response.ok( ).build( );
         }
-        catch ( EntityNotFoundException e )
+        catch ( RepositoryException e )
         {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, repositoryGroupId ), 404 );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            handleAdminException( e );
-            // cannot happen:
-            return null;
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_DELETE_FAILED ) );
         }
     }
 
@@ -289,28 +264,31 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         try
         {
-            repositoryGroupAdmin.addRepositoryToGroup( repositoryGroupId, repositoryId, getAuditData( ) );
-            return RepositoryGroup.of( repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId ) );
-        }
-        catch ( EntityNotFoundException e )
-        {
-            return handleNotFoundException( repositoryGroupId, repositoryId, e );
-        }
-        catch ( EntityExistsException e )
-        {
-            // This is thrown, if the repositoryId is already assigned to the group. We ignore this for the PUT action (nothing to do).
-            try
-            {
-                return RepositoryGroup.of( repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId ) );
+            org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
+            if (repositoryGroup==null) {
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
             }
-            catch ( RepositoryAdminException repositoryAdminException )
-            {
-                return handleAdminException( e );
+            if (!(repositoryGroup instanceof EditableRepositoryGroup )) {
+                log.error( "This group instance is not editable: {}", repositoryGroupId );
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, "" ), 500 );
             }
+            EditableRepositoryGroup editableRepositoryGroup = (EditableRepositoryGroup) repositoryGroup;
+            if ( editableRepositoryGroup.getRepositories().stream().anyMatch( repo -> repositoryId.equals(repo.getId())) )
+            {
+                log.info( "Repository {} is already member of group {}", repositoryId, repositoryGroupId );
+                return RepositoryGroup.of( editableRepositoryGroup );
+            }
+            org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repositoryId);
+            if (managedRepo==null) {
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, "" ), 404 );
+            }
+            editableRepositoryGroup.addRepository( managedRepo );
+            org.apache.archiva.repository.RepositoryGroup newGroup = repositoryRegistry.putRepositoryGroup( editableRepositoryGroup );
+            return RepositoryGroup.of( newGroup );
         }
-        catch ( RepositoryAdminException e )
+        catch ( RepositoryException e )
         {
-            return handleAdminException( e );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage() ), 500 );
         }
     }
 
@@ -327,34 +305,24 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         try
         {
-            repositoryGroupAdmin.deleteRepositoryFromGroup( repositoryGroupId, repositoryId, getAuditData( ) );
-            return RepositoryGroup.of( repositoryGroupAdmin.getRepositoryGroup( repositoryGroupId ) );
-        }
-        catch ( EntityNotFoundException e )
-        {
-            return handleNotFoundException( repositoryGroupId, repositoryId, e );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            return handleAdminException( e );
-        }
-    }
+            org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
+            if (repositoryGroup==null) {
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
+            }
+            if (!(repositoryGroup instanceof EditableRepositoryGroup)) {
+                log.error( "This group instance is not editable: {}", repositoryGroupId );
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, "" ), 500 );
+            }
+            EditableRepositoryGroup editableRepositoryGroup = (EditableRepositoryGroup) repositoryGroup;
 
-    protected RepositoryGroup handleNotFoundException( String repositoryGroupId, String repositoryId, EntityNotFoundException e ) throws ArchivaRestServiceException
-    {
-        if ( e.getParameters( ).length > 0 )
-        {
-            if ( repositoryGroupId.equals( e.getParameters( )[0] ) )
-            {
-                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, repositoryGroupId ), 404 );
-            }
-            else if ( repositoryId.equals( e.getParameters( )[0] ) )
-            {
-                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, repositoryGroupId ), 404 );
-            }
+            editableRepositoryGroup.removeRepository( repositoryId );
+            org.apache.archiva.repository.RepositoryGroup newGroup = repositoryRegistry.putRepositoryGroup( editableRepositoryGroup );
+            return RepositoryGroup.of( newGroup );
         }
-        log.warn( "Entity not found but neither group nor repo set in exception" );
-        throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, repositoryGroupId ), 404 );
+        catch ( RepositoryException e )
+        {
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage() ), 500 );
+        }
     }
 
 

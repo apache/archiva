@@ -45,6 +45,9 @@ public interface ErrorKeys
 {
 
     String PREFIX = "archiva.";
+
+    String VALIDATION_ERROR = PREFIX + "validation_error";
+
     String REPOSITORY_GROUP_PREFIX = PREFIX + "repository_group.";
     String REPOSITORY_PREFIX = PREFIX + "repository.";
 
@@ -67,6 +70,7 @@ public interface ErrorKeys
     String REPOSITORY_GROUP_NOT_FOUND = REPOSITORY_GROUP_PREFIX+"notfound";
     String REPOSITORY_GROUP_ADD_FAILED = REPOSITORY_GROUP_PREFIX+"add.failed"  ;
     String REPOSITORY_GROUP_EXIST = REPOSITORY_GROUP_PREFIX+"exists";
+    String REPOSITORY_GROUP_UPDATE_FAILED = REPOSITORY_GROUP_PREFIX + "update.failed";
 
     String REPOSITORY_GROUP_DELETE_FAILED = REPOSITORY_GROUP_PREFIX + "delete.failed";
     String REPOSITORY_NOT_FOUND = REPOSITORY_PREFIX + "notfound";
