@@ -401,6 +401,7 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
             repo = repositoryRegistry.getProvider( repoType ).createRepositoryGroup( repositoryGroupConfiguration );
         }
         replaceOrAddRepositoryConfig( repositoryGroupConfiguration, configuration );
+        updateReferences( repo, repositoryGroupConfiguration );
         return repo;
     }
 
@@ -422,7 +423,7 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
         }
         if ( result.isValid( ) )
         {
-            put( repositoryConfiguration );
+            put( result.getRepository() );
         }
         return result;
     }

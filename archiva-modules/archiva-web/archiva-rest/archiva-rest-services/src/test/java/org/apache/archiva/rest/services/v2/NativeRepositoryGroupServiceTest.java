@@ -31,6 +31,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,7 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.easymock.EasyMock.contains;
 import static org.hamcrest.Matchers.endsWith;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -188,6 +188,162 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
                     .delete( groupName )
                     .then( ).statusCode( 200 );
             }
+        }
+    }
+
+    @Test
+    void testAddRepositoryToGroup( )
+    {
+        String token = getAdminToken( );
+        try
+        {
+            Map<String, Object> jsonAsMap = new HashMap<>( );
+            jsonAsMap.put( "id", "group_001" );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .post( "" )
+                .prettyPeek()
+                .then( ).statusCode( 201 ).extract( ).response( );
+            assertNotNull( response );
+            RepositoryGroup result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+            assertNotNull( result );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            PagedResult resultList = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+            assertEquals( 1, resultList.getPagination( ).getTotalCount( ) );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .put( "group_001/repositories/internal" )
+                .prettyPeek()
+                .then( ).statusCode( 200 ).extract( ).response( );
+
+            assertNotNull( response );
+            result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+            assertNotNull( result );
+            assertEquals( 1, result.getRepositories( ).size( ) );
+            assertTrue( result.getRepositories( ).contains( "internal" ) );
+
+        } finally
+        {
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .delete( "group_001" )
+                .then( ).statusCode( 200 );
+        }
+    }
+
+    @Test
+    void testAddRepositoryToGroupIdempotency( )
+    {
+        String token = getAdminToken( );
+        try
+        {
+            Map<String, Object> jsonAsMap = new HashMap<>( );
+            jsonAsMap.put( "id", "group_001" );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .post( "" )
+                .prettyPeek()
+                .then( ).statusCode( 201 ).extract( ).response( );
+            assertNotNull( response );
+            RepositoryGroup result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+            assertNotNull( result );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            PagedResult resultList = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+            assertEquals( 1, resultList.getPagination( ).getTotalCount( ) );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .put( "group_001/repositories/internal" )
+                .prettyPeek()
+                .then( ).statusCode( 200 ).extract( ).response( );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .put( "group_001/repositories/internal" )
+                .prettyPeek()
+                .then( ).statusCode( 200 ).extract( ).response( );
+
+            assertNotNull( response );
+            result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+            assertNotNull( result );
+            assertEquals( 1, result.getRepositories( ).size( ) );
+            assertTrue( result.getRepositories( ).contains( "internal" ) );
+
+        } finally
+        {
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .delete( "group_001" )
+                .then( ).statusCode( 200 );
+        }
+    }
+
+
+    @Test
+    void testRemoveRepositoryFromGroup( )
+    {
+        String token = getAdminToken( );
+        try
+        {
+            Map<String, Object> jsonAsMap = new HashMap<>( );
+            jsonAsMap.put( "id", "group_001" );
+            jsonAsMap.put( "repositories", Arrays.asList( "internal" ) );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .post( "" )
+                .prettyPeek()
+                .then( ).statusCode( 201 ).extract( ).response( );
+            assertNotNull( response );
+            RepositoryGroup result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+            assertNotNull( result );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            PagedResult resultList = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+            assertEquals( 1, resultList.getPagination( ).getTotalCount( ) );
+
+            assertNotNull( result.getRepositories( ) );
+            assertEquals( 1, result.getRepositories( ).size( ) );
+            assertTrue( result.getRepositories( ).contains( "internal" ) );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .delete( "group_001/repositories/internal" )
+                .prettyPeek()
+                .then( ).statusCode( 200 ).extract( ).response( );
+
+            assertNotNull( response );
+            result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+            assertNotNull( result );
+            assertEquals( 0, result.getRepositories( ).size( ) );
+
+        } finally
+        {
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .delete( "group_001" )
+                .then( ).statusCode( 200 );
         }
     }
 
