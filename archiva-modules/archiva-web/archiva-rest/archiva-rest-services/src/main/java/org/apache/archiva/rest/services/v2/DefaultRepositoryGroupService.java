@@ -40,11 +40,14 @@ import org.apache.archiva.components.rest.util.QueryHelper;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.repository.CheckedResult;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.validation.ValidationError;
 import org.apache.archiva.repository.validation.ValidationResponse;
+import org.apache.archiva.rest.api.model.v2.MergeConfiguration;
 import org.apache.archiva.rest.api.model.v2.RepositoryGroup;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.v2.ErrorKeys;
@@ -62,6 +65,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -139,9 +143,13 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         result.setId( group.getId( ) );
         result.setLocation( group.getLocation( ) );
         result.setRepositories( group.getRepositories( ) );
-        result.setMergedIndexPath( group.getMergeConfiguration( ).getMergedIndexPath( ) );
-        result.setMergedIndexTtl( group.getMergeConfiguration( ).getMergedIndexTtlMinutes( ) );
-        result.setCronExpression( group.getMergeConfiguration( ).getIndexMergeSchedule( ) );
+        MergeConfiguration mergeConfig = group.getMergeConfiguration( );
+        if (mergeConfig!=null)
+        {
+            result.setMergedIndexPath( mergeConfig.getMergedIndexPath( ) );
+            result.setMergedIndexTtl( mergeConfig.getMergedIndexTtlMinutes( ) );
+            result.setCronExpression( mergeConfig.getIndexMergeSchedule( ) );
+        }
         return result;
     }
 
@@ -158,27 +166,18 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         try
         {
+
             RepositoryGroupConfiguration configuration = toConfig( repositoryGroup );
-            Configuration config = configurationHandler.getBaseConfiguration( );
-            org.apache.archiva.repository.RepositoryGroup repo = repositoryRegistry.putRepositoryGroup( configuration, config);
-            if ( repo!=null )
-            {
-                ValidationResponse<org.apache.archiva.repository.RepositoryGroup> validationResult = repositoryRegistry.validateRepository( repo );
+            CheckedResult<org.apache.archiva.repository.RepositoryGroup, Map<String, List<ValidationError>>> validationResult = repositoryRegistry.putRepositoryGroupAndValidate( configuration );
                 if ( validationResult.isValid( ) )
                 {
                     httpServletResponse.setStatus( 201 );
-                    configurationHandler.save( config );
-                    return RepositoryGroup.of( repo );
+                    return RepositoryGroup.of( validationResult.getRepository() );
                 } else {
-                    throw ValidationException.of( validationResult );
+                    throw ValidationException.of( validationResult.getResult() );
                 }
-            }
-            else
-            {
-                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_ADD_FAILED ) );
-            }
         }
-        catch ( RepositoryException | IndeterminateConfigurationException | RegistryException e )
+        catch ( RepositoryException e )
         {
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_ADD_FAILED ) );
         }
@@ -196,32 +195,19 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND ), 404 );
         }
         repositoryGroup.setId( repositoryGroupId );
-
         try
         {
             RepositoryGroupConfiguration configuration = toConfig( repositoryGroup );
-            Configuration config = configurationHandler.getBaseConfiguration( );
-            org.apache.archiva.repository.RepositoryGroup repo = repositoryRegistry.putRepositoryGroup( configuration, config);
-            if ( repo!=null )
-            {
-                ValidationResponse<org.apache.archiva.repository.RepositoryGroup> validationResult = repositoryRegistry.validateRepository( repo );
+                CheckedResult<org.apache.archiva.repository.RepositoryGroup, Map<String, List<ValidationError>>> validationResult = repositoryRegistry.putRepositoryGroupAndValidate( configuration );
                 if ( validationResult.isValid( ) )
                 {
                     httpServletResponse.setStatus( 201 );
-                    configurationHandler.save( config );
-                    return RepositoryGroup.of( repo );
+                    return RepositoryGroup.of( validationResult.getRepository() );
                 } else {
-                    throw ValidationException.of( validationResult );
+                    throw ValidationException.of( validationResult.getResult() );
                 }
-            }
-            else
-            {
-                log.error( "Returned repository group was null {}", repositoryGroupId );
-                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED ) );
-            }
-
         }
-        catch ( RepositoryException | IndeterminateConfigurationException | RegistryException e )
+        catch ( RepositoryException e )
         {
             log.error( "Exception during repository group update: {}", e.getMessage( ), e );
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage() ) );

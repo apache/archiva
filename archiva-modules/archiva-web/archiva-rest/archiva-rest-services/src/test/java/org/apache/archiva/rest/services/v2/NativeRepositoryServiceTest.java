@@ -69,7 +69,6 @@ public class NativeRepositoryServiceTest extends AbstractNativeRestServices
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
                 .get( "" )
-                .prettyPeek()
                 .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
         PagedResult<Repository> repositoryPagedResult = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
@@ -102,7 +101,6 @@ public class NativeRepositoryServiceTest extends AbstractNativeRestServices
             .when( )
             .queryParam( "q", "central" )
             .get( "" )
-            .prettyPeek()
             .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
         PagedResult<Repository> repositoryPagedResult = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
@@ -118,7 +116,6 @@ public class NativeRepositoryServiceTest extends AbstractNativeRestServices
         Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
             .when( )
             .get( "managed/internal/statistics" )
-            .prettyPeek()
             .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
 
@@ -130,7 +127,6 @@ public class NativeRepositoryServiceTest extends AbstractNativeRestServices
         Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
             .when( )
             .post( "managed/internal/scan/schedule" )
-            .prettyPeek()
             .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
 
@@ -142,7 +138,6 @@ public class NativeRepositoryServiceTest extends AbstractNativeRestServices
         Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
             .when( )
             .post( "managed/internal/scan/now" )
-            .prettyPeek()
             .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
 
@@ -154,7 +149,6 @@ public class NativeRepositoryServiceTest extends AbstractNativeRestServices
         Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
             .when( )
             .get( "managed/internal/scan/status" )
-            .prettyPeek()
             .then( ).statusCode( 200 ).extract( ).response( );
         assertNotNull( response );
 

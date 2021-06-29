@@ -487,9 +487,8 @@ public abstract class AbstractNativeRestServices
         Response result = given( ).spec( getAuthRequestSpecBuilder().build() )
             .contentType( JSON )
             .body( jsonAsMap )
-            .when( ).post( "/authenticate").prettyPeek().then( ).statusCode( 200 )
+            .when( ).post( "/authenticate").then( ).statusCode( 200 )
             .extract( ).response( );
-        result.getBody( ).prettyPrint( );
         return result.body( ).jsonPath( ).getString( "access_token" );
     }
     protected String getAdminToken()  {

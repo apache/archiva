@@ -54,7 +54,7 @@ public class ArchivaRestServiceExceptionMapper
 
                 public Response.Status.Family getFamily()
                 {
-                    return Response.Status.Family.SERVER_ERROR;
+                    return Response.Status.Family.familyOf( e.getHttpErrorCode( ) );
                 }
 
                 public String getReasonPhrase()

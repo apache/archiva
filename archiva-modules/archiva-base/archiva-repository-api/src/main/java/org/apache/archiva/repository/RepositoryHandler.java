@@ -19,6 +19,7 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.repository.validation.RepositoryChecker;
+import org.apache.archiva.repository.validation.RepositoryValidator;
 
 import java.util.Collection;
 import java.util.Map;
@@ -157,6 +158,12 @@ public interface RepositoryHandler<R extends Repository, C>
      * @return the list of repositories
      */
     Collection<R> getAll();
+
+    /**
+     * Returns a validator that can be used to validate repository data
+     * @return a validator instance
+     */
+    RepositoryValidator<R> getValidator( );
 
     /**
      * Returns <code>true</code>, if the repository is registered with the given id, otherwise <code>false</code>

@@ -20,10 +20,7 @@ package org.apache.archiva.rest.services.v2;
 
 import io.restassured.response.Response;
 import org.apache.archiva.components.rest.model.PagedResult;
-import org.apache.archiva.components.rest.model.PropertyEntry;
-import org.apache.archiva.rest.api.model.v2.BeanInformation;
-import org.apache.archiva.rest.api.model.v2.CacheConfiguration;
-import org.apache.archiva.rest.api.model.v2.LdapConfiguration;
+import org.apache.archiva.rest.api.model.v2.RepositoryGroup;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -33,14 +30,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.easymock.EasyMock.contains;
+import static org.hamcrest.Matchers.endsWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -70,16 +70,125 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
     }
 
     @Test
-    void testGetConfiguration() {
+    void testGetEmptyList( )
+    {
         String token = getAdminToken( );
+        Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .get( "" )
+            .then( ).statusCode( 200 ).extract( ).response( );
+        assertNotNull( response );
+        PagedResult result = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+        assertEquals( 0, result.getPagination( ).getTotalCount( ) );
+
+    }
+
+    @Test
+    void testAddGroup( )
+    {
+        String token = getAdminToken( );
+        try
+        {
+            Map<String, Object> jsonAsMap = new HashMap<>( );
+            jsonAsMap.put( "id", "group_001" );
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
-                .get( "" )
+                .body( jsonAsMap )
+                .post( "" )
                 .prettyPeek()
+                .then( ).statusCode( 201 ).extract( ).response( );
+            assertNotNull( response );
+            RepositoryGroup result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+            assertNotNull( result );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "" )
                 .then( ).statusCode( 200 ).extract( ).response( );
-        assertNotNull( response );
+            assertNotNull( response );
+            PagedResult resultList = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+            assertEquals( 1, resultList.getPagination( ).getTotalCount( ) );
+        } finally
+        {
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .delete( "group_001" )
+                .then( ).statusCode( 200 );
+        }
+    }
+
+    @Test
+    void testAddExistingGroup( )
+    {
+        String token = getAdminToken( );
+        try
+        {
+            Map<String, Object> jsonAsMap = new HashMap<>( );
+            jsonAsMap.put( "id", "group_001" );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .post( "" )
+                .then( ).statusCode( 201 ).extract( ).response( );
+            assertNotNull( response );
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .redirects().follow( false )
+                .body( jsonAsMap )
+                .post( "" )
+                .prettyPeek()
+                .then( ).statusCode( 303 )
+                .assertThat()
+                .header( "Location", endsWith("group_001") ).extract( ).response( );
+        } finally
+        {
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .delete( "group_001" )
+                .then( ).statusCode( 200 );
+        }
     }
 
 
+    @Test
+    void testAddMultipleGroups( )
+    {
+        String token = getAdminToken( );
+        List<String> groups = new ArrayList<>( );
+        try
+        {
+            for ( int i=0; i<10; i++)
+            {
+                String groupName = String.format( "group_%03d", i );
+                groups.add( groupName );
+                Map<String, Object> jsonAsMap = new HashMap<>( );
+                jsonAsMap.put( "id", groupName );
+                Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                    .when( )
+                    .body( jsonAsMap )
+                    .post( "" )
+                    .then( ).statusCode( 201 ).extract( ).response( );
+                assertNotNull( response );
+                RepositoryGroup result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+                assertNotNull( result );
+            }
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            PagedResult resultList = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+            assertEquals( 10, resultList.getPagination( ).getTotalCount( ) );
+        } finally
+        {
+            for (String groupName : groups)
+            {
+                given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                    .when( )
+                    .delete( groupName )
+                    .then( ).statusCode( 200 );
+            }
+        }
+    }
 
 }

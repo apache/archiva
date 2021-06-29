@@ -36,6 +36,7 @@ import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.validation.RepositoryChecker;
+import org.apache.archiva.repository.validation.RepositoryValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +75,10 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
     private final MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
 
     private final Map<String, RepositoryGroup> repositoryGroups = new HashMap<>( );
+    private final RepositoryValidator<RepositoryGroup> validator;
 
     private Path groupsDirectory;
+
 
     /**
      * Creates a new instance. All dependencies are injected on the constructor.
@@ -86,11 +89,14 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
      */
     public RepositoryGroupHandler( ArchivaRepositoryRegistry repositoryRegistry,
                                    ConfigurationHandler configurationHandler,
-                                   @Named( "mergedRemoteIndexesScheduler#default" ) MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler )
+                                   @Named( "mergedRemoteIndexesScheduler#default" ) MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler,
+                                   @Named( "repositoryValidator#common#group") RepositoryValidator<RepositoryGroup> repositoryGroupValidator
+                                   )
     {
         this.configurationHandler = configurationHandler;
         this.mergedRemoteIndexesScheduler = mergedRemoteIndexesScheduler;
         this.repositoryRegistry = repositoryRegistry;
+        this.validator = repositoryGroupValidator;
     }
 
     @Override
@@ -550,6 +556,12 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
     public Collection<RepositoryGroup> getAll( )
     {
         return repositoryGroups.values( );
+    }
+
+    @Override
+    public RepositoryValidator<RepositoryGroup> getValidator( )
+    {
+        return this.validator;
     }
 
     @Override

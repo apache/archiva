@@ -52,6 +52,7 @@ import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
+import org.apache.archiva.repository.base.validation.CommonGroupValidator;
 import org.apache.archiva.repository.event.LifecycleEvent;
 import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.event.RepositoryIndexEvent;
@@ -136,9 +137,6 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
 
     private RepositoryGroupHandler groupHandler;
     private final Set<RepositoryValidator<? extends Repository>> validators;
-    private final RepositoryChecker<RepositoryGroup, Map<String, List<ValidationError>>> groupChecker;
-    private final RepositoryChecker<ManagedRepository, Map<String, List<ValidationError>>> managedChecker;
-    private final RepositoryChecker<RemoteRepository, Map<String, List<ValidationError>>> remoteChecker;
     private final ConfigurationHandler configurationHandler;
 
 
@@ -152,27 +150,8 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         this.eventManager = new EventManager( this );
         this.configurationHandler = configurationHandler;
         this.validators = initValidatorList( validatorList );
-        this.groupChecker = initChecker( RepositoryGroup.class );
-        this.managedChecker = initChecker( ManagedRepository.class );
-        this.remoteChecker = initChecker( RemoteRepository.class );
     }
 
-    private <R extends Repository> RepositoryChecker<R, Map<String, List<ValidationError>>> initChecker(Class<R> clazz) {
-        return new RepositoryChecker<R, Map<String, List<ValidationError>>>( )
-        {
-            @Override
-            public CheckedResult<R, Map<String, List<ValidationError>>> apply( R repositoryGroup )
-            {
-                return this.apply( repositoryGroup );
-            }
-
-            @Override
-            public CheckedResult<R, Map<String, List<ValidationError>>> applyForUpdate( R repo )
-            {
-                return this.applyForUpdate( repo );
-            }
-        };
-    }
 
     private Set<RepositoryValidator<? extends Repository>> initValidatorList( List<RepositoryValidator<? extends Repository>> validators )
     {
@@ -909,7 +888,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         rwLock.writeLock( ).lock( );
         try
         {
-            return groupHandler.putWithCheck( repositoryGroupConfiguration, this.groupChecker );
+            return groupHandler.putWithCheck( repositoryGroupConfiguration, groupHandler.getValidator() );
         }
         finally
         {

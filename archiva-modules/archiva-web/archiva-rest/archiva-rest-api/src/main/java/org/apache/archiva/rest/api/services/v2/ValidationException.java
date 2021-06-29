@@ -26,9 +26,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Exception is thrown
+ *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 public class ValidationException extends ArchivaRestServiceException
@@ -39,27 +41,41 @@ public class ValidationException extends ArchivaRestServiceException
 
     private List<ValidationError> validationErrors;
 
-    public ValidationException( ) {
+    public ValidationException( )
+    {
         super( DEFAULT_MESSAGE, DEFAULT_CODE );
     }
 
-    public ValidationException( int errorCode) {
+    public ValidationException( int errorCode )
+    {
         super( DEFAULT_MESSAGE, errorCode );
     }
 
-    public ValidationException( List<ValidationError> errors) {
+    public ValidationException( List<ValidationError> errors )
+    {
         super( DEFAULT_MESSAGE, DEFAULT_CODE );
         this.validationErrors = errors;
     }
 
-    public static ValidationException of( List<org.apache.archiva.repository.validation.ValidationError> errorList ) {
+    public static ValidationException of( List<org.apache.archiva.repository.validation.ValidationError> errorList )
+    {
         return new ValidationException( errorList.stream( ).map( ValidationError::of ).collect( Collectors.toList( ) ) );
     }
 
-    public static <R extends Repository> ValidationException of( ValidationResponse<R> result ) {
-        if (result.isValid()) {
+    public static ValidationException of( Map<String, List<org.apache.archiva.repository.validation.ValidationError>> errorMap )
+    {
+        return new ValidationException( errorMap.entrySet( ).stream( )
+            .flatMap( v -> v.getValue( ).stream( ).map( k -> ValidationError.of(v.getKey(), k)))
+            .collect( Collectors.toList( ) ) );
+    }
+
+    public static <R extends Repository> ValidationException of( ValidationResponse<R> result )
+    {
+        if ( result.isValid( ) )
+        {
             return new ValidationException( );
-        } else
+        }
+        else
         {
             return new ValidationException( result.getResult( ).entrySet( ).stream( ).flatMap(
                 v -> v.getValue( ).stream( ).map( e -> ValidationError.of( v.getKey( ), e ) ) ).collect( Collectors.toList( ) ) );
@@ -68,7 +84,7 @@ public class ValidationException extends ArchivaRestServiceException
 
     public List<ValidationError> getValidationErrors( )
     {
-        return validationErrors==null? Collections.emptyList() : validationErrors;
+        return validationErrors == null ? Collections.emptyList( ) : validationErrors;
     }
 
     public void setValidationErrors( List<ValidationError> validationErrors )
@@ -76,8 +92,10 @@ public class ValidationException extends ArchivaRestServiceException
         this.validationErrors = validationErrors;
     }
 
-    public void addValidationError( ValidationError error) {
-        if (this.validationErrors==null) {
+    public void addValidationError( ValidationError error )
+    {
+        if ( this.validationErrors == null )
+        {
             this.validationErrors = new ArrayList<>( );
         }
         this.validationErrors.add( error );
