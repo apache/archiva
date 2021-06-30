@@ -245,7 +245,7 @@ public interface RepositoryGroupService
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to delete the group",
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
-            @ApiResponse( responseCode = "404", description = "The group with the given id does not exist, or the repository was not part of the group.",
+            @ApiResponse( responseCode = "404", description = "Either the group with the given id does not exist, or the repository was not part of the group.",
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
         }
     )

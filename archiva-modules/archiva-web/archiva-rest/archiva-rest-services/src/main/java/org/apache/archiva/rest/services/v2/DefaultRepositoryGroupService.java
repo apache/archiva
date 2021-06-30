@@ -279,15 +279,15 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     }
 
     @Override
-    public RepositoryGroup deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId ) throws org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException
+    public RepositoryGroup deleteRepositoryFromGroup( final String repositoryGroupId, final String repositoryId ) throws org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException
     {
         if ( StringUtils.isEmpty( repositoryGroupId ) )
         {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, repositoryGroupId ), 404 );
         }
         if ( StringUtils.isEmpty( repositoryId ) )
         {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, "" ), 404 );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, repositoryId ), 404 );
         }
         try
         {
@@ -295,12 +295,14 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
             if (repositoryGroup==null) {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
             }
+            if (repositoryGroup.getRepositories().stream().noneMatch( r -> repositoryId.equals( r.getId() ) )) {
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, repositoryId ), 404 );
+            }
             if (!(repositoryGroup instanceof EditableRepositoryGroup)) {
                 log.error( "This group instance is not editable: {}", repositoryGroupId );
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, "" ), 500 );
             }
             EditableRepositoryGroup editableRepositoryGroup = (EditableRepositoryGroup) repositoryGroup;
-
             editableRepositoryGroup.removeRepository( repositoryId );
             org.apache.archiva.repository.RepositoryGroup newGroup = repositoryRegistry.putRepositoryGroup( editableRepositoryGroup );
             return RepositoryGroup.of( newGroup );

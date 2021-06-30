@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services.v2;
 import io.restassured.response.Response;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.rest.api.model.v2.RepositoryGroup;
+import org.apache.archiva.rest.api.services.v2.ArchivaRestError;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -192,6 +193,73 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
     }
 
     @Test
+    void testRemoveRepositoryGroup( )
+    {
+        String token = getAdminToken( );
+        List<String> groups = new ArrayList<>( );
+        try
+        {
+            for ( int i=0; i<10; i++)
+            {
+                String groupName = String.format( "group_%03d", i );
+                groups.add( groupName );
+                Map<String, Object> jsonAsMap = new HashMap<>( );
+                jsonAsMap.put( "id", groupName );
+                Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                    .when( )
+                    .body( jsonAsMap )
+                    .post( "" )
+                    .then( ).statusCode( 201 ).extract( ).response( );
+                assertNotNull( response );
+                RepositoryGroup result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+                assertNotNull( result );
+            }
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .delete( "group_001" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            PagedResult resultList = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+            assertEquals( 9, resultList.getPagination( ).getTotalCount( ) );
+
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .delete( "group_005" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            resultList = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+            assertEquals( 8, resultList.getPagination( ).getTotalCount( ) );
+
+        } finally
+        {
+            for (String groupName : groups)
+            {
+                if (!("group_001".equals(groupName) || "group_005".equals(groupName) ) )
+                {
+                    given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                        .when( )
+                        .delete( groupName )
+                        .then( ).statusCode( 200 );
+                }
+            }
+        }
+    }
+
+
+    @Test
     void testAddRepositoryToGroup( )
     {
         String token = getAdminToken( );
@@ -338,6 +406,56 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
             assertNotNull( result );
             assertEquals( 0, result.getRepositories( ).size( ) );
 
+        } finally
+        {
+            given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .delete( "group_001" )
+                .then( ).statusCode( 200 );
+        }
+    }
+
+    @Test
+    void testRemoveRepositoryFromGroup404( )
+    {
+        String token = getAdminToken( );
+        try
+        {
+            Map<String, Object> jsonAsMap = new HashMap<>( );
+            jsonAsMap.put( "id", "group_001" );
+            jsonAsMap.put( "repositories", Arrays.asList( "internal" ) );
+            Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .post( "" )
+                .prettyPeek()
+                .then( ).statusCode( 201 ).extract( ).response( );
+            assertNotNull( response );
+            RepositoryGroup result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
+            assertNotNull( result );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .get( "" )
+                .then( ).statusCode( 200 ).extract( ).response( );
+            assertNotNull( response );
+            PagedResult resultList = response.getBody( ).jsonPath( ).getObject( "", PagedResult.class );
+            assertEquals( 1, resultList.getPagination( ).getTotalCount( ) );
+
+            assertNotNull( result.getRepositories( ) );
+            assertEquals( 1, result.getRepositories( ).size( ) );
+            assertTrue( result.getRepositories( ).contains( "internal" ) );
+
+            response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+                .when( )
+                .body( jsonAsMap )
+                .delete( "group_001/repositories/internalxx" )
+                .prettyPeek()
+                .then( ).statusCode( 404 ).extract( ).response( );
+
+            assertNotNull( response );
+            ArchivaRestError error = response.getBody( ).jsonPath( ).getObject( "", ArchivaRestError.class );
+            assertNotNull( error );
         } finally
         {
             given( ).spec( getRequestSpec( token ) ).contentType( JSON )
