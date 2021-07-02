@@ -19,6 +19,7 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
+import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.registry.RegistryListener;
 
@@ -138,5 +139,11 @@ public interface ArchivaConfiguration
      * @return
      */
     public Path getDataDirectory();
+
+    /**
+     * Return the used configuration registry
+     * @return
+     */
+    Registry getRegistry( );
 }
 

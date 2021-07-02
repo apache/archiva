@@ -28,7 +28,7 @@ import org.apache.archiva.repository.RepositoryRequestInfo;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.StandardCapabilities;
 import org.apache.archiva.repository.UnsupportedFeatureException;
-import org.apache.archiva.repository.base.AbstractManagedRepository;
+import org.apache.archiva.repository.base.managed.AbstractManagedRepository;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RepositoryFeature;

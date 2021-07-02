@@ -72,7 +72,7 @@ public class ConfigurationHandler
         archivaConfiguration.save( configuration, "" );
     }
 
-    ReentrantReadWriteLock getLock() {
+    public ReentrantReadWriteLock getLock() {
         return lock;
     }
 }

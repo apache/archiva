@@ -1,4 +1,4 @@
-package org.apache.archiva.repository;
+package org.apache.archiva.repository.validation;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,15 +17,22 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.components.registry.Registry;
+
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface CheckedResult<R extends Repository, D>
+public interface ErrorKeys
 {
-    R getRepository();
-
-    boolean isValid();
-
-    D getResult();
-
+    String ISNULL = "isnull";
+    String ISEMPTY = "empty";
+    String EXISTS = "exists";
+    String MANAGED_REPOSITORY_EXISTS = "managed_repo_exists";
+    String REMOTE_REPOSITORY_EXISTS = "remote_repo_exists";
+    String REPOSITORY_GROUP_EXISTS = "group_exists";
+    String MAX_LENGTH_EXCEEDED = "max_length";
+    String INVALID_CHARS = "invalid_chars";
+    String BELOW_MIN = "min";
+    String INVALID_SCHEDULING_EXPRESSION = "scheduling_exp_invalid";
+    String INVALID_LOCATION = "location_invalid";
 }

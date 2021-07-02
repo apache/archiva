@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.base;
+package org.apache.archiva.repository.base.group;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,13 +20,15 @@ package org.apache.archiva.repository.base;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
-import org.apache.archiva.repository.CheckedResult;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.EditableRepository;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryHandler;
@@ -35,8 +37,10 @@ import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.validation.CombinedValidator;
 import org.apache.archiva.repository.validation.RepositoryChecker;
 import org.apache.archiva.repository.validation.RepositoryValidator;
+import org.apache.archiva.repository.validation.ValidationResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,13 +94,24 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
     public RepositoryGroupHandler( ArchivaRepositoryRegistry repositoryRegistry,
                                    ConfigurationHandler configurationHandler,
                                    @Named( "mergedRemoteIndexesScheduler#default" ) MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler,
-                                   @Named( "repositoryValidator#common#group") RepositoryValidator<RepositoryGroup> repositoryGroupValidator
+                                   List<RepositoryValidator<? extends Repository>> repositoryGroupValidatorList
                                    )
     {
         this.configurationHandler = configurationHandler;
         this.mergedRemoteIndexesScheduler = mergedRemoteIndexesScheduler;
         this.repositoryRegistry = repositoryRegistry;
-        this.validator = repositoryGroupValidator;
+        List<RepositoryValidator<RepositoryGroup>> validatorList = initValidators( repositoryGroupValidatorList );
+        this.validator = new CombinedValidator<>( RepositoryGroup.class, validatorList );
+    }
+
+    private List<RepositoryValidator<RepositoryGroup>> initValidators(List<RepositoryValidator<? extends Repository>> repositoryGroupValidatorList) {
+        if (repositoryGroupValidatorList!=null && repositoryGroupValidatorList.size()>0) {
+            return repositoryGroupValidatorList.stream( ).filter(
+                v -> v.isFlavour( RepositoryGroup.class )
+            ).map( v -> v.narrowTo( RepositoryGroup.class ) ).collect( Collectors.toList( ) );
+        } else {
+            return Collections.emptyList( );
+        }
     }
 
     @Override
@@ -563,6 +578,18 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
     public RepositoryValidator<RepositoryGroup> getValidator( )
     {
         return this.validator;
+    }
+
+    @Override
+    public ValidationResponse<RepositoryGroup> validateRepository( RepositoryGroup repository )
+    {
+        return null;
+    }
+
+    @Override
+    public ValidationResponse<RepositoryGroup> validateRepositoryForUpdate( RepositoryGroup repository )
+    {
+        return null;
     }
 
     @Override

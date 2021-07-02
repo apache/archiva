@@ -29,7 +29,7 @@ import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.archiva.components.taskqueue.execution.TaskExecutor;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.base.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.After;

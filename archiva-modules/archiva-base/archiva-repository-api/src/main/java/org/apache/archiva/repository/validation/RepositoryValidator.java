@@ -33,6 +33,11 @@ import java.util.function.Function;
 public interface RepositoryValidator<R extends Repository> extends RepositoryChecker<R, Map<String, List<ValidationError>>>, Comparable<RepositoryValidator<R>>
 {
 
+    String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
+    String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
+    String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
+
+
     int DEFAULT_PRIORITY=1000;
 
     /**
@@ -81,5 +86,16 @@ public interface RepositoryValidator<R extends Repository> extends RepositoryChe
 
     Class<R> getFlavour();
 
-    boolean isFlavour(Class<?> clazz);
+    default boolean isFlavour(Class<?> clazz) {
+        return getFlavour( ).isAssignableFrom( clazz );
+    }
+
+    @SuppressWarnings( "unchecked" )
+    default <RR extends Repository> RepositoryValidator<RR> narrowTo( Class<RR> clazz ) {
+        if (isFlavour( clazz )) {
+            return (RepositoryValidator<RR>) this;
+        } else {
+            throw new IllegalArgumentException( "Could not narrow to " + clazz );
+        }
+    }
 }

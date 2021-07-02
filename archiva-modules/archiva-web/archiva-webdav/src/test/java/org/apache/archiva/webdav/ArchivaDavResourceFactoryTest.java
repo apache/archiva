@@ -34,7 +34,7 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.base.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.repository.maven.content.MavenContentHelper;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.proxy.ProxyRegistry;

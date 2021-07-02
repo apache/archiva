@@ -26,7 +26,7 @@ import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.base.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.junit.Test;
 
 import javax.inject.Inject;

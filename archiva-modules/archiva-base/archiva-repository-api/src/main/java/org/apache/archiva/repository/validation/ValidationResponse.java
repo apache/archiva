@@ -17,7 +17,6 @@ package org.apache.archiva.repository.validation;
  * under the License.
  */
 
-import org.apache.archiva.repository.CheckedResult;
 import org.apache.archiva.repository.Repository;
 
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * A validation response gives information about the validation status for certain attributes.

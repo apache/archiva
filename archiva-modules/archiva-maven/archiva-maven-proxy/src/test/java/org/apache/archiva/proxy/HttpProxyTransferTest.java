@@ -34,7 +34,7 @@ import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.base.BasicManagedRepository;
+import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;

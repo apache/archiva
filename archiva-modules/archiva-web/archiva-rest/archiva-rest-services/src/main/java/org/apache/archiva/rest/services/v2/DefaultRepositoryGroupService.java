@@ -34,19 +34,15 @@ package org.apache.archiva.rest.services.v2;/*
  * under the License.
  */
 
-import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.archiva.repository.CheckedResult;
+import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
 import org.apache.archiva.repository.validation.ValidationError;
-import org.apache.archiva.repository.validation.ValidationResponse;
 import org.apache.archiva.rest.api.model.v2.MergeConfiguration;
 import org.apache.archiva.rest.api.model.v2.RepositoryGroup;
 import org.apache.archiva.rest.api.services.v2.ArchivaRestServiceException;

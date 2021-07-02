@@ -4,7 +4,7 @@ import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.archiva.repository.base.BasicManagedRepository;
+import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;

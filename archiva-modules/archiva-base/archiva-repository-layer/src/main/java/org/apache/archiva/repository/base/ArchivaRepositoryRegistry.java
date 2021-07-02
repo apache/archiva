@@ -38,7 +38,8 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexManagerFactory;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
-import org.apache.archiva.repository.CheckedResult;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
+import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.EditableRepository;
@@ -52,7 +53,6 @@ import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
-import org.apache.archiva.repository.base.validation.CommonGroupValidator;
 import org.apache.archiva.repository.event.LifecycleEvent;
 import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.event.RepositoryIndexEvent;
@@ -61,7 +61,6 @@ import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.validation.RepositoryChecker;
 import org.apache.archiva.repository.validation.RepositoryValidator;
 import org.apache.archiva.repository.validation.ValidationError;
 import org.apache.archiva.repository.validation.ValidationResponse;
@@ -240,7 +239,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     }
 
 
-    protected Map<RepositoryType, RepositoryProvider> getRepositoryProviderMap( )
+    public Map<RepositoryType, RepositoryProvider> getRepositoryProviderMap( )
     {
         Map<RepositoryType, RepositoryProvider> map = new HashMap<>( );
         if ( repositoryProviders != null )
@@ -256,7 +255,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         return map;
     }
 
-    protected RepositoryProvider getProvider( RepositoryType type ) throws RepositoryException
+    public RepositoryProvider getProvider( RepositoryType type ) throws RepositoryException
     {
         return repositoryProviders.stream( ).filter( repositoryProvider -> repositoryProvider.provides( ).contains( type ) ).findFirst( ).orElseThrow( ( ) -> new RepositoryException( "Repository type cannot be handled: " + type ) );
     }

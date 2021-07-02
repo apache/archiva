@@ -17,9 +17,13 @@ package org.apache.archiva.repository.validation;
  * under the License.
  */
 
-import org.apache.archiva.repository.CheckedResult;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -27,11 +31,34 @@ import org.apache.archiva.repository.RepositoryRegistry;
 public abstract class AbstractRepositoryValidator<R extends Repository> implements RepositoryValidator<R>
 {
     protected RepositoryRegistry repositoryRegistry;
+    private final String category;
+
+    public AbstractRepositoryValidator( String category )
+    {
+        this.category = category;
+    }
 
     @Override
     public void setRepositoryRegistry( RepositoryRegistry repositoryRegistry )
     {
         this.repositoryRegistry = repositoryRegistry;
+    }
+
+    protected String getCategory() {
+        return this.category;
+    }
+
+
+
+    protected Map<String, List<ValidationError>> appendError( Map<String, List<ValidationError>> errorMap, String attribute, String type, Object... parameter )
+    {
+        String errorKey = getCategory( ) + "." + attribute + "." + type;
+        Map<String, List<ValidationError>> result;
+        result = errorMap == null ? new HashMap<>( ) : errorMap;
+        ValidationError error = ValidationError.ofKey( errorKey, parameter );
+        List<ValidationError> errList = result.computeIfAbsent( error.getAttribute( ), k -> new ArrayList<>( ) );
+        errList.add( error );
+        return result;
     }
 
     protected abstract ValidationResponse<R> apply( R repo, boolean update );

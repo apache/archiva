@@ -35,7 +35,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.metadata.audit.TestAuditListener;
-import org.apache.archiva.repository.base.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;

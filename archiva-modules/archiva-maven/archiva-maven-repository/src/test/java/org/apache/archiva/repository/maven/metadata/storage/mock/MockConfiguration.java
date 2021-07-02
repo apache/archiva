@@ -201,7 +201,11 @@ public class MockConfiguration
         }
     }
 
-
+    @Override
+    public Registry getRegistry( )
+    {
+        return null;
+    }
 
 
 }

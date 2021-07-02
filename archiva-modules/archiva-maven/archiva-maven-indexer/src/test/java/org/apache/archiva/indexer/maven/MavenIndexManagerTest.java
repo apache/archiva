@@ -24,7 +24,7 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.base.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.maven.MavenManagedRepository;

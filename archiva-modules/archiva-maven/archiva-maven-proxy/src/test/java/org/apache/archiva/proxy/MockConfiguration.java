@@ -205,4 +205,10 @@ public class MockConfiguration
             return getAppServerBaseDir().resolve("data");
         }
     }
+
+    @Override
+    public Registry getRegistry( )
+    {
+        return null;
+    }
 }

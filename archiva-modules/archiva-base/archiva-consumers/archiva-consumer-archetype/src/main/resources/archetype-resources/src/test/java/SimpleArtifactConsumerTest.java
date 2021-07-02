@@ -21,7 +21,7 @@ package $package;
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.repository.base.BasicManagedRepository;
+import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.junit.Before;

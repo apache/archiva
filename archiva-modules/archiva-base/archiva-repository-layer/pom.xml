@@ -79,6 +79,10 @@
       <artifactId>archiva-components-spring-registry-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva.components</groupId>
+      <artifactId>archiva-components-spring-quartz</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.cronutils</groupId>
       <artifactId>cron-utils</artifactId>
     </dependency>

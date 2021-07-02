@@ -41,7 +41,7 @@ import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedURIException;
-import org.apache.archiva.repository.base.BasicManagedRepository;
+import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.base.PasswordCredentials;
 import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;

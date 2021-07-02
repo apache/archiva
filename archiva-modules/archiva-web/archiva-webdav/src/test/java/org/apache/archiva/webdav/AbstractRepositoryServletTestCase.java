@@ -30,7 +30,7 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.base.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.apache.commons.io.FileUtils;

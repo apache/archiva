@@ -29,6 +29,7 @@ import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.repository.metadata.MetadataReader;
 import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.ValidationError;
 import org.apache.archiva.repository.validation.ValidationResponse;
 

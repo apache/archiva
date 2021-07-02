@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.base.validation;
+package org.apache.archiva.repository.base.group;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,7 +17,6 @@ package org.apache.archiva.repository.base.validation;
  * under the License.
  */
 
-import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
@@ -28,12 +27,12 @@ import org.apache.archiva.repository.validation.ValidationResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.apache.archiva.repository.validation.ErrorKeys.*;
 
 /**
  *
@@ -42,54 +41,47 @@ import java.util.regex.Pattern;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Service( "repositoryValidator#common#group" )
-public class CommonGroupValidator extends AbstractRepositoryValidator<RepositoryGroup> implements RepositoryValidator<RepositoryGroup>
+public class BasicRepositoryGroupValidator extends AbstractRepositoryValidator<RepositoryGroup> implements RepositoryValidator<RepositoryGroup>
 {
 
-    private static final Pattern REPO_GROUP_ID_PATTERN = Pattern.compile( "[A-Za-z0-9\\._\\-]+" );
+    private static final String CATEGORY = "repository_group";
+    private static final Pattern REPO_GROUP_ID_PATTERN = Pattern.compile( "[A-Za-z0-9._\\-]+" );
     private final ConfigurationHandler configurationHandler;
 
     private RepositoryRegistry repositoryRegistry;
 
-    public CommonGroupValidator( ConfigurationHandler configurationHandler )
+    public BasicRepositoryGroupValidator( ConfigurationHandler configurationHandler )
     {
+        super( CATEGORY );
         this.configurationHandler = configurationHandler;
     }
 
 
-    private Map<String, List<ValidationError>> appendError( Map<String, List<ValidationError>> errorMap, String errorKey, Object... parameter )
-    {
-        Map<String, List<ValidationError>> result;
-        result = errorMap == null ? new HashMap<>( ) : errorMap;
-        ValidationError error = ValidationError.ofKey( errorKey, parameter );
-        List<ValidationError> errList = result.computeIfAbsent( error.getAttribute( ), k -> new ArrayList<ValidationError>( ) );
-        errList.add( error );
-        return result;
-    }
-
-    public ValidationResponse apply( RepositoryGroup repositoryGroup, boolean updateMode ) throws IllegalArgumentException
+    @Override
+    public ValidationResponse<RepositoryGroup> apply( RepositoryGroup repositoryGroup, boolean updateMode ) throws IllegalArgumentException
     {
         final String repoGroupId = repositoryGroup.getId( );
         Map<String, List<ValidationError>> errors = null;
         if ( StringUtils.isBlank( repoGroupId ) )
         {
-            errors = appendError( errors, "repository_group.id.empty" );
+            errors = appendError( null, "id", ISEMPTY );
         }
 
         if ( repoGroupId.length( ) > 100 )
         {
-            errors = appendError( errors, "repository_group.id.max_length", repoGroupId, Integer.toString( 100 ) );
+            errors = appendError( errors, "id", MAX_LENGTH_EXCEEDED, repoGroupId, Integer.toString( 100 ) );
 
         }
 
         Matcher matcher = REPO_GROUP_ID_PATTERN.matcher( repoGroupId );
         if ( !matcher.matches( ) )
         {
-            errors = appendError( errors, "repository_group.id.invalid_chars", "alphanumeric, '.', '-','_'" );
+            errors = appendError( errors, "id", INVALID_CHARS, repoGroupId, new String[]{"alphanumeric, '.', '-','_'"} );
         }
 
         if ( repositoryGroup.getMergedIndexTTL( ) <= 0 )
         {
-            errors = appendError( errors, "repository_group.merged_index_ttl.min", "0" );
+            errors = appendError( errors, "merged_index_ttl",BELOW_MIN, "0" );
         }
 
 
@@ -97,18 +89,18 @@ public class CommonGroupValidator extends AbstractRepositoryValidator<Repository
         {
             if ( repositoryRegistry.hasRepositoryGroup( repoGroupId ) )
             {
-                errors = appendError( errors, "repository_group.id.group_exists", repoGroupId );
+                errors = appendError( errors, "id", REPOSITORY_GROUP_EXISTS, repoGroupId );
             }
             else if ( repositoryRegistry.hasManagedRepository( repoGroupId ) )
             {
-                errors = appendError( errors, "repository_group.id.managed_exists" );
+                errors = appendError( errors, "id", MANAGED_REPOSITORY_EXISTS );
             }
             else if ( repositoryRegistry.hasRemoteRepository( repoGroupId ) )
             {
-                errors = appendError( errors, "repository_group.id.remote_exists" );
+                errors = appendError( errors, "id", REMOTE_REPOSITORY_EXISTS );
             }
         }
-        return new ValidationResponse(repositoryGroup, errors );
+        return new ValidationResponse<>(repositoryGroup, errors );
     }
 
 
@@ -136,9 +128,4 @@ public class CommonGroupValidator extends AbstractRepositoryValidator<Repository
         return RepositoryGroup.class;
     }
 
-    @Override
-    public boolean isFlavour( Class<?> clazz )
-    {
-        return RepositoryGroup.class.isAssignableFrom( clazz );
-    }
 }

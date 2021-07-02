@@ -18,6 +18,7 @@ package org.apache.archiva.repository.maven.mock.configuration;
  * under the License.
  */
 
+import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -148,5 +149,11 @@ public class StubConfiguration
             return getAppServerBaseDir().resolve("data");
         }
 
+    }
+
+    @Override
+    public Registry getRegistry( )
+    {
+        return null;
     }
 }

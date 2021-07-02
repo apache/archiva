@@ -19,16 +19,15 @@ package org.apache.archiva.repository.validation;
 
 import org.apache.archiva.repository.Repository;
 
-import java.util.function.Function;
-
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface RepositoryChecker<R extends Repository, D> extends Function<R, CheckedResult<R,D>>
+public interface CheckedResult<R extends Repository, D>
 {
+    R getRepository();
 
-    @Override
-    CheckedResult<R,D> apply( R r );
+    boolean isValid();
 
-    CheckedResult<R,D> applyForUpdate( R repo );
+    D getResult();
+
 }

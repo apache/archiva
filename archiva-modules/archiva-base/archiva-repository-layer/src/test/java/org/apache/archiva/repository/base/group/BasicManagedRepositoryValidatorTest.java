@@ -1,4 +1,5 @@
-package org.apache.archiva.repository.validation;
+package org.apache.archiva.repository.base.group;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,18 +18,31 @@ package org.apache.archiva.repository.validation;
  * under the License.
  */
 
-import org.apache.archiva.repository.Repository;
-
-import java.util.function.Function;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface RepositoryChecker<R extends Repository, D> extends Function<R, CheckedResult<R,D>>
+class BasicManagedRepositoryValidatorTest
 {
 
-    @Override
-    CheckedResult<R,D> apply( R r );
+    @Test
+    void apply( )
+    {
+    }
 
-    CheckedResult<R,D> applyForUpdate( R repo );
+    @Test
+    void applyForUpdate( )
+    {
+    }
+
+    @Test
+    void getFlavour( )
+    {
+    }
+
+    @Test
+    void isFlavour( )
+    {
+    }
 }

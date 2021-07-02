@@ -18,8 +18,10 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.RepositoryChecker;
 import org.apache.archiva.repository.validation.RepositoryValidator;
+import org.apache.archiva.repository.validation.ValidationResponse;
 
 import java.util.Collection;
 import java.util.Map;
@@ -164,6 +166,28 @@ public interface RepositoryHandler<R extends Repository, C>
      * @return a validator instance
      */
     RepositoryValidator<R> getValidator( );
+
+    /**
+     * Validates the set attributes of the given repository instance and returns the validation result.
+     * The repository registry uses all available validators and applies their validateRepository method to the given
+     * repository. Validation results will be merged per field.
+     *
+     * @param repository the repository to validate against
+     * @return the result of the validation.
+     */
+    ValidationResponse<R> validateRepository( R repository);
+
+    /**
+     * Validates the set attributes of the given repository instance for a repository update and returns the validation result.
+     * The repository registry uses all available validators and applies their validateRepositoryForUpdate method to the given
+     * repository. Validation results will be merged per field.
+     *
+     * @param repository the repository to validate against
+     * @return the result of the validation.
+     */
+    ValidationResponse<R> validateRepositoryForUpdate( R repository);
+
+
 
     /**
      * Returns <code>true</code>, if the repository is registered with the given id, otherwise <code>false</code>
