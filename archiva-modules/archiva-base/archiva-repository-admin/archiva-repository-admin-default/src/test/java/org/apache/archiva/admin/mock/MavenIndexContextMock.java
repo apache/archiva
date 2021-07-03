@@ -47,12 +47,17 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
     MavenIndexContextMock(Repository repository, IndexingContext delegate) {
         this.delegate = delegate;
         this.repository = repository;
-        try {
-            this.filesystemStorage = new FilesystemStorage(delegate.getIndexDirectoryFile().toPath(), new DefaultFileLockManager());
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(delegate!=null && delegate.getIndexDirectoryFile()!=null)
+        {
+            try
+            {
+                this.filesystemStorage = new FilesystemStorage( delegate.getIndexDirectoryFile( ).toPath( ), new DefaultFileLockManager( ) );
+            }
+            catch ( IOException e )
+            {
+                e.printStackTrace( );
+            }
         }
-
     }
 
     @Override
@@ -95,7 +100,7 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
     public void close(boolean deleteFiles) throws IOException {
         open = false;
         try {
-            delegate.close(deleteFiles);
+            if (delegate!=null) delegate.close(deleteFiles);
         } catch (NoSuchFileException e) {
             // Ignore missing directory
         }
@@ -105,7 +110,7 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
     public void close() throws IOException {
         open = false;
         try {
-            delegate.close(false);
+            if (delegate!=null)  delegate.close(false);
         } catch (NoSuchFileException e) {
             // Ignore missing directory
         }
