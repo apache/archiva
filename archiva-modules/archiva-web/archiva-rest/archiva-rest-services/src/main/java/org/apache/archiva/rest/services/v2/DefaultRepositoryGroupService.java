@@ -37,11 +37,11 @@ package org.apache.archiva.rest.services.v2;/*
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.ValidationError;
 import org.apache.archiva.rest.api.model.v2.MergeConfiguration;
 import org.apache.archiva.rest.api.model.v2.RepositoryGroup;
@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
  * @see RepositoryGroupService
  * @since 3.0
  */
-@Service("v2.repositoryGroupService#rest")
+@Service( "v2.repositoryGroupService#rest" )
 public class DefaultRepositoryGroupService implements RepositoryGroupService
 {
     private final ConfigurationHandler configurationHandler;
@@ -86,9 +86,9 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     final private RepositoryRegistry repositoryRegistry;
 
 
-
     private static final Logger log = LoggerFactory.getLogger( DefaultRepositoryGroupService.class );
     private static final QueryHelper<org.apache.archiva.repository.RepositoryGroup> QUERY_HELPER = new QueryHelper<>( new String[]{"id"} );
+
     static
     {
         QUERY_HELPER.addStringFilter( "id", org.apache.archiva.repository.RepositoryGroup::getId );
@@ -96,7 +96,8 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     }
 
 
-    public DefaultRepositoryGroupService( RepositoryRegistry repositoryRegistry, ConfigurationHandler configurationHandler ) {
+    public DefaultRepositoryGroupService( RepositoryRegistry repositoryRegistry, ConfigurationHandler configurationHandler )
+    {
         this.repositoryRegistry = repositoryRegistry;
         this.configurationHandler = configurationHandler;
     }
@@ -137,10 +138,11 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     {
         RepositoryGroupConfiguration result = new RepositoryGroupConfiguration( );
         result.setId( group.getId( ) );
+        result.setName( group.getName() );
         result.setLocation( group.getLocation( ) );
         result.setRepositories( group.getRepositories( ) );
         MergeConfiguration mergeConfig = group.getMergeConfiguration( );
-        if (mergeConfig!=null)
+        if ( mergeConfig != null )
         {
             result.setMergedIndexPath( mergeConfig.getMergedIndexPath( ) );
             result.setMergedIndexTtl( mergeConfig.getMergedIndexTtlMinutes( ) );
@@ -153,10 +155,12 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
     public RepositoryGroup addRepositoryGroup( RepositoryGroup repositoryGroup ) throws ArchivaRestServiceException
     {
         final String groupId = repositoryGroup.getId( );
-        if ( StringUtils.isEmpty( groupId ) ) {
+        if ( StringUtils.isEmpty( groupId ) )
+        {
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_INVALID_ID, groupId ), 422 );
         }
-        if (repositoryRegistry.hasRepositoryGroup( groupId )) {
+        if ( repositoryRegistry.hasRepositoryGroup( groupId ) )
+        {
             httpServletResponse.setHeader( "Location", uriInfo.getAbsolutePathBuilder( ).path( groupId ).build( ).toString( ) );
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_ID_EXISTS, groupId ), 303 );
         }
@@ -165,13 +169,15 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
 
             RepositoryGroupConfiguration configuration = toConfig( repositoryGroup );
             CheckedResult<org.apache.archiva.repository.RepositoryGroup, Map<String, List<ValidationError>>> validationResult = repositoryRegistry.putRepositoryGroupAndValidate( configuration );
-                if ( validationResult.isValid( ) )
-                {
-                    httpServletResponse.setStatus( 201 );
-                    return RepositoryGroup.of( validationResult.getRepository() );
-                } else {
-                    throw ValidationException.of( validationResult.getResult() );
-                }
+            if ( validationResult.isValid( ) )
+            {
+                httpServletResponse.setStatus( 201 );
+                return RepositoryGroup.of( validationResult.getRepository( ) );
+            }
+            else
+            {
+                throw ValidationException.of( validationResult.getResult( ) );
+            }
         }
         catch ( RepositoryException e )
         {
@@ -194,19 +200,21 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         try
         {
             RepositoryGroupConfiguration configuration = toConfig( repositoryGroup );
-                CheckedResult<org.apache.archiva.repository.RepositoryGroup, Map<String, List<ValidationError>>> validationResult = repositoryRegistry.putRepositoryGroupAndValidate( configuration );
-                if ( validationResult.isValid( ) )
-                {
-                    httpServletResponse.setStatus( 201 );
-                    return RepositoryGroup.of( validationResult.getRepository() );
-                } else {
-                    throw ValidationException.of( validationResult.getResult() );
-                }
+            CheckedResult<org.apache.archiva.repository.RepositoryGroup, Map<String, List<ValidationError>>> validationResult = repositoryRegistry.putRepositoryGroupAndValidate( configuration );
+            if ( validationResult.isValid( ) )
+            {
+                httpServletResponse.setStatus( 201 );
+                return RepositoryGroup.of( validationResult.getRepository( ) );
+            }
+            else
+            {
+                throw ValidationException.of( validationResult.getResult( ) );
+            }
         }
         catch ( RepositoryException e )
         {
             log.error( "Exception during repository group update: {}", e.getMessage( ), e );
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage() ) );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage( ) ) );
 
         }
     }
@@ -221,7 +229,8 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         try
         {
             org.apache.archiva.repository.RepositoryGroup group = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
-            if (group==null) {
+            if ( group == null )
+            {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
             }
             repositoryRegistry.removeRepositoryGroup( group );
@@ -247,21 +256,24 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         try
         {
             org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
-            if (repositoryGroup==null) {
+            if ( repositoryGroup == null )
+            {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
             }
-            if (!(repositoryGroup instanceof EditableRepositoryGroup )) {
+            if ( !( repositoryGroup instanceof EditableRepositoryGroup ) )
+            {
                 log.error( "This group instance is not editable: {}", repositoryGroupId );
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, "" ), 500 );
             }
             EditableRepositoryGroup editableRepositoryGroup = (EditableRepositoryGroup) repositoryGroup;
-            if ( editableRepositoryGroup.getRepositories().stream().anyMatch( repo -> repositoryId.equals(repo.getId())) )
+            if ( editableRepositoryGroup.getRepositories( ).stream( ).anyMatch( repo -> repositoryId.equals( repo.getId( ) ) ) )
             {
                 log.info( "Repository {} is already member of group {}", repositoryId, repositoryGroupId );
                 return RepositoryGroup.of( editableRepositoryGroup );
             }
-            org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repositoryId);
-            if (managedRepo==null) {
+            org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository( repositoryId );
+            if ( managedRepo == null )
+            {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, "" ), 404 );
             }
             editableRepositoryGroup.addRepository( managedRepo );
@@ -270,7 +282,7 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         catch ( RepositoryException e )
         {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage() ), 500 );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage( ) ), 500 );
         }
     }
 
@@ -288,13 +300,16 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         try
         {
             org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
-            if (repositoryGroup==null) {
+            if ( repositoryGroup == null )
+            {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_NOT_FOUND, "" ), 404 );
             }
-            if (repositoryGroup.getRepositories().stream().noneMatch( r -> repositoryId.equals( r.getId() ) )) {
+            if ( repositoryGroup.getRepositories( ).stream( ).noneMatch( r -> repositoryId.equals( r.getId( ) ) ) )
+            {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, repositoryId ), 404 );
             }
-            if (!(repositoryGroup instanceof EditableRepositoryGroup)) {
+            if ( !( repositoryGroup instanceof EditableRepositoryGroup ) )
+            {
                 log.error( "This group instance is not editable: {}", repositoryGroupId );
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, "" ), 500 );
             }
@@ -305,7 +320,7 @@ public class DefaultRepositoryGroupService implements RepositoryGroupService
         }
         catch ( RepositoryException e )
         {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage() ), 500 );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_GROUP_UPDATE_FAILED, e.getMessage( ) ), 500 );
         }
     }
 

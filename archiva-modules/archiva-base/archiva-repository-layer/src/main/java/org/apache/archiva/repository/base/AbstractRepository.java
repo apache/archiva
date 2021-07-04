@@ -287,11 +287,6 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
 
     @Override
     public void setSchedulingDefinition(String cronExpression) {
-        if (StringUtils.isNotEmpty( cronExpression ))
-        {
-            CronParser parser = new CronParser( CRON_DEFINITION );
-            parser.parse( cronExpression ).validate( );
-        }
         this.schedulingDefinition = cronExpression;
     }
 
@@ -302,9 +297,6 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
 
     @Override
     public void setIndexingContext(ArchivaIndexingContext context) {
-        if (this.indexingContext!=null) {
-
-        }
         this.indexingContext = context;
     }
 

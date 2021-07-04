@@ -45,7 +45,9 @@ public class BasicRepositoryGroupValidator extends AbstractRepositoryValidator<R
 {
 
     private static final String CATEGORY = "repository_group";
-    private static final Pattern REPO_GROUP_ID_PATTERN = Pattern.compile( "[A-Za-z0-9._\\-]+" );
+    private static final Pattern REPOSITORY_ID_VALID_EXPRESSION_PATTERN = Pattern.compile( REPOSITORY_ID_VALID_EXPRESSION );
+    private static final Pattern REPOSITORY_NAME_VALID_EXPRESSION_PATTERN = Pattern.compile( REPOSITORY_NAME_VALID_EXPRESSION );
+
     private final ConfigurationHandler configurationHandler;
 
     private RepositoryRegistry repositoryRegistry;
@@ -60,8 +62,12 @@ public class BasicRepositoryGroupValidator extends AbstractRepositoryValidator<R
     @Override
     public ValidationResponse<RepositoryGroup> apply( RepositoryGroup repositoryGroup, boolean updateMode ) throws IllegalArgumentException
     {
-        final String repoGroupId = repositoryGroup.getId( );
         Map<String, List<ValidationError>> errors = null;
+        if (repositoryGroup==null) {
+            errors = appendError( null, "object", ISNULL );
+            return new ValidationResponse<>( repositoryGroup, errors );
+        }
+        final String repoGroupId = repositoryGroup.getId( );
         if ( StringUtils.isBlank( repoGroupId ) )
         {
             errors = appendError( null, "id", ISEMPTY );
@@ -73,16 +79,28 @@ public class BasicRepositoryGroupValidator extends AbstractRepositoryValidator<R
 
         }
 
-        Matcher matcher = REPO_GROUP_ID_PATTERN.matcher( repoGroupId );
+        Matcher matcher = REPOSITORY_ID_VALID_EXPRESSION_PATTERN.matcher( repoGroupId );
         if ( !matcher.matches( ) )
         {
-            errors = appendError( errors, "id", INVALID_CHARS, repoGroupId, new String[]{"alphanumeric, '.', '-','_'"} );
+            errors = appendError( errors, "id", INVALID_CHARS, repoGroupId, REPOSITORY_ID_ALLOWED );
         }
 
         if ( repositoryGroup.getMergedIndexTTL( ) <= 0 )
         {
             errors = appendError( errors, "merged_index_ttl",BELOW_MIN, "0" );
         }
+
+        if (StringUtils.isBlank( repositoryGroup.getName() )) {
+            errors = appendError( errors, "name", ISEMPTY );
+        } else
+        {
+            matcher = REPOSITORY_NAME_VALID_EXPRESSION_PATTERN.matcher( repositoryGroup.getName( ) );
+            if ( !matcher.matches( ) )
+            {
+                errors = appendError( errors, "name", INVALID_CHARS, repoGroupId, REPOSITORY_NAME_ALLOWED );
+            }
+        }
+
 
 
         if ( repositoryRegistry != null && !updateMode )

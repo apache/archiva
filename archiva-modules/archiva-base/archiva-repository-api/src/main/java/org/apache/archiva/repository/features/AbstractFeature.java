@@ -34,7 +34,10 @@ public class AbstractFeature {
     }
 
     AbstractFeature(EventHandler listener) {
-        this.listener.add(listener);
+        if (listener!=null)
+        {
+            this.listener.add( listener );
+        }
     }
 
     AbstractFeature(Collection<EventHandler> listeners) {

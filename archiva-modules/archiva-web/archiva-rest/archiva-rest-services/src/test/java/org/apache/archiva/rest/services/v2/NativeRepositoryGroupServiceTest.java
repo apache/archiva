@@ -92,11 +92,11 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             Map<String, Object> jsonAsMap = new HashMap<>( );
             jsonAsMap.put( "id", "group_001" );
+            jsonAsMap.put( "name", "group_001" );
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
                 .body( jsonAsMap )
                 .post( "" )
-                .prettyPeek()
                 .then( ).statusCode( 201 ).extract( ).response( );
             assertNotNull( response );
             RepositoryGroup result = response.getBody( ).jsonPath( ).getObject( "", RepositoryGroup.class );
@@ -126,10 +126,12 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             Map<String, Object> jsonAsMap = new HashMap<>( );
             jsonAsMap.put( "id", "group_001" );
+            jsonAsMap.put( "name", "group_001" );
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
                 .body( jsonAsMap )
                 .post( "" )
+                .prettyPeek()
                 .then( ).statusCode( 201 ).extract( ).response( );
             assertNotNull( response );
             response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
@@ -145,8 +147,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
-                .delete( "group_001" )
-                .then( ).statusCode( 200 );
+                .delete( "group_001" );
         }
     }
 
@@ -164,6 +165,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
                 groups.add( groupName );
                 Map<String, Object> jsonAsMap = new HashMap<>( );
                 jsonAsMap.put( "id", groupName );
+                jsonAsMap.put( "name", groupName );
                 Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                     .when( )
                     .body( jsonAsMap )
@@ -186,8 +188,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
             {
                 given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                     .when( )
-                    .delete( groupName )
-                    .then( ).statusCode( 200 );
+                    .delete( groupName );
             }
         }
     }
@@ -205,6 +206,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
                 groups.add( groupName );
                 Map<String, Object> jsonAsMap = new HashMap<>( );
                 jsonAsMap.put( "id", groupName );
+                jsonAsMap.put( "name", groupName );
                 Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                     .when( )
                     .body( jsonAsMap )
@@ -251,8 +253,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
                 {
                     given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                         .when( )
-                        .delete( groupName )
-                        .then( ).statusCode( 200 );
+                        .delete( groupName );
                 }
             }
         }
@@ -267,6 +268,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             Map<String, Object> jsonAsMap = new HashMap<>( );
             jsonAsMap.put( "id", "group_001" );
+            jsonAsMap.put( "name", "group_001" );
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
                 .body( jsonAsMap )
@@ -302,8 +304,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
-                .delete( "group_001" )
-                .then( ).statusCode( 200 );
+                .delete( "group_001" );
         }
     }
 
@@ -315,6 +316,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             Map<String, Object> jsonAsMap = new HashMap<>( );
             jsonAsMap.put( "id", "group_001" );
+            jsonAsMap.put( "name", "group_001" );
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
                 .body( jsonAsMap )
@@ -371,6 +373,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             Map<String, Object> jsonAsMap = new HashMap<>( );
             jsonAsMap.put( "id", "group_001" );
+            jsonAsMap.put( "name", "group_001" );
             jsonAsMap.put( "repositories", Arrays.asList( "internal" ) );
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
@@ -423,6 +426,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             Map<String, Object> jsonAsMap = new HashMap<>( );
             jsonAsMap.put( "id", "group_001" );
+            jsonAsMap.put( "name", "group_001" );
             jsonAsMap.put( "repositories", Arrays.asList( "internal" ) );
             Response response = given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
@@ -460,8 +464,7 @@ public class NativeRepositoryGroupServiceTest extends AbstractNativeRestServices
         {
             given( ).spec( getRequestSpec( token ) ).contentType( JSON )
                 .when( )
-                .delete( "group_001" )
-                .then( ).statusCode( 200 );
+                .delete( "group_001" );
         }
     }
 

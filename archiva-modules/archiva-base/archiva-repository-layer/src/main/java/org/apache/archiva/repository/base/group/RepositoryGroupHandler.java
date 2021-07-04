@@ -22,6 +22,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
+import org.apache.archiva.repository.base.AbstractRepositoryHandler;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
 import org.apache.archiva.repository.validation.CheckedResult;
@@ -37,9 +38,9 @@ import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.validation.CombinedValidator;
 import org.apache.archiva.repository.validation.RepositoryChecker;
 import org.apache.archiva.repository.validation.RepositoryValidator;
+import org.apache.archiva.repository.validation.ValidationError;
 import org.apache.archiva.repository.validation.ValidationResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -70,7 +71,9 @@ import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Service( "repositoryGroupHandler#default" )
-public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup, RepositoryGroupConfiguration>
+public class RepositoryGroupHandler
+    extends AbstractRepositoryHandler<RepositoryGroup, RepositoryGroupConfiguration>
+    implements RepositoryHandler<RepositoryGroup, RepositoryGroupConfiguration>
 {
     private static final Logger log = LoggerFactory.getLogger( RepositoryGroupHandler.class );
 
@@ -90,28 +93,18 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
      * @param repositoryRegistry           the registry. To avoid circular dependencies via DI, this class registers itself on the registry.
      * @param configurationHandler         the configuration handler is used to retrieve and save configuration.
      * @param mergedRemoteIndexesScheduler the index scheduler is used for merging the indexes from all group members
+     * @param repositoryValidatorList the list of validators that are registered
      */
     public RepositoryGroupHandler( ArchivaRepositoryRegistry repositoryRegistry,
                                    ConfigurationHandler configurationHandler,
                                    @Named( "mergedRemoteIndexesScheduler#default" ) MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler,
-                                   List<RepositoryValidator<? extends Repository>> repositoryGroupValidatorList
+                                   List<RepositoryValidator<? extends Repository>> repositoryValidatorList
                                    )
     {
         this.configurationHandler = configurationHandler;
         this.mergedRemoteIndexesScheduler = mergedRemoteIndexesScheduler;
         this.repositoryRegistry = repositoryRegistry;
-        List<RepositoryValidator<RepositoryGroup>> validatorList = initValidators( repositoryGroupValidatorList );
-        this.validator = new CombinedValidator<>( RepositoryGroup.class, validatorList );
-    }
-
-    private List<RepositoryValidator<RepositoryGroup>> initValidators(List<RepositoryValidator<? extends Repository>> repositoryGroupValidatorList) {
-        if (repositoryGroupValidatorList!=null && repositoryGroupValidatorList.size()>0) {
-            return repositoryGroupValidatorList.stream( ).filter(
-                v -> v.isFlavour( RepositoryGroup.class )
-            ).map( v -> v.narrowTo( RepositoryGroup.class ) ).collect( Collectors.toList( ) );
-        } else {
-            return Collections.emptyList( );
-        }
+        this.validator = getCombinedValidatdor( RepositoryGroup.class, repositoryValidatorList );
     }
 
     @Override
@@ -124,13 +117,14 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
         this.repositoryRegistry.registerGroupHandler( this );
     }
 
+    @Override
     public void initializeFromConfig( )
     {
         this.repositoryGroups.clear( );
         this.repositoryGroups.putAll( newInstancesFromConfig( ) );
         for ( RepositoryGroup group : this.repositoryGroups.values( ) )
         {
-            initializeGroup( group );
+            initialize( group );
         }
     }
 
@@ -151,7 +145,8 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
         this.groupsDirectory = baseDir;
     }
 
-    private void initializeGroup( RepositoryGroup repositoryGroup )
+    @Override
+    public void initialize( RepositoryGroup repositoryGroup )
     {
         StorageAsset indexDirectory = getMergedIndexDirectory( repositoryGroup );
         if ( !indexDirectory.exists( ) )
@@ -295,7 +290,7 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
                 }
                 configuration.addRepositoryGroup( newCfg );
                 configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
-                initializeGroup( repositoryGroup );
+                initialize( repositoryGroup );
             }
             finally
             {
@@ -354,7 +349,7 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
                 }
                 configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
                 updateReferences( currentRepository, repositoryGroupConfiguration );
-                initializeGroup( currentRepository );
+                initialize( currentRepository );
                 this.repositoryGroups.put( id, currentRepository );
             }
             catch ( IndeterminateConfigurationException | RegistryException | RepositoryException e )
@@ -374,7 +369,7 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
                         log.error( "Fatal error, config save during rollback failed: {}", e.getMessage( ), e );
                     }
                     updateReferences( oldRepository, oldCfg  );
-                    initializeGroup( oldRepository );
+                    initialize( oldRepository );
                 }
                 log.error( "Could not save the configuration for repository group {}: {}", id, e.getMessage( ), e );
                 if (e instanceof RepositoryException) {
@@ -559,7 +554,7 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
     @Override
     public void updateReferences( RepositoryGroup repo, RepositoryGroupConfiguration repositoryConfiguration ) throws RepositoryException
     {
-        if ( repo instanceof EditableRepositoryGroup )
+        if ( repo instanceof EditableRepositoryGroup && repositoryConfiguration!=null)
         {
             EditableRepositoryGroup eGroup = (EditableRepositoryGroup) repo;
             eGroup.setRepositories( repositoryConfiguration.getRepositories( ).stream( )
@@ -581,17 +576,17 @@ public class RepositoryGroupHandler implements RepositoryHandler<RepositoryGroup
     }
 
     @Override
-    public ValidationResponse<RepositoryGroup> validateRepository( RepositoryGroup repository )
+    public CheckedResult<RepositoryGroup, Map<String, List<ValidationError>>> validateRepository( RepositoryGroup repository )
     {
-        return null;
+        return this.validator.apply( repository );
+
     }
 
     @Override
-    public ValidationResponse<RepositoryGroup> validateRepositoryForUpdate( RepositoryGroup repository )
+    public CheckedResult<RepositoryGroup,Map<String, List<ValidationError>>> validateRepositoryForUpdate( RepositoryGroup repository )
     {
-        return null;
+        return this.validator.applyForUpdate( repository );
     }
-
     @Override
     public boolean has( String id )
     {

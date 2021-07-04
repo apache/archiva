@@ -33,6 +33,6 @@ public interface ErrorKeys
     String MAX_LENGTH_EXCEEDED = "max_length";
     String INVALID_CHARS = "invalid_chars";
     String BELOW_MIN = "min";
-    String INVALID_SCHEDULING_EXPRESSION = "scheduling_exp_invalid";
-    String INVALID_LOCATION = "location_invalid";
+    String INVALID_SCHEDULING_EXPRESSION = "invalid_scheduling_exp";
+    String INVALID_LOCATION = "invalid_location";
 }

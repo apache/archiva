@@ -34,7 +34,9 @@ public interface RepositoryValidator<R extends Repository> extends RepositoryChe
 {
 
     String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
+    String[] REPOSITORY_ID_ALLOWED = new String[]{"alphanumeric, '.', '-','_'"};
     String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
+    String[] REPOSITORY_NAME_ALLOWED = new String[]{"alphanumeric", "whitespace", "/", "(", ")", "_", ".", "-"};
     String REPOSITORY_LOCATION_VALID_EXPRESSION = "^[-a-zA-Z0-9._/~:?!&amp;=\\\\]+$";
 
 

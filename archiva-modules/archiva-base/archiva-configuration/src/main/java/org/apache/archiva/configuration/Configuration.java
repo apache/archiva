@@ -695,15 +695,9 @@ public class Configuration
     
     public RepositoryGroupConfiguration findRepositoryGroupById( String id )
     {
-        if ( repositoryGroups != null )
+        if ( repositoryGroups != null && id!=null)
         {
-            for ( RepositoryGroupConfiguration group : (java.util.List<RepositoryGroupConfiguration>) repositoryGroups )
-            {
-                if ( group.getId().equals( id ) )
-                {
-                    return group;
-                }
-            }
+            return ( (java.util.List<RepositoryGroupConfiguration>) repositoryGroups ).stream( ).filter( g -> g != null && id.equals( g.getId( ) ) ).findFirst( ).orElse( null );
         }
         return null;
     }

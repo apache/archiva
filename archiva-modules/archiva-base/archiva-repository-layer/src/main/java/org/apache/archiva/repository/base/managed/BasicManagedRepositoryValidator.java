@@ -64,7 +64,8 @@ public class BasicManagedRepositoryValidator extends AbstractRepositoryValidator
     {
         Map<String, List<ValidationError>> errors = null;
         if (managedRepository==null) {
-            errors = appendError( errors, "id", ISNULL );
+            errors = appendError( errors, "object", ISNULL );
+            return new ValidationResponse<>( managedRepository, errors );
         }
         final String repoId = managedRepository.getId( );
         if ( StringUtils.isBlank( repoId ) ) {
@@ -89,7 +90,7 @@ public class BasicManagedRepositoryValidator extends AbstractRepositoryValidator
 
         if ( !REPOSITORY_ID_VALID_EXPRESSION_PATTERN.matcher( repoId ).matches( ) )
         {
-            errors = appendError( errors, "id", INVALID_CHARS, repoId, new String[]{"alphanumeric", "_", ".", "-"} );
+            errors = appendError( errors, "id", INVALID_CHARS, repoId, REPOSITORY_ID_ALLOWED );
         }
         if ( StringUtils.isBlank( managedRepository.getName() ) )
         {
@@ -98,7 +99,7 @@ public class BasicManagedRepositoryValidator extends AbstractRepositoryValidator
 
         if ( !REPOSITORY_NAME_VALID_EXPRESSION_PATTERN.matcher( managedRepository.getName() ).matches( ) )
         {
-            errors = appendError( errors, "name", INVALID_CHARS, managedRepository.getName( ), new String[]{"alphanumeric", "whitespace", "/", "(", ")", "_", ".", "-"} );
+            errors = appendError( errors, "name", INVALID_CHARS, managedRepository.getName( ), REPOSITORY_NAME_ALLOWED );
         }
 
         String cronExpression = managedRepository.getSchedulingDefinition( );

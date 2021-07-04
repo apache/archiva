@@ -20,29 +20,116 @@ package org.apache.archiva.repository.base.group;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-class BasicManagedRepositoryValidatorTest
+class RepositoryGroupHandlerTest
 {
 
     @Test
-    void apply( )
+    void init( )
     {
     }
 
     @Test
-    void applyForUpdate( )
+    void initializeFromConfig( )
     {
     }
 
     @Test
-    void getFlavour( )
+    void initialize( )
     {
     }
 
     @Test
-    void isFlavour( )
+    void newInstancesFromConfig( )
+    {
+    }
+
+    @Test
+    void newInstance( )
+    {
+    }
+
+    @Test
+    void testNewInstance( )
+    {
+    }
+
+    @Test
+    void put( )
+    {
+    }
+
+    @Test
+    void testPut( )
+    {
+    }
+
+    @Test
+    void testPut1( )
+    {
+    }
+
+    @Test
+    void putWithCheck( )
+    {
+    }
+
+    @Test
+    void remove( )
+    {
+    }
+
+    @Test
+    void testRemove( )
+    {
+    }
+
+    @Test
+    void get( )
+    {
+    }
+
+    @Test
+    void testClone( )
+    {
+    }
+
+    @Test
+    void updateReferences( )
+    {
+    }
+
+    @Test
+    void getAll( )
+    {
+    }
+
+    @Test
+    void getValidator( )
+    {
+    }
+
+    @Test
+    void validateRepository( )
+    {
+    }
+
+    @Test
+    void validateRepositoryForUpdate( )
+    {
+    }
+
+    @Test
+    void has( )
+    {
+    }
+
+    @Test
+    void close( )
     {
     }
 }

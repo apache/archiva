@@ -55,6 +55,7 @@ public class RepositoryGroup implements Serializable
 {
     private static final long serialVersionUID = -7319687481737616081L;
     private String id;
+    private String name;
     private List<String> repositories = new ArrayList<>(  );
     private String location;
     MergeConfiguration mergeConfiguration;
@@ -72,6 +73,7 @@ public class RepositoryGroup implements Serializable
         MergeConfiguration mergeConfig = new MergeConfiguration( );
         result.setMergeConfiguration( mergeConfig );
         result.setId( modelObj.getId() );
+        result.setName( modelObj.getName() );
         result.setLocation( modelObj.getLocation().toString() );
         result.setRepositories( modelObj.getRepositories().stream().map( Repository::getId ).collect( Collectors.toList()) );
         if (modelObj.supportsFeature( IndexCreationFeature.class )) {
@@ -133,6 +135,17 @@ public class RepositoryGroup implements Serializable
         this.location = location;
     }
 
+    @Schema(description = "The name of the repository group")
+    public String getName( )
+    {
+        return name;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
     @Override
     public boolean equals( Object o )
     {
@@ -141,29 +154,21 @@ public class RepositoryGroup implements Serializable
 
         RepositoryGroup that = (RepositoryGroup) o;
 
-        if ( !Objects.equals( id, that.id ) ) return false;
-        if ( !repositories.equals( that.repositories ) )
-            return false;
-        if ( !Objects.equals( location, that.location ) ) return false;
-        return Objects.equals( mergeConfiguration, that.mergeConfiguration );
+        return id.equals( that.id );
     }
 
     @Override
     public int hashCode( )
     {
-        int result = id != null ? id.hashCode( ) : 0;
-        result = 31 * result + repositories.hashCode( );
-        result = 31 * result + ( location != null ? location.hashCode( ) : 0 );
-        result = 31 * result + ( mergeConfiguration != null ? mergeConfiguration.hashCode( ) : 0 );
-        return result;
+        return id.hashCode( );
     }
 
-    @SuppressWarnings( "StringBufferReplaceableByString" )
     @Override
     public String toString( )
     {
         final StringBuilder sb = new StringBuilder( "RepositoryGroup{" );
         sb.append( "id='" ).append( id ).append( '\'' );
+        sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", repositories=" ).append( repositories );
         sb.append( ", location='" ).append( location ).append( '\'' );
         sb.append( ", mergeConfiguration=" ).append( mergeConfiguration );

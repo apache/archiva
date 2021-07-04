@@ -21,14 +21,16 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.RepositoryChecker;
 import org.apache.archiva.repository.validation.RepositoryValidator;
+import org.apache.archiva.repository.validation.ValidationError;
 import org.apache.archiva.repository.validation.ValidationResponse;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
- *
- * This is the generic interface that handles different repository flavours.
+ * This is the generic interface that handles different repository flavours, currently for
+ * ManagedRepository, RemoteRepository and RepositoryGroup
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
@@ -36,21 +38,32 @@ public interface RepositoryHandler<R extends Repository, C>
 {
 
     /**
-     * Creates instances from the archiva configuration. The instances are not registered in the registry.
+     * Initializes the current state from the configuration
+     */
+    void initializeFromConfig( );
+
+    /**
+     * Initializes the repository. E.g. starts scheduling and activate additional processes.
+     * @param repository the repository to initialize
+     */
+    void initialize( R repository );
+
+    /**
+     * Creates new instances from the archiva configuration. The instances are not registered in the registry.
      *
      * @return A map of (repository id, Repository) pairs
      */
-    Map<String, R> newInstancesFromConfig();
+    Map<String, R> newInstancesFromConfig( );
 
     /**
      * Creates a new instance without registering and without updating the archiva configuration
      *
      * @param type the repository type
-     * @param id the repository identifier
+     * @param id   the repository identifier
      * @return the repository instance
      * @throws RepositoryException if the creation failed
      */
-    R newInstance(RepositoryType type, String id) throws RepositoryException;
+    R newInstance( RepositoryType type, String id ) throws RepositoryException;
 
     /**
      * Creates a new instance and updates the given configuration object.
@@ -90,7 +103,7 @@ public interface RepositoryHandler<R extends Repository, C>
      * and not initialized. References are not updated.
      *
      * @param repositoryConfiguration the repository configuration
-     * @param configuration the configuration instance
+     * @param configuration           the configuration instance
      * @return the repository instance that was created or updated
      * @throws RepositoryException if the update or creation failed
      */
@@ -102,12 +115,12 @@ public interface RepositoryHandler<R extends Repository, C>
      * If the checker returns a valid result, the registry is updated and configuration is saved.
      *
      * @param repositoryConfiguration the repository configuration
-     * @param checker the checker that validates the repository data
+     * @param checker                 the checker that validates the repository data
      * @return the repository and the check result
      * @throws RepositoryException if the creation or update failed
      */
     <D> CheckedResult<R, D>
-    putWithCheck( C repositoryConfiguration, RepositoryChecker<R, D> checker) throws RepositoryException;
+    putWithCheck( C repositoryConfiguration, RepositoryChecker<R, D> checker ) throws RepositoryException;
 
     /**
      * Removes the given repository from the registry and updates references and saves the new configuration.
@@ -121,7 +134,7 @@ public interface RepositoryHandler<R extends Repository, C>
      * Removes the given repository from the registry and updates only the given configuration instance.
      * The archiva registry is not updated
      *
-     * @param id the repository identifier
+     * @param id            the repository identifier
      * @param configuration the configuration to update
      * @throws RepositoryException if the repository could not be removed
      */
@@ -141,7 +154,7 @@ public interface RepositoryHandler<R extends Repository, C>
      * @param repo the repository that should be cloned
      * @return a newly created instance with the same repository data
      */
-    R clone(R repo) throws RepositoryException;
+    R clone( R repo ) throws RepositoryException;
 
     /**
      * Updates the references and stores updates in the given <code>configuration</code> instance.
@@ -149,7 +162,7 @@ public interface RepositoryHandler<R extends Repository, C>
      * This method may register/unregister repositories depending on the implementation. That means there is no simple
      * way to roll back, if an error occurs.
      *
-     * @param repo the repository for which references are updated
+     * @param repo                    the repository for which references are updated
      * @param repositoryConfiguration the repository configuration
      */
     void updateReferences( R repo, C repositoryConfiguration ) throws RepositoryException;
@@ -159,10 +172,11 @@ public interface RepositoryHandler<R extends Repository, C>
      *
      * @return the list of repositories
      */
-    Collection<R> getAll();
+    Collection<R> getAll( );
 
     /**
      * Returns a validator that can be used to validate repository data
+     *
      * @return a validator instance
      */
     RepositoryValidator<R> getValidator( );
@@ -175,7 +189,7 @@ public interface RepositoryHandler<R extends Repository, C>
      * @param repository the repository to validate against
      * @return the result of the validation.
      */
-    ValidationResponse<R> validateRepository( R repository);
+    CheckedResult<R,Map<String, List<ValidationError>>> validateRepository( R repository );
 
     /**
      * Validates the set attributes of the given repository instance for a repository update and returns the validation result.
@@ -185,25 +199,25 @@ public interface RepositoryHandler<R extends Repository, C>
      * @param repository the repository to validate against
      * @return the result of the validation.
      */
-    ValidationResponse<R> validateRepositoryForUpdate( R repository);
-
+    CheckedResult<R,Map<String, List<ValidationError>>> validateRepositoryForUpdate( R repository );
 
 
     /**
      * Returns <code>true</code>, if the repository is registered with the given id, otherwise <code>false</code>
+     *
      * @param id the repository identifier
      * @return <code>true</code>, if it is registered, otherwise <code>false</code>
      */
-    boolean has(String id);
+    boolean has( String id );
 
     /**
      * Initializes
      */
-    void init();
+    void init( );
 
     /**
      * Closes the handler
      */
-    void close();
+    void close( );
 
 }
