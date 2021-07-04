@@ -24,6 +24,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryCapabilities;
 import org.apache.archiva.repository.RepositoryGroup;
+import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.StandardCapabilities;
 import org.apache.archiva.repository.base.AbstractRepository;
@@ -70,6 +71,7 @@ public class BasicRepositoryGroup extends AbstractRepository implements Editable
         feature.setLocalIndexPath( repositoryStorage.getRoot( ).resolve(".indexer") );
         feature.setLocalPackedIndexPath( repositoryStorage.getRoot( ).resolve(".index") );
         addFeature( feature );
+        setLastState( RepositoryState.CREATED );
     }
 
     @Override

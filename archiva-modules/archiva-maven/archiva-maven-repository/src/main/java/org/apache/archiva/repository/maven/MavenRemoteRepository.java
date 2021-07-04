@@ -5,6 +5,7 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCapabilities;
+import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.StandardCapabilities;
 import org.apache.archiva.repository.UnsupportedFeatureException;
@@ -67,13 +68,14 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     {
         super( RepositoryType.MAVEN, id, name, storage );
         this.indexCreationFeature = new IndexCreationFeature(this, this);
-
+        setLastState( RepositoryState.CREATED );
     }
 
     public MavenRemoteRepository( Locale primaryLocale, String id, String name, FilesystemStorage storage )
     {
         super( primaryLocale, RepositoryType.MAVEN, id, name, storage );
         this.indexCreationFeature = new IndexCreationFeature(this, this);
+        setLastState( RepositoryState.CREATED );
     }
 
     @Override

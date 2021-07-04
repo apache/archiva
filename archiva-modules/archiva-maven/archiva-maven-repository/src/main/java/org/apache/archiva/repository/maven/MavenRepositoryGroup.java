@@ -24,6 +24,7 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryCapabilities;
+import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.StandardCapabilities;
 import org.apache.archiva.repository.base.group.AbstractRepositoryGroup;
@@ -58,11 +59,13 @@ public class MavenRepositoryGroup extends AbstractRepositoryGroup implements Edi
     public MavenRepositoryGroup(String id, String name, FilesystemStorage storage) {
         super(RepositoryType.MAVEN, id, name, storage);
         init();
+        setLastState( RepositoryState.CREATED );
     }
 
     public MavenRepositoryGroup(Locale primaryLocale, String id, String name, FilesystemStorage storage) {
         super(primaryLocale, RepositoryType.MAVEN, id, name, storage);
         init();
+        setLastState( RepositoryState.CREATED );
     }
 
     private Path getRepositoryPath() {

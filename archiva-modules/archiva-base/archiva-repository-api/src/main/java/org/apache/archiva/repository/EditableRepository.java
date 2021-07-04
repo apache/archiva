@@ -128,5 +128,10 @@ public interface EditableRepository extends Repository
      */
     void setIndexingContext(ArchivaIndexingContext context);
 
+    /**
+     * Sets the last repository state.
+     * @param state the state value
+     */
+    void setLastState(RepositoryState state);
 
 }

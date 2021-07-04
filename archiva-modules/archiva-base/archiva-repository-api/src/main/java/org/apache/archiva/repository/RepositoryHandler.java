@@ -32,6 +32,17 @@ import java.util.Map;
  * This is the generic interface that handles different repository flavours, currently for
  * ManagedRepository, RemoteRepository and RepositoryGroup
  *
+ * Lifecycle/states of a repository:
+ * <ul>
+ *     <li>Instance created: This state is reached by the newInstance-methods. The instance is created, filled with the
+ *     corresponding attribute data and references are updated. References are object references to other repositories, if they exist.
+ *     The instance is not registered on the registry (stored) and configuration is not updated.</li>
+ *     <li>Instance registered: Instances added/updated by the put()-methods are created and registered on the registry.
+ *     If all goes well, the configuration is updated.</li>
+ *     <li>Instance initialized: </li>
+ * </ul>
+ *
+ *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 public interface RepositoryHandler<R extends Repository, C>

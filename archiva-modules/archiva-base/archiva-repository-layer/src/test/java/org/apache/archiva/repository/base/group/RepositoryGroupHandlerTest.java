@@ -28,10 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class RepositoryGroupHandlerTest
 {
 
-    @Test
-    void init( )
-    {
-    }
 
     @Test
     void initializeFromConfig( )

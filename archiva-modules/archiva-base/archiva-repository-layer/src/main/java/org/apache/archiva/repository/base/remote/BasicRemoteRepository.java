@@ -22,6 +22,7 @@ import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryCapabilities;
+import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.StandardCapabilities;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
@@ -61,12 +62,14 @@ public class BasicRemoteRepository extends AbstractRemoteRepository
     {
         super( RepositoryType.MAVEN, id, name, storage);
         initFeatures();
+        setLastState( RepositoryState.CREATED );
     }
 
     public BasicRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage storage )
     {
         super( primaryLocale, type, id, name, storage );
         initFeatures();
+        setLastState( RepositoryState.CREATED );
     }
 
     private void initFeatures() {

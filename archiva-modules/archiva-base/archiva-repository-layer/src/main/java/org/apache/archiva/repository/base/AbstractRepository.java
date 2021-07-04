@@ -30,6 +30,7 @@ import org.apache.archiva.event.EventType;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.EditableRepository;
 import org.apache.archiva.repository.RepositoryCapabilities;
+import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedFeatureException;
 import org.apache.archiva.repository.event.*;
@@ -85,6 +86,7 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
     String schedulingDefinition = "0 0 02 * * ?";
     private String layout = "default";
     public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+    private RepositoryState state;
 
     private final EventManager eventManager;
 
@@ -324,6 +326,7 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
                     sf.getStagingRepository().close();
                 }
             }
+            setLastState( RepositoryState.CLOSED );
         }
 
     }
@@ -424,5 +427,18 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
 
     protected RepositoryStorage getStorage() {
         return storage;
+    }
+
+
+    @Override
+    public RepositoryState getLastState( )
+    {
+        return this.state;
+    }
+
+    @Override
+    public void setLastState( RepositoryState state )
+    {
+        this.state = state;
     }
 }

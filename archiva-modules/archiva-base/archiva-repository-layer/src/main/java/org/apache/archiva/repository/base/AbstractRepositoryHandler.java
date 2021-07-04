@@ -17,10 +17,15 @@ package org.apache.archiva.repository.base;
  * under the License.
  */
 
+import org.apache.archiva.repository.EditableRepository;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryHandler;
+import org.apache.archiva.repository.RepositoryState;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.repository.validation.CombinedValidator;
 import org.apache.archiva.repository.validation.RepositoryValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +37,9 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractRepositoryHandler<R extends Repository, C> implements RepositoryHandler<R, C>
 {
+
+    private static final Logger log = LoggerFactory.getLogger( AbstractRepositoryHandler.class );
+
     protected List<RepositoryValidator<R>> initValidators( Class<R> clazz, List<RepositoryValidator<? extends Repository>> repositoryGroupValidatorList) {
         if (repositoryGroupValidatorList!=null && repositoryGroupValidatorList.size()>0) {
             return repositoryGroupValidatorList.stream( ).filter(
@@ -46,4 +54,14 @@ public abstract class AbstractRepositoryHandler<R extends Repository, C> impleme
         return new CombinedValidator<>( clazz, initValidators( clazz, repositoryGroupValidatorList ) );
     }
 
+    protected void setLastState(Repository repo, RepositoryState state) {
+        if (repo instanceof EditableRepository ) {
+            if (state.getOrderNumber()>repo.getLastState().getOrderNumber())
+            {
+                ( (EditableRepository) repo ).setLastState( state );
+            }
+        } else {
+            log.error( "Found a not editable repository instance: {}, {}", repo.getId( ), repo.getClass().getName() );
+        }
+    }
 }

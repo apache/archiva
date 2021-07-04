@@ -22,6 +22,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
+import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.base.AbstractRepositoryHandler;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
@@ -174,6 +175,7 @@ public class RepositoryGroupHandler
         }
         mergedRemoteIndexesScheduler.schedule( repositoryGroup,
             indexDirectory );
+        setLastState( repositoryGroup, RepositoryState.INITIALIZED );
     }
 
     public StorageAsset getMergedIndexDirectory( RepositoryGroup group )
@@ -251,9 +253,12 @@ public class RepositoryGroupHandler
     {
         RepositoryGroup repositoryGroup = provider.createRepositoryGroup( config );
         updateReferences( repositoryGroup, config );
+        if (repositoryGroup instanceof EditableRepository)
+        {
+            ( (EditableRepository) repositoryGroup ).setLastState( RepositoryState.REFERENCES_SET );
+        }
         return repositoryGroup;
     }
-
 
     /**
      * Adds a new repository group to the current list, or replaces the repository group definition with
@@ -290,6 +295,7 @@ public class RepositoryGroupHandler
                 }
                 configuration.addRepositoryGroup( newCfg );
                 configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
+                setLastState( repositoryGroup, RepositoryState.SAVED );
                 initialize( repositoryGroup );
             }
             finally
@@ -297,6 +303,7 @@ public class RepositoryGroupHandler
                 configLock.unlock( );
             }
             repositoryGroups.put( id, repositoryGroup );
+            setLastState( repositoryGroup, RepositoryState.REGISTERED );
             return repositoryGroup;
         }
         catch ( Exception e )
@@ -349,8 +356,10 @@ public class RepositoryGroupHandler
                 }
                 configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
                 updateReferences( currentRepository, repositoryGroupConfiguration );
+                setLastState( currentRepository, RepositoryState.REFERENCES_SET );
                 initialize( currentRepository );
                 this.repositoryGroups.put( id, currentRepository );
+                setLastState( currentRepository, RepositoryState.REGISTERED );
             }
             catch ( IndeterminateConfigurationException | RegistryException | RepositoryException e )
             {
@@ -369,7 +378,12 @@ public class RepositoryGroupHandler
                         log.error( "Fatal error, config save during rollback failed: {}", e.getMessage( ), e );
                     }
                     updateReferences( oldRepository, oldCfg  );
+                    setLastState( oldRepository, RepositoryState.REFERENCES_SET );
                     initialize( oldRepository );
+                    repositoryGroups.put( id, oldRepository );
+                    setLastState( oldRepository, RepositoryState.REGISTERED );
+                } else {
+                    repositoryGroups.remove( id );
                 }
                 log.error( "Could not save the configuration for repository group {}: {}", id, e.getMessage( ), e );
                 if (e instanceof RepositoryException) {
@@ -409,9 +423,11 @@ public class RepositoryGroupHandler
         else
         {
             repo = repositoryRegistry.getProvider( repoType ).createRepositoryGroup( repositoryGroupConfiguration );
+            setLastState( repo, RepositoryState.CREATED );
         }
         replaceOrAddRepositoryConfig( repositoryGroupConfiguration, configuration );
         updateReferences( repo, repositoryGroupConfiguration );
+        setLastState( repo, RepositoryState.REFERENCES_SET );
         return repo;
     }
 
@@ -501,6 +517,7 @@ public class RepositoryGroupHandler
                         configuration.removeRepositoryGroup( cfg );
                     }
                     this.configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
+                    setLastState( repo, RepositoryState.UNREGISTERED );
                 }
 
             }
@@ -530,6 +547,7 @@ public class RepositoryGroupHandler
                 {
                     configuration.removeRepositoryGroup( cfg );
                 }
+                setLastState( repo, RepositoryState.UNREGISTERED );
             }
         }
 
@@ -548,6 +566,7 @@ public class RepositoryGroupHandler
         RepositoryGroupConfiguration cfg = provider.getRepositoryGroupConfiguration( repo );
         RepositoryGroup cloned = provider.createRepositoryGroup( cfg );
         cloned.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
+        setLastState( cloned, RepositoryState.CREATED );
         return cloned;
     }
 

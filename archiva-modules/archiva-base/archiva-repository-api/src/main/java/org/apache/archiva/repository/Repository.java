@@ -173,5 +173,14 @@ public interface Repository extends EventSource, RepositoryStorage {
      */
     boolean isOpen();
 
-
+    /**
+     * Returns the last state of this repository instance. As multiple repository instances may point to the
+     * same repository, this is only a representation of the last state, when this particular instance was
+     * used by the registry.
+     *
+     * @return the last known state of this repository instance
+     */
+    default RepositoryState getLastState() {
+        return RepositoryState.CREATED;
+    }
 }
