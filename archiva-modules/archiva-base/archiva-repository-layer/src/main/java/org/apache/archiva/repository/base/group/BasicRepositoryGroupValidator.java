@@ -92,13 +92,9 @@ public class BasicRepositoryGroupValidator extends AbstractRepositoryValidator<R
 
         if (StringUtils.isBlank( repositoryGroup.getName() )) {
             errors = appendError( errors, "name", ISEMPTY );
-        } else
+        } else if ( !REPOSITORY_NAME_VALID_EXPRESSION_PATTERN.matcher( repositoryGroup.getName( ) ).matches( ) )
         {
-            matcher = REPOSITORY_NAME_VALID_EXPRESSION_PATTERN.matcher( repositoryGroup.getName( ) );
-            if ( !matcher.matches( ) )
-            {
-                errors = appendError( errors, "name", INVALID_CHARS, repoGroupId, REPOSITORY_NAME_ALLOWED );
-            }
+            errors = appendError( errors, "name", INVALID_CHARS, repoGroupId, REPOSITORY_NAME_ALLOWED );
         }
 
 

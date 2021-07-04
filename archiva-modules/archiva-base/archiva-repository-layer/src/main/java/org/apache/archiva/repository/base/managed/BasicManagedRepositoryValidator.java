@@ -95,9 +95,7 @@ public class BasicManagedRepositoryValidator extends AbstractRepositoryValidator
         if ( StringUtils.isBlank( managedRepository.getName() ) )
         {
             errors = appendError( errors, "name", ISEMPTY );
-        }
-
-        if ( !REPOSITORY_NAME_VALID_EXPRESSION_PATTERN.matcher( managedRepository.getName() ).matches( ) )
+        } else if ( !REPOSITORY_NAME_VALID_EXPRESSION_PATTERN.matcher( managedRepository.getName( ) ).matches( ) )
         {
             errors = appendError( errors, "name", INVALID_CHARS, managedRepository.getName( ), REPOSITORY_NAME_ALLOWED );
         }
