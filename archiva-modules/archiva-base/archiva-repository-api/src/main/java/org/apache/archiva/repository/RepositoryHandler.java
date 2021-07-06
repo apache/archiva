@@ -22,7 +22,6 @@ import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.RepositoryChecker;
 import org.apache.archiva.repository.validation.RepositoryValidator;
 import org.apache.archiva.repository.validation.ValidationError;
-import org.apache.archiva.repository.validation.ValidationResponse;
 
 import java.util.Collection;
 import java.util.List;
@@ -57,7 +56,7 @@ public interface RepositoryHandler<R extends Repository, C>
      * Initializes the repository. E.g. starts scheduling and activate additional processes.
      * @param repository the repository to initialize
      */
-    void initialize( R repository );
+    void activateRepository( R repository );
 
     /**
      * Creates new instances from the archiva configuration. The instances are not registered in the registry.
@@ -77,7 +76,7 @@ public interface RepositoryHandler<R extends Repository, C>
     R newInstance( RepositoryType type, String id ) throws RepositoryException;
 
     /**
-     * Creates a new instance and updates the given configuration object.
+     * Creates a new instance based on the given configuration instance. The instance is not activated and not registered.
      *
      * @param repositoryConfiguration the configuration instance
      * @return a newly created instance
@@ -152,10 +151,11 @@ public interface RepositoryHandler<R extends Repository, C>
     void remove( String id, Configuration configuration ) throws RepositoryException;
 
     /**
-     * Returns the repository with the given identifier or <code>null</code>, if it is not registered.
+     * Returns the repository with the given identifier or <code>null</code>, if no repository is registered
+     * with the given id.
      *
      * @param id the repository id
-     * @return if the retrieval failed
+     * @return the repository instance or <code>null</code>
      */
     R get( String id );
 
@@ -222,12 +222,12 @@ public interface RepositoryHandler<R extends Repository, C>
     boolean has( String id );
 
     /**
-     * Initializes
+     * Initializes the handler. This method must be called before using the repository handler.
      */
     void init( );
 
     /**
-     * Closes the handler
+     * Closes the handler. After closing, the repository handler instance is not usable anymore.
      */
     void close( );
 

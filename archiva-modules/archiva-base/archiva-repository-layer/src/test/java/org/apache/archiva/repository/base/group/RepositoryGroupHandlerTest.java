@@ -18,20 +18,66 @@ package org.apache.archiva.repository.base.group;
  * under the License.
  */
 
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.validation.RepositoryValidator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
+@ExtendWith( SpringExtension.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-group.xml" })
 class RepositoryGroupHandlerTest
 {
 
+    @Inject
+    @Named("repositoryRegistry")
+    ArchivaRepositoryRegistry repositoryRegistry;
+
+    @Inject
+    ConfigurationHandler configurationHandler;
+
+    @Inject
+    @Named( "mergedRemoteIndexesScheduler#default" )
+    MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
+
+    @Inject
+    List<RepositoryValidator<? extends Repository>> repositoryValidatorList;
+
+    @Inject
+    ArchivaConfiguration archivaConfiguration;
+
+
+    private RepositoryGroupHandler createHandler() {
+        RepositoryGroupHandler groupHandler = new RepositoryGroupHandler( repositoryRegistry, configurationHandler, mergedRemoteIndexesScheduler, repositoryValidatorList );
+        groupHandler.init();
+        return groupHandler;
+    }
 
     @Test
     void initializeFromConfig( )
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        assertNotNull( groupHandler );
+        groupHandler.initializeFromConfig();
+        assertEquals( 1, groupHandler.getAll( ).size( ) );
+        assertNotNull( groupHandler.get( "test-group-01" ).getRepositories( ) );
+        assertEquals( "internal", groupHandler.get( "test-group-01" ).getRepositories( ).get( 0 ).getId() );
     }
 
     @Test

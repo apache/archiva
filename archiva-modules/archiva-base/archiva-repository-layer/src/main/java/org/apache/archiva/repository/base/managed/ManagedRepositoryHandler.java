@@ -77,13 +77,13 @@ implements RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration>
         this.managedRepositories.putAll( newInstancesFromConfig( ) );
         for ( ManagedRepository managedRepository : this.managedRepositories.values( ) )
         {
-            initialize( managedRepository );
+            activateRepository( managedRepository );
         }
 
     }
 
     @Override
-    public void initialize( ManagedRepository repository )
+    public void activateRepository( ManagedRepository repository )
     {
 
     }

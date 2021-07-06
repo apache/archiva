@@ -25,6 +25,7 @@ import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.event.Event;
+import org.apache.archiva.repository.base.group.BasicRepositoryGroup;
 import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -81,7 +82,15 @@ public class RepositoryProviderMock implements RepositoryProvider
 
     @Override
     public EditableRepositoryGroup createRepositoryGroup(String id, String name) {
-        return null;
+        try
+        {
+            return BasicRepositoryGroup.newFilesystemInstance( id, name, Paths.get( "target/groups" ) );
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeException( );
+        }
+
     }
 
     @Override
@@ -195,7 +204,15 @@ public class RepositoryProviderMock implements RepositoryProvider
 
     @Override
     public RepositoryGroup createRepositoryGroup(RepositoryGroupConfiguration configuration) throws RepositoryException {
-        return null;
+        EditableRepositoryGroup group = createRepositoryGroup( configuration.getId( ), configuration.getName( ) );
+        updateGroupInstance( group, configuration );
+        return group;
+    }
+
+    private void updateGroupInstance( EditableRepositoryGroup group, RepositoryGroupConfiguration configuration )
+    {
+        group.setMergedIndexTTL( configuration.getMergedIndexTtl() );
+        group.setSchedulingDefinition( configuration.getCronExpression() );
     }
 
     @Override

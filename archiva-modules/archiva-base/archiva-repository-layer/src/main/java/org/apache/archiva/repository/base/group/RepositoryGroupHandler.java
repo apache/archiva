@@ -42,7 +42,6 @@ import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.validation.RepositoryChecker;
 import org.apache.archiva.repository.validation.RepositoryValidator;
 import org.apache.archiva.repository.validation.ValidationError;
-import org.apache.archiva.repository.validation.ValidationResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +124,7 @@ public class RepositoryGroupHandler
         this.repositoryGroups.putAll( newInstancesFromConfig( ) );
         for ( RepositoryGroup group : this.repositoryGroups.values( ) )
         {
-            initialize( group );
+            activateRepository( group );
         }
     }
 
@@ -147,7 +146,7 @@ public class RepositoryGroupHandler
     }
 
     @Override
-    public void initialize( RepositoryGroup repositoryGroup )
+    public void activateRepository( RepositoryGroup repositoryGroup )
     {
         StorageAsset indexDirectory = getMergedIndexDirectory( repositoryGroup );
         if ( !indexDirectory.exists( ) )
@@ -296,7 +295,7 @@ public class RepositoryGroupHandler
                 configuration.addRepositoryGroup( newCfg );
                 configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
                 setLastState( repositoryGroup, RepositoryState.SAVED );
-                initialize( repositoryGroup );
+                activateRepository( repositoryGroup );
             }
             finally
             {
@@ -357,7 +356,7 @@ public class RepositoryGroupHandler
                 configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
                 updateReferences( currentRepository, repositoryGroupConfiguration );
                 setLastState( currentRepository, RepositoryState.REFERENCES_SET );
-                initialize( currentRepository );
+                activateRepository( currentRepository );
                 this.repositoryGroups.put( id, currentRepository );
                 setLastState( currentRepository, RepositoryState.REGISTERED );
             }
@@ -379,7 +378,7 @@ public class RepositoryGroupHandler
                     }
                     updateReferences( oldRepository, oldCfg  );
                     setLastState( oldRepository, RepositoryState.REFERENCES_SET );
-                    initialize( oldRepository );
+                    activateRepository( oldRepository );
                     repositoryGroups.put( id, oldRepository );
                     setLastState( oldRepository, RepositoryState.REGISTERED );
                 } else {
