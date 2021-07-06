@@ -29,7 +29,7 @@
  */
 LABEL = 'ubuntu'
 buildJdk = 'jdk_1.8_latest'
-buildMvn = 'maven_3.5.2'
+buildMvn = 'maven_3.5.4'
 deploySettings = 'archiva-uid-jenkins'
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
