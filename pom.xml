@@ -68,7 +68,7 @@
     <rome.version>1.13.1</rome.version>
     <cronutils.version>9.1.3</cronutils.version>
 
-    <lucene.version>4.10.4</lucene.version>
+    <lucene.version>8.4.1</lucene.version>
 
     <!-- JCR modules -->
     <javax.jcr.version>2.0</javax.jcr.version>
