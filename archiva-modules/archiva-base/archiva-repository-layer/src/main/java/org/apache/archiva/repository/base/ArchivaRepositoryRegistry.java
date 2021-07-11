@@ -565,7 +565,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
                 log.debug( "Remote repo" );
                 return remoteRepositories.get( repoId );
             }
-            else if ( groupHandler.has( repoId ) )
+            else if ( groupHandler.hasRepository( repoId ) )
             {
                 return groupHandler.get( repoId );
             }
@@ -639,7 +639,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     @Override
     public boolean hasRepository( String repoId )
     {
-        return this.managedRepositories.containsKey( repoId ) || this.remoteRepositories.containsKey( repoId ) || groupHandler.has( repoId );
+        return this.managedRepositories.containsKey( repoId ) || this.remoteRepositories.containsKey( repoId ) || groupHandler.hasRepository( repoId );
     }
 
     @Override
@@ -657,7 +657,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     @Override
     public boolean hasRepositoryGroup( String groupId )
     {
-        return groupHandler.has( groupId );
+        return groupHandler.hasRepository( groupId );
     }
 
     protected void saveConfiguration( Configuration configuration ) throws IndeterminateConfigurationException, RegistryException
@@ -1293,7 +1293,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             return;
         }
         final String id = repositoryGroup.getId( );
-        if ( groupHandler.has( id ) )
+        if ( groupHandler.hasRepository( id ) )
         {
             rwLock.writeLock( ).lock( );
             try
@@ -1315,7 +1315,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
             return;
         }
         final String id = repositoryGroup.getId( );
-        if ( groupHandler.has( id ) )
+        if ( groupHandler.hasRepository( id ) )
         {
             rwLock.writeLock( ).lock( );
             try

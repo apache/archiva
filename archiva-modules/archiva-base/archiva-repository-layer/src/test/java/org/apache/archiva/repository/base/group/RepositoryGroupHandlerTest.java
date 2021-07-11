@@ -81,7 +81,7 @@ class RepositoryGroupHandlerTest
     }
 
     @Test
-    void initialize( )
+    void activateRepository( )
     {
     }
 

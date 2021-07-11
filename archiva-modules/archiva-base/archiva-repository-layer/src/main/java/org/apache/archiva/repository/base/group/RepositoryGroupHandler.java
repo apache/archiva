@@ -606,7 +606,7 @@ public class RepositoryGroupHandler
         return this.validator.applyForUpdate( repository );
     }
     @Override
-    public boolean has( String id )
+    public boolean hasRepository( String id )
     {
         return repositoryGroups.containsKey( id );
     }

@@ -219,7 +219,7 @@ public interface RepositoryHandler<R extends Repository, C>
      * @param id the repository identifier
      * @return <code>true</code>, if it is registered, otherwise <code>false</code>
      */
-    boolean has( String id );
+    boolean hasRepository( String id );
 
     /**
      * Initializes the handler. This method must be called before using the repository handler.

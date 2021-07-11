@@ -221,7 +221,7 @@ implements RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration>
     }
 
     @Override
-    public boolean has( String id )
+    public boolean hasRepository( String id )
     {
         return false;
     }
