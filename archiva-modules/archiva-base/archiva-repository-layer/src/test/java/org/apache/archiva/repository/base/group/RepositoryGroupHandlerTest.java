@@ -21,12 +21,18 @@ package org.apache.archiva.repository.base.group;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryState;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
 import org.apache.archiva.repository.validation.RepositoryValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -34,26 +40,30 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-@ExtendWith( SpringExtension.class)
-@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-group.xml" })
+@ExtendWith( {MockitoExtension.class, SpringExtension.class} )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-group.xml"} )
 class RepositoryGroupHandlerTest
 {
 
     @Inject
-    @Named("repositoryRegistry")
+    @Named( "repositoryRegistry" )
     ArchivaRepositoryRegistry repositoryRegistry;
 
     @Inject
     ConfigurationHandler configurationHandler;
 
-    @Inject
-    @Named( "mergedRemoteIndexesScheduler#default" )
+    @Mock
+    // @Named( "mergedRemoteIndexesScheduler#default" )
     MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
 
     @Inject
@@ -63,9 +73,10 @@ class RepositoryGroupHandlerTest
     ArchivaConfiguration archivaConfiguration;
 
 
-    private RepositoryGroupHandler createHandler() {
+    private RepositoryGroupHandler createHandler( )
+    {
         RepositoryGroupHandler groupHandler = new RepositoryGroupHandler( repositoryRegistry, configurationHandler, mergedRemoteIndexesScheduler, repositoryValidatorList );
-        groupHandler.init();
+        groupHandler.init( );
         return groupHandler;
     }
 
@@ -73,32 +84,43 @@ class RepositoryGroupHandlerTest
     void initializeFromConfig( )
     {
         RepositoryGroupHandler groupHandler = createHandler( );
-        assertNotNull( groupHandler );
-        groupHandler.initializeFromConfig();
+        groupHandler.initializeFromConfig( );
         assertEquals( 1, groupHandler.getAll( ).size( ) );
         assertNotNull( groupHandler.get( "test-group-01" ).getRepositories( ) );
-        assertEquals( "internal", groupHandler.get( "test-group-01" ).getRepositories( ).get( 0 ).getId() );
+        assertEquals( "internal", groupHandler.get( "test-group-01" ).getRepositories( ).get( 0 ).getId( ) );
     }
 
     @Test
-    void activateRepository( )
+    void activateRepository( ) throws RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        RepositoryGroup repo = groupHandler.newInstance( RepositoryType.MAVEN, "test-group-02" );
+        groupHandler.activateRepository( repo );
+        verify( mergedRemoteIndexesScheduler ).schedule( eq( repo ), any( ) );
+        assertEquals( RepositoryState.INITIALIZED, repo.getLastState( ) );
     }
 
     @Test
     void newInstancesFromConfig( )
     {
+        RepositoryGroupHandler groupHandler = new RepositoryGroupHandler( repositoryRegistry, configurationHandler, mergedRemoteIndexesScheduler, repositoryValidatorList );
+        Map<String, RepositoryGroup> instances = groupHandler.newInstancesFromConfig( );
+        assertFalse( groupHandler.hasRepository( "test-group-01" ) );
+        assertTrue( instances.containsKey( "test-group-01" ) );
+        assertEquals( RepositoryState.REFERENCES_SET, instances.get( "test-group-01" ).getLastState( ) );
     }
 
     @Test
-    void newInstance( )
+    void newInstance( ) throws RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        RepositoryGroup instance = groupHandler.newInstance( RepositoryType.MAVEN, "test-group-03" );
+        assertNotNull( instance );
+        assertEquals( "test-group-03", instance.getId( ) );
+        assertFalse( groupHandler.hasRepository( "test-group-03" ) );
+        assertEquals( RepositoryState.REFERENCES_SET, instance.getLastState( ) );
     }
 
-    @Test
-    void testNewInstance( )
-    {
-    }
 
     @Test
     void put( )
