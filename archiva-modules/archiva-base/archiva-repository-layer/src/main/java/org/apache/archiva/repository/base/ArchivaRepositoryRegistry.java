@@ -157,6 +157,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         TreeSet<RepositoryValidator<? extends Repository>> val = new TreeSet<>( );
         for (RepositoryValidator<? extends Repository> validator : validators) {
             val.add( validator );
+            validator.setRepositoryRegistry( this );
         }
         return val;
     }

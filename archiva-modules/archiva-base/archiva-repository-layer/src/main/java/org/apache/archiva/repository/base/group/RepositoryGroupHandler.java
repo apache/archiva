@@ -56,9 +56,11 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
@@ -549,7 +551,14 @@ public class RepositoryGroupHandler
                 setLastState( repo, RepositoryState.UNREGISTERED );
             }
         }
-
+        Iterator<RepositoryGroupConfiguration> cfgIter = configuration.getRepositoryGroups( ).iterator( );
+        while(cfgIter.hasNext()) {
+            RepositoryGroupConfiguration el = cfgIter.next( );
+            if (id.equals( el.getId() )) {
+                cfgIter.remove( );
+                break;
+            }
+        }
     }
 
     @Override

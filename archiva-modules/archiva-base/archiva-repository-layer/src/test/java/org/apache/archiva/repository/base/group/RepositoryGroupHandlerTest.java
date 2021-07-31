@@ -18,17 +18,24 @@ package org.apache.archiva.repository.base.group;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
+import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryGroup;
-import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.storage.fs.FilesystemStorage;
+import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.RepositoryValidator;
+import org.apache.archiva.repository.validation.ValidationError;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,10 +45,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.archiva.repository.validation.ErrorKeys.ISEMPTY;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -72,6 +83,7 @@ class RepositoryGroupHandlerTest
     @Inject
     ArchivaConfiguration archivaConfiguration;
 
+    Path repoBaseDir;
 
     private RepositoryGroupHandler createHandler( )
     {
@@ -79,6 +91,34 @@ class RepositoryGroupHandlerTest
         groupHandler.init( );
         return groupHandler;
     }
+
+    private Path getRepoBaseDir() throws IOException
+    {
+        if (repoBaseDir==null) {
+            this.repoBaseDir = archivaConfiguration.getRepositoryBaseDir( ).resolve( "group" );
+            Files.createDirectories( this.repoBaseDir );
+        }
+        return repoBaseDir;
+    }
+
+
+
+    protected EditableRepositoryGroup createRepository( String id, String name, Path location ) throws IOException
+    {
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(location.toAbsolutePath(), lockManager);
+        BasicRepositoryGroup repo = new BasicRepositoryGroup(id, name, storage);
+        repo.setLocation( location.toAbsolutePath().toUri());
+        return repo;
+    }
+
+    protected EditableRepositoryGroup createRepository( String id, String name) throws IOException
+    {
+        Path dir = getRepoBaseDir( ).resolve( id );
+        Files.createDirectories( dir );
+        return createRepository( id, name, dir );
+    }
+
 
     @Test
     void initializeFromConfig( )
@@ -123,77 +163,180 @@ class RepositoryGroupHandlerTest
 
 
     @Test
-    void put( )
+    void put( ) throws IOException, RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        EditableRepositoryGroup repositoryGroup = createRepository( "test-group-04", "n-test-group-04" );
+        groupHandler.put( repositoryGroup );
+        RepositoryGroup storedGroup = groupHandler.get( "test-group-04" );
+        assertNotNull( storedGroup );
+        assertEquals( "test-group-04", storedGroup.getId( ) );
+        assertEquals( "n-test-group-04", storedGroup.getName( ) );
+
+        EditableRepositoryGroup repositoryGroup2 = createRepository( "test-group-04", "n2-test-group-04" );
+        groupHandler.put( repositoryGroup2 );
+        storedGroup = groupHandler.get( "test-group-04" );
+        assertNotNull( storedGroup );
+        assertEquals( "test-group-04", storedGroup.getId( ) );
+        assertEquals( "n2-test-group-04", storedGroup.getName( ) );
+
+        assertNotNull( configurationHandler.getBaseConfiguration().getRepositoryGroups( ) );
+        assertTrue( configurationHandler.getBaseConfiguration().getRepositoryGroups( ).stream( ).anyMatch( g -> g!=null && "test-group-04".equals( g.getId( ) ) ) );
     }
 
     @Test
-    void testPut( )
+    void testPut( ) throws RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        RepositoryGroupConfiguration configuration = new RepositoryGroupConfiguration( );
+        configuration.setId( "test-group-05" );
+        configuration.setName( "n-test-group-05" );
+        ArrayList<String> repos = new ArrayList<>( );
+        repos.add( "internal" );
+        configuration.setRepositories( repos );
+        groupHandler.put( configuration );
+
+        RepositoryGroup repo = groupHandler.get( "test-group-05" );
+        assertNotNull( repo );
+        assertEquals( "test-group-05", repo.getId( ) );
+        assertEquals( "n-test-group-05", repo.getName( ) );
+
+        assertNotNull( repo.getRepositories( ) );
+        assertEquals( 1, repo.getRepositories( ).size( ) );
+        assertEquals( "internal", repo.getRepositories( ).get( 0 ).getId( ) );
+        assertNotNull( configurationHandler.getBaseConfiguration().getRepositoryGroups( ) );
+        assertTrue( configurationHandler.getBaseConfiguration().getRepositoryGroups( ).stream( ).anyMatch( g -> g!=null && "test-group-05".equals( g.getId( ) ) ) );
     }
 
     @Test
-    void testPut1( )
+    void testPutWithoutRegister( ) throws RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        Configuration aCfg = new Configuration( );
+        RepositoryGroupConfiguration configuration = new RepositoryGroupConfiguration( );
+        configuration.setId( "test-group-06" );
+        configuration.setName( "n-test-group-06" );
+        ArrayList<String> repos = new ArrayList<>( );
+        repos.add( "internal" );
+        configuration.setRepositories( repos );
+        groupHandler.put( configuration, aCfg );
+
+        RepositoryGroup repo = groupHandler.get( "test-group-06" );
+        assertNull( repo );
+        assertNotNull( configurationHandler.getBaseConfiguration().getRepositoryGroups( ) );
+        assertTrue( configurationHandler.getBaseConfiguration().getRepositoryGroups( ).stream( ).noneMatch( g -> g!=null && "test-group-06".equals( g.getId( ) ) ) );
+        assertTrue( aCfg.getRepositoryGroups( ).stream( ).anyMatch( g -> g!=null && "test-group-06".equals( g.getId( ) ) ) );
+
     }
 
     @Test
-    void putWithCheck( )
+    void putWithCheck( ) throws RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        BasicRepositoryGroupValidator checker = new BasicRepositoryGroupValidator( configurationHandler );
+        RepositoryGroupConfiguration configuration = new RepositoryGroupConfiguration( );
+        configuration.setId( "" );
+        configuration.setName( "n-test-group-07" );
+        ArrayList<String> repos = new ArrayList<>( );
+        repos.add( "internal" );
+        configuration.setRepositories( repos );
+        CheckedResult<RepositoryGroup, Map<String, List<ValidationError>>> result = groupHandler.putWithCheck( configuration, checker );
+        assertNull( groupHandler.get( "test-group-07" ) );
+        assertNotNull( result.getResult( ) );
+        assertNotNull( result.getResult( ).get( "id" ) );
+        assertEquals( 1, result.getResult( ).get( "id" ).size( ) );
+        assertEquals( ISEMPTY, result.getResult( ).get( "id" ).get( 0 ).getType( ) );
     }
 
     @Test
-    void remove( )
+    void remove( ) throws RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        RepositoryGroupConfiguration configuration = new RepositoryGroupConfiguration( );
+        configuration.setId( "test-group-08" );
+        configuration.setName( "n-test-group-08" );
+        groupHandler.put( configuration );
+        assertNotNull( groupHandler.get( "test-group-08" ) );
+        groupHandler.remove( "test-group-08" );
+        assertNull( groupHandler.get( "test-group-08" ) );
     }
 
     @Test
-    void testRemove( )
+    void testRemove( ) throws RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        Configuration aCfg = new Configuration( );
+        RepositoryGroupConfiguration configuration = new RepositoryGroupConfiguration( );
+        configuration.setId( "test-group-09" );
+        configuration.setName( "n-test-group-09" );
+        ArrayList<String> repos = new ArrayList<>( );
+        repos.add( "internal" );
+        configuration.setRepositories( repos );
+        groupHandler.put( configuration, aCfg );
+        assertTrue( aCfg.getRepositoryGroups( ).stream( ).anyMatch( g -> g != null && "test-group-09".equals( g.getId( ) ) ) );
+        groupHandler.remove( "test-group-09", aCfg );
+        assertNull( groupHandler.get( "test-group-09" ) );
+        assertTrue( aCfg.getRepositoryGroups( ).stream( ).noneMatch( g -> g != null && "test-group-09".equals( g.getId( ) ) ) );
+        assertNull( groupHandler.get( "test-group-09" ) );
+
+    }
+
+
+    @Test
+    void validateRepository( ) throws IOException
+    {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        EditableRepositoryGroup repositoryGroup = createRepository( "test-group-10", "n-test-group-10" );
+        repositoryGroup.setMergedIndexTTL( 5 );
+        CheckedResult<RepositoryGroup, Map<String, List<ValidationError>>> result = groupHandler.validateRepository( repositoryGroup );
+        assertNotNull( result );
+        assertEquals( 0, result.getResult( ).size( ) );
+
+        repositoryGroup = createRepository( "test-group-10", "n-test-group-10###" );
+        result = groupHandler.validateRepository( repositoryGroup );
+        assertNotNull( result );
+        assertEquals( 2, result.getResult( ).size( ) );
+        assertNotNull( result.getResult().get( "merged_index_ttl" ) );
+        assertNotNull( result.getResult().get( "name" ) );
+
     }
 
     @Test
-    void get( )
+    void validateRepositoryIfExisting( ) throws IOException, RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        EditableRepositoryGroup repositoryGroup = createRepository( "test-group-11", "n-test-group-11" );
+        repositoryGroup.setMergedIndexTTL( 5 );
+        groupHandler.put( repositoryGroup );
+        CheckedResult<RepositoryGroup, Map<String, List<ValidationError>>> result = groupHandler.validateRepository( repositoryGroup );
+        assertNotNull( result );
+        assertEquals( 1, result.getResult( ).size( ) );
+
+
     }
 
     @Test
-    void testClone( )
+    void validateRepositoryForUpdate( ) throws IOException, RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        EditableRepositoryGroup repositoryGroup = createRepository( "test-group-12", "n-test-group-12" );
+        repositoryGroup.setMergedIndexTTL( 5 );
+        groupHandler.put( repositoryGroup );
+        CheckedResult<RepositoryGroup, Map<String, List<ValidationError>>> result = groupHandler.validateRepositoryForUpdate( repositoryGroup );
+        assertNotNull( result );
+        assertEquals( 0, result.getResult( ).size( ) );
+
     }
 
     @Test
-    void updateReferences( )
+    void has( ) throws IOException, RepositoryException
     {
+        RepositoryGroupHandler groupHandler = createHandler( );
+        EditableRepositoryGroup repositoryGroup = createRepository( "test-group-13", "n-test-group-13" );
+        repositoryGroup.setMergedIndexTTL( 5 );
+        assertFalse( groupHandler.hasRepository( "test-group-13" ) );
+        groupHandler.put( repositoryGroup );
+        assertTrue( groupHandler.hasRepository( "test-group-13" ) );
     }
 
-    @Test
-    void getAll( )
-    {
-    }
-
-    @Test
-    void getValidator( )
-    {
-    }
-
-    @Test
-    void validateRepository( )
-    {
-    }
-
-    @Test
-    void validateRepositoryForUpdate( )
-    {
-    }
-
-    @Test
-    void has( )
-    {
-    }
-
-    @Test
-    void close( )
-    {
-    }
 }

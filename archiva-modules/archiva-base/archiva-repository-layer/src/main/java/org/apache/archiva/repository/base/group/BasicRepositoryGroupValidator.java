@@ -27,6 +27,7 @@ import org.apache.archiva.repository.validation.ValidationResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -71,18 +72,20 @@ public class BasicRepositoryGroupValidator extends AbstractRepositoryValidator<R
         if ( StringUtils.isBlank( repoGroupId ) )
         {
             errors = appendError( null, "id", ISEMPTY );
-        }
-
-        if ( repoGroupId.length( ) > 100 )
+        } else
         {
-            errors = appendError( errors, "id", MAX_LENGTH_EXCEEDED, repoGroupId, Integer.toString( 100 ) );
 
-        }
+            if ( repoGroupId.length( ) > 100 )
+            {
+                errors = appendError( errors, "id", MAX_LENGTH_EXCEEDED, repoGroupId, Integer.toString( 100 ) );
 
-        Matcher matcher = REPOSITORY_ID_VALID_EXPRESSION_PATTERN.matcher( repoGroupId );
-        if ( !matcher.matches( ) )
-        {
-            errors = appendError( errors, "id", INVALID_CHARS, repoGroupId, REPOSITORY_ID_ALLOWED );
+            }
+
+            Matcher matcher = REPOSITORY_ID_VALID_EXPRESSION_PATTERN.matcher( repoGroupId );
+            if ( !matcher.matches( ) )
+            {
+                errors = appendError( errors, "id", INVALID_CHARS, repoGroupId, REPOSITORY_ID_ALLOWED );
+            }
         }
 
         if ( repositoryGroup.getMergedIndexTTL( ) <= 0 )

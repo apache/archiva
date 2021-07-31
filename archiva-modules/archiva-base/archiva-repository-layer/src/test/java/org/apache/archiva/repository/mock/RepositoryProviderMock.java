@@ -43,6 +43,7 @@ import java.time.Duration;
 import java.time.Period;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Just a simple mock class for the repository provider
@@ -248,7 +249,19 @@ public class RepositoryProviderMock implements RepositoryProvider
 
     @Override
     public RepositoryGroupConfiguration getRepositoryGroupConfiguration(RepositoryGroup repositoryGroup) throws RepositoryException {
-        return null;
+        RepositoryGroupConfiguration cfg = new RepositoryGroupConfiguration();
+        cfg.setId(repositoryGroup.getId());
+        cfg.setName(repositoryGroup.getName());
+        if (repositoryGroup.supportsFeature( IndexCreationFeature.class ))
+        {
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+
+            cfg.setMergedIndexPath( indexCreationFeature.getIndexPath().toString() );
+        }
+        cfg.setMergedIndexTtl(repositoryGroup.getMergedIndexTTL());
+        cfg.setRepositories(repositoryGroup.getRepositories().stream().map( Repository::getId ).collect( Collectors.toList()));
+        cfg.setCronExpression(repositoryGroup.getSchedulingDefinition());
+        return cfg;
     }
 
     @Override
