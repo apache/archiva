@@ -437,8 +437,7 @@ public class RepositoryGroupHandler
     {
         final String id = repositoryConfiguration.getId( );
         RepositoryGroup currentGroup = repositoryGroups.get( id );
-        Configuration configuration = configurationHandler.getBaseConfiguration( );
-        RepositoryGroup repositoryGroup = put( repositoryConfiguration, configuration );
+        RepositoryGroup repositoryGroup = newInstance( repositoryConfiguration );
         CheckedResult<RepositoryGroup, D> result;
         if ( currentGroup == null )
         {
@@ -593,7 +592,7 @@ public class RepositoryGroupHandler
     @Override
     public Collection<RepositoryGroup> getAll( )
     {
-        return repositoryGroups.values( );
+        return Collections.unmodifiableCollection( repositoryGroups.values( ) );
     }
 
     @Override
