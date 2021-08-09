@@ -40,8 +40,11 @@ import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
@@ -84,6 +87,12 @@ public class DefaultManagedRepositoryAdmin
 
     @Inject
     private RepositoryRegistry repositoryRegistry;
+
+    @Inject
+    private ManagedRepositoryHandler managedRepositoryHandler;
+
+    @Inject
+    private RepositoryGroupHandler repositoryGroupHandler;
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
@@ -223,19 +232,9 @@ public class DefaultManagedRepositoryAdmin
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         try
         {
-            org.apache.archiva.repository.ManagedRepository newRepo = repositoryRegistry.putRepository( repoConfig, configuration );
+            org.apache.archiva.repository.ManagedRepository newRepo = repositoryRegistry.putRepository( repoConfig );
             log.debug("Added new repository {}", newRepo.getId());
-            org.apache.archiva.repository.ManagedRepository stagingRepo = null;
             addRepositoryRoles( newRepo.getId() );
-            if ( newRepo.supportsFeature( StagingRepositoryFeature.class )) {
-                StagingRepositoryFeature stf = newRepo.getFeature( StagingRepositoryFeature.class ).get();
-                stagingRepo = stf.getStagingRepository();
-                if (stf.isStageRepoNeeded() && stagingRepo != null) {
-                    addRepositoryRoles( stagingRepo.getId() );
-                    triggerAuditEvent( stagingRepo.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
-                }
-            }
-            saveConfiguration( configuration );
             //MRM-1342 Repository statistics report doesn't appear to be working correctly
             //scan repository when adding of repository is successful
             try
@@ -245,9 +244,13 @@ public class DefaultManagedRepositoryAdmin
                     scanRepository( newRepo.getId(), true );
                 }
 
-                if ( stagingRepo!=null && stagingRepo.isScanned() )
+                org.apache.archiva.repository.ManagedRepository stagingRepo = newRepo.getFeature( StagingRepositoryFeature.class ).get( ).getStagingRepository( );
+                if ( stagingRepo!=null)
                 {
-                    scanRepository( stagingRepo.getId(), true );
+                    if (stagingRepo.isScanned()) {
+                        scanRepository( stagingRepo.getId(), true );
+                    }
+                    addRepositoryRoles( stagingRepo.getId( ) );
                 }
             }
             catch ( Exception e )
@@ -285,14 +288,8 @@ public class DefaultManagedRepositoryAdmin
             org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryId);
             org.apache.archiva.repository.ManagedRepository stagingRepository = null;
             if (repo != null) {
-                try {
-                    if (repo.supportsFeature(StagingRepositoryFeature.class)) {
-                        stagingRepository = repo.getFeature(StagingRepositoryFeature.class).get().getStagingRepository();
-                    }
-                    repositoryRegistry.removeRepository(repo, config);
-                } catch (RepositoryException e) {
-                    log.error("Removal of repository {} failed: {}", repositoryId, e.getMessage(), e);
-                    throw new RepositoryAdminException("Removal of repository " + repositoryId + " failed.");
+                if (repo.supportsFeature(StagingRepositoryFeature.class)) {
+                    stagingRepository = repo.getFeature(StagingRepositoryFeature.class).get().getStagingRepository();
                 }
             } else {
                 throw new RepositoryAdminException("A repository with that id does not exist");
@@ -308,13 +305,8 @@ public class DefaultManagedRepositoryAdmin
             if (stagingRepository != null) {
                 // do not trigger event when deleting the staged one
                 ManagedRepositoryConfiguration stagingRepositoryConfig = config.findManagedRepositoryById(stagingRepository.getId());
-                try {
-                    repositoryRegistry.removeRepository(stagingRepository);
-                    if (stagingRepositoryConfig != null) {
-                        deleteManagedRepository(stagingRepositoryConfig, deleteContent, config, true);
-                    }
-                } catch (RepositoryException e) {
-                    log.error("Removal of staging repository {} failed: {}", stagingRepository.getId(), e.getMessage(), e);
+                if (stagingRepositoryConfig != null) {
+                    deleteManagedRepository(stagingRepositoryConfig, deleteContent, config, true);
                 }
             }
 
@@ -371,12 +363,6 @@ public class DefaultManagedRepositoryAdmin
 
         }
 
-        if ( deleteContent )
-        {
-            // TODO could be async ? as directory can be huge
-            Path dir = Paths.get( repository.getLocation() );
-            org.apache.archiva.common.utils.FileUtils.deleteQuietly( dir );
-        }
 
         // olamy: copy list for reading as a unit test in webapp fail with ConcurrentModificationException
         List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>( config.getProxyConnectors() );
@@ -387,27 +373,6 @@ public class DefaultManagedRepositoryAdmin
                 config.removeProxyConnector( proxyConnector );
             }
         }
-
-        Map<String, List<String>> repoToGroupMap = config.getRepositoryToGroupMap();
-        if ( repoToGroupMap != null )
-        {
-            if ( repoToGroupMap.containsKey( repository.getId() ) )
-            {
-                List<String> repoGroups = repoToGroupMap.get( repository.getId() );
-                for ( String repoGroup : repoGroups )
-                {
-                    // copy to prevent UnsupportedOperationException
-                    RepositoryGroupConfiguration repositoryGroupConfiguration =
-                        config.findRepositoryGroupById( repoGroup );
-                    List<String> repos = new ArrayList<>( repositoryGroupConfiguration.getRepositories() );
-                    config.removeRepositoryGroup( repositoryGroupConfiguration );
-                    repos.remove( repository.getId() );
-                    repositoryGroupConfiguration.setRepositories( repos );
-                    config.addRepositoryGroup( repositoryGroupConfiguration );
-                }
-            }
-        }
-
         try
         {
             removeRepositoryRoles( repository );
@@ -419,15 +384,23 @@ public class DefaultManagedRepositoryAdmin
         }
 
         try {
-            final RepositoryRegistry reg = getRepositoryRegistry();
-            if (reg.getManagedRepository(repository.getId())!=null) {
-                reg.removeRepository(reg.getManagedRepository(repository.getId()));
+            org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repository.getId( ) );
+            if (repo!=null)
+            {
+                repositoryRegistry.removeRepository( repo, config );
+                if ( deleteContent )
+                {
+                    // TODO could be async ? as directory can be huge
+                    Path dir = Paths.get( repository.getLocation( ) );
+                    org.apache.archiva.common.utils.FileUtils.deleteQuietly( dir );
+                }
             }
         } catch (RepositoryException e) {
             throw new RepositoryAdminException("Removal of repository "+repository.getId()+ " failed: "+e.getMessage());
         }
 
         saveConfiguration( config );
+
 
         return Boolean.TRUE;
     }
@@ -452,8 +425,6 @@ public class DefaultManagedRepositoryAdmin
 
         getRepositoryCommonValidator().validateManagedRepository( managedRepository );
 
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
-
         ManagedRepositoryConfiguration updatedRepoConfig = getRepositoryConfiguration( managedRepository );
         updatedRepoConfig.setStageRepoNeeded( needStageRepo );
 
@@ -467,7 +438,7 @@ public class DefaultManagedRepositoryAdmin
         // TODO remove content from old if path has changed !!!!!
         try
         {
-            newRepo = repositoryRegistry.putRepository( updatedRepoConfig, configuration );
+            newRepo = repositoryRegistry.putRepository( updatedRepoConfig );
             if (newRepo.supportsFeature( StagingRepositoryFeature.class )) {
                 org.apache.archiva.repository.ManagedRepository stagingRepo = newRepo.getFeature( StagingRepositoryFeature.class ).get( ).getStagingRepository( );
                 if (stagingRepo!=null && !stagingExists)
@@ -490,16 +461,6 @@ public class DefaultManagedRepositoryAdmin
         }
         triggerAuditEvent( managedRepository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO,
             auditInformation );
-        try
-        {
-            getArchivaConfiguration().save(configuration);
-        }
-        catch ( RegistryException | IndeterminateConfigurationException e )
-        {
-            log.error("Could not save repository configuration: {}", e.getMessage(), e);
-            throw new RepositoryAdminException( "Could not save repository configuration: "+e.getMessage() );
-        }
-
         // Save the repository configuration.
         RepositorySession repositorySession = null;
         try

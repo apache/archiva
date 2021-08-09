@@ -20,13 +20,9 @@ package org.apache.archiva.repository.base.group;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
-import org.apache.archiva.repository.RepositoryState;
-import org.apache.archiva.repository.base.AbstractRepositoryHandler;
-import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
-import org.apache.archiva.repository.base.ConfigurationHandler;
-import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.EditableRepository;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ManagedRepository;
@@ -34,14 +30,17 @@ import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryHandler;
+import org.apache.archiva.repository.RepositoryHandlerManager;
 import org.apache.archiva.repository.RepositoryProvider;
+import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.base.AbstractRepositoryHandler;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.event.LifecycleEvent;
 import org.apache.archiva.repository.event.RepositoryEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.apache.archiva.repository.validation.RepositoryChecker;
-import org.apache.archiva.repository.validation.RepositoryValidator;
-import org.apache.archiva.repository.validation.ValidationError;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,14 +52,10 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
@@ -79,12 +74,8 @@ public class RepositoryGroupHandler
 {
     private static final Logger log = LoggerFactory.getLogger( RepositoryGroupHandler.class );
 
-    private final ArchivaRepositoryRegistry repositoryRegistry;
-    private final ConfigurationHandler configurationHandler;
+    private final RepositoryHandlerManager repositoryRegistry;
     private final MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
-
-    private final Map<String, RepositoryGroup> repositoryGroups = new HashMap<>( );
-    private final RepositoryValidator<RepositoryGroup> validator;
 
     private Path groupsDirectory;
 
@@ -95,18 +86,15 @@ public class RepositoryGroupHandler
      * @param repositoryRegistry           the registry. To avoid circular dependencies via DI, this class registers itself on the registry.
      * @param configurationHandler         the configuration handler is used to retrieve and save configuration.
      * @param mergedRemoteIndexesScheduler the index scheduler is used for merging the indexes from all group members
-     * @param repositoryValidatorList the list of validators that are registered
      */
-    public RepositoryGroupHandler( ArchivaRepositoryRegistry repositoryRegistry,
+    public RepositoryGroupHandler( RepositoryHandlerManager repositoryRegistry,
                                    ConfigurationHandler configurationHandler,
-                                   @Named( "mergedRemoteIndexesScheduler#default" ) MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler,
-                                   List<RepositoryValidator<? extends Repository>> repositoryValidatorList
+                                   @Named( "mergedRemoteIndexesScheduler#default" ) MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler
                                    )
     {
-        this.configurationHandler = configurationHandler;
+        super( RepositoryGroup.class, RepositoryGroupConfiguration.class, configurationHandler );
         this.mergedRemoteIndexesScheduler = mergedRemoteIndexesScheduler;
         this.repositoryRegistry = repositoryRegistry;
-        this.validator = getCombinedValidatdor( RepositoryGroup.class, repositoryValidatorList );
     }
 
     @Override
@@ -116,15 +104,15 @@ public class RepositoryGroupHandler
         log.debug( "Initializing repository group handler " + repositoryRegistry.toString( ) );
         initializeStorage( );
         // We are registering this class on the registry. This is necessary to avoid circular dependencies via injection.
-        this.repositoryRegistry.registerGroupHandler( this );
+        this.repositoryRegistry.registerHandler( this );
     }
 
     @Override
     public void initializeFromConfig( )
     {
-        this.repositoryGroups.clear( );
-        this.repositoryGroups.putAll( newInstancesFromConfig( ) );
-        for ( RepositoryGroup group : this.repositoryGroups.values( ) )
+        getRepositories().clear( );
+        getRepositories().putAll( newInstancesFromConfig( ) );
+        for ( RepositoryGroup group : getRepositories().values( ) )
         {
             activateRepository( group );
         }
@@ -132,7 +120,7 @@ public class RepositoryGroupHandler
 
     private void initializeStorage( )
     {
-        Path baseDir = this.configurationHandler.getArchivaConfiguration( ).getRepositoryGroupBaseDir( );
+        Path baseDir = this.getConfigurationHandler().getArchivaConfiguration( ).getRepositoryGroupBaseDir( );
         if ( !Files.exists( baseDir ) )
         {
             try
@@ -179,6 +167,14 @@ public class RepositoryGroupHandler
         setLastState( repositoryGroup, RepositoryState.INITIALIZED );
     }
 
+    @Override
+    public void deactivateRepository( RepositoryGroup repository )
+    {
+        mergedRemoteIndexesScheduler.unschedule( repository );
+        repository.close();
+        setLastState( repository, RepositoryState.DEACTIVATED );
+    }
+
     public StorageAsset getMergedIndexDirectory( RepositoryGroup group )
     {
         if ( group != null )
@@ -198,7 +194,7 @@ public class RepositoryGroupHandler
         try
         {
             List<RepositoryGroupConfiguration> repositoryGroupConfigurations =
-                this.configurationHandler.getBaseConfiguration( ).getRepositoryGroups( );
+                this.getConfigurationHandler().getBaseConfiguration( ).getRepositoryGroups( );
 
             if ( repositoryGroupConfigurations == null )
             {
@@ -207,11 +203,10 @@ public class RepositoryGroupHandler
 
             Map<String, RepositoryGroup> repositoryGroupMap = new LinkedHashMap<>( repositoryGroupConfigurations.size( ) );
 
-            Map<RepositoryType, RepositoryProvider> providerMap = repositoryRegistry.getRepositoryProviderMap( );
             for ( RepositoryGroupConfiguration repoConfig : repositoryGroupConfigurations )
             {
                 RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
-                if ( providerMap.containsKey( repositoryType ) )
+                if ( super.providerMap.containsKey( repositoryType ) )
                 {
                     try
                     {
@@ -236,7 +231,7 @@ public class RepositoryGroupHandler
     @Override
     public RepositoryGroup newInstance( final RepositoryType type, String id ) throws RepositoryException
     {
-        RepositoryProvider provider = repositoryRegistry.getProvider( type );
+        RepositoryProvider provider = getProvider( type );
         RepositoryGroupConfiguration config = new RepositoryGroupConfiguration( );
         config.setId( id );
         return createNewRepositoryGroup( provider, config );
@@ -246,7 +241,7 @@ public class RepositoryGroupHandler
     public RepositoryGroup newInstance( final RepositoryGroupConfiguration repositoryConfiguration ) throws RepositoryException
     {
         RepositoryType type = RepositoryType.valueOf( repositoryConfiguration.getType( ) );
-        RepositoryProvider provider = repositoryRegistry.getProvider( type );
+        RepositoryProvider provider = getProvider( type );
         return createNewRepositoryGroup( provider, repositoryConfiguration );
     }
 
@@ -258,6 +253,7 @@ public class RepositoryGroupHandler
         {
             ( (EditableRepository) repositoryGroup ).setLastState( RepositoryState.REFERENCES_SET );
         }
+        repositoryGroup.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
         return repositoryGroup;
     }
 
@@ -273,21 +269,21 @@ public class RepositoryGroupHandler
     public RepositoryGroup put( final RepositoryGroup repositoryGroup ) throws RepositoryException
     {
         final String id = repositoryGroup.getId( );
-        RepositoryGroup originRepoGroup = repositoryGroups.remove( id );
+        RepositoryGroup originRepoGroup = getRepositories().remove( id );
         try
         {
             if ( originRepoGroup != null && originRepoGroup != repositoryGroup )
             {
-                this.mergedRemoteIndexesScheduler.unschedule( originRepoGroup );
-                originRepoGroup.close( );
+                deactivateRepository( originRepoGroup );
+                pushEvent( new LifecycleEvent( LifecycleEvent.UNREGISTERED, this, originRepoGroup ) );
             }
-            RepositoryProvider provider = repositoryRegistry.getProvider( repositoryGroup.getType( ) );
+            RepositoryProvider provider = getProvider( repositoryGroup.getType( ) );
             RepositoryGroupConfiguration newCfg = provider.getRepositoryGroupConfiguration( repositoryGroup );
-            ReentrantReadWriteLock.WriteLock configLock = this.configurationHandler.getLock( ).writeLock( );
+            ReentrantReadWriteLock.WriteLock configLock = this.getConfigurationHandler().getLock( ).writeLock( );
             configLock.lock( );
             try
             {
-                Configuration configuration = this.configurationHandler.getBaseConfiguration( );
+                Configuration configuration = this.getConfigurationHandler().getBaseConfiguration( );
                 updateReferences( repositoryGroup, newCfg );
                 RepositoryGroupConfiguration oldCfg = configuration.findRepositoryGroupById( id );
                 if ( oldCfg != null )
@@ -295,7 +291,7 @@ public class RepositoryGroupHandler
                     configuration.removeRepositoryGroup( oldCfg );
                 }
                 configuration.addRepositoryGroup( newCfg );
-                configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
+                getConfigurationHandler().save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
                 setLastState( repositoryGroup, RepositoryState.SAVED );
                 activateRepository( repositoryGroup );
             }
@@ -303,7 +299,7 @@ public class RepositoryGroupHandler
             {
                 configLock.unlock( );
             }
-            repositoryGroups.put( id, repositoryGroup );
+            getRepositories().put( id, repositoryGroup );
             setLastState( repositoryGroup, RepositoryState.REGISTERED );
             return repositoryGroup;
         }
@@ -312,11 +308,11 @@ public class RepositoryGroupHandler
             // Rollback
             if ( originRepoGroup != null )
             {
-                repositoryGroups.put( id, originRepoGroup );
+                getRepositories().put( id, originRepoGroup );
             }
             else
             {
-                repositoryGroups.remove( id );
+                getRepositories().remove( id );
             }
             log.error( "Exception during configuration update {}", e.getMessage( ), e );
             throw new RepositoryException( "Could not save the configuration" + ( e.getMessage( ) == null ? "" : ": " + e.getMessage( ) ), e);
@@ -336,31 +332,28 @@ public class RepositoryGroupHandler
     {
         final String id = repositoryGroupConfiguration.getId( );
         final RepositoryType repositoryType = RepositoryType.valueOf( repositoryGroupConfiguration.getType( ) );
-        final RepositoryProvider provider = repositoryRegistry.getProvider( repositoryType );
+        final RepositoryProvider provider = getProvider( repositoryType );
         RepositoryGroup currentRepository;
-        ReentrantReadWriteLock.WriteLock configLock = this.configurationHandler.getLock( ).writeLock( );
+        ReentrantReadWriteLock.WriteLock configLock = this.getConfigurationHandler().getLock( ).writeLock( );
         configLock.lock( );
         try
         {
-            Configuration configuration = this.configurationHandler.getBaseConfiguration( );
-            currentRepository = repositoryRegistry.getRepositoryGroup( id );
-            RepositoryGroup oldRepository = currentRepository == null ? null : clone( currentRepository );
+            Configuration configuration = this.getConfigurationHandler().getBaseConfiguration( );
+            currentRepository = getRepositories().get( id );
+            RepositoryGroup oldRepository = currentRepository == null ? null : clone( currentRepository, id );
             try
             {
-
+                boolean updated = false;
                 if (currentRepository==null) {
                     currentRepository = put( repositoryGroupConfiguration, configuration );
                 } else
                 {
                     setRepositoryGroupDefaults( repositoryGroupConfiguration );
                     provider.updateRepositoryGroupInstance( (EditableRepositoryGroup) currentRepository, repositoryGroupConfiguration );
+                    updated = true;
+                    pushEvent( LifecycleEvent.UPDATED, currentRepository );
                 }
-                configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
-                updateReferences( currentRepository, repositoryGroupConfiguration );
-                setLastState( currentRepository, RepositoryState.REFERENCES_SET );
-                activateRepository( currentRepository );
-                this.repositoryGroups.put( id, currentRepository );
-                setLastState( currentRepository, RepositoryState.REGISTERED );
+                registerNewRepository( repositoryGroupConfiguration, currentRepository, configuration, updated );
             }
             catch ( IndeterminateConfigurationException | RegistryException | RepositoryException e )
             {
@@ -368,23 +361,10 @@ public class RepositoryGroupHandler
                 if ( oldRepository != null  )
                 {
                     RepositoryGroupConfiguration oldCfg = provider.getRepositoryGroupConfiguration( oldRepository );
-                    provider.updateRepositoryGroupInstance( (EditableRepositoryGroup) currentRepository, oldCfg);
-                    replaceOrAddRepositoryConfig( oldCfg, configuration );
-                    try
-                    {
-                        configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
-                    }
-                    catch ( IndeterminateConfigurationException | RegistryException indeterminateConfigurationException )
-                    {
-                        log.error( "Fatal error, config save during rollback failed: {}", e.getMessage( ), e );
-                    }
-                    updateReferences( oldRepository, oldCfg  );
-                    setLastState( oldRepository, RepositoryState.REFERENCES_SET );
-                    activateRepository( oldRepository );
-                    repositoryGroups.put( id, oldRepository );
-                    setLastState( oldRepository, RepositoryState.REGISTERED );
+                    provider.updateRepositoryGroupInstance( (EditableRepositoryGroup) currentRepository, oldCfg );
+                    rollback( configuration, oldRepository, e, oldCfg );
                 } else {
-                    repositoryGroups.remove( id );
+                    getRepositories().remove( id );
                 }
                 log.error( "Could not save the configuration for repository group {}: {}", id, e.getMessage( ), e );
                 if (e instanceof RepositoryException) {
@@ -409,12 +389,12 @@ public class RepositoryGroupHandler
         final RepositoryType repoType = RepositoryType.valueOf( repositoryGroupConfiguration.getType( ) );
         RepositoryGroup repo;
         setRepositoryGroupDefaults( repositoryGroupConfiguration );
-        if ( repositoryGroups.containsKey( id ) )
+        if ( getRepositories().containsKey( id ) )
         {
-            repo = clone( repositoryGroups.get( id ) );
+            repo = clone( getRepositories().get( id ), id );
             if ( repo instanceof EditableRepositoryGroup )
             {
-                repositoryRegistry.getProvider( repoType ).updateRepositoryGroupInstance( (EditableRepositoryGroup) repo, repositoryGroupConfiguration );
+                getProvider( repoType ).updateRepositoryGroupInstance( (EditableRepositoryGroup) repo, repositoryGroupConfiguration );
             }
             else
             {
@@ -423,7 +403,7 @@ public class RepositoryGroupHandler
         }
         else
         {
-            repo = repositoryRegistry.getProvider( repoType ).createRepositoryGroup( repositoryGroupConfiguration );
+            repo = getProvider( repoType ).createRepositoryGroup( repositoryGroupConfiguration );
             setLastState( repo, RepositoryState.CREATED );
         }
         replaceOrAddRepositoryConfig( repositoryGroupConfiguration, configuration );
@@ -431,29 +411,6 @@ public class RepositoryGroupHandler
         setLastState( repo, RepositoryState.REFERENCES_SET );
         return repo;
     }
-
-    @Override
-    public <D> CheckedResult<RepositoryGroup, D> putWithCheck( RepositoryGroupConfiguration repositoryConfiguration, RepositoryChecker<RepositoryGroup, D> checker ) throws RepositoryException
-    {
-        final String id = repositoryConfiguration.getId( );
-        RepositoryGroup currentGroup = repositoryGroups.get( id );
-        RepositoryGroup repositoryGroup = newInstance( repositoryConfiguration );
-        CheckedResult<RepositoryGroup, D> result;
-        if ( currentGroup == null )
-        {
-            result = checker.apply( repositoryGroup );
-        }
-        else
-        {
-            result = checker.applyForUpdate( repositoryGroup );
-        }
-        if ( result.isValid( ) )
-        {
-            put( result.getRepository() );
-        }
-        return result;
-    }
-
 
     private void setRepositoryGroupDefaults( RepositoryGroupConfiguration repositoryGroupConfiguration )
     {
@@ -471,106 +428,23 @@ public class RepositoryGroupHandler
         }
     }
 
-    private void replaceOrAddRepositoryConfig( RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration )
-    {
-        RepositoryGroupConfiguration oldCfg = configuration.findRepositoryGroupById( repositoryGroupConfiguration.getId( ) );
-        if ( oldCfg != null )
-        {
-            configuration.removeRepositoryGroup( oldCfg );
-        }
-        configuration.addRepositoryGroup( repositoryGroupConfiguration );
-    }
-
-    public void removeRepositoryFromGroups( ManagedRepository repo )
-    {
-        if ( repo != null )
-        {
-            repositoryGroups.values( ).stream( ).filter( repoGroup -> repoGroup instanceof EditableRepository ).
-                map( repoGroup -> (EditableRepositoryGroup) repoGroup ).forEach( repoGroup -> repoGroup.removeRepository( repo ) );
-        }
-    }
-
-    /**
-     * Removes a repository group from the registry and configuration, if it exists.
-     * The change is saved to the configuration immediately.
-     *
-     * @param id the id of the repository group to remove
-     * @throws RepositoryException if a error occurs during configuration save
-     */
     @Override
-    public void remove( final String id ) throws RepositoryException
+    public void processOtherVariantRemoval( Repository repo )
     {
-        RepositoryGroup repo = get( id );
-        if ( repo != null )
+        if ( repo instanceof ManagedRepository )
         {
-            try
-            {
-                repo = repositoryGroups.remove( id );
-                if ( repo != null )
-                {
-                    this.mergedRemoteIndexesScheduler.unschedule( repo );
-                    repo.close( );
-                    Configuration configuration = this.configurationHandler.getBaseConfiguration( );
-                    RepositoryGroupConfiguration cfg = configuration.findRepositoryGroupById( id );
-                    if ( cfg != null )
-                    {
-                        configuration.removeRepositoryGroup( cfg );
-                    }
-                    this.configurationHandler.save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
-                    setLastState( repo, RepositoryState.UNREGISTERED );
-                }
-
-            }
-            catch ( RegistryException | IndeterminateConfigurationException e )
-            {
-                // Rollback
-                log.error( "Could not save config after repository removal: {}", e.getMessage( ), e );
-                repositoryGroups.put( repo.getId( ), repo );
-                throw new RepositoryException( "Could not save configuration after repository removal: " + e.getMessage( ) );
-            }
+            getRepositories().values( ).stream( ).filter( repoGroup -> repoGroup instanceof EditableRepository ).
+                map( repoGroup -> (EditableRepositoryGroup) repoGroup ).forEach( repoGroup -> repoGroup.removeRepository( (ManagedRepository) repo ) );
         }
     }
+
 
     @Override
-    public void remove( String id, Configuration configuration ) throws RepositoryException
+    public RepositoryGroup clone( RepositoryGroup repo, String newId ) throws RepositoryException
     {
-        RepositoryGroup repo = repositoryGroups.get( id );
-        if ( repo != null )
-        {
-            repo = repositoryGroups.remove( id );
-            if ( repo != null )
-            {
-                this.mergedRemoteIndexesScheduler.unschedule( repo );
-                repo.close( );
-                RepositoryGroupConfiguration cfg = configuration.findRepositoryGroupById( id );
-                if ( cfg != null )
-                {
-                    configuration.removeRepositoryGroup( cfg );
-                }
-                setLastState( repo, RepositoryState.UNREGISTERED );
-            }
-        }
-        Iterator<RepositoryGroupConfiguration> cfgIter = configuration.getRepositoryGroups( ).iterator( );
-        while(cfgIter.hasNext()) {
-            RepositoryGroupConfiguration el = cfgIter.next( );
-            if (id.equals( el.getId() )) {
-                cfgIter.remove( );
-                break;
-            }
-        }
-    }
-
-    @Override
-    public RepositoryGroup get( String groupId )
-    {
-        return repositoryGroups.get( groupId );
-    }
-
-    @Override
-    public RepositoryGroup clone( RepositoryGroup repo ) throws RepositoryException
-    {
-        RepositoryProvider provider = repositoryRegistry.getProvider( repo.getType( ) );
+        RepositoryProvider provider = getProvider( repo.getType( ) );
         RepositoryGroupConfiguration cfg = provider.getRepositoryGroupConfiguration( repo );
+        cfg.setId( newId );
         RepositoryGroup cloned = provider.createRepositoryGroup( cfg );
         cloned.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
         setLastState( cloned, RepositoryState.CREATED );
@@ -578,46 +452,18 @@ public class RepositoryGroupHandler
     }
 
     @Override
-    public void updateReferences( RepositoryGroup repo, RepositoryGroupConfiguration repositoryConfiguration ) throws RepositoryException
+    public void updateReferences( RepositoryGroup repo, RepositoryGroupConfiguration repositoryConfiguration )
     {
         if ( repo instanceof EditableRepositoryGroup && repositoryConfiguration!=null)
         {
             EditableRepositoryGroup eGroup = (EditableRepositoryGroup) repo;
+            RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration> managedHandler = repositoryRegistry.getHandler( ManagedRepository.class, ManagedRepositoryConfiguration.class );
             eGroup.setRepositories( repositoryConfiguration.getRepositories( ).stream( )
-                .map( repositoryRegistry::getManagedRepository ).collect( Collectors.toList( ) ) );
+                .map( managedHandler::get ).collect( Collectors.toList( ) ) );
         }
 
     }
 
-    @Override
-    public Collection<RepositoryGroup> getAll( )
-    {
-        return Collections.unmodifiableCollection( repositoryGroups.values( ) );
-    }
-
-    @Override
-    public RepositoryValidator<RepositoryGroup> getValidator( )
-    {
-        return this.validator;
-    }
-
-    @Override
-    public CheckedResult<RepositoryGroup, Map<String, List<ValidationError>>> validateRepository( RepositoryGroup repository )
-    {
-        return this.validator.apply( repository );
-
-    }
-
-    @Override
-    public CheckedResult<RepositoryGroup,Map<String, List<ValidationError>>> validateRepositoryForUpdate( RepositoryGroup repository )
-    {
-        return this.validator.applyForUpdate( repository );
-    }
-    @Override
-    public boolean hasRepository( String id )
-    {
-        return repositoryGroups.containsKey( id );
-    }
 
     @PreDestroy
     private void destroy( )
@@ -626,21 +472,20 @@ public class RepositoryGroupHandler
     }
 
     @Override
-    public void close( )
+    protected RepositoryGroupConfiguration findRepositoryConfiguration( Configuration configuration, String id )
     {
-        for ( RepositoryGroup group : repositoryGroups.values( ) )
-        {
-            try
-            {
-                mergedRemoteIndexesScheduler.unschedule( group );
-                group.close( );
-            }
-            catch ( Throwable e )
-            {
-                log.error( "Could not close repository group {}: {}", group.getId( ), e.getMessage( ) );
-            }
-        }
-        this.repositoryGroups.clear( );
+        return configuration.findRepositoryGroupById( id );
     }
 
+    @Override
+    protected void removeRepositoryConfiguration( Configuration configuration, RepositoryGroupConfiguration cfg )
+    {
+        configuration.removeRepositoryGroup( cfg );
+    }
+
+    @Override
+    protected void addRepositoryConfiguration( Configuration configuration, RepositoryGroupConfiguration repoConfiguration )
+    {
+        configuration.addRepositoryGroup( repoConfiguration );
+    }
 }

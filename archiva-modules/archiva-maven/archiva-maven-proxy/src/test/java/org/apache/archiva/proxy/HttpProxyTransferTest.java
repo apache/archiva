@@ -30,6 +30,7 @@ import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -99,6 +100,11 @@ public class HttpProxyTransferTest
 
     @Inject
     private ProxyRegistry proxyRegistry;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
 
     private Server server;
 

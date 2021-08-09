@@ -29,6 +29,8 @@ import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedURIException;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -89,6 +91,15 @@ public class DownloadRemoteIndexTaskTest
 
     @Inject
     RepositoryRegistry repositoryRegistry;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
+
 
     @Inject
     RepositoryProvider repositoryProvider;

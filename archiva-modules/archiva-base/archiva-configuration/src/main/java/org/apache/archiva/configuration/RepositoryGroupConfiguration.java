@@ -29,7 +29,7 @@ import java.util.List;
  * @version $Revision$ $Date$
  */
 @SuppressWarnings( "all" )
-public class RepositoryGroupConfiguration
+public class RepositoryGroupConfiguration extends AbstractRepositoryConfiguration
     implements Serializable
 {
 

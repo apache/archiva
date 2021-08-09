@@ -27,10 +27,12 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.apache.commons.io.FileUtils;
@@ -104,6 +106,10 @@ public abstract class AbstractRepositoryServletTestCase
     @Inject
     RepositoryGroupHandler repositoryGroupHandler;
 
+    @SuppressWarnings( "unused" )
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
     @Inject
     ArchivaRepositoryRegistry repositoryRegistry;
 
@@ -166,8 +172,16 @@ public abstract class AbstractRepositoryServletTestCase
         System.setProperty( "appserver.base", getAppserverBase().toAbsolutePath().toString());
         log.info("setUp appserverBase={}, projectBase={}, workingDir={}", getAppserverBase(), getProjectBase(), Paths.get("").toString());
 
-        repositoryRegistry.getRepositories().stream().forEach(r -> r.close());
-
+        repositoryRegistry.getRepositories().stream().forEach(r -> {
+            try
+            {
+                repositoryRegistry.removeRepository( r );
+            }
+            catch ( RepositoryException e )
+            {
+                e.printStackTrace( );
+            }
+        } );
         org.apache.archiva.common.utils.FileUtils.deleteDirectory( getAppserverBase() );
 
         Path testConf = getProjectBase().resolve( "src/test/resources/repository-archiva.xml" );
@@ -191,20 +205,21 @@ public abstract class AbstractRepositoryServletTestCase
         config.getRemoteRepositories().clear();
 
         saveConfiguration( archivaConfiguration );
+        // repositoryRegistry.reload();
 
-        ArchivaIndexingContext ctx = repositoryRegistry.getManagedRepository( REPOID_INTERNAL ).getIndexingContext( );
-        try
-        {
-            if (repositoryRegistry.getIndexManager(RepositoryType.MAVEN)!=null) {
-                repositoryRegistry.getIndexManager(RepositoryType.MAVEN).pack(ctx);
-            }
-        } finally
-        {
-            if (ctx!=null)
-            {
-                ctx.close( );
-            }
-        }
+        // ArchivaIndexingContext ctx = repositoryRegistry.getManagedRepository( REPOID_INTERNAL ).getIndexingContext( );
+//        try
+//        {
+//            if (repositoryRegistry.getIndexManager(RepositoryType.MAVEN)!=null) {
+//                repositoryRegistry.getIndexManager(RepositoryType.MAVEN).pack(ctx);
+//            }
+//        } finally
+//        {
+//            if (ctx!=null)
+//            {
+//                ctx.close( );
+//            }
+//        }
 
         CacheManager.getInstance().clearAll();
 
@@ -856,8 +871,8 @@ public abstract class AbstractRepositoryServletTestCase
         repo.setLocation( location.toAbsolutePath().toString() );
         repo.setBlockRedeployments( blockRedeployments );
         repo.setType( "MAVEN" );
-        repo.setIndexDir(".indexer");
-        repo.setPackedIndexDir(".index");
+        repo.setIndexDir(location.resolve( ".indexer" ).toAbsolutePath().toString());
+        repo.setPackedIndexDir( location.resolve( ".index" ).toAbsolutePath( ).toString( ) );
 
         return repo;
     }
@@ -892,10 +907,13 @@ public abstract class AbstractRepositoryServletTestCase
     protected void setupCleanRepo( Path repoRootDir )
         throws IOException
     {
-        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootDir );
-        if ( !Files.exists(repoRootDir) )
+        if (repoRootDir!=null)
         {
-            Files.createDirectories( repoRootDir );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootDir );
+            if ( !Files.exists( repoRootDir ) )
+            {
+                Files.createDirectories( repoRootDir );
+            }
         }
     }
 

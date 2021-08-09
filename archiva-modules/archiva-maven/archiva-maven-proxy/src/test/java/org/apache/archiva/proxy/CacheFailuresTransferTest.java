@@ -25,6 +25,7 @@ import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
@@ -52,6 +53,7 @@ public class CacheFailuresTransferTest
 
     @Inject
     UrlFailureCache urlFailureCache;
+
 
     @Test
     public void testGetWithCacheFailuresOn( )

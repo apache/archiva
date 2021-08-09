@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,6 +42,11 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
 
     @Inject
     RepositoryRegistry repositoryRegistry;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
 
     private static final String TEST_REPO_ID = "test";
 

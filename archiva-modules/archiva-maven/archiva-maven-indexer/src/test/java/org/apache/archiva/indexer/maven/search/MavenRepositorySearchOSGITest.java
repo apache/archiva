@@ -24,6 +24,7 @@ import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Test;
@@ -44,8 +45,14 @@ public class MavenRepositorySearchOSGITest
     @Inject
     ArchivaRepositoryRegistry repositoryRegistry;
 
+    @SuppressWarnings( "unused" )
     @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
+    ManagedRepositoryHandler managedRepositoryHandler;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    RepositoryGroupHandler groupHandler;
+
 
     @After
     @Override

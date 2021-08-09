@@ -21,29 +21,29 @@ package org.apache.archiva.repository.base.group;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.common.utils.PathUtil;
-import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
 import org.apache.archiva.repository.EditableRepositoryGroup;
-import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryGroup;
+import org.apache.archiva.repository.RepositoryHandler;
 import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.validation.CheckedResult;
-import org.apache.archiva.repository.validation.RepositoryValidator;
 import org.apache.archiva.repository.validation.ValidationError;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -87,8 +87,8 @@ class RepositoryGroupHandlerTest
     // @Named( "mergedRemoteIndexesScheduler#default" )
     MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
 
-    @Inject
-    List<RepositoryValidator<? extends Repository>> repositoryValidatorList;
+    @Mock
+    RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration> managedRepositoryHandler;
 
     @Inject
     ArchivaConfiguration archivaConfiguration;
@@ -142,7 +142,19 @@ class RepositoryGroupHandlerTest
 
     private RepositoryGroupHandler createHandler( )
     {
-        RepositoryGroupHandler groupHandler = new RepositoryGroupHandler( repositoryRegistry, configurationHandler, mergedRemoteIndexesScheduler, repositoryValidatorList );
+        Mockito.when( managedRepositoryHandler.getVariant( ) ).thenReturn( ManagedRepository.class );
+        final ManagedRepository internalRepo;
+        try
+        {
+            internalRepo = getManaged( "internal", "internal");
+        }
+        catch ( IOException e )
+        {
+            throw new Error( e );
+        }
+        Mockito.when( managedRepositoryHandler.get( ArgumentMatchers.eq("internal") ) ).thenReturn( internalRepo );
+        repositoryRegistry.registerHandler( managedRepositoryHandler );
+        RepositoryGroupHandler groupHandler = new RepositoryGroupHandler( repositoryRegistry, configurationHandler, mergedRemoteIndexesScheduler);
         groupHandler.init( );
         return groupHandler;
     }
@@ -156,6 +168,13 @@ class RepositoryGroupHandlerTest
         return repoBaseDir;
     }
 
+    protected ManagedRepository getManaged(String id, String name) throws IOException
+    {
+        Path path = getRepoBaseDir().resolve( "../managed" );
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(path.toAbsolutePath(), lockManager);
+        return new BasicManagedRepository( id, name, storage );
+    }
 
 
     protected EditableRepositoryGroup createRepository( String id, String name, Path location ) throws IOException
@@ -200,9 +219,8 @@ class RepositoryGroupHandlerTest
     @Test
     void newInstancesFromConfig( )
     {
-        RepositoryGroupHandler groupHandler = new RepositoryGroupHandler( repositoryRegistry, configurationHandler, mergedRemoteIndexesScheduler, repositoryValidatorList );
+        RepositoryGroupHandler groupHandler = createHandler( );
         Map<String, RepositoryGroup> instances = groupHandler.newInstancesFromConfig( );
-        assertFalse( groupHandler.hasRepository( "test-group-01" ) );
         assertTrue( instances.containsKey( "test-group-01" ) );
         assertEquals( RepositoryState.REFERENCES_SET, instances.get( "test-group-01" ).getLastState( ) );
     }

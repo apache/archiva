@@ -497,7 +497,12 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         if (StringUtils.isNotBlank(repository.getIndexDir())) {
             Path indexDir;
             try {
-                indexDir = Paths.get(new URI(repository.getIndexDir().startsWith("file://") ? repository.getIndexDir() : "file://" + repository.getIndexDir()));
+                if (repository.getIndexDir().startsWith( "file:" )) {
+                    indexDir = Paths.get( new URI( repository.getIndexDir( ) ) );
+                } else
+                {
+                    indexDir = Paths.get( repository.getIndexDir( ) );
+                }
                 if (indexDir.isAbsolute()) {
                     Path newDir = indexDir.getParent().resolve(indexDir.getFileName() + StagingRepositoryFeature.STAGING_REPO_POSTFIX);
                     log.debug("Changing index directory {} -> {}", indexDir, newDir);

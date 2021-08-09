@@ -17,6 +17,7 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.RepositoryChecker;
@@ -44,7 +45,7 @@ import java.util.Map;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public interface RepositoryHandler<R extends Repository, C>
+public interface RepositoryHandler<R extends Repository, C extends AbstractRepositoryConfiguration>
 {
 
     /**
@@ -57,6 +58,12 @@ public interface RepositoryHandler<R extends Repository, C>
      * @param repository the repository to initialize
      */
     void activateRepository( R repository );
+
+    /**
+     * Reset the repository. E.g. stops scheduling.
+     * @param repository
+     */
+    void deactivateRepository( R repository );
 
     /**
      * Creates new instances from the archiva configuration. The instances are not registered in the registry.
@@ -163,9 +170,10 @@ public interface RepositoryHandler<R extends Repository, C>
      * Clones a given repository without registering.
      *
      * @param repo the repository that should be cloned
+     * @param newId the new identifier of the cloned instance
      * @return a newly created instance with the same repository data
      */
-    R clone( R repo ) throws RepositoryException;
+    R clone( R repo, String newId ) throws RepositoryException;
 
     /**
      * Updates the references and stores updates in the given <code>configuration</code> instance.
@@ -222,6 +230,13 @@ public interface RepositoryHandler<R extends Repository, C>
     boolean hasRepository( String id );
 
     /**
+     * This is called, when another variant repository was removed. This is needed only for certain variants.
+     *
+     * @param repository
+     */
+    void processOtherVariantRemoval( Repository repository );
+
+    /**
      * Initializes the handler. This method must be called before using the repository handler.
      */
     void init( );
@@ -231,4 +246,20 @@ public interface RepositoryHandler<R extends Repository, C>
      */
     void close( );
 
+
+    /**
+     * Sets the repository provider list
+     * @param providers
+     */
+    void setRepositoryProviders( List<RepositoryProvider> providers );
+
+    /**
+     * Sets the list of repository validators
+     * @param repositoryValidatorList
+     */
+    void setRepositoryValidator( List<RepositoryValidator<? extends Repository>> repositoryValidatorList );
+
+    Class<R> getVariant();
+
+    Class<C> getConfigurationVariant();
 }

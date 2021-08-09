@@ -31,7 +31,7 @@
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
-    <cassandraVersion>3.11.10</cassandraVersion>
+    <cassandraVersion>3.11.11</cassandraVersion>
   </properties>
 
   <dependencies>

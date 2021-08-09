@@ -37,6 +37,7 @@ import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryRequest;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.Wagon;
@@ -97,6 +98,11 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
     @Inject
     RepositoryRegistry repositoryRegistry;
 
+    @SuppressWarnings( "unused" )
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
+
     private WagonFactory wagonFactory;
 
     ManagedRepositoryConfiguration testRepo;
@@ -141,6 +147,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
 
         wagonFactory = mock( WagonFactory.class );
 
+        assertNotNull( storage );
         storage.setWagonFactory( wagonFactory );
 
         Wagon wagon = new MockWagon();
@@ -153,6 +160,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
     public void testGetProjectVersionMetadataWithParentSuccessful()
         throws Exception
     {
+        assertNotNull( storage );
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
         copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-parent",
@@ -201,12 +209,14 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
     public void testGetProjectVersionMetadataWithParentNoRemoteReposConfigured()
         throws Exception
     {
+        assertNotNull( storage );
         // remove configuration
         Configuration config = configuration.getConfiguration();
         RemoteRepositoryConfiguration remoteRepo = config.findRemoteRepositoryById( TEST_REMOTE_REPO_ID );
         config.removeRemoteRepository( remoteRepo );
 
         configuration.save( config );
+        assertNotNull( storage );
 
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
@@ -233,6 +243,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
     public void testGetProjectVersionMetadataWithParentNotInAnyRemoteRepo()
         throws Exception
     {
+        assertNotNull( storage );
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 

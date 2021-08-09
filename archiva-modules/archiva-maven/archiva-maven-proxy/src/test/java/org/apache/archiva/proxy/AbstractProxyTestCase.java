@@ -25,6 +25,7 @@ import org.apache.archiva.policies.*;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.wagon.Wagon;
@@ -69,6 +70,11 @@ public abstract class AbstractProxyTestCase
 
     @Inject
     RepositoryRegistry repositoryRegistry;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
 
     protected static final String ID_PROXIED1 = "proxied1";
 

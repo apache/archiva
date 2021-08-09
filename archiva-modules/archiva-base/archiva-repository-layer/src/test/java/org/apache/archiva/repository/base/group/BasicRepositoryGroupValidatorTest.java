@@ -18,8 +18,6 @@ package org.apache.archiva.repository.base.group;
  * under the License.
  */
 
-import org.apache.archiva.common.filelock.DefaultFileLockManager;
-import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ManagedRepository;
@@ -28,9 +26,8 @@ import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
-import org.apache.archiva.repository.base.managed.BasicManagedRepositoryValidator;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.mock.ManagedRepositoryContentMock;
-import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.validation.ValidationResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -63,6 +60,9 @@ class BasicRepositoryGroupValidatorTest
     @SuppressWarnings( "unused" )
     @Inject
     RepositoryGroupHandler repositoryGroupHandler;
+
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
 
     Path repoBaseDir;
 

@@ -32,6 +32,7 @@ import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.SystemUtils;
@@ -46,6 +47,7 @@ import org.apache.maven.index.Scanner;
 import org.apache.maven.index.ScanningRequest;
 import org.apache.maven.index.ScanningResult;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index_shaded.lucene.index.IndexUpgrader;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.After;
@@ -93,8 +95,14 @@ public abstract class AbstractMavenRepositorySearch
     @Inject
     ArchivaRepositoryRegistry repositoryRegistry;
 
+    @SuppressWarnings( "unused" )
     @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
+    ManagedRepositoryHandler managedRepositoryHandler;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    RepositoryGroupHandler groupHandler;
+
 
     @Inject
     ProxyRegistry proxyRegistry;
@@ -124,9 +132,11 @@ public abstract class AbstractMavenRepositorySearch
 
         FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ) );
         assertFalse( Files.exists(Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" )) );
+        Files.createDirectories( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ) );
 
         FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
         assertFalse( Files.exists(Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" )) );
+        Files.createDirectories( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
 
         archivaConfigControl = EasyMock.createControl();
 
@@ -212,7 +222,7 @@ public abstract class AbstractMavenRepositorySearch
     protected void createIndex( String repository, List<Path> filesToBeIndexed, boolean scan, Path indexDir, boolean copyFiles)
         throws Exception
     {
-        Repository rRepo = repositoryRegistry.getRepository(repository);
+        final Repository rRepo = repositoryRegistry.getRepository(repository);
         IndexCreationFeature icf = rRepo.getFeature(IndexCreationFeature.class).get();
 
 
@@ -228,12 +238,12 @@ public abstract class AbstractMavenRepositorySearch
 
         Path indexerDirectory = repoDir.resolve(".indexer" );
 
-        if ( Files.exists(indexerDirectory) )
+        if ( indexDir == null && Files.exists(indexerDirectory) )
         {
             FileUtils.deleteDirectory( indexerDirectory );
+            assertFalse( Files.exists(indexerDirectory) );
         }
 
-        assertFalse( Files.exists(indexerDirectory) );
 
         Path lockFile = repoDir.resolve(".indexer/write.lock" );
         if ( Files.exists(lockFile) )
@@ -247,10 +257,21 @@ public abstract class AbstractMavenRepositorySearch
             indexDirectory.toFile().deleteOnExit();
             FileUtils.deleteDirectory(indexDirectory);
             icf.setIndexPath(indexDirectory.toUri());
+            config.getManagedRepositories( ).stream( ).filter( r -> r.getId( ).equals( rRepo.getId( ) ) ).findFirst( ).ifPresent( r ->
+                r.setIndexDir( indexDirectory.toAbsolutePath( ).toString( ) )
+            );
+            // IndexUpgrader.main(new String[]{indexDirectory.toAbsolutePath().toString()});
         } else {
 
             icf.setIndexPath(indexDir.toUri());
+            Files.createDirectories( indexDir );
+            config.getManagedRepositories( ).stream( ).filter( r -> r.getId( ).equals( rRepo.getId( ) ) ).findFirst( ).ifPresent( r ->
+                r.setIndexDir( indexDir.toAbsolutePath( ).toString( ) )
+            );
+            IndexUpgrader.main(new String[]{indexDir.toAbsolutePath().toString()});
+
         }
+
         if (copyFiles) {
             Path repo = Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository);
             assertTrue(Files.exists(repo));
@@ -269,11 +290,11 @@ public abstract class AbstractMavenRepositorySearch
         repositoryRegistry.reload();
         archivaConfigControl.reset();
 
-        rRepo = repositoryRegistry.getRepository(repository);
-        icf = rRepo.getFeature(IndexCreationFeature.class).get();
+        Repository rRepo2 = repositoryRegistry.getRepository( repository );
+        icf = rRepo2.getFeature(IndexCreationFeature.class).get();
 
 
-        archivaCtx = rRepo.getIndexingContext();
+        archivaCtx = rRepo2.getIndexingContext();
         context = archivaCtx.getBaseContext(IndexingContext.class);
 
 

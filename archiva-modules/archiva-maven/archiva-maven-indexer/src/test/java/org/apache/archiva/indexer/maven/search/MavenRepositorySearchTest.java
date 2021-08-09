@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -895,12 +896,12 @@ public class MavenRepositorySearchTest
         throws Exception
     {
 
-        Path repo = Paths.get("target/repo-release");
+        Path repo = Paths.get("target/repo-release-index-test/repo-release");
         try {
             Path indexDirectory = repo.resolve(".indexer");
             Path zipFile = Paths.get(Thread.currentThread().getContextClassLoader().getResource("repo-release.zip").toURI());
             FileUtils.unzip(zipFile, repo.getParent());
-            IndexUpgrader.main(new String[]{indexDirectory.toAbsolutePath().toString()});
+//            IndexUpgrader.main(new String[]{indexDirectory.toAbsolutePath().toString(), "-delete-prior-commits"});
             createIndex(REPO_RELEASE, Collections.emptyList(), false, indexDirectory, false);
 
 //        indexer.addIndexingContext( REPO_RELEASE, REPO_RELEASE, repo.toFile(), indexDirectory.toFile(),

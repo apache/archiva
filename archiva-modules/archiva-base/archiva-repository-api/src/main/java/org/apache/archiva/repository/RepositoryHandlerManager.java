@@ -17,21 +17,19 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
+import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventHandler;
+
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public enum RepositoryState
+public interface RepositoryHandlerManager extends EventHandler<Event>
 {
-    CREATED(0),REFERENCES_SET(100),SAVED(200),INITIALIZED(300),REGISTERED(400),DEACTIVATED(500), UNREGISTERED(600),CLOSED(700);
+    <R extends Repository, C extends AbstractRepositoryConfiguration> RepositoryHandler<R,C> getHandler( Class<R> repositoryClazz, Class<C> configurationClazz);
 
-    private final int orderNumber;
+    void registerHandler( RepositoryHandler<?, ?> handler );
 
-    RepositoryState( int orderNumber )
-    {
-        this.orderNumber = orderNumber;
-    }
+    boolean isRegisteredId(String id);
 
-    public int getOrderNumber() {
-        return orderNumber;
-    }
 }

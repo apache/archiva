@@ -21,10 +21,13 @@ package $package;
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -52,7 +55,15 @@ public class SimpleArtifactConsumerTest
     private SimpleArtifactConsumer consumer;
 
     @Inject
-    private RepositoryRegistry repositoryRegistry;
+    private ArchivaRepositoryRegistry repositoryRegistry;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    private ManagedRepositoryHandler managedRepositoryHandler;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    private org.apache.archiva.repository.base.group.RepositoryGroupHandler repositoryGroupHandler;
 
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -70,9 +81,20 @@ public class SimpleArtifactConsumerTest
         setUpMockRepository();
     }
 
+    @After
+    public void tearDown() {
+        try
+        {
+            repositoryRegistry.removeRepository( "test-consumer-repository" );
+        } catch (Throwable ex) {
+            log.error( "Could not remove repository: {}", ex.getMessage( ) );
+        }
+    }
+
     private void setUpMockRepository()
         throws IOException, RepositoryException
     {
+        ((ArchivaRepositoryRegistry)repositoryRegistry).setIgnoreIndexing( true );
         Path repoDir = Paths.get( "target/test-consumer-repo" );
         Files.createDirectories( repoDir );
         repoDir.toFile().deleteOnExit();

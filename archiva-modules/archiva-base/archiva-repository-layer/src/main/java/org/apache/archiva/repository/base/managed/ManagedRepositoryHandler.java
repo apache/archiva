@@ -17,74 +17,102 @@ package org.apache.archiva.repository.base.managed;
  * under the License.
  */
 
+import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.indexer.ArchivaIndexManager;
+import org.apache.archiva.indexer.IndexCreationFailedException;
+import org.apache.archiva.indexer.IndexManagerFactory;
+import org.apache.archiva.repository.EditableManagedRepository;
+import org.apache.archiva.repository.EditableRepository;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryHandler;
+import org.apache.archiva.repository.RepositoryHandlerManager;
+import org.apache.archiva.repository.RepositoryProvider;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.AbstractRepositoryHandler;
-import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.event.LifecycleEvent;
+import org.apache.archiva.repository.event.RepositoryEvent;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
-import org.apache.archiva.repository.validation.CheckedResult;
-import org.apache.archiva.repository.validation.RepositoryChecker;
-import org.apache.archiva.repository.validation.RepositoryValidator;
-import org.apache.archiva.repository.validation.ValidationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Handler implementation for managed repositories.
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
+@Service( "managedRepositoryHandler#default" )
 public class ManagedRepositoryHandler
     extends AbstractRepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration>
-implements RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration>
+    implements RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration>
 {
     private static final Logger log = LoggerFactory.getLogger( ManagedRepositoryHandler.class );
-    private final ConfigurationHandler configurationHandler;
-    private final ArchivaRepositoryRegistry repositoryRegistry;
-    private final RepositoryValidator<ManagedRepository> validator;
-    private Map<String, ManagedRepository> managedRepositories = new HashMap<>(  );
-    private Map<String, ManagedRepository> uManagedRepositories = Collections.unmodifiableMap( managedRepositories );
+    private final RepositoryHandlerManager repositoryRegistry;
+    private final RepositoryContentFactory repositoryContentFactory;
 
 
-    public ManagedRepositoryHandler( ArchivaRepositoryRegistry repositoryRegistry,
-                                     ConfigurationHandler configurationHandler,
-                                     List<RepositoryValidator<? extends Repository>> repositoryValidatorList )
+    IndexManagerFactory indexManagerFactory;
+
+
+    public ManagedRepositoryHandler( RepositoryHandlerManager repositoryRegistry,
+                                     ConfigurationHandler configurationHandler, IndexManagerFactory indexManagerFactory,
+                                     @Named( "repositoryContentFactory#default" )
+                                         RepositoryContentFactory repositoryContentFactory
+    )
     {
-        this.configurationHandler = configurationHandler;
+        super( ManagedRepository.class, ManagedRepositoryConfiguration.class, configurationHandler );
         this.repositoryRegistry = repositoryRegistry;
-        this.validator = getCombinedValidatdor( ManagedRepository.class, repositoryValidatorList );
+        this.indexManagerFactory = indexManagerFactory;
+        this.repositoryContentFactory = repositoryContentFactory;
+    }
+
+    @Override
+    @PostConstruct
+    public void init( )
+    {
+        log.debug( "Initializing managed repository handler " + repositoryRegistry.toString( ) );
+        initializeStorage( );
+        // We are registering this class on the registry. This is necessary to avoid circular dependencies via injection.
+        this.repositoryRegistry.registerHandler( this );
+    }
+
+    private void initializeStorage( )
+    {
+
     }
 
     @Override
     public void initializeFromConfig( )
     {
-        this.managedRepositories.clear( );
-        this.managedRepositories.putAll( newInstancesFromConfig( ) );
-        for ( ManagedRepository managedRepository : this.managedRepositories.values( ) )
+        Map<String, ManagedRepository> currentInstances = new HashMap<>( getRepositories( ) );
+        getRepositories().clear();
+        getRepositories( ).putAll( newOrUpdateInstancesFromConfig( currentInstances ) );
+        for ( ManagedRepository managedRepository : getRepositories( ).values( ) )
         {
             activateRepository( managedRepository );
         }
-
-    }
-
-    @Override
-    public void activateRepository( ManagedRepository repository )
-    {
+        for (ManagedRepository managedRepository : currentInstances.values()) {
+            deactivateRepository( managedRepository );
+        }
 
     }
 
@@ -93,148 +121,437 @@ implements RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration>
     {
         try
         {
-            Set<String> configRepoIds = new HashSet<>( );
             List<ManagedRepositoryConfiguration> managedRepoConfigs =
-                configurationHandler.getBaseConfiguration( ).getManagedRepositories( );
+                new ArrayList<>(
+                    getConfigurationHandler( ).getBaseConfiguration( ).getManagedRepositories( ) );
 
             if ( managedRepoConfigs == null )
             {
-                return managedRepositories;
+                return Collections.emptyMap( );
             }
 
+            Map<String, ManagedRepository> result = new HashMap<>( );
             for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
             {
-                ManagedRepository repo = put( repoConfig, null );
-                configRepoIds.add( repoConfig.getId( ) );
+                ManagedRepository repo = newInstance( repoConfig );
+                result.put( repo.getId( ), repo );
                 if ( repo.supportsFeature( StagingRepositoryFeature.class ) )
                 {
                     StagingRepositoryFeature stagF = repo.getFeature( StagingRepositoryFeature.class ).get( );
                     if ( stagF.getStagingRepository( ) != null )
                     {
-                        configRepoIds.add( stagF.getStagingRepository( ).getId( ) );
+                        ManagedRepository stagingRepo = getStagingRepository( repo );
+                        if ( stagingRepo != null )
+                        {
+                            result.put( stagingRepo.getId( ), stagingRepo );
+                        }
                     }
                 }
             }
-            List<String> toRemove = managedRepositories.keySet( ).stream( ).filter( id -> !configRepoIds.contains( id ) ).collect( Collectors.toList( ) );
-            for ( String id : toRemove )
-            {
-                ManagedRepository removed = managedRepositories.remove( id );
-                removed.close( );
-            }
+            return result;
         }
         catch ( Throwable e )
         {
             log.error( "Could not initialize repositories from config: {}", e.getMessage( ), e );
-            return managedRepositories;
+            return new HashMap<>( );
         }
-        return managedRepositories;
     }
+
+    public Map<String, ManagedRepository> newOrUpdateInstancesFromConfig( Map<String, ManagedRepository> currentInstances)
+    {
+        try
+        {
+            List<ManagedRepositoryConfiguration> managedRepoConfigs =
+                new ArrayList<>(
+                    getConfigurationHandler( ).getBaseConfiguration( ).getManagedRepositories( ) );
+
+            if ( managedRepoConfigs == null )
+            {
+                return Collections.emptyMap( );
+            }
+
+            Map<String, ManagedRepository> result = new HashMap<>( );
+            for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
+            {
+                String id = repoConfig.getId( );
+                ManagedRepository repo;
+                if ( currentInstances.containsKey( id ) )
+                {
+                    repo = currentInstances.remove( id );
+                    getProvider( repo.getType() ).updateManagedInstance( (EditableManagedRepository) repo, repoConfig );
+                    updateReferences( repo, repoConfig );
+                }
+                else
+                {
+                    repo = newInstance( repoConfig );
+                }
+                result.put( id, repo );
+                if ( repo.supportsFeature( StagingRepositoryFeature.class ) )
+                {
+                    StagingRepositoryFeature stagF = repo.getFeature( StagingRepositoryFeature.class ).get( );
+                    if ( stagF.getStagingRepository( ) != null )
+                    {
+                        String stagingId = getStagingId( id );
+                        ManagedRepository stagingRepo;
+                        if ( currentInstances.containsKey( stagingId ) )
+                        {
+                            stagingRepo = currentInstances.remove( stagingId );
+                            managedRepoConfigs.stream( ).filter( cfg -> stagingId.equals( cfg.getId( ) ) ).findFirst( ).ifPresent(
+                                stagingRepoConfig ->
+                                {
+                                    try
+                                    {
+                                        getProvider( stagingRepo.getType() ).updateManagedInstance( (EditableManagedRepository) stagingRepo, stagingRepoConfig );
+                                        updateReferences( stagingRepo, stagingRepoConfig );
+                                    }
+                                    catch ( RepositoryException e )
+                                    {
+                                        log.error( "Could not update staging repo {}: {}", stagingId, e.getMessage( ) );
+                                    }
+                                }
+                            );
+                        }
+                        else
+                        {
+                            stagingRepo = getStagingRepository( repo );
+                        }
+                        if ( stagingRepo != null )
+                        {
+                            result.put( stagingRepo.getId( ), stagingRepo );
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        catch ( Throwable e )
+        {
+            log.error( "Could not initialize repositories from config: {}", e.getMessage( ), e );
+            return new HashMap<>( );
+        }
+    }
+
 
     @Override
     public ManagedRepository newInstance( RepositoryType type, String id ) throws RepositoryException
     {
-        return null;
+        log.debug( "Creating repo {}", id );
+        RepositoryProvider provider = getProvider( type );
+        EditableManagedRepository repo;
+        try
+        {
+            repo = provider.createManagedInstance( id, id );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryException( "Could not create repository '" + id + "': " + e.getMessage( ) );
+        }
+        repo.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
+        updateReferences( repo, null );
+        repo.setLastState( RepositoryState.REFERENCES_SET );
+        return repo;
     }
+
+    private String getStagingId( String repoId )
+    {
+        return repoId + StagingRepositoryFeature.STAGING_REPO_POSTFIX;
+    }
+
+
+    private ManagedRepository getStagingRepository( ManagedRepository baseRepo ) throws RepositoryException
+    {
+        ManagedRepository stageRepo = get( getStagingId( baseRepo.getId( ) ) );
+        final RepositoryType type = baseRepo.getType( );
+        if ( stageRepo == null )
+        {
+            RepositoryProvider provider = getProvider( type );
+            ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration( baseRepo );
+            stageRepo = provider.createStagingInstance( cfg );
+            if ( stageRepo.supportsFeature( StagingRepositoryFeature.class ) )
+            {
+                stageRepo.getFeature( StagingRepositoryFeature.class ).get( ).setStageRepoNeeded( false );
+            }
+            updateReferences( stageRepo, cfg );
+        }
+        return stageRepo;
+    }
+
+    public ArchivaIndexManager getIndexManager( RepositoryType type )
+    {
+        return indexManagerFactory.getIndexManager( type );
+    }
+
+    private void createIndexingContext( EditableRepository editableRepo ) throws RepositoryException
+    {
+        if ( editableRepo.supportsFeature( IndexCreationFeature.class ) )
+        {
+            ArchivaIndexManager idxManager = getIndexManager( editableRepo.getType( ) );
+            try
+            {
+                editableRepo.setIndexingContext( idxManager.createContext( editableRepo ) );
+                idxManager.updateLocalIndexPath( editableRepo );
+            }
+            catch ( IndexCreationFailedException e )
+            {
+                throw new RepositoryException( "Could not create index for repository " + editableRepo.getId( ) + ": " + e.getMessage( ), e );
+            }
+        }
+    }
+
 
     @Override
     public ManagedRepository newInstance( ManagedRepositoryConfiguration repositoryConfiguration ) throws RepositoryException
     {
-        return null;
+        RepositoryType type = RepositoryType.valueOf( repositoryConfiguration.getType( ) );
+        RepositoryProvider provider = getProvider( type );
+        if ( provider == null )
+        {
+            throw new RepositoryException( "Provider not found for repository type: " + repositoryConfiguration.getType( ) );
+        }
+        final ManagedRepository repo = provider.createManagedInstance( repositoryConfiguration );
+        repo.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
+        updateReferences( repo, null );
+        if ( repo instanceof EditableRepository )
+        {
+            ( (EditableRepository) repo ).setLastState( RepositoryState.REFERENCES_SET );
+        }
+        return repo;
     }
 
     @Override
-    public ManagedRepository put( ManagedRepository repository ) throws RepositoryException
+    protected ManagedRepositoryConfiguration findRepositoryConfiguration( final Configuration configuration, final String id )
     {
-        return null;
+        return configuration.findManagedRepositoryById( id );
     }
 
     @Override
-    public ManagedRepository put( ManagedRepositoryConfiguration repositoryConfiguration ) throws RepositoryException
+    protected void removeRepositoryConfiguration( final Configuration configuration, final ManagedRepositoryConfiguration repoConfiguration )
     {
-        return null;
+        configuration.removeManagedRepository( repoConfiguration );
+    }
+
+    @Override
+    protected void addRepositoryConfiguration( Configuration configuration, ManagedRepositoryConfiguration repoConfiguration )
+    {
+        configuration.addManagedRepository( repoConfiguration );
+    }
+
+    @Override
+    public ManagedRepository put( ManagedRepository managedRepository ) throws RepositoryException
+    {
+        final String id = managedRepository.getId( );
+        ManagedRepository originRepo = getRepositories( ).remove( id );
+        if ( originRepo == null && repositoryRegistry.isRegisteredId( id ) )
+        {
+            throw new RepositoryException( "There exists a repository with id " + id + ". Could not update with managed repository." );
+        }
+        try
+        {
+            if ( originRepo != null && managedRepository != originRepo )
+            {
+                deactivateRepository( originRepo );
+                pushEvent( LifecycleEvent.UNREGISTERED, originRepo );
+            }
+            RepositoryProvider provider = getProvider( managedRepository.getType( ) );
+            ManagedRepositoryConfiguration newCfg = provider.getManagedConfiguration( managedRepository );
+            getConfigurationHandler( ).getLock( ).writeLock( ).lock( );
+            try
+            {
+                Configuration configuration = getConfigurationHandler( ).getBaseConfiguration( );
+                updateReferences( managedRepository, newCfg );
+                ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById( id );
+                if ( oldCfg != null )
+                {
+                    configuration.removeManagedRepository( oldCfg );
+                }
+                configuration.addManagedRepository( newCfg );
+                getConfigurationHandler( ).save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
+                setLastState( managedRepository, RepositoryState.SAVED );
+                activateRepository( managedRepository );
+            }
+            finally
+            {
+                getConfigurationHandler( ).getLock( ).writeLock( ).unlock( );
+            }
+            getRepositories( ).put( id, managedRepository );
+            setLastState( managedRepository, RepositoryState.REGISTERED );
+            return managedRepository;
+        }
+        catch ( Exception e )
+        {
+            // Rollback only partly, because repository is closed already
+            if ( originRepo != null )
+            {
+                getRepositories( ).put( id, originRepo );
+            }
+            else
+            {
+                getRepositories( ).remove( id );
+            }
+            log.error( "Exception during configuration update {}", e.getMessage( ), e );
+            throw new RepositoryException( "Could not save the configuration" + ( e.getMessage( ) == null ? "" : ": " + e.getMessage( ) ) );
+        }
+    }
+
+
+    @Override
+    public ManagedRepository put( ManagedRepositoryConfiguration managedRepositoryConfiguration ) throws RepositoryException
+    {
+        final String id = managedRepositoryConfiguration.getId( );
+        final RepositoryType repositoryType = RepositoryType.valueOf( managedRepositoryConfiguration.getType( ) );
+        final RepositoryProvider provider = getProvider( repositoryType );
+        ReentrantReadWriteLock.WriteLock configLock = this.getConfigurationHandler( ).getLock( ).writeLock( );
+        configLock.lock( );
+        ManagedRepository repo = null;
+        ManagedRepository oldRepository = null;
+        Configuration configuration = null;
+        try
+        {
+            boolean updated = false;
+            configuration = getConfigurationHandler( ).getBaseConfiguration( );
+            repo = getRepositories( ).get( id );
+            oldRepository = repo == null ? null : clone( repo, id );
+            if ( repo == null )
+            {
+                repo = put( managedRepositoryConfiguration, configuration );
+            }
+            else
+            {
+                setManagedRepositoryDefaults( managedRepositoryConfiguration );
+                provider.updateManagedInstance( (EditableManagedRepository) repo, managedRepositoryConfiguration );
+                updated = true;
+                pushEvent( LifecycleEvent.UPDATED, repo );
+            }
+            registerNewRepository( managedRepositoryConfiguration, repo, configuration, updated );
+        }
+        catch ( IndeterminateConfigurationException | RegistryException e )
+        {
+            if ( oldRepository != null )
+            {
+                ManagedRepositoryConfiguration oldCfg = provider.getManagedConfiguration( oldRepository );
+                provider.updateManagedInstance( (EditableManagedRepository) repo, oldCfg );
+                rollback( configuration, oldRepository, e, oldCfg );
+            }
+            else
+            {
+                getRepositories( ).remove( id );
+            }
+            log.error( "Could not save the configuration for repository {}: {}", id, e.getMessage( ), e );
+            throw new RepositoryException( "Could not save the configuration for repository " + id + ": " + e.getMessage( ) );
+        }
+        finally
+        {
+            configLock.unlock( );
+        }
+        return repo;
     }
 
     @Override
     public ManagedRepository put( ManagedRepositoryConfiguration repositoryConfiguration, Configuration configuration ) throws RepositoryException
     {
-        return null;
+        final String id = repositoryConfiguration.getId( );
+        final RepositoryType repoType = RepositoryType.valueOf( repositoryConfiguration.getType( ) );
+        ManagedRepository repo;
+        setManagedRepositoryDefaults( repositoryConfiguration );
+        if ( getRepositories( ).containsKey( id ) )
+        {
+            repo = clone( getRepositories( ).get( id ), id );
+            if ( repo instanceof EditableManagedRepository )
+            {
+                getProvider( repoType ).updateManagedInstance( (EditableManagedRepository) repo, repositoryConfiguration );
+            }
+            else
+            {
+                throw new RepositoryException( "The repository is not editable " + id );
+            }
+        }
+        else
+        {
+            repo = getProvider( repoType ).createManagedInstance( repositoryConfiguration );
+            setLastState( repo, RepositoryState.CREATED );
+        }
+        if ( configuration != null )
+        {
+            replaceOrAddRepositoryConfig( repositoryConfiguration, configuration );
+        }
+        updateReferences( repo, repositoryConfiguration );
+        setLastState( repo, RepositoryState.REFERENCES_SET );
+        return repo;
+    }
+
+    @SuppressWarnings( "unused" )
+    private void setManagedRepositoryDefaults( ManagedRepositoryConfiguration repositoryConfiguration )
+    {
+        // We do nothing here
     }
 
     @Override
-    public <D> CheckedResult<ManagedRepository, D> putWithCheck( ManagedRepositoryConfiguration repositoryConfiguration, RepositoryChecker<ManagedRepository, D> checker ) throws RepositoryException
+    public ManagedRepository clone( ManagedRepository repo, String id ) throws RepositoryException
     {
-        return null;
+        RepositoryProvider provider = getProvider( repo.getType( ) );
+        ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration( repo );
+        cfg.setId( id );
+        ManagedRepository cloned = provider.createManagedInstance( cfg );
+        cloned.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
+        setLastState( cloned, RepositoryState.CREATED );
+        return cloned;
     }
 
-    @Override
-    public void remove( String id ) throws RepositoryException
-    {
-
-    }
-
-    @Override
-    public void remove( String id, Configuration configuration ) throws RepositoryException
-    {
-
-    }
-
-    @Override
-    public ManagedRepository get( String id )
-    {
-        return null;
-    }
-
-    @Override
-    public ManagedRepository clone( ManagedRepository repo ) throws RepositoryException
-    {
-        return null;
-    }
 
     @Override
     public void updateReferences( ManagedRepository repo, ManagedRepositoryConfiguration repositoryConfiguration ) throws RepositoryException
     {
-
-    }
-
-    @Override
-    public Collection<ManagedRepository> getAll( )
-    {
-        return null;
-    }
-
-    @Override
-    public RepositoryValidator<ManagedRepository> getValidator( )
-    {
-        return null;
-    }
-
-    @Override
-    public ValidationResponse<ManagedRepository> validateRepository( ManagedRepository repository )
-    {
-        return null;
-    }
-
-    @Override
-    public ValidationResponse<ManagedRepository> validateRepositoryForUpdate( ManagedRepository repository )
-    {
-        return null;
-    }
-
-    @Override
-    public boolean hasRepository( String id )
-    {
-        return false;
-    }
-
-    @Override
-    public void init( )
-    {
-
+        log.debug( "Updating references of repo {}", repo.getId( ) );
+        if ( repo.supportsFeature( StagingRepositoryFeature.class ) )
+        {
+            Configuration configuration = getConfigurationHandler( ).getBaseConfiguration( );
+            RepositoryProvider provider = getProvider( repo.getType( ) );
+            StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get( );
+            if ( feature.isStageRepoNeeded( ) && feature.getStagingRepository( ) == null )
+            {
+                ManagedRepository stageRepo = get( getStagingId( repo.getId( ) ) );
+                if ( stageRepo == null )
+                {
+                    stageRepo = getStagingRepository( repo );
+                    getRepositories( ).put( stageRepo.getId( ), stageRepo );
+                    if ( configuration != null )
+                    {
+                        replaceOrAddRepositoryConfig( provider.getManagedConfiguration( stageRepo ), configuration );
+                    }
+                    pushEvent( new LifecycleEvent( LifecycleEvent.REGISTERED, this, stageRepo ) );
+                }
+                feature.setStagingRepository( stageRepo );
+            }
+        }
+        if ( repo instanceof EditableManagedRepository )
+        {
+            EditableManagedRepository editableRepo = (EditableManagedRepository) repo;
+            if ( repo.getContent( ) == null )
+            {
+                editableRepo.setContent( repositoryContentFactory.getManagedRepositoryContent( repo ) );
+                editableRepo.getContent( ).setRepository( editableRepo );
+            }
+            log.debug( "Index repo: " + repo.hasIndex( ) );
+            if ( repo.hasIndex( ) && ( repo.getIndexingContext( ) == null || !repo.getIndexingContext( ).isOpen( ) ) )
+            {
+                log.debug( "Creating indexing context for {}", repo.getId( ) );
+                createIndexingContext( editableRepo );
+            }
+        }
+        repo.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
     }
 
     @Override
     public void close( )
     {
+        getRepositories( ).values( ).stream( ).forEach(
+            r -> deactivateRepository( r )
+        );
+    }
 
+    @Override
+    public void deactivateRepository( ManagedRepository repository )
+    {
+        repository.close( );
     }
 }

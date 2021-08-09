@@ -32,6 +32,7 @@ import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.base.remote.BasicRemoteRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -51,6 +52,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -72,6 +74,9 @@ public class ArchivaRepositoryRegistryTest
     @SuppressWarnings( "unused" )
     @Inject
     RepositoryGroupHandler repositoryGroupHandler;
+
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
 
     private static final Path userCfg = Paths.get(System.getProperty( "user.home" ), ".m2/archiva.xml");
 
@@ -269,30 +274,31 @@ public class ArchivaRepositoryRegistryTest
     public void putManagedRepositoryFromConfigWithoutSave( ) throws Exception
     {
         Configuration configuration = archivaConfiguration.getConfiguration();
+        int actualSize = configuration.getManagedRepositories( ).size( );
+        Configuration newConfiguration = new Configuration( );
         ManagedRepositoryConfiguration cfg = new ManagedRepositoryConfiguration();
         cfg.setId("test002");
         cfg.setName("This is test 002");
-        ManagedRepository repo = repositoryRegistry.putRepository( cfg, configuration );
+        ManagedRepository repo = repositoryRegistry.putRepository( cfg, newConfiguration );
         assertNotNull(repo);
         assertEquals("test002", repo.getId());
         assertEquals("This is test 002", repo.getName());
         assertNotNull(repo.getContent());
         archivaConfiguration.reload();
-        assertEquals(3, archivaConfiguration.getConfiguration().getManagedRepositories().size());
-        Collection<ManagedRepository> repos = repositoryRegistry.getManagedRepositories();
-        assertEquals(5, repos.size());
+        assertEquals(actualSize, configuration.getManagedRepositories().size());
+        List<ManagedRepositoryConfiguration> repos = newConfiguration.getManagedRepositories( );
+        assertEquals(1, repos.size());
 
         ManagedRepository internalRepo = repositoryRegistry.getManagedRepository( "internal" );
         cfg = new ManagedRepositoryConfiguration();
         cfg.setId("internal");
         cfg.setName("This is internal test 002");
-        repo = repositoryRegistry.putRepository( cfg, configuration );
-        assertSame( internalRepo, repo );
+        repo = repositoryRegistry.putRepository( cfg, newConfiguration );
         assertEquals("This is internal test 002",repo.getName());
-        assertEquals(5, repositoryRegistry.getManagedRepositories().size());
+        assertEquals(2, newConfiguration.getManagedRepositories().size());
 
         repositoryRegistry.reload();
-        assertEquals(4, repositoryRegistry.getManagedRepositories().size());
+        assertEquals(actualSize, configuration.getManagedRepositories().size());
     }
 
     @Test

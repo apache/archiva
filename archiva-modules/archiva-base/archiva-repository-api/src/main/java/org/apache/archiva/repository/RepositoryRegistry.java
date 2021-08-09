@@ -50,7 +50,7 @@ import java.util.Map;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @SuppressWarnings( "UnusedReturnValue" )
-public interface RepositoryRegistry extends EventSource
+public interface RepositoryRegistry extends EventSource, RepositoryHandlerManager
 {
     /**
      * Set the configuration for the registry

@@ -25,7 +25,10 @@ import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
@@ -55,6 +58,19 @@ public abstract class AbstractArtifactConsumerTest
 
     @Inject
     ArchivaConfiguration archivaConfiguration;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    RepositoryGroupHandler repositoryGroupHandler;
+
+    @SuppressWarnings( "unused" )
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
 
     @Before
     public void setUp()

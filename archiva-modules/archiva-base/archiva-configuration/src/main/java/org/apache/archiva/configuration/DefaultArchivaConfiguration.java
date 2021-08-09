@@ -430,7 +430,7 @@ public class DefaultArchivaConfiguration
         if (section == null) {
             section = baseSection;
             if (section == null) {
-                section = createDefaultConfigurationFile();
+                section = createDefaultConfigurationFile(eventTag);
             }
         } else if (baseSection != null) {
             Collection<String> keys = baseSection.getKeys();
@@ -513,7 +513,7 @@ public class DefaultArchivaConfiguration
         }
     }
 
-    private Registry createDefaultConfigurationFile()
+    private Registry createDefaultConfigurationFile(String eventTag)
             throws RegistryException {
         // TODO: may not be needed under commons-configuration 1.4 - check
 
@@ -543,7 +543,7 @@ public class DefaultArchivaConfiguration
             addRegistryChangeListener(regListener);
         }
 
-        triggerEvent(ConfigurationEvent.SAVED, "default-file");
+        triggerEvent(ConfigurationEvent.SAVED, eventTag==null?"default-file":eventTag);
 
         Registry section = registry.getSection(KEY + ".user");
         if (section == null) {
