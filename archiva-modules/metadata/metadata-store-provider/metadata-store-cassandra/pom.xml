@@ -457,6 +457,7 @@
           </systemPropertyVariables>
           <trimStackTrace>false</trimStackTrace>
           <skip>false</skip>
+          <classesDirectory>${project.build.outputDirectory}</classesDirectory>
         </configuration>
         <dependencies>
           <dependency>

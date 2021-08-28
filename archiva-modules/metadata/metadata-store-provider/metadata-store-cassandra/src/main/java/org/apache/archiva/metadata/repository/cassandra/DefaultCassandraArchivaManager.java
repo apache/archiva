@@ -40,10 +40,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
-import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
 import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.*;
 import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
 
@@ -58,7 +56,7 @@ public class DefaultCassandraArchivaManager
     implements CassandraArchivaManager
 {
 
-    private Logger logger = LoggerFactory.getLogger( getClass( ) );
+    private static final Logger logger = LoggerFactory.getLogger( DefaultCassandraArchivaManager.class );
 
     @Inject
     private ApplicationContext applicationContext;
