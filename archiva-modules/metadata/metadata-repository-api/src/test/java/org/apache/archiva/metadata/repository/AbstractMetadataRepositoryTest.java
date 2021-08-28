@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
@@ -37,12 +36,13 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -62,11 +62,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith( SpringJUnit4ClassRunner.class )
+@ExtendWith( SpringExtension.class )
+@TestInstance( TestInstance.Lifecycle.PER_CLASS )
 @ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml"} )
 public abstract class AbstractMetadataRepositoryTest
-    extends TestCase
 {
     protected static final String OTHER_REPO_ID = "other-repo";
 
@@ -107,6 +108,14 @@ public abstract class AbstractMetadataRepositoryTest
 
     protected int assertMaxTries =10;
     protected int assertRetrySleepMs=500;
+
+    protected void setUp() throws Exception {
+
+    }
+
+    protected void tearDown() throws Exception {
+
+    }
 
     /*
      * Used by tryAssert to allow to throw exceptions in the lambda expression.
@@ -452,19 +461,23 @@ public abstract class AbstractMetadataRepositoryTest
             getRepository( ).updateProjectVersion( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
             metadata = getRepository( ).getProjectVersion( session, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+            assertNotNull( metadata );
             assertEquals( TEST_PROJECT_VERSION, metadata.getId( ) );
             assertEquals( TEST_PROJECT_VERSION, metadata.getVersion( ) );
             assertEquals( "project name", metadata.getName( ) );
             assertEquals( "project description", metadata.getDescription( ) );
             assertEquals( "the url", metadata.getUrl( ) );
 
+            assertNotNull( metadata.getScm( ) );
             assertEquals( "connection", metadata.getScm( ).getConnection( ) );
             assertEquals( "dev conn", metadata.getScm( ).getDeveloperConnection( ) );
             assertEquals( "url", metadata.getScm( ).getUrl( ) );
 
+            assertNotNull( metadata.getCiManagement( ) );
             assertEquals( "system", metadata.getCiManagement( ).getSystem( ) );
             assertEquals( "ci url", metadata.getCiManagement( ).getUrl( ) );
 
+            assertNotNull( metadata.getIssueManagement( ) );
             assertEquals( "system", metadata.getIssueManagement( ).getSystem( ) );
             assertEquals( "issue tracker url", metadata.getIssueManagement( ).getUrl( ) );
 

@@ -23,17 +23,14 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.DefaultMetadataResolver;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataService;
-import org.apache.archiva.metadata.repository.MetadataSessionException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -67,7 +64,7 @@ public class JcrMetadataRepositoryTest
         return sessionFactory;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setupSpec( ) throws IOException, InvalidFileStoreVersionException
     {
         Path directory = Paths.get( "target/test-repositories" );
@@ -89,7 +86,7 @@ public class JcrMetadataRepositoryTest
 
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception
     {
@@ -106,7 +103,7 @@ public class JcrMetadataRepositoryTest
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopSpec( )
         throws Exception
     {

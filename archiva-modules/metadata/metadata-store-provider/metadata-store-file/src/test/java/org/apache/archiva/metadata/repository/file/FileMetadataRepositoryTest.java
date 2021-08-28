@@ -27,14 +27,13 @@ import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,7 +57,7 @@ public class FileMetadataRepositoryTest
         return this.sessionFactory;
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp()
         throws Exception
@@ -81,7 +80,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testGetArtifactsByProjectVersionMetadata()
         throws Exception
     {
@@ -89,7 +88,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testGetArtifactsByProjectVersionMetadataNoRepository()
         throws Exception
     {
@@ -97,7 +96,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testGetArtifactsByProjectVersionMetadataAllRepositories()
         throws Exception
     {
@@ -105,7 +104,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testGetArtifactsByMetadataAllRepositories()
         throws Exception
     {
@@ -113,7 +112,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testGetArtifactsByPropertySingleResult()
         throws Exception
     {
@@ -121,7 +120,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testSearchArtifactsByKey()
         throws Exception
     {
@@ -129,7 +128,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testSearchArtifactsByKeyExact()
         throws Exception
     {
@@ -137,7 +136,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testSearchArtifactsFullText()
         throws Exception
     {
@@ -145,7 +144,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testSearchArtifactsFullTextExact()
         throws Exception
     {
@@ -153,7 +152,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testSearchArtifactsByFacetKeyAllRepos()
         throws Exception
     {
@@ -161,7 +160,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testSearchArtifactsByFacetKey()
         throws Exception
     {
@@ -169,7 +168,7 @@ public class FileMetadataRepositoryTest
     }
 
     @Override
-    @Ignore
+    @Disabled
     public void testSearchArtifactsFullTextByFacet()
         throws Exception
     {

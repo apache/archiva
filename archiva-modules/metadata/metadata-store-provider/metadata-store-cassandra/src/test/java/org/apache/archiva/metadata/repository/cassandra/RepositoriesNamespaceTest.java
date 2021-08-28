@@ -23,13 +23,14 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Olivier Lamy
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ExtendWith( SpringExtension.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class RepositoriesNamespaceTest
 {
@@ -53,7 +54,7 @@ public class RepositoriesNamespaceTest
 
     CassandraMetadataRepository cmr;
 
-    @Before
+    @BeforeEach
     public void setup()
         throws Exception
     {
@@ -65,7 +66,7 @@ public class RepositoriesNamespaceTest
         CassandraMetadataRepositoryTest.clearReposAndNamespace( cassandraArchivaManager );
     }
 
-    @After
+    @AfterEach
     public void shutdown()
         throws Exception
     {

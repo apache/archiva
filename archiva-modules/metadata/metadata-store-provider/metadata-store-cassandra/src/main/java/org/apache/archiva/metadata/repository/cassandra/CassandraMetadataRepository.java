@@ -19,22 +19,19 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import me.prettyprint.cassandra.serializers.LongSerializer;
-import me.prettyprint.cassandra.serializers.StringSerializer;
-import me.prettyprint.cassandra.service.template.ColumnFamilyResult;
-import me.prettyprint.cassandra.service.template.ColumnFamilyTemplate;
-import me.prettyprint.cassandra.service.template.ColumnFamilyUpdater;
-import me.prettyprint.cassandra.service.template.ThriftColumnFamilyTemplate;
-import me.prettyprint.hector.api.Keyspace;
-import me.prettyprint.hector.api.beans.ColumnSlice;
-import me.prettyprint.hector.api.beans.OrderedRows;
-import me.prettyprint.hector.api.beans.Row;
-import me.prettyprint.hector.api.exceptions.HInvalidRequestException;
-import me.prettyprint.hector.api.factory.HFactory;
-import me.prettyprint.hector.api.mutation.MutationResult;
-import me.prettyprint.hector.api.mutation.Mutator;
-import me.prettyprint.hector.api.query.QueryResult;
-import me.prettyprint.hector.api.query.RangeSlicesQuery;
+
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.cql.ColumnDefinition;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.metadata.schema.ClusteringOrder;
+import com.datastax.oss.driver.api.querybuilder.delete.Delete;
+import com.datastax.oss.driver.api.querybuilder.insert.Insert;
+import com.datastax.oss.driver.api.querybuilder.insert.RegularInsert;
+import com.datastax.oss.driver.api.querybuilder.select.Select;
+import com.datastax.oss.driver.api.querybuilder.update.Update;
+import com.datastax.oss.driver.api.querybuilder.update.UpdateStart;
+import com.datastax.oss.driver.api.querybuilder.update.UpdateWithAssignments;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.metadata.QueryParameter;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -71,15 +68,14 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Properties;
 import java.util.Spliterator;
 import java.util.UUID;
 import java.util.function.BiFunction;
@@ -88,8 +84,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.*;
 import static org.apache.archiva.metadata.model.ModelInfo.STORAGE_TZ;
-import static org.apache.archiva.metadata.repository.cassandra.CassandraUtils.*;
+import static org.apache.archiva.metadata.repository.cassandra.CassandraArchivaManager.DEFAULT_PRIMARY_KEY;
 import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
 
 /**
@@ -100,84 +97,17 @@ public class CassandraMetadataRepository
     extends AbstractMetadataRepository implements MetadataRepository
 {
 
-    private static final String ARTIFACT_METADATA_MODEL_KEY = "artifactMetadataModel.key";
-    private Logger logger = LoggerFactory.getLogger( getClass() );
+    private static final String ARTIFACT_METADATA_MODEL_KEY = "\"artifactMetadataModel.key\"";
+    private Logger logger = LoggerFactory.getLogger( getClass( ) );
 
     private final CassandraArchivaManager cassandraArchivaManager;
 
-    private final ColumnFamilyTemplate<String, String> projectVersionMetadataTemplate;
-
-    private final ColumnFamilyTemplate<String, String> projectTemplate;
-
-    private final ColumnFamilyTemplate<String, String> artifactMetadataTemplate;
-
-    private final ColumnFamilyTemplate<String, String> metadataFacetTemplate;
-
-    private final ColumnFamilyTemplate<String, String> mailingListTemplate;
-
-    private final ColumnFamilyTemplate<String, String> licenseTemplate;
-
-    private final ColumnFamilyTemplate<String, String> dependencyTemplate;
-
-    private final ColumnFamilyTemplate<String, String> checksumTemplate;
-
-    private final Keyspace keyspace;
-
-    private final StringSerializer ss = StringSerializer.get();
 
     public CassandraMetadataRepository( MetadataService metadataService,
                                         CassandraArchivaManager cassandraArchivaManager )
     {
         super( metadataService );
         this.cassandraArchivaManager = cassandraArchivaManager;
-        this.keyspace = cassandraArchivaManager.getKeyspace();
-
-        this.projectVersionMetadataTemplate =
-            new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
-                                              cassandraArchivaManager.getProjectVersionMetadataFamilyName(), //
-                                              StringSerializer.get(), //
-                                              StringSerializer.get() );
-
-        this.projectTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
-                                                                 cassandraArchivaManager.getProjectFamilyName(), //
-                                                                 //
-                                                                 StringSerializer.get(), //
-                                                                 StringSerializer.get() );
-
-        this.artifactMetadataTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
-                                                                          cassandraArchivaManager.getArtifactMetadataFamilyName(),
-                                                                          StringSerializer.get(), //
-                                                                          StringSerializer.get() );
-
-        this.metadataFacetTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
-                                                                       cassandraArchivaManager.getMetadataFacetFamilyName(),
-                                                                       //
-                                                                       StringSerializer.get(), //
-                                                                       StringSerializer.get() );
-
-        this.mailingListTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
-                                                                     cassandraArchivaManager.getMailingListFamilyName(),
-                                                                     //
-                                                                     StringSerializer.get(), //
-                                                                     StringSerializer.get() );
-
-        this.licenseTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
-                                                                 cassandraArchivaManager.getLicenseFamilyName(),
-                                                                 //
-                                                                 StringSerializer.get(), //
-                                                                 StringSerializer.get() );
-
-        this.dependencyTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
-                                                                    cassandraArchivaManager.getDependencyFamilyName(),
-                                                                    //
-                                                                    StringSerializer.get(), //
-                                                                    StringSerializer.get() );
-
-        this.checksumTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
-                cassandraArchivaManager.getChecksumFamilyName(),
-                //
-                StringSerializer.get(), //
-                StringSerializer.get() );
     }
 
 
@@ -190,40 +120,26 @@ public class CassandraMetadataRepository
     public Repository getOrCreateRepository( String repositoryId )
         throws MetadataRepositoryException
     {
-        String cf = cassandraArchivaManager.getRepositoryFamilyName();
+        String cf = cassandraArchivaManager.getRepositoryFamilyName( );
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
-                                     StringSerializer.get() ) //
-            .setColumnFamily( cf ) //
-            .setColumnNames( REPOSITORY_NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .execute();
-
-        if ( result.get().getCount() < 1 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            // we need to create the repository
-            Repository repository = new Repository( repositoryId );
-
-            try
+            Select query = selectFrom( cf ).column( REPOSITORY_NAME.toString( ) ).whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) ).allowFiltering();
+            ResultSet qResult = session.execute( query.build( ) );
+            Row row = qResult.one( );
+            if ( row == null )
             {
-                MutationResult mutationResult = HFactory.createMutator( keyspace, StringSerializer.get() ) //
-                    .addInsertion( repositoryId, cf,
-                                   CassandraUtils.column( REPOSITORY_NAME.toString(), repository.getName() ) ) //
-                    .execute();
-                logger.debug( "time to insert repository: {}", mutationResult.getExecutionTimeMicro() );
+                Repository repository = new Repository( repositoryId );
+                RegularInsert insert = insertInto( cf )
+                    .value( DEFAULT_PRIMARY_KEY, literal( repositoryId ) )
+                    .value( REPOSITORY_NAME.toString( ), literal( repository.getName( ) ) );
+                session.execute( insert.build( ) );
                 return repository;
             }
-            catch ( HInvalidRequestException e )
-            {
-                logger.error( e.getMessage(), e );
-                throw new MetadataRepositoryException( e.getMessage(), e );
-            }
+            return new Repository( row.get( REPOSITORY_NAME.toString( ), String.class ) );
 
         }
 
-        return new Repository(
-            result.get().getList().get( 0 ).getColumnSlice().getColumnByName( REPOSITORY_NAME.toString() ).getValue() );
     }
 
 
@@ -231,14 +147,14 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
-                                     StringSerializer.get() ) //
-            .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
-            .setColumnNames( REPOSITORY_NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .execute();
-        return ( result.get().getCount() > 0 ) ? new Repository( repositoryId ) : null;
+        CqlSession session = cassandraArchivaManager.getSession( );
+        {
+            Select query = selectFrom( cassandraArchivaManager.getRepositoryFamilyName( ) ).column( REPOSITORY_NAME.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .allowFiltering();
+            Row row = session.execute( query.build( ) ).one( );
+            return row != null ? new Repository( repositoryId ) : null;
+        }
     }
 
     @Override
@@ -251,476 +167,391 @@ public class CassandraMetadataRepository
     private Namespace updateOrAddNamespace( String repositoryId, String namespaceId )
         throws MetadataRepositoryException
     {
-        try
+        Repository repository = getOrCreateRepository( repositoryId );
+
+        String key =
+            new Namespace.KeyBuilder( ).withNamespace( namespaceId ).withRepositoryId( repositoryId ).build( );
+
+        Namespace namespace = getNamespace( repositoryId, namespaceId );
+        if ( namespace == null )
         {
-            Repository repository = getOrCreateRepository( repositoryId );
+            String cf = cassandraArchivaManager.getNamespaceFamilyName( );
+            namespace = new Namespace( namespaceId, repository );
 
-            String key =
-                new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build();
-
-            Namespace namespace = getNamespace( repositoryId, namespaceId );
-            if ( namespace == null )
+            CqlSession session = cassandraArchivaManager.getSession( );
             {
-                String cf = cassandraArchivaManager.getNamespaceFamilyName();
-                namespace = new Namespace( namespaceId, repository );
-                HFactory.createMutator( keyspace, StringSerializer.get() )
-                    //  values
-                    .addInsertion( key, cf, CassandraUtils.column( NAME.toString(), namespace.getName() ) ) //
-                    .addInsertion( key, cf, CassandraUtils.column( REPOSITORY_NAME.toString(), repository.getName() ) ) //
-                    .execute();
+                RegularInsert insert = insertInto( cf )
+                    .value( DEFAULT_PRIMARY_KEY, literal( key ) )
+                    .value( NAME.toString( ), literal( namespace.getName( ) ) )
+                    .value( REPOSITORY_NAME.toString( ), literal( repository.getName( ) ) );
+                session.execute( insert.build( ) );
             }
 
-            return namespace;
         }
-        catch ( HInvalidRequestException e )
-        {
-            logger.error( e.getMessage(), e );
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }
+
+        return namespace;
     }
 
     protected Namespace getNamespace( String repositoryId, String namespaceId )
     {
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( REPOSITORY_NAME.toString(), NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( NAME.toString(), namespaceId ) //
-            .execute();
-        if ( result.get().getCount() > 0 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            ColumnSlice<String, String> columnSlice = result.get().getList().get( 0 ).getColumnSlice();
-            return new Namespace( getStringValue( columnSlice, NAME.toString() ), //
-                                  new Repository( getStringValue( columnSlice, REPOSITORY_NAME.toString() ) ) );
-
-        }
-        return null;
-    }
-
-
-    @Override
-    public void removeNamespace( RepositorySession session, String repositoryId, String namespaceId )
-        throws MetadataRepositoryException
-    {
-
-        try
-        {
-            String key = new Namespace.KeyBuilder() //
-                .withNamespace( namespaceId ) //
-                .withRepositoryId( repositoryId ) //
-                .build();
-
-            HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
-                .addDeletion( key, cassandraArchivaManager.getNamespaceFamilyName() ) //
-                .execute();
-
-            QueryResult<OrderedRows<String, String, String>> result = HFactory //
-                .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
-                .setColumnNames( REPOSITORY_NAME.toString() ) //
-                .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-                .addEqualsExpression( NAMESPACE_ID.toString(), namespaceId ) //
-                .execute();
-
-            for ( Row<String, String, String> row : result.get() )
+            String table = cassandraArchivaManager.getNamespaceFamilyName( );
+            String key =
+                new Namespace.KeyBuilder( ).withNamespace( namespaceId ).withRepositoryId( repositoryId ).build( );
+            Select query = selectFrom( table )
+                .columns( REPOSITORY_NAME.toString( ), NAME.toString( ) )
+                .whereColumn(  DEFAULT_PRIMARY_KEY ).isEqualTo(  literal( key ) );
+            Row row = session.execute( query.build( ) ).one( );
+            if ( row != null )
             {
-                this.projectTemplate.deleteRow( row.getKey() );
+                return new Namespace( row.get( NAME.toString( ), String.class ),
+                    new Repository( row.get( REPOSITORY_NAME.toString( ), String.class ) ) );
             }
-
-            result = HFactory //
-                .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-                .setColumnNames( REPOSITORY_NAME.toString() ) //
-                .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-                .addEqualsExpression( NAMESPACE_ID.toString(), namespaceId ) //
-                .execute();
-
-            for ( Row<String, String, String> row : result.get() )
-            {
-                this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
-                removeMailingList( row.getKey() );
-            }
-
-            result = HFactory //
-                .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-                .setColumnNames( REPOSITORY_NAME.toString() ) //
-                .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-                .addEqualsExpression( NAMESPACE_ID.toString(), namespaceId ) //
-                .execute();
-
-            for ( Row<String, String, String> row : result.get() )
-            {
-                this.artifactMetadataTemplate.deleteRow( row.getKey() );
-            }
-
-            result = HFactory //
-                .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-                .setColumnNames( REPOSITORY_NAME.toString() ) //
-                .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-                .addEqualsExpression( NAMESPACE_ID.toString(), namespaceId ) //
-                .execute();
-
-            for ( Row<String, String, String> row : result.get() )
-            {
-                this.metadataFacetTemplate.deleteRow( row.getKey() );
-            }
-
-        }
-        catch ( HInvalidRequestException e )
-        {
-            logger.error( e.getMessage(), e );
-            throw new MetadataRepositoryException( e.getMessage(), e );
+            return null;
         }
     }
 
 
     @Override
-    public void removeRepository( RepositorySession session, final String repositoryId )
+    public void removeNamespace( RepositorySession repositorySession, String repositoryId, String namespaceId )
         throws MetadataRepositoryException
     {
 
-        // TODO use cql queries to delete all
-        List<String> namespacesKey = new ArrayList<>();
+        String key = new Namespace.KeyBuilder( ) //
+            .withNamespace( namespaceId ) //
+            .withRepositoryId( repositoryId ) //
+            .build( );
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( REPOSITORY_NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .execute();
 
-        for ( Row<String, String, String> row : result.get().getList() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            namespacesKey.add( row.getKey() );
+            String pTable = cassandraArchivaManager.getNamespaceFamilyName( );
+            Delete delete = deleteFrom( pTable ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+            session.execute( delete.build( ) );
+
+            List<String> tables = Arrays.asList(
+                cassandraArchivaManager.getProjectFamilyName( ),
+                cassandraArchivaManager.getProjectVersionMetadataFamilyName( ),
+                cassandraArchivaManager.getArtifactMetadataFamilyName( ),
+                cassandraArchivaManager.getMetadataFacetFamilyName( ) );
+
+            for ( String table : tables )
+            {
+                Select deleteRows = selectFrom( table )
+                    .column( DEFAULT_PRIMARY_KEY )
+                    .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                    .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespaceId ) )
+                    .allowFiltering();
+                ResultSet result = session.execute( deleteRows.build( ) );
+                StreamSupport.stream( result.spliterator( ), false ).map( row -> row.getString( DEFAULT_PRIMARY_KEY ) )
+                    .distinct( ).forEach( delKey ->
+                        session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( delKey ) ).build( ) ) );
+            }
+
+        }
+    }
+
+
+    @Override
+    public void removeRepository( RepositorySession repositorySession, final String repositoryId )
+        throws MetadataRepositoryException
+    {
+
+        CqlSession session = cassandraArchivaManager.getSession( );
+        {
+            final String table = cassandraArchivaManager.getNamespaceFamilyName( );
+            Select deleteRows = selectFrom( table )
+                .column( DEFAULT_PRIMARY_KEY )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) );
+            ResultSet result = session.execute( deleteRows.build( ) );
+            StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( DEFAULT_PRIMARY_KEY ) )
+                .distinct( )
+                .forEach(
+                    delKey ->
+                        session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( delKey ) ).build( ) )
+                );
+
+            String deleteTable = cassandraArchivaManager.getRepositoryFamilyName( );
+            Delete delete = deleteFrom( deleteTable ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( repositoryId ) );
+            session.execute( delete.build( ) );
+
+            List<String> tables = Arrays.asList(
+                cassandraArchivaManager.getProjectFamilyName( ),
+                cassandraArchivaManager.getProjectVersionMetadataFamilyName( ),
+                cassandraArchivaManager.getArtifactMetadataFamilyName( ),
+                cassandraArchivaManager.getMetadataFacetFamilyName( )
+            );
+
+            for ( String dTable : tables )
+            {
+                deleteRows = selectFrom( dTable )
+                    .column( DEFAULT_PRIMARY_KEY )
+                    .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                    .allowFiltering();
+                result = session.execute( deleteRows.build( ) );
+                StreamSupport.stream( result.spliterator(), false )
+                    .map(row -> row.getString( DEFAULT_PRIMARY_KEY ))
+                    .distinct()
+                    .forEach( delKey ->
+                        session.execute( deleteFrom( dTable ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal(delKey) ).build(  ) ));
+            }
+
         }
 
-        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), ss ) //
-            .addDeletion( namespacesKey, cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .execute();
+    }
 
-        //delete repositoryId
-        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), ss ) //
-            .addDeletion( repositoryId, cassandraArchivaManager.getRepositoryFamilyName() ) //
-            .execute();
-
-        result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
-            .setColumnNames( REPOSITORY_NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get() )
+    @Override
+    public List<String> getRootNamespaces( RepositorySession repositorySession, final String repoId )
+        throws MetadataResolutionException
+    {
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            this.projectTemplate.deleteRow( row.getKey() );
+            String table = cassandraArchivaManager.getNamespaceFamilyName( );
+            Select query = selectFrom( table ).column( NAME.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) );
+            return StreamSupport.stream( session.execute( query.build( ) ).spliterator( ), false )
+                .map( row ->
+                    StringUtils.substringBefore( row.get( NAME.toString( ), String.class ), "." ) )
+                .distinct( )
+                .collect( Collectors.toList( ) );
         }
-
-        result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( REPOSITORY_NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
-            removeMailingList( row.getKey() );
-        }
-
-        result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( REPOSITORY_NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            this.artifactMetadataTemplate.deleteRow( row.getKey() );
-        }
-
-        result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( REPOSITORY_NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            this.metadataFacetTemplate.deleteRow( row.getKey() );
-        }
-
-
     }
 
     // FIXME this one need peformance improvement maybe a cache?
     @Override
-    public List<String> getRootNamespaces( RepositorySession session, final String repoId )
+    public List<String> getChildNamespaces( RepositorySession repositorySession, final String repoId, final String namespaceId )
         throws MetadataResolutionException
     {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .execute();
-
-        Set<String> namespaces = new HashSet<>( result.get( ).getCount( ) );
-
-        for ( Row<String, String, String> row : result.get() )
+        final String calledNs = namespaceId.endsWith( "." ) ? namespaceId : namespaceId + ".";
+        final int nslen = calledNs.length( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            namespaces.add( StringUtils.substringBefore( getStringValue( row.getColumnSlice(), NAME.toString() ), "." ) );
+            String table = cassandraArchivaManager.getNamespaceFamilyName( );
+            Select query = selectFrom( table ).column( NAME.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) );
+            return StreamSupport.stream( session.execute( query.build( ) ).spliterator( ), false )
+                .map( row -> row.get( NAME.toString( ), String.class ) )
+                .filter( namespace -> namespace.length( ) > nslen && namespace.startsWith( calledNs ) )
+                .map( namespace -> StringUtils.substringBefore( StringUtils.substringAfter( namespace, calledNs ), "." ) )
+                .distinct( )
+                .collect( Collectors.toList( ) );
         }
-
-        return new ArrayList<>( namespaces );
-    }
-
-    // FIXME this one need peformance improvement maybe a cache?
-    @Override
-    public List<String> getChildNamespaces( RepositorySession session, final String repoId, final String namespaceId )
-        throws MetadataResolutionException
-    {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .execute();
-
-        List<String> namespaces = new ArrayList<>( result.get().getCount() );
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            String currentNamespace = getStringValue( row.getColumnSlice(), NAME.toString() );
-            if ( StringUtils.startsWith( currentNamespace, namespaceId ) //
-                && ( StringUtils.length( currentNamespace ) > StringUtils.length( namespaceId ) ) )
-            {
-                // store after namespaceId '.' but before next '.'
-                // call org namespace org.apache.maven.shared -> stored apache
-
-                String calledNamespace = StringUtils.endsWith( namespaceId, "." ) ? namespaceId : namespaceId + ".";
-                String storedNamespace = StringUtils.substringAfter( currentNamespace, calledNamespace );
-
-                storedNamespace = StringUtils.substringBefore( storedNamespace, "." );
-
-                namespaces.add( storedNamespace );
-            }
-        }
-
-        return namespaces;
-
     }
 
     // only use for testing purpose
     protected List<String> getNamespaces( final String repoId )
         throws MetadataResolutionException
     {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .execute();
-
-        List<String> namespaces = new ArrayList<>( result.get().getCount() );
-
-        for ( Row<String, String, String> row : result.get() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            namespaces.add( getStringValue( row.getColumnSlice(), NAME.toString() ) );
+            String table = cassandraArchivaManager.getNamespaceFamilyName( );
+            Select query = selectFrom( table ).column( NAME.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) );
+            return StreamSupport.stream( session.execute( query.build( ) ).spliterator( ), false )
+                .map( row ->
+                    row.get( NAME.toString( ), String.class ) )
+                .distinct( )
+                .collect( Collectors.toList( ) );
         }
-
-        return namespaces;
     }
 
 
     @Override
-    public void updateProject( RepositorySession session, String repositoryId, ProjectMetadata projectMetadata )
+    public void updateProject( RepositorySession repositorySession, String repositoryId, ProjectMetadata projectMetadata )
         throws MetadataRepositoryException
     {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
-            .setColumnNames( PROJECT_ID.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), projectMetadata.getNamespace() ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectMetadata.getId() ) //
-            .execute();
-
-        // project exists ? if yes return nothing to update here
-        if ( result.get( ).getCount( ) <= 0 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            Namespace namespace = updateOrAddNamespace( repositoryId, projectMetadata.getNamespace() );
+            String table = cassandraArchivaManager.getProjectFamilyName( );
+            Select query = selectFrom( table ).column( PROJECT_ID.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( projectMetadata.getNamespace( ) ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectMetadata.getId( ) ) ).allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            if ( result.one( ) == null )
+            {
+                Namespace namespace = updateOrAddNamespace( repositoryId, projectMetadata.getNamespace( ) );
+                String key =
+                    new Project.KeyBuilder( ).withProjectId( projectMetadata.getId( ) ).withNamespace( namespace ).build( );
+                RegularInsert insert = insertInto( table )
+                    .value( DEFAULT_PRIMARY_KEY, literal( key ) )
+                    .value( PROJECT_ID.toString( ), literal( projectMetadata.getId( ) ) )
+                    .value( REPOSITORY_NAME.toString( ), literal( repositoryId ) )
+                    .value( NAMESPACE_ID.toString( ), literal( projectMetadata.getNamespace( ) ) );
+                session.execute( insert.build( ) );
+            }
+            if ( projectMetadata.hasProperties( ) )
+            {
+                UpdateStart update = update( table );
+                UpdateWithAssignments newUpdat = null;
+                final Properties props = projectMetadata.getProperties( );
+                for ( String propKey : props.stringPropertyNames( ) )
+                {
+                    newUpdat = update.setMapValue( PROJECT_PROPERTIES.toString( ), literal( propKey ), literal( props.getProperty( propKey, "" ) ) );
+                }
+                Update finalUpdate = newUpdat
+                    .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                    .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( projectMetadata.getNamespace( ) ) )
+                    .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectMetadata.getId( ) ) );
+                session.execute( finalUpdate.build( ) );
+            }
 
-            String key =
-                new Project.KeyBuilder().withProjectId( projectMetadata.getId() ).withNamespace( namespace ).build();
 
-            String cf = cassandraArchivaManager.getProjectFamilyName();
-            projectTemplate.createMutator()
-                //  values
-                .addInsertion( key, cf, CassandraUtils.column( PROJECT_ID.toString(), projectMetadata.getId() ) ) //
-                .addInsertion( key, cf, CassandraUtils.column( REPOSITORY_NAME.toString(), repositoryId ) ) //
-                .addInsertion( key, cf, CassandraUtils.column( NAMESPACE_ID.toString(), projectMetadata.getNamespace() ) )//
-                .execute();
         }
+
     }
 
     @Override
-    public List<String> getProjects( RepositorySession session, final String repoId, final String namespace )
+    public List<String> getProjects( RepositorySession repositorySession, final String repoId, final String namespace )
         throws MetadataResolutionException
     {
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
-            .setColumnNames( PROJECT_ID.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .execute();
-
-        final Set<String> projects = new HashSet<>( result.get( ).getCount( ) );
-
-        for ( Row<String, String, String> row : result.get() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            projects.add( getStringValue( row.getColumnSlice(), PROJECT_ID.toString() ) );
+            String table = cassandraArchivaManager.getProjectFamilyName( );
+            Select query = selectFrom( table ).column( PROJECT_ID.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespace ) )
+                .allowFiltering();
+            return StreamSupport.stream( session.execute( query.build( ) ).spliterator( ), false )
+                .map( row ->
+                    row.get( PROJECT_ID.toString( ), String.class ) )
+                .distinct( )
+                .collect( Collectors.toList( ) );
         }
 
-        return new ArrayList<>( projects );
     }
 
     @Override
-    public void removeProject( RepositorySession session, final String repositoryId, final String namespaceId, final String projectId )
+    public void removeProject( RepositorySession repositorySession, final String repositoryId, final String namespaceId, final String projectId )
         throws MetadataRepositoryException
     {
 
-        String key = new Project.KeyBuilder() //
+        String key = new Project.KeyBuilder( ) //
             .withProjectId( projectId ) //
             .withNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) ) //
-            .build();
+            .build( );
 
-        this.projectTemplate.deleteRow( key );
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( ID.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespaceId ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
-            removeMailingList( row.getKey() );
+            String table = cassandraArchivaManager.getProjectFamilyName( );
+            Delete delete = deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+            session.execute( delete.build( ) );
+
+            table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            Select query = selectFrom( table ).columns( DEFAULT_PRIMARY_KEY, PROJECT_ID.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespaceId ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .allowFiltering();
+
+            ResultSet result = session.execute( query.build( ) );
+            result.forEach( row -> removeMailingList( row.get( DEFAULT_PRIMARY_KEY, String.class ) ) );
+
+
+            List<String> tables = Arrays.asList(
+                cassandraArchivaManager.getProjectVersionMetadataFamilyName( ),
+                cassandraArchivaManager.getArtifactMetadataFamilyName( )
+            );
+
+            for ( String dTable : tables )
+            {
+                Select deleteRows = selectFrom( dTable ).column( DEFAULT_PRIMARY_KEY )
+                    .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                    .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespaceId ) )
+                    .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                    .allowFiltering();
+                result = session.execute( deleteRows.build( ) );
+                StreamSupport.stream( result.spliterator( ), false )
+                    .map( row -> row.getString( DEFAULT_PRIMARY_KEY ) )
+                    .forEach( delKey -> session.execute( deleteFrom( dTable ).column( PROJECT_ID.toString( ) ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( delKey ) ).build( ) ) );
+            }
         }
-
-        result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( PROJECT_ID.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespaceId ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            this.artifactMetadataTemplate.deleteRow( row.getKey() );
-        }
-    }
-
-    @Override
-    public List<String> getProjectVersions( RepositorySession session, final String repoId, final String namespace, final String projectId )
-        throws MetadataResolutionException
-    {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( PROJECT_VERSION.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .execute();
-
-        int count = result.get().getCount();
-
-        if ( count < 1 )
-        {
-            return Collections.emptyList();
-        }
-
-        Set<String> versions = new HashSet<>( count );
-
-        for ( Row<String, String, String> orderedRows : result.get() )
-        {
-            versions.add( getStringValue( orderedRows.getColumnSlice(), PROJECT_VERSION.toString() ) );
-        }
-
-        return new ArrayList<>( versions );
 
     }
 
     @Override
-    public ProjectMetadata getProject( RepositorySession session, final String repoId, final String namespace, final String id )
+    public List<String> getProjectVersions( RepositorySession repositorySession, final String repositoryId, final String namespaceId, final String projectId )
         throws MetadataResolutionException
     {
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
-            .setColumnNames( PROJECT_ID.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT_ID.toString(), id ) //
-            .execute();
-
-        int count = result.get().getCount();
-
-        if ( count < 1 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            return null;
+            String table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            Select query = selectFrom( table ).column( PROJECT_ID.toString( ) )
+                .column( PROJECT_VERSION.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespaceId ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.get( PROJECT_VERSION.toString( ), String.class ) )
+                .distinct( )
+                .collect( Collectors.toList( ) );
         }
-
-        ProjectMetadata projectMetadata = new ProjectMetadata();
-        projectMetadata.setId( id );
-        projectMetadata.setNamespace( namespace );
-
-        logger.debug( "getProject repoId: {}, namespace: {}, projectId: {} -> {}", repoId, namespace, id,
-                      projectMetadata );
-
-        return projectMetadata;
     }
 
-    protected ProjectVersionMetadataModel mapProjectVersionMetadataModel( ColumnSlice<String, String> columnSlice )
+    @Override
+    public ProjectMetadata getProject( RepositorySession repositorySession, final String repositoryId, final String namespaceId, final String id )
+        throws MetadataResolutionException
     {
-        ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
-        projectVersionMetadataModel.setId( getStringValue( columnSlice, ID.toString() ) );
-        projectVersionMetadataModel.setDescription( getStringValue( columnSlice, DESCRIPTION.toString() ) );
-        projectVersionMetadataModel.setName( getStringValue( columnSlice, NAME.toString() ) );
-        Namespace namespace = new Namespace( getStringValue( columnSlice, NAMESPACE_ID.toString() ), //
-                                             new Repository( getStringValue( columnSlice, REPOSITORY_NAME.toString() ) ) );
+        CqlSession session = cassandraArchivaManager.getSession( );
+        {
+            String table = cassandraArchivaManager.getProjectFamilyName( );
+            Select query = selectFrom( table ).column( PROJECT_ID.toString( ) )
+                .column( PROJECT_ID.toString( ) )
+                .column( PROJECT_PROPERTIES.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespaceId ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( id ) ).allowFiltering();
+            Row result = session.execute( query.build( ) ).one( );
+            if ( result == null )
+            {
+                return null;
+            }
+            else
+            {
+                ProjectMetadata projectMetadata = new ProjectMetadata( );
+                projectMetadata.setId( id );
+                projectMetadata.setNamespace( namespaceId );
+                Map<String, String> props = result.getMap( PROJECT_PROPERTIES.toString( ), String.class, String.class );
+                Properties pProps = new Properties( );
+                if ( props != null )
+                {
+                    pProps.putAll( props );
+                }
+                projectMetadata.setProperties( pProps );
+                return projectMetadata;
+            }
+        }
+    }
+
+    protected ProjectVersionMetadataModel mapProjectVersionMetadataModel( Row row )
+    {
+        ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel( );
+        projectVersionMetadataModel.setId( row.get( VERSION.toString( ), String.class ) );
+        projectVersionMetadataModel.setDescription( row.get( DESCRIPTION.toString( ), String.class ) );
+        projectVersionMetadataModel.setName( row.get( NAME.toString( ), String.class ) );
+        Namespace namespace = new Namespace( row.get( NAMESPACE_ID.toString( ), String.class ), //
+            new Repository( row.get( REPOSITORY_NAME.toString( ), String.class ) ) );
         projectVersionMetadataModel.setNamespace( namespace );
-        projectVersionMetadataModel.setIncomplete(
-            Boolean.parseBoolean( getStringValue( columnSlice, "incomplete" ) ) );
-        projectVersionMetadataModel.setProjectId( getStringValue( columnSlice, PROJECT_ID.toString() ) );
-        projectVersionMetadataModel.setUrl( getStringValue( columnSlice, URL.toString() ) );
+        projectVersionMetadataModel.setIncomplete( row.getBoolean( "incomplete" ) );
+        projectVersionMetadataModel.setProjectId( row.get( PROJECT_ID.toString( ), String.class ) );
+        projectVersionMetadataModel.setUrl( row.get( URL.toString( ), String.class ) );
         return projectVersionMetadataModel;
     }
 
+    protected UpdateWithAssignments addUpdate( UpdateWithAssignments update, String column, Object value )
+    {
+        return update.setColumn( column, literal( value ) );
+    }
 
     @Override
-    public void updateProjectVersion( RepositorySession session, String repositoryId, String namespaceId, String projectId,
+    public void updateProjectVersion( RepositorySession repositorySession, String repositoryId, String namespaceId, String projectId,
                                       ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException
     {
@@ -733,546 +564,464 @@ public class CassandraMetadataRepository
                 updateOrAddNamespace( repositoryId, namespaceId );
             }
 
-            if ( getProject( session, repositoryId, namespaceId, projectId ) == null )
+            if ( getProject( repositorySession, repositoryId, namespaceId, projectId ) == null )
             {
-                ProjectMetadata projectMetadata = new ProjectMetadata();
+                ProjectMetadata projectMetadata = new ProjectMetadata( );
                 projectMetadata.setNamespace( namespaceId );
                 projectMetadata.setId( projectId );
-                updateProject( session, repositoryId, projectMetadata );
+                updateProject( repositorySession, repositoryId, projectMetadata );
             }
 
         }
         catch ( MetadataResolutionException e )
         {
-            throw new MetadataRepositoryException( e.getMessage(), e );
+            throw new MetadataRepositoryException( e.getMessage( ), e );
         }
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( PROJECT_VERSION.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespaceId ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .addEqualsExpression( PROJECT_VERSION.toString(), versionMetadata.getId() ) //
-            .execute();
-
-        ProjectVersionMetadataModel projectVersionMetadataModel;
-        boolean creation = true;
-        if ( result.get().getCount() > 0 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            projectVersionMetadataModel =
-                mapProjectVersionMetadataModel( result.get().getList().get( 0 ).getColumnSlice() );
-            creation = false;
-        }
-        else
-        {
-            projectVersionMetadataModel = getModelMapper().map( versionMetadata, ProjectVersionMetadataModel.class );
-        }
-
-        projectVersionMetadataModel.setProjectId( projectId );
-        projectVersionMetadataModel.setNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) );
-
-        projectVersionMetadataModel.setCiManagement( versionMetadata.getCiManagement() );
-        projectVersionMetadataModel.setIssueManagement( versionMetadata.getIssueManagement() );
-        projectVersionMetadataModel.setOrganization( versionMetadata.getOrganization() );
-        projectVersionMetadataModel.setScm( versionMetadata.getScm() );
-
-        projectVersionMetadataModel.setMailingLists( versionMetadata.getMailingLists() );
-        projectVersionMetadataModel.setDependencies( versionMetadata.getDependencies() );
-        projectVersionMetadataModel.setLicenses( versionMetadata.getLicenses() );
-
-        // we don't test of repository and namespace really exist !
-        String key = new ProjectVersionMetadataModel.KeyBuilder() //
-            .withRepository( repositoryId ) //
-            .withNamespace( namespaceId ) //
-            .withProjectId( projectId ) //
-            .withProjectVersion( versionMetadata.getVersion() ) //
-            .withId( versionMetadata.getId() ) //
-            .build();
-
-        // FIXME nested objects to store!!!
-        if ( creation )
-        {
-            String cf = cassandraArchivaManager.getProjectVersionMetadataFamilyName();
-            Mutator<String> mutator = projectVersionMetadataTemplate.createMutator()
-                //  values
-                .addInsertion( key, cf, column( PROJECT_ID.toString(), projectId ) ) //
-                .addInsertion( key, cf, column( REPOSITORY_NAME.toString(), repositoryId ) ) //
-                .addInsertion( key, cf, column( NAMESPACE_ID.toString(), namespaceId ) )//
-                .addInsertion( key, cf, column( PROJECT_VERSION.toString(), versionMetadata.getVersion() ) ); //
-
-            addInsertion( mutator, key, cf, DESCRIPTION.toString(), versionMetadata.getDescription() );
-
-            addInsertion( mutator, key, cf, NAME.toString(), versionMetadata.getName() );
-
-            addInsertion( mutator, key, cf, "incomplete", Boolean.toString( versionMetadata.isIncomplete() ) );
-
-            addInsertion( mutator, key, cf, URL.toString(), versionMetadata.getUrl() );
+            String table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            Select query = selectFrom( table ).column( PROJECT_ID.toString( ) )
+                .all( )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespaceId ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( versionMetadata.getId( ) ) ).allowFiltering();
+            ProjectVersionMetadataModel projectVersionMetadataModel;
+            boolean create = true;
+            Row result = session.execute( query.build( ) ).one( );
+            if ( result != null )
             {
-                CiManagement ci = versionMetadata.getCiManagement();
+                projectVersionMetadataModel = mapProjectVersionMetadataModel( result );
+                create = false;
+            }
+            else
+            {
+                projectVersionMetadataModel = getModelMapper( ).map( versionMetadata, ProjectVersionMetadataModel.class );
+            }
+            projectVersionMetadataModel.setProjectId( projectId );
+            projectVersionMetadataModel.setNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) );
+
+            projectVersionMetadataModel.setCiManagement( versionMetadata.getCiManagement( ) );
+            projectVersionMetadataModel.setIssueManagement( versionMetadata.getIssueManagement( ) );
+            projectVersionMetadataModel.setOrganization( versionMetadata.getOrganization( ) );
+            projectVersionMetadataModel.setScm( versionMetadata.getScm( ) );
+
+            projectVersionMetadataModel.setMailingLists( versionMetadata.getMailingLists( ) );
+            projectVersionMetadataModel.setDependencies( versionMetadata.getDependencies( ) );
+            projectVersionMetadataModel.setLicenses( versionMetadata.getLicenses( ) );
+
+            // we don't test, if repository and namespace really exist !
+            String key = new ProjectVersionMetadataModel.KeyBuilder( ) //
+                .withRepository( repositoryId ) //
+                .withNamespace( namespaceId ) //
+                .withProjectId( projectId ) //
+                .withProjectVersion( versionMetadata.getVersion( ) ) //
+                .withId( versionMetadata.getId( ) ) //
+                .build( );
+
+            // Update is upsert
+            table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            UpdateWithAssignments update = update( table )
+                .setColumn( PROJECT_ID.toString( ), literal( projectId ) )
+                .setColumn( REPOSITORY_NAME.toString( ), literal( repositoryId ) )
+                .setColumn( NAMESPACE_ID.toString( ), literal( namespaceId ) )
+                .setColumn( PROJECT_VERSION.toString( ), literal( versionMetadata.getVersion( ) ) )
+                .setColumn( DESCRIPTION.toString( ), literal( versionMetadata.getDescription( ) ) )
+                .setColumn( NAME.toString( ), literal( versionMetadata.getName( ) ) )
+                .setColumn( "incomplete", literal( versionMetadata.isIncomplete( ) ) )
+                .setColumn( URL.toString( ), literal( versionMetadata.getUrl( ) ) );
+
+
+            {
+                CiManagement ci = versionMetadata.getCiManagement( );
                 if ( ci != null )
                 {
-                    addInsertion( mutator, key, cf, "ciManagement.system", ci.getSystem() );
-                    addInsertion( mutator, key, cf, "ciManagement.url", ci.getUrl() );
+                    update = update.setColumn( "\"ciManagement.system\"", literal( ci.getSystem( ) ) )
+                        .setColumn( "\"ciManagement.url\"", literal( ci.getUrl( ) ) );
                 }
             }
 
             {
-                IssueManagement issueManagement = versionMetadata.getIssueManagement();
+                IssueManagement issueManagement = versionMetadata.getIssueManagement( );
 
                 if ( issueManagement != null )
                 {
-                    addInsertion( mutator, key, cf, "issueManagement.system", issueManagement.getSystem() );
-                    addInsertion( mutator, key, cf, "issueManagement.url", issueManagement.getUrl() );
+                    update = update.setColumn( "\"issueManagement.system\"", literal( issueManagement.getSystem( ) ) )
+                        .setColumn( "\"issueManagement.url\"", literal( issueManagement.getUrl( ) ) );
                 }
             }
 
             {
-                Organization organization = versionMetadata.getOrganization();
+                Organization organization = versionMetadata.getOrganization( );
                 if ( organization != null )
                 {
-                    addInsertion( mutator, key, cf, "organization.name", organization.getName() );
-                    addInsertion( mutator, key, cf, "organization.url", organization.getUrl() );
+                    update = update.setColumn( "\"organization.name\"", literal( organization.getName( ) ) )
+                        .setColumn( "\"organization.url\"", literal( organization.getUrl( ) ) );
                 }
             }
 
             {
-                Scm scm = versionMetadata.getScm();
+                Scm scm = versionMetadata.getScm( );
                 if ( scm != null )
                 {
-                    addInsertion( mutator, key, cf, "scm.url", scm.getUrl() );
-                    addInsertion( mutator, key, cf, "scm.connection", scm.getConnection() );
-                    addInsertion( mutator, key, cf, "scm.developerConnection", scm.getDeveloperConnection() );
+                    update = update.setColumn( "\"scm.url\"", literal( scm.getUrl( ) ) )
+                        .setColumn( "\"scm.connection\"", literal( scm.getConnection( ) ) )
+                        .setColumn( "\"scm.developerConnection\"", literal( scm.getDeveloperConnection( ) ) );
+                }
+            }
+            if (versionMetadata.getProperties()!=null && versionMetadata.getProperties().size()>0) {
+                for( Map.Entry<String, String> entry : versionMetadata.getProperties().entrySet()) {
+                    update = update.setMapValue( VERSION_PROPERTIES.toString( ), literal( entry.getKey( ) ), literal( entry.getValue( ) ) );
                 }
             }
 
-            recordMailingList( key, versionMetadata.getMailingLists() );
+            Update finalUpdate = update.whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+            session.execute( finalUpdate.build( ) );
 
-            recordLicenses( key, versionMetadata.getLicenses() );
 
-            recordDependencies( key, versionMetadata.getDependencies(), repositoryId );
-
-            mutator.execute();
-        }
-        else
-        {
-            ColumnFamilyUpdater<String, String> updater = projectVersionMetadataTemplate.createUpdater( key );
-            addUpdateStringValue( updater, PROJECT_ID.toString(), projectId );
-            addUpdateStringValue( updater, REPOSITORY_NAME.toString(), repositoryId );
-            addUpdateStringValue( updater, NAMESPACE_ID.toString(), namespaceId );
-            addUpdateStringValue( updater, PROJECT_VERSION.toString(), versionMetadata.getVersion() );
-            addUpdateStringValue( updater, DESCRIPTION.toString(), versionMetadata.getDescription() );
-
-            addUpdateStringValue( updater, NAME.toString(), versionMetadata.getName() );
-
-            updater.setString( "incomplete", Boolean.toString( versionMetadata.isIncomplete() ) );
-            addUpdateStringValue( updater, URL.toString(), versionMetadata.getUrl() );
-
+            if ( !create )
             {
-                CiManagement ci = versionMetadata.getCiManagement();
-                if ( ci != null )
-                {
-                    addUpdateStringValue( updater, "ciManagement.system", ci.getSystem() );
-                    addUpdateStringValue( updater, "ciManagement.url", ci.getUrl() );
-                }
+                removeMailingList( key );
+                removeLicenses( key );
+                removeDependencies( key );
             }
-            {
-                IssueManagement issueManagement = versionMetadata.getIssueManagement();
-                if ( issueManagement != null )
-                {
-                    addUpdateStringValue( updater, "issueManagement.system", issueManagement.getSystem() );
-                    addUpdateStringValue( updater, "issueManagement.url", issueManagement.getUrl() );
-                }
-            }
-            {
-                Organization organization = versionMetadata.getOrganization();
-                if ( organization != null )
-                {
-                    addUpdateStringValue( updater, "organization.name", organization.getName() );
-                    addUpdateStringValue( updater, "organization.url", organization.getUrl() );
-                }
-            }
-            {
-                Scm scm = versionMetadata.getScm();
-                if ( scm != null )
-                {
-                    addUpdateStringValue( updater, "scm.url", scm.getUrl() );
-                    addUpdateStringValue( updater, "scm.connection", scm.getConnection() );
-                    addUpdateStringValue( updater, "scm.developerConnection", scm.getDeveloperConnection() );
-                }
-            }
+            recordMailingList( key, versionMetadata.getMailingLists( ) );
+            recordLicenses( key, versionMetadata.getLicenses( ) );
+            recordDependencies( key, versionMetadata.getDependencies( ), repositoryId );
 
-            // update is a delete record
-            removeMailingList( key );
-            recordMailingList( key, versionMetadata.getMailingLists() );
+            ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel( );
+            artifactMetadataModel.setRepositoryId( repositoryId );
+            artifactMetadataModel.setNamespace( namespaceId );
+            artifactMetadataModel.setProject( projectId );
+            artifactMetadataModel.setProjectVersion( versionMetadata.getVersion( ) );
+            artifactMetadataModel.setVersion( versionMetadata.getVersion( ) );
+            updateFacets( versionMetadata, artifactMetadataModel );
 
-            removeLicenses( key );
-            recordLicenses( key, versionMetadata.getLicenses() );
-
-            removeDependencies( key );
-            recordDependencies( key, versionMetadata.getDependencies(), repositoryId );
-
-            projectVersionMetadataTemplate.update( updater );
 
         }
-
-        ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
-        artifactMetadataModel.setRepositoryId( repositoryId );
-        artifactMetadataModel.setNamespace( namespaceId );
-        artifactMetadataModel.setProject( projectId );
-        artifactMetadataModel.setProjectVersion( versionMetadata.getVersion() );
-        artifactMetadataModel.setVersion( versionMetadata.getVersion() );
-        updateFacets( versionMetadata, artifactMetadataModel );
 
     }
 
 
     @Override
-    public ProjectVersionMetadata getProjectVersion( RepositorySession session, final String repoId, final String namespace,
+    public ProjectVersionMetadata getProjectVersion( RepositorySession repositorySession, final String repositoryId, final String namespaceId,
                                                      final String projectId, final String projectVersion )
         throws MetadataResolutionException
     {
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( PROJECT_VERSION.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
-            .execute();
-
-        if ( result.get().getCount() < 1 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            return null;
-        }
-
-        String key = result.get().iterator().next().getKey();
-
-        ColumnFamilyResult<String, String> columnFamilyResult = this.projectVersionMetadataTemplate.queryColumns( key );
-
-        if ( !columnFamilyResult.hasResults() )
-        {
-            return null;
-        }
-
-        ProjectVersionMetadata projectVersionMetadata = new ProjectVersionMetadata();
-        projectVersionMetadata.setId( columnFamilyResult.getString( PROJECT_VERSION.toString() ) );
-        projectVersionMetadata.setDescription( columnFamilyResult.getString( DESCRIPTION.toString() ) );
-        projectVersionMetadata.setName( columnFamilyResult.getString( NAME.toString() ) );
-
-        projectVersionMetadata.setIncomplete( Boolean.parseBoolean( columnFamilyResult.getString( "incomplete" ) ) );
-
-        projectVersionMetadata.setUrl( columnFamilyResult.getString( URL.toString() ) );
-        {
-            String ciUrl = columnFamilyResult.getString( "ciManagement.url" );
-            String ciSystem = columnFamilyResult.getString( "ciManagement.system" );
-
-            if ( StringUtils.isNotEmpty( ciSystem ) || StringUtils.isNotEmpty( ciUrl ) )
+            String table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            Select query = selectFrom( table ).column( PROJECT_ID.toString( ) )
+                .all( )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespaceId ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( projectVersion ) )
+                .allowFiltering();
+            Row result = session.execute( query.build( ) ).one( );
+            if ( result == null )
             {
-                projectVersionMetadata.setCiManagement( new CiManagement( ciSystem, ciUrl ) );
+                return null;
             }
-        }
-        {
-            String issueUrl = columnFamilyResult.getString( "issueManagement.url" );
-            String issueSystem = columnFamilyResult.getString( "issueManagement.system" );
-            if ( StringUtils.isNotEmpty( issueSystem ) || StringUtils.isNotEmpty( issueUrl ) )
-            {
-                projectVersionMetadata.setIssueManagement( new IssueManagement( issueSystem, issueUrl ) );
-            }
-        }
-        {
-            String organizationUrl = columnFamilyResult.getString( "organization.url" );
-            String organizationName = columnFamilyResult.getString( "organization.name" );
-            if ( StringUtils.isNotEmpty( organizationUrl ) || StringUtils.isNotEmpty( organizationName ) )
-            {
-                projectVersionMetadata.setOrganization( new Organization( organizationName, organizationUrl ) );
-            }
-        }
-        {
-            String devConn = columnFamilyResult.getString( "scm.developerConnection" );
-            String conn = columnFamilyResult.getString( "scm.connection" );
-            String url = columnFamilyResult.getString( "scm.url" );
-            if ( StringUtils.isNotEmpty( devConn ) || StringUtils.isNotEmpty( conn ) || StringUtils.isNotEmpty( url ) )
-            {
-                projectVersionMetadata.setScm( new Scm( conn, devConn, url ) );
-            }
-        }
-        projectVersionMetadata.setMailingLists( getMailingLists( key ) );
-        projectVersionMetadata.setLicenses( getLicenses( key ) );
-        projectVersionMetadata.setDependencies( getDependencies( key ) );
-        // facets
+            String key = result.getString( DEFAULT_PRIMARY_KEY );
+            ProjectVersionMetadata projectVersionMetadata = new ProjectVersionMetadata( );
+            projectVersionMetadata.setId( result.getString( PROJECT_VERSION.toString( ) ) );
+            projectVersionMetadata.setDescription( result.getString( DESCRIPTION.toString( ) ) );
+            projectVersionMetadata.setName( result.getString( NAME.toString( ) ) );
 
-        result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( FACET_ID.toString(), KEY.toString(), VALUE.toString(), NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
-            .execute();
+            projectVersionMetadata.setIncomplete( result.getBoolean( "incomplete" ) ) ;
 
-        Map<String, Map<String, String>> metadataFacetsPerFacetIds = new HashMap<>();
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            String facetId = getStringValue( columnSlice, FACET_ID.toString() );
-            Map<String, String> metaValues = metadataFacetsPerFacetIds.computeIfAbsent( facetId, k -> new HashMap<>( ) );
-            metaValues.put( getStringValue( columnSlice, KEY.toString() ), getStringValue( columnSlice, VALUE.toString() ) );
-        }
-
-        if ( !metadataFacetsPerFacetIds.isEmpty() )
-        {
-            for ( Map.Entry<String, Map<String, String>> entry : metadataFacetsPerFacetIds.entrySet() )
+            projectVersionMetadata.setUrl( result.getString( URL.toString( ) ) );
             {
-                MetadataFacetFactory<?> metadataFacetFactory = getFacetFactory( entry.getKey() );
-                if ( metadataFacetFactory != null )
+                String ciUrl = result.getString( "\"ciManagement.url\"" );
+                String ciSystem = result.getString( "\"ciManagement.system\"" );
+
+                if ( StringUtils.isNotEmpty( ciSystem ) || StringUtils.isNotEmpty( ciUrl ) )
                 {
-                    MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet();
-                    metadataFacet.fromProperties( entry.getValue() );
-                    projectVersionMetadata.addFacet( metadataFacet );
+                    projectVersionMetadata.setCiManagement( new CiManagement( ciSystem, ciUrl ) );
                 }
             }
-        }
+            {
+                String issueUrl = result.getString( "\"issueManagement.url\"" );
+                String issueSystem = result.getString( "\"issueManagement.system\"" );
+                if ( StringUtils.isNotEmpty( issueSystem ) || StringUtils.isNotEmpty( issueUrl ) )
+                {
+                    projectVersionMetadata.setIssueManagement( new IssueManagement( issueSystem, issueUrl ) );
+                }
+            }
+            {
+                String organizationUrl = result.getString( "\"organization.url\"" );
+                String organizationName = result.getString( "\"organization.name\"" );
+                if ( StringUtils.isNotEmpty( organizationUrl ) || StringUtils.isNotEmpty( organizationName ) )
+                {
+                    projectVersionMetadata.setOrganization( new Organization( organizationName, organizationUrl ) );
+                }
+            }
+            {
+                String devConn = result.getString( "\"scm.developerConnection\"" );
+                String conn = result.getString( "\"scm.connection\"" );
+                String url = result.getString( "\"scm.url\"" );
+                if ( StringUtils.isNotEmpty( devConn ) || StringUtils.isNotEmpty( conn ) || StringUtils.isNotEmpty( url ) )
+                {
+                    projectVersionMetadata.setScm( new Scm( conn, devConn, url ) );
+                }
+            }
+            projectVersionMetadata.setMailingLists( getMailingLists( key ) );
+            projectVersionMetadata.setLicenses( getLicenses( key ) );
+            projectVersionMetadata.setDependencies( getDependencies( key ) );
 
-        return projectVersionMetadata;
+
+            // Facets
+            table = cassandraArchivaManager.getMetadataFacetFamilyName( );
+            query = selectFrom( table ).column( PROJECT_ID.toString( ) )
+                .column( FACET_ID.toString( ) )
+                .column( KEY.toString( ) )
+                .column( VALUE.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespaceId ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( projectVersion ) )
+                .allowFiltering();
+            ResultSet rows = session.execute( query.build( ) );
+            Map<String, Map<String, String>> metadataFacetsPerFacetIds = StreamSupport.stream( rows.spliterator( ), false )
+                .collect(
+                    Collectors.groupingBy(
+                        row -> row.getString( FACET_ID.toString( ) ),
+                        Collectors.toMap(
+                            row -> row.getString( KEY.toString( ) ),
+                            row -> row.getString( VALUE.toString( ) )
+                        )
+                    )
+                );
+            if ( !metadataFacetsPerFacetIds.isEmpty( ) )
+            {
+                for ( Map.Entry<String, Map<String, String>> entry : metadataFacetsPerFacetIds.entrySet( ) )
+                {
+                    MetadataFacetFactory<?> metadataFacetFactory = getFacetFactory( entry.getKey( ) );
+                    if ( metadataFacetFactory != null )
+                    {
+                        MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( );
+                        metadataFacet.fromProperties( entry.getValue( ) );
+                        projectVersionMetadata.addFacet( metadataFacet );
+                    }
+                }
+            }
+
+            return projectVersionMetadata;
+        }
     }
 
-    protected void recordChecksums( String repositoryId, String artifactMetadataKey, Map<String, String> checksums)
+    protected void recordChecksums( String repositoryId, String artifactMetadataKey, Map<String, String> checksums )
     {
-        if ( checksums == null || checksums.isEmpty() )
+        if ( checksums == null || checksums.isEmpty( ) )
         {
             return;
         }
-        Mutator<String> checksumMutator = this.checksumTemplate.createMutator();
-        for ( Map.Entry<String, String> entry : checksums.entrySet())
+
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            // we don't care about the key as the real used one with the projectVersionMetadata
-            String keyChecksums = UUID.randomUUID().toString();
-            String cfChecksums = cassandraArchivaManager.getChecksumFamilyName();
+            String table = cassandraArchivaManager.getChecksumFamilyName( );
+            for ( Map.Entry<String, String> entry : checksums.entrySet( ) )
+            {
+                String key = getChecksumKey( artifactMetadataKey, entry.getKey( ));
+                RegularInsert insert = insertInto( table )
+                    .value(DEFAULT_PRIMARY_KEY, literal(key))
+                    .value( ARTIFACT_METADATA_MODEL_KEY, literal( artifactMetadataKey ) )
+                    .value( CHECKSUM_ALG.toString( ), literal( entry.getKey( ) ) )
+                    .value( CHECKSUM_VALUE.toString( ), literal( entry.getValue( ) ) )
+                    .value( REPOSITORY_NAME.toString( ), literal( repositoryId ) );
+                session.execute( insert.build( ) );
 
-            addInsertion( checksumMutator, keyChecksums, cfChecksums, ARTIFACT_METADATA_MODEL_KEY,
-                    artifactMetadataKey );
-            addInsertion( checksumMutator, keyChecksums, cfChecksums, CHECKSUM_ALG.toString(), entry.getKey());
-            addInsertion( checksumMutator, keyChecksums, cfChecksums, CHECKSUM_VALUE.toString(),
-                    entry.getValue() );
-            addInsertion(checksumMutator, keyChecksums, cfChecksums, REPOSITORY_NAME.toString(), repositoryId);
-
+            }
         }
-        checksumMutator.execute();
+    }
+
+    private String getChecksumKey(String metadataKey, String checksumAlg) {
+        return metadataKey + "." + checksumAlg;
     }
 
     protected void removeChecksums( String artifactMetadataKey )
     {
-
-        QueryResult<OrderedRows<String, String, String>> result =
-                HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                        .setColumnFamily( cassandraArchivaManager.getChecksumFamilyName() ) //
-                        .setColumnNames( CHECKSUM_ALG.toString() ) //
-                        .setRowCount( Integer.MAX_VALUE ) //
-                        .addEqualsExpression(ARTIFACT_METADATA_MODEL_KEY, artifactMetadataKey ) //
-                        .execute();
-
-        if ( result.get().getCount() < 1 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            return;
+            String table = cassandraArchivaManager.getChecksumFamilyName( );
+            Select deleteRows = selectFrom( table )
+                .column( DEFAULT_PRIMARY_KEY )
+                .whereColumn( ARTIFACT_METADATA_MODEL_KEY ).isEqualTo( literal( artifactMetadataKey ) )
+                .allowFiltering();
+            ResultSet result = session.execute( deleteRows.build( ) );
+            StreamSupport.stream( result.spliterator(), false )
+                .map(row -> row.getString( DEFAULT_PRIMARY_KEY ))
+                .distinct()
+                .forEach(
+                    delKey -> session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal(delKey) ).build(  ) )
+                );
         }
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            this.checksumTemplate.deleteRow( row.getKey() );
-        }
-
     }
 
     protected Map<String, String> getChecksums( String artifactMetadataKey )
     {
-        Map<String, String> checksums = new HashMap<>();
-
-        QueryResult<OrderedRows<String, String, String>> result =
-                HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                        .setColumnFamily( cassandraArchivaManager.getChecksumFamilyName() ) //
-                        .setColumnNames( ARTIFACT_METADATA_MODEL_KEY, REPOSITORY_NAME.toString(),
-                                CHECKSUM_ALG.toString(), CHECKSUM_VALUE.toString() ) //
-                        .setRowCount( Integer.MAX_VALUE ) //
-                        .addEqualsExpression(ARTIFACT_METADATA_MODEL_KEY, artifactMetadataKey) //
-                        .execute();
-        for ( Row<String, String, String> row : result.get() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            ColumnFamilyResult<String, String> columnFamilyResult =
-                    this.checksumTemplate.queryColumns( row.getKey() );
-
-            checksums.put(columnFamilyResult.getString(CHECKSUM_ALG.toString()),
-                    columnFamilyResult.getString(CHECKSUM_VALUE.toString()));
+            String table = cassandraArchivaManager.getChecksumFamilyName( );
+            Select query = selectFrom( table )
+                .all( )
+                .whereColumn( ARTIFACT_METADATA_MODEL_KEY ).isEqualTo( literal( artifactMetadataKey ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .collect(
+                    Collectors.toMap(
+                        row -> row.getString( CHECKSUM_ALG.toString( ) ),
+                        row -> row.getString( CHECKSUM_VALUE.toString( ) )
+                    )
+                );
         }
-
-        return checksums;
     }
 
     protected void recordMailingList( String projectVersionMetadataKey, List<MailingList> mailingLists )
     {
-        if ( mailingLists == null || mailingLists.isEmpty() )
+        if ( mailingLists == null || mailingLists.isEmpty( ) )
         {
             return;
         }
-        Mutator<String> mailingMutator = this.mailingListTemplate.createMutator();
-        for ( MailingList mailingList : mailingLists )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            // we don't care about the key as the real used one with the projectVersionMetadata
-            String keyMailingList = UUID.randomUUID().toString();
-            String cfMailingList = cassandraArchivaManager.getMailingListFamilyName();
-
-            addInsertion( mailingMutator, keyMailingList, cfMailingList, "projectVersionMetadataModel.key",
-                          projectVersionMetadataKey );
-            addInsertion( mailingMutator, keyMailingList, cfMailingList, NAME.toString(), mailingList.getName() );
-            addInsertion( mailingMutator, keyMailingList, cfMailingList, "mainArchiveUrl",
-                          mailingList.getMainArchiveUrl() );
-            addInsertion( mailingMutator, keyMailingList, cfMailingList, "postAddress", mailingList.getPostAddress() );
-            addInsertion( mailingMutator, keyMailingList, cfMailingList, "subscribeAddress",
-                          mailingList.getSubscribeAddress() );
-            addInsertion( mailingMutator, keyMailingList, cfMailingList, "unsubscribeAddress",
-                          mailingList.getUnsubscribeAddress() );
-            int idx = 0;
-            for ( String otherArchive : mailingList.getOtherArchives() )
+            String table = cassandraArchivaManager.getMailingListFamilyName( );
+            for ( MailingList mailingList : mailingLists )
             {
-                addInsertion( mailingMutator, keyMailingList, cfMailingList, "otherArchive." + idx, otherArchive );
-                idx++;
+                // we don't care about the key as the real used one with the projectVersionMetadata
+                String keyMailingList = UUID.randomUUID( ).toString( );
+                RegularInsert insert = insertInto( table )
+                    .value( DEFAULT_PRIMARY_KEY, literal( keyMailingList ) );
+                insert = insert.value( "\"projectVersionMetadataModel.key\"", literal( projectVersionMetadataKey ) )
+                    .value( NAME.toString( ), literal( mailingList.getName( ) ) )
+                    .value( "mainArchiveUrl", literal( mailingList.getMainArchiveUrl( ) ) )
+                    .value( "postAddress", literal( mailingList.getPostAddress( ) ) )
+                    .value( "subscribeAddress", literal( mailingList.getSubscribeAddress( ) ) )
+                    .value( "unsubscribeAddress", literal( mailingList.getUnsubscribeAddress( ) ) )
+                    .value( "otherArchive", literal( mailingList.getOtherArchives( ) ) );
+                session.execute( insert.build( ) );
             }
-
         }
-        mailingMutator.execute();
     }
 
     protected void removeMailingList( String projectVersionMetadataKey )
     {
-
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getMailingListFamilyName() ) //
-                .setColumnNames( NAME.toString() ) //
-                .setRowCount( Integer.MAX_VALUE ) //
-                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
-                .execute();
-
-        if ( result.get().getCount() < 1 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            return;
+            String table = cassandraArchivaManager.getMailingListFamilyName( );
+            Select deleteRows = selectFrom( table )
+                .column( DEFAULT_PRIMARY_KEY )
+                .whereColumn( "\"projectVersionMetadataModel.key\"" ).isEqualTo( literal( projectVersionMetadataKey ) );
+            ResultSet result = session.execute( deleteRows.build( ) );
+            StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( DEFAULT_PRIMARY_KEY ) )
+                .distinct( )
+                .forEach(
+                    delKey ->
+                        session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( delKey ) ).build( ) )
+                );
         }
+    }
 
-        for ( Row<String, String, String> row : result.get() )
-        {
-            this.mailingListTemplate.deleteRow( row.getKey() );
-        }
-
+    protected MailingList getMailingList( Row row )
+    {
+        MailingList mailingList = new MailingList( );
+        mailingList.setName( row.getString( NAME.toString( ) ) );
+        mailingList.setMainArchiveUrl( row.getString( "mainArchiveUrl" ) );
+        mailingList.setPostAddress( row.getString( "postAddress" ) );
+        mailingList.setSubscribeAddress( row.getString( "subscribeAddress" ) );
+        mailingList.setUnsubscribeAddress( row.getString( "unsubscribeAddress" ) );
+        mailingList.setOtherArchives( row.getList( "otherArchive", String.class ) );
+        return mailingList;
     }
 
     protected List<MailingList> getMailingLists( String projectVersionMetadataKey )
     {
-        List<MailingList> mailingLists = new ArrayList<>();
+        List<MailingList> mailingLists = new ArrayList<>( );
 
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getMailingListFamilyName() ) //
-                .setColumnNames( NAME.toString() ) //
-                .setRowCount( Integer.MAX_VALUE ) //
-                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
-                .execute();
-        for ( Row<String, String, String> row : result.get() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            ColumnFamilyResult<String, String> columnFamilyResult =
-                this.mailingListTemplate.queryColumns( row.getKey() );
-
-            MailingList mailingList = new MailingList();
-            mailingList.setName( columnFamilyResult.getString( NAME.toString() ) );
-            mailingList.setMainArchiveUrl( columnFamilyResult.getString( "mainArchiveUrl" ) );
-            mailingList.setPostAddress( columnFamilyResult.getString( "postAddress" ) );
-            mailingList.setSubscribeAddress( columnFamilyResult.getString( "subscribeAddress" ) );
-            mailingList.setUnsubscribeAddress( columnFamilyResult.getString( "unsubscribeAddress" ) );
-
-            List<String> otherArchives = new ArrayList<>();
-
-            for ( String columnName : columnFamilyResult.getColumnNames() )
-            {
-                if ( StringUtils.startsWith( columnName, "otherArchive." ) )
-                {
-                    otherArchives.add( columnFamilyResult.getString( columnName ) );
-                }
-            }
-
-            mailingList.setOtherArchives( otherArchives );
-            mailingLists.add( mailingList );
+            String table = cassandraArchivaManager.getMailingListFamilyName( );
+            Select query = selectFrom( table )
+                .all( )
+                .whereColumn( "\"projectVersionMetadataModel.key\"" ).isEqualTo( literal( projectVersionMetadataKey ) );
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .map( this::getMailingList )
+                .collect( Collectors.toList( ) );
         }
-
-        return mailingLists;
     }
 
     protected void recordLicenses( String projectVersionMetadataKey, List<License> licenses )
     {
 
-        if ( licenses == null || licenses.isEmpty() )
+        if ( licenses == null || licenses.isEmpty( ) )
         {
             return;
         }
-        Mutator<String> licenseMutator = this.licenseTemplate.createMutator();
-
-        for ( License license : licenses )
+        String table = cassandraArchivaManager.getLicenseFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            // we don't care about the key as the real used one with the projectVersionMetadata
-            String keyLicense = UUID.randomUUID().toString();
-            String cfLicense = cassandraArchivaManager.getLicenseFamilyName();
 
-            addInsertion( licenseMutator, keyLicense, cfLicense, "projectVersionMetadataModel.key",
-                          projectVersionMetadataKey );
+            for ( License license : licenses )
+            {
+                // we don't care about the key as the real used one with the projectVersionMetadata
+                String keyLicense = UUID.randomUUID( ).toString( );
+                RegularInsert insert = insertInto( table )
+                    .value( DEFAULT_PRIMARY_KEY, literal( keyLicense ) )
+                    .value( "\"projectVersionMetadataModel.key\"", literal( projectVersionMetadataKey ) )
+                    .value( NAME.toString( ), literal( license.getName( ) ) )
+                    .value( URL.toString( ), literal( license.getUrl( ) ) );
+                session.execute( insert.build( ) );
 
-            addInsertion( licenseMutator, keyLicense, cfLicense, NAME.toString(), license.getName() );
-
-            addInsertion( licenseMutator, keyLicense, cfLicense, URL.toString(), license.getUrl() );
-
+            }
         }
-        licenseMutator.execute();
     }
 
     protected void removeLicenses( String projectVersionMetadataKey )
     {
-
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getLicenseFamilyName() ) //
-                .setColumnNames( NAME.toString() ) //
-                .setRowCount( Integer.MAX_VALUE ) //
-                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
-                .execute();
-        for ( Row<String, String, String> row : result.get() )
+        String table = cassandraArchivaManager.getLicenseFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            this.licenseTemplate.deleteRow( row.getKey() );
+            Select deleteRows = selectFrom( table )
+                .column( DEFAULT_PRIMARY_KEY )
+                .whereColumn( "\"projectVersionMetadataModel.key\"" ).isEqualTo( literal( projectVersionMetadataKey ) )
+                .allowFiltering();
+            ResultSet result = session.execute( deleteRows.build( ) );
+            StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( DEFAULT_PRIMARY_KEY ) )
+                .distinct( )
+                .forEach(
+                    delKey ->
+                        session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( delKey ) ).build( ) )
+                );
+
         }
     }
 
     protected List<License> getLicenses( String projectVersionMetadataKey )
     {
-        List<License> licenses = new ArrayList<>();
-
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getLicenseFamilyName() ) //
-                .setColumnNames( "projectVersionMetadataModel.key" ) //
-                .setRowCount( Integer.MAX_VALUE ) //
-                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
-                .execute();
-
-        for ( Row<String, String, String> row : result.get() )
+        String table = cassandraArchivaManager.getLicenseFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            ColumnFamilyResult<String, String> columnFamilyResult = this.licenseTemplate.queryColumns( row.getKey() );
-
-            licenses.add(
-                new License( columnFamilyResult.getString( NAME.toString() ), columnFamilyResult.getString( URL.toString() ) ) );
+            Select query = selectFrom( table )
+                .column( NAME.toString( ) )
+                .column( URL.toString( ) )
+                .whereColumn( "\"projectVersionMetadataModel.key\"" ).isEqualTo( literal( projectVersionMetadataKey ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .map(
+                    row ->
+                        new License( row.getString( NAME.toString( ) ), row.getString( URL.toString( ) ) )
+                )
+                .collect( Collectors.toList( ) );
         }
 
-        return licenses;
     }
 
 
@@ -1280,114 +1029,111 @@ public class CassandraMetadataRepository
                                        String repositoryId )
     {
 
-        if ( dependencies == null || dependencies.isEmpty() )
+        if ( dependencies == null || dependencies.isEmpty( ) )
         {
             return;
         }
-        Mutator<String> dependencyMutator = this.dependencyTemplate.createMutator();
-
-        for ( Dependency dependency : dependencies )
+        String table = cassandraArchivaManager.getDependencyFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            // we don't care about the key as the real used one with the projectVersionMetadata
-            String keyDependency = UUID.randomUUID().toString();
-            String cfDependency = cassandraArchivaManager.getDependencyFamilyName();
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, "projectVersionMetadataModel.key",
-                          projectVersionMetadataKey );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, REPOSITORY_NAME.toString(), repositoryId );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, "classifier", dependency.getClassifier() );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, "optional",
-                          Boolean.toString( dependency.isOptional() ) );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, "scope", dependency.getScope() );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, "systemPath", dependency.getSystemPath() );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, "type", dependency.getType() );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, ARTIFACT_ID.toString(), dependency.getArtifactId() );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, GROUP_ID.toString(), dependency.getNamespace() );
-
-            addInsertion( dependencyMutator, keyDependency, cfDependency, VERSION.toString(), dependency.getVersion() );
-
+            for ( Dependency dependency : dependencies )
+            {
+                // we don't care about the key as the real used one with the projectVersionMetadata
+                String keyDependency = UUID.randomUUID( ).toString( );
+                RegularInsert insert = insertInto( table )
+                    .value( DEFAULT_PRIMARY_KEY, literal( keyDependency ) )
+                    .value( "\"projectVersionMetadataModel.key\"", literal( projectVersionMetadataKey ) )
+                    .value( REPOSITORY_NAME.toString( ), literal( repositoryId ) )
+                    .value( "classifier", literal( dependency.getClassifier( ) ) )
+                    .value( "optional", literal( Boolean.toString( dependency.isOptional( ) ) ) )
+                    .value( "scope", literal( dependency.getScope( ) ) )
+                    .value( "systemPath", literal( dependency.getSystemPath( ) ) )
+                    .value( "type", literal( dependency.getType( ) ) )
+                    .value( ARTIFACT_ID.toString( ), literal( dependency.getArtifactId( ) ) )
+                    .value( GROUP_ID.toString( ), literal( dependency.getNamespace( ) ) )
+                    .value( VERSION.toString( ), literal( dependency.getVersion( ) ) );
+                session.execute( insert.build( ) );
+            }
         }
-        dependencyMutator.execute();
     }
 
     protected void removeDependencies( String projectVersionMetadataKey )
     {
 
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getDependencyFamilyName() ) //
-                .setColumnNames( GROUP_ID.toString() ) //
-                .setRowCount( Integer.MAX_VALUE ) //
-                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
-                .execute();
-        for ( Row<String, String, String> row : result.get() )
+        String table = cassandraArchivaManager.getDependencyFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            this.dependencyTemplate.deleteRow( row.getKey() );
+            Select deleteRows = selectFrom( table )
+                .column( DEFAULT_PRIMARY_KEY )
+                .whereColumn( "\"projectVersionMetadataModel.key\"" ).isEqualTo( literal( projectVersionMetadataKey ) )
+                .allowFiltering();
+            ResultSet result = session.execute( deleteRows.build( ) );
+            StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( DEFAULT_PRIMARY_KEY ) )
+                .distinct( )
+                .forEach(
+                    delKey ->
+                        session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( delKey ) ).build( ) )
+                );
+
         }
+    }
+
+    protected Dependency newDependency( Row row )
+    {
+        Dependency dependency = new Dependency( );
+        dependency.setClassifier( row.getString( "classifier" ) );
+
+        dependency.setOptional( Boolean.parseBoolean( row.getString( "optional" ) ) );
+
+        dependency.setScope( row.getString( "scope" ) );
+
+        dependency.setSystemPath( row.getString( "systemPath" ) );
+
+        dependency.setType( row.getString( "type" ) );
+
+        dependency.setArtifactId( row.getString( ARTIFACT_ID.toString( ) ) );
+
+        dependency.setNamespace( row.getString( GROUP_ID.toString( ) ) );
+
+        dependency.setVersion( row.getString( VERSION.toString( ) ) );
+
+        return dependency;
     }
 
     protected List<Dependency> getDependencies( String projectVersionMetadataKey )
     {
-        List<Dependency> dependencies = new ArrayList<>();
 
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getDependencyFamilyName() ) //
-                .setColumnNames( "projectVersionMetadataModel.key" ) //
-                .setRowCount( Integer.MAX_VALUE ) //
-                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
-                .execute();
-
-        for ( Row<String, String, String> row : result.get() )
+        String table = cassandraArchivaManager.getDependencyFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            ColumnFamilyResult<String, String> columnFamilyResult =
-                this.dependencyTemplate.queryColumns( row.getKey() );
-
-            Dependency dependency = new Dependency();
-            dependency.setClassifier( columnFamilyResult.getString( "classifier" ) );
-
-            dependency.setOptional( Boolean.parseBoolean( columnFamilyResult.getString( "optional" ) ) );
-
-            dependency.setScope( columnFamilyResult.getString( "scope" ) );
-
-            dependency.setSystemPath( columnFamilyResult.getString( "systemPath" ) );
-
-            dependency.setType( columnFamilyResult.getString( "type" ) );
-
-            dependency.setArtifactId( columnFamilyResult.getString( ARTIFACT_ID.toString() ) );
-
-            dependency.setNamespace( columnFamilyResult.getString( GROUP_ID.toString() ) );
-
-            dependency.setVersion( columnFamilyResult.getString( VERSION.toString() ) );
-
-            dependencies.add( dependency );
+            Select query = selectFrom( table )
+                .all( )
+                .whereColumn( "\"projectVersionMetadataModel.key\"" ).isEqualTo( literal( projectVersionMetadataKey ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .map( this::newDependency )
+                .collect( Collectors.toList( ) );
         }
-
-        return dependencies;
     }
 
-    private Map<String, String> mapChecksums(Map<ChecksumAlgorithm,String> checksums) {
-        return checksums.entrySet().stream().collect(Collectors.toMap(
-                e -> e.getKey().name(), Map.Entry::getValue
-        ));
+    private Map<String, String> mapChecksums( Map<ChecksumAlgorithm, String> checksums )
+    {
+        return checksums.entrySet( ).stream( ).collect( Collectors.toMap(
+            e -> e.getKey( ).name( ), Map.Entry::getValue
+        ) );
     }
 
-    private Map<ChecksumAlgorithm, String> mapChecksumsReverse(Map<String,String> checksums) {
-        return checksums.entrySet().stream().collect(Collectors.toMap(
-                e -> ChecksumAlgorithm.valueOf(e.getKey()), Map.Entry::getValue
-        ));
+    private Map<ChecksumAlgorithm, String> mapChecksumsReverse( Map<String, String> checksums )
+    {
+        return checksums.entrySet( ).stream( ).collect( Collectors.toMap(
+            e -> ChecksumAlgorithm.valueOf( e.getKey( ) ), Map.Entry::getValue
+        ) );
     }
 
     @Override
-    public void updateArtifact( RepositorySession session, String repositoryId, String namespaceId, String projectId, String projectVersion,
+    public void updateArtifact( RepositorySession repositorySession, String repositoryId, String namespaceId, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException
     {
@@ -1398,94 +1144,63 @@ public class CassandraMetadataRepository
             namespace = updateOrAddNamespace( repositoryId, namespaceId );
         }
 
-        ProjectMetadata projectMetadata = new ProjectMetadata();
+        ProjectMetadata projectMetadata = new ProjectMetadata( );
         projectMetadata.setId( projectId );
         projectMetadata.setNamespace( namespaceId );
-        updateProject( session, repositoryId, projectMetadata );
+        updateProject( repositorySession, repositoryId, projectMetadata );
 
-        String key = new ArtifactMetadataModel.KeyBuilder().withNamespace( namespace ).withProject( projectId ).withId(
-            artifactMeta.getId() ).withProjectVersion( projectVersion ).build();
+        String key = new ArtifactMetadataModel.KeyBuilder( ).withNamespace( namespace ).withProject( projectId ).withId(
+            artifactMeta.getId( ) ).withProjectVersion( projectVersion ).build( );
 
-        // exists?
 
-        boolean exists = this.artifactMetadataTemplate.isColumnsExist( key );
-
-        if ( exists )
+        String table = this.cassandraArchivaManager.getArtifactMetadataFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            // updater
-            ColumnFamilyUpdater<String, String> updater = this.artifactMetadataTemplate.createUpdater( key );
-            updater.setLong( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().toInstant().toEpochMilli());
-            updater.setLong( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().toInstant().toEpochMilli() );
-            updater.setLong( SIZE.toString(), artifactMeta.getSize() );
-            addUpdateStringValue( updater, VERSION.toString(), artifactMeta.getVersion() );
-            removeChecksums(key);
-            recordChecksums(repositoryId, key, mapChecksums(artifactMeta.getChecksums()));
-            this.artifactMetadataTemplate.update( updater );
+            Update update = update( table )
+                .setColumn( ID.toString( ), literal( artifactMeta.getId( ) ) )//
+                .setColumn( REPOSITORY_NAME.toString( ), literal( repositoryId ) ) //
+                .setColumn( NAMESPACE_ID.toString( ), literal( namespaceId ) ) //
+                .setColumn( PROJECT_ID.toString( ), literal( artifactMeta.getProject( ) ) ) //
+                .setColumn( PROJECT_VERSION.toString( ), literal( projectVersion ) ) //
+                .setColumn( VERSION.toString( ), literal( artifactMeta.getVersion( ) ) ) //
+                .setColumn( FILE_LAST_MODIFIED.toString( ), literal( artifactMeta.getFileLastModified( ).toInstant( ).toEpochMilli( ) ) ) //
+                .setColumn( SIZE.toString( ), literal( artifactMeta.getSize( ) ) ) //
+                .setColumn( ( WHEN_GATHERED.toString( ) ), literal( artifactMeta.getWhenGathered( ).toInstant( ).toEpochMilli( ) ) )
+                .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+            session.execute( update.build( ) ).wasApplied( );
+            removeChecksums( key );
+            recordChecksums( repositoryId, key, mapChecksums( artifactMeta.getChecksums( ) ) );
+
+            key = new ProjectVersionMetadataModel.KeyBuilder( ) //
+                .withRepository( repositoryId ) //
+                .withNamespace( namespace ) //
+                .withProjectId( projectId ) //
+                .withProjectVersion( projectVersion ) //
+                .withId( artifactMeta.getId( ) ) //
+                .build( );
+            table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+
+            Insert insert = insertInto( table )
+                .value( DEFAULT_PRIMARY_KEY, literal( key ) )
+                .value( REPOSITORY_NAME.toString( ), literal( repositoryId ) )
+                .value( NAMESPACE_ID.toString( ), literal( namespaceId ) )
+                .value( PROJECT_ID.toString( ), literal( projectId ) )
+                .value( PROJECT_VERSION.toString( ), literal( projectVersion ) )
+                .value( VERSION.toString( ), literal( artifactMeta.getVersion( ) ) )
+                .ifNotExists( );
+            session.execute( insert.build( ) );
         }
-        else
-        {
-            String cf = this.cassandraArchivaManager.getArtifactMetadataFamilyName();
-            // create
-            this.artifactMetadataTemplate.createMutator() //
-                .addInsertion( key, cf, column( ID.toString(), artifactMeta.getId() ) )//
-                .addInsertion( key, cf, column( REPOSITORY_NAME.toString(), repositoryId ) ) //
-                .addInsertion( key, cf, column( NAMESPACE_ID.toString(), namespaceId ) ) //
-                .addInsertion( key, cf, column( PROJECT.toString(), artifactMeta.getProject() ) ) //
-                .addInsertion( key, cf, column( PROJECT_VERSION.toString(), projectVersion ) ) //
-                .addInsertion( key, cf, column( VERSION.toString(), artifactMeta.getVersion() ) ) //
-                .addInsertion( key, cf, column( FILE_LAST_MODIFIED.toString(), artifactMeta.getFileLastModified().toInstant().toEpochMilli() ) ) //
-                .addInsertion( key, cf, column( SIZE.toString(), artifactMeta.getSize() ) ) //
-                .addInsertion( key, cf, column( WHEN_GATHERED.toString(), artifactMeta.getWhenGathered().toInstant().toEpochMilli() ) )//
-                .execute();
-            recordChecksums(repositoryId, key, mapChecksums(artifactMeta.getChecksums()));
-        }
-
-        key = new ProjectVersionMetadataModel.KeyBuilder() //
-            .withRepository( repositoryId ) //
-            .withNamespace( namespace ) //
-            .withProjectId( projectId ) //
-            .withProjectVersion( projectVersion ) //
-            .withId( artifactMeta.getId() ) //
-            .build();
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( VERSION.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespaceId ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
-            .addEqualsExpression( VERSION.toString(), artifactMeta.getVersion() ) //
-            .execute();
-
-        exists = result.get().getCount() > 0;
-
-        if ( !exists )
-        {
-            String cf = this.cassandraArchivaManager.getProjectVersionMetadataFamilyName();
-
-            projectVersionMetadataTemplate.createMutator() //
-                .addInsertion( key, cf, column( NAMESPACE_ID.toString(), namespace.getName() ) ) //
-                .addInsertion( key, cf, column( REPOSITORY_NAME.toString(), repositoryId ) ) //
-                .addInsertion( key, cf, column( PROJECT_VERSION.toString(), projectVersion ) ) //
-                .addInsertion( key, cf, column( PROJECT_ID.toString(), projectId ) ) //
-                .addInsertion( key, cf, column( VERSION.toString(), artifactMeta.getVersion() ) ) //
-                .execute();
-
-        }
-
-        ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
+        ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel( );
 
         artifactMetadataModel.setRepositoryId( repositoryId );
         artifactMetadataModel.setNamespace( namespaceId );
         artifactMetadataModel.setProject( projectId );
         artifactMetadataModel.setProjectVersion( projectVersion );
-        artifactMetadataModel.setVersion( artifactMeta.getVersion() );
-        artifactMetadataModel.setFileLastModified( artifactMeta.getFileLastModified() == null
-                                                       ? ZonedDateTime.now().toInstant().toEpochMilli()
-                                                       : artifactMeta.getFileLastModified().toInstant().toEpochMilli() );
-        artifactMetadataModel.setChecksums(mapChecksums(artifactMeta.getChecksums()));
+        artifactMetadataModel.setVersion( artifactMeta.getVersion( ) );
+        artifactMetadataModel.setFileLastModified( artifactMeta.getFileLastModified( ) == null
+            ? ZonedDateTime.now( ).toInstant( ).toEpochMilli( )
+            : artifactMeta.getFileLastModified( ).toInstant( ).toEpochMilli( ) );
+        artifactMetadataModel.setChecksums( mapChecksums( artifactMeta.getChecksums( ) ) );
 
         // now facets
         updateFacets( artifactMeta, artifactMetadataModel );
@@ -1493,30 +1208,26 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public List<String> getArtifactVersions( RepositorySession session, final String repoId, final String namespace, final String projectId,
+    public List<String> getArtifactVersions( RepositorySession repositorySession, final String repoId, final String namespace, final String projectId,
                                              final String projectVersion )
         throws MetadataResolutionException
     {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( VERSION.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
-            .execute();
-
-        final Set<String> versions = new HashSet<>();
-
-        for ( Row<String, String, String> row : result.get() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            versions.add( getStringValue( row.getColumnSlice(), VERSION.toString() ) );
+            String table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            Select query = selectFrom( table )
+                .column( VERSION.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespace ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( projectVersion ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( VERSION.toString( ) ) )
+                .distinct()
+                .collect( Collectors.toList( ) );
         }
-
-        return new ArrayList<>( versions );
-
     }
 
     /*
@@ -1528,86 +1239,81 @@ public class CassandraMetadataRepository
     private void updateFacets( final FacetedMetadata facetedMetadata,
                                final ArtifactMetadataModel artifactMetadataModel )
     {
-
-        String cf = cassandraArchivaManager.getMetadataFacetFamilyName();
-
-        for ( final String facetId : getSupportedFacets() )
+        String table = cassandraArchivaManager.getMetadataFacetFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            MetadataFacet metadataFacet = facetedMetadata.getFacet( facetId );
-            if ( metadataFacet == null )
+            for ( final String facetId : getSupportedFacets( ) )
             {
-                continue;
-            }
-            // clean first
-
-            QueryResult<OrderedRows<String, String, String>> result =
-                HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-                    .setColumnFamily( cf ) //
-                    .setColumnNames( REPOSITORY_NAME.toString() ) //
-                    .addEqualsExpression( REPOSITORY_NAME.toString(), artifactMetadataModel.getRepositoryId() ) //
-                    .addEqualsExpression( NAMESPACE_ID.toString(), artifactMetadataModel.getNamespace() ) //
-                    .addEqualsExpression( PROJECT_ID.toString(), artifactMetadataModel.getProject() ) //
-                    .addEqualsExpression( PROJECT_VERSION.toString(), artifactMetadataModel.getProjectVersion() ) //
-                    .addEqualsExpression( FACET_ID.toString(), facetId ) //
-                    .execute();
-
-            for ( Row<String, String, String> row : result.get().getList() )
-            {
-                this.metadataFacetTemplate.deleteRow( row.getKey() );
-            }
-
-            Map<String, String> properties = metadataFacet.toProperties();
-
-            for ( Map.Entry<String, String> entry : properties.entrySet() )
-            {
-                String key = new MetadataFacetModel.KeyBuilder().withKey( entry.getKey() ).withArtifactMetadataModel(
-                    artifactMetadataModel ).withFacetId( facetId ).withName( metadataFacet.getName() ).build();
-                Mutator<String> mutator = metadataFacetTemplate.createMutator() //
-                    .addInsertion( key, cf, column( REPOSITORY_NAME.toString(), artifactMetadataModel.getRepositoryId() ) ) //
-                    .addInsertion( key, cf, column( NAMESPACE_ID.toString(), artifactMetadataModel.getNamespace() ) ) //
-                    .addInsertion( key, cf, column( PROJECT_ID.toString(), artifactMetadataModel.getProject() ) ) //
-                    .addInsertion( key, cf, column( PROJECT_VERSION.toString(), artifactMetadataModel.getProjectVersion() ) ) //
-                    .addInsertion( key, cf, column( FACET_ID.toString(), facetId ) ) //
-                    .addInsertion( key, cf, column( KEY.toString(), entry.getKey() ) ) //
-                    .addInsertion( key, cf, column( VALUE.toString(), entry.getValue() ) );
-
-                if ( metadataFacet.getName() != null )
+                MetadataFacet metadataFacet = facetedMetadata.getFacet( facetId );
+                if (metadataFacet!=null)
                 {
-                    mutator.addInsertion( key, cf, column( NAME.toString(), metadataFacet.getName() ) );
+                    Select deleteRows = selectFrom( table )
+                        .column( DEFAULT_PRIMARY_KEY )
+                        .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( artifactMetadataModel.getRepositoryId( ) ) )
+                        .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( artifactMetadataModel.getNamespace( ) ) )
+                        .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( artifactMetadataModel.getProject( ) ) )
+                        .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( artifactMetadataModel.getProjectVersion( ) ) )
+                        .whereColumn( FACET_ID.toString() ).isEqualTo( literal(facetId) )
+                        .allowFiltering( );
+                    ResultSet resultSet = session.execute( deleteRows.build( ) );
+                    StreamSupport.stream( resultSet.spliterator(), false ).map(row -> row.getString( DEFAULT_PRIMARY_KEY )).distinct().forEach( key ->
+                        {
+                            Delete delete = deleteFrom( table )
+                                .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+                            session.execute( delete.build( ) );
+                        }
+                    );
+                    Map<String, String> properties = metadataFacet.toProperties( );
+
+                    for ( Map.Entry<String, String> entry : properties.entrySet( ) )
+                    {
+                        String key = new MetadataFacetModel.KeyBuilder( ).withKey( entry.getKey( ) ).withArtifactMetadataModel(
+                            artifactMetadataModel ).withFacetId( facetId ).withName( metadataFacet.getName( ) ).build( );
+                        Update update = update( table )
+                            .setColumn( REPOSITORY_NAME.toString( ), literal( artifactMetadataModel.getRepositoryId( ) ) )
+                            .setColumn( NAMESPACE_ID.toString( ), literal( artifactMetadataModel.getNamespace( ) ) )
+                            .setColumn( PROJECT_ID.toString( ), literal( artifactMetadataModel.getProject( ) ) )
+                            .setColumn( PROJECT_VERSION.toString( ), literal( artifactMetadataModel.getProjectVersion( ) ) )
+                            .setColumn( FACET_ID.toString( ), literal( facetId ) )
+                            .setColumn( KEY.toString( ), literal( entry.getKey( ) ) )
+                            .setColumn( VALUE.toString( ), literal( entry.getValue( ) ) )
+                            .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+                        session.execute( update.build( ) );
+                    }
                 }
 
-                mutator.execute();
+
             }
         }
     }
 
 
     @Override
-    public List<String> getMetadataFacets( RepositorySession session, final String repositoryId, final String facetId )
+    public List<String> getMetadataFacets( RepositorySession repositorySession, final String repositoryId, final String facetId )
         throws MetadataRepositoryException
     {
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( NAME.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( FACET_ID.toString(), facetId ) //
-            .execute();
-
-        final List<String> facets = new ArrayList<>();
-
-        for ( Row<String, String, String> row : result.get() )
+        String table = cassandraArchivaManager.getMetadataFacetFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            facets.add( getStringValue( row.getColumnSlice(), NAME.toString() ) );
+            Select query = selectFrom( table )
+                .column( NAME.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( FACET_ID.toString( ) ).isEqualTo( literal( facetId ) )
+                .allowFiltering();
+
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( NAME.toString( ) ) )
+                .distinct( )
+                .collect( Collectors.toList( ) );
+
         }
-        return facets;
     }
 
-    private <T> Spliterator<T> createResultSpliterator( QueryResult<OrderedRows<String, String, String>> result, BiFunction<Row<String, String, String>, T, T> converter) throws MetadataRepositoryException
+    private <T> Spliterator<T> createResultSpliterator( ResultSet result, BiFunction<Row, T, T> converter ) throws MetadataRepositoryException
     {
-        final int size = result.get().getCount();
-        final Iterator<Row<String, String, String>> it = result.get( ).iterator( );
+        final Iterator<Row> it = result.iterator( );
 
         return new Spliterator<T>( )
         {
@@ -1616,29 +1322,27 @@ public class CassandraMetadataRepository
             @Override
             public boolean tryAdvance( Consumer<? super T> action )
             {
-                if (size>=1)
+                if ( it.hasNext( ) )
                 {
-                    if(it.hasNext())
+                    while ( it.hasNext( ) )
                     {
-                        while ( it.hasNext( ) )
+                        Row row = it.next( );
+                        T item = converter.apply( row, lastItem );
+                        if ( item != null && lastItem != null && item != lastItem )
                         {
-                            Row<String, String, String> row = it.next( );
-                            T item = converter.apply( row, lastItem );
-                            if ( item != null && lastItem !=null && item != lastItem )
-                            {
-                                action.accept( lastItem );
-                                lastItem = item;
-                                return true;
-                            }
+                            action.accept( lastItem );
                             lastItem = item;
+                            return true;
                         }
-                        action.accept( lastItem );
-                        return true;
-                    } else {
-                        return false;
+                        lastItem = item;
                     }
+                    action.accept( lastItem );
+                    return true;
                 }
-                return false;
+                else
+                {
+                    return false;
+                }
             }
 
             @Override
@@ -1650,24 +1354,34 @@ public class CassandraMetadataRepository
             @Override
             public long estimateSize( )
             {
-                return size;
+                return Long.MAX_VALUE;
             }
 
             @Override
             public int characteristics( )
             {
-                return ORDERED+NONNULL+SIZED;
+                return ORDERED + NONNULL;
             }
         };
     }
 
+    <T extends MetadataFacet> Comparator<T> getFacetComparator(boolean ascending) {
+        return new Comparator<T>( )
+        {
+            @Override
+            public int compare( T o1, T o2 )
+            {
+                return ascending ? o1.getName( ).compareTo( o2.getName( ) ) : o2.getName( ).compareTo( o1.getName( ) );
+            }
+        };
+    }
 
     /**
      * Implementation is not very performant, because sorting is part of the stream. I do not know how to specify the sort
      * in the query.
-     * 
+     *
      * @param <T>
-     * @param session
+     * @param repositorySession
      * @param repositoryId
      * @param facetClazz
      * @param queryParameter
@@ -1675,96 +1389,97 @@ public class CassandraMetadataRepository
      * @throws MetadataRepositoryException
      */
     @Override
-    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream(RepositorySession session, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter) throws MetadataRepositoryException
+    public <T extends MetadataFacet> Stream<T> getMetadataFacetStream( RepositorySession repositorySession, String repositoryId, Class<T> facetClazz, QueryParameter queryParameter ) throws MetadataRepositoryException
     {
         final MetadataFacetFactory<T> metadataFacetFactory = getFacetFactory( facetClazz );
         final String facetId = metadataFacetFactory.getFacetId( );
+        String table = cassandraArchivaManager.getMetadataFacetFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
+        {
+            Select query = selectFrom( table )
+                .columns( NAME.toString( ), KEY.toString( ), VALUE.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( FACET_ID.toString( ) ).isEqualTo( literal( facetId ) )
+                .allowFiltering();
 
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName( ) ) //
-            .setColumnNames( NAME.toString( ), KEY.toString( ), VALUE.toString( ) ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString( ), repositoryId ) //
-            .addEqualsExpression( FACET_ID.toString( ), facetId ) //
-            .setRange( null, null, false, Integer.MAX_VALUE )
-            .setRowCount( Integer.MAX_VALUE )
-            .execute( );
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( createResultSpliterator( result, ( Row row, T lastItem ) -> {
+                String name = row.getString( NAME.toString( ) );
+                String key = row.getString( KEY.toString( ) );
+                String value = row.getString( VALUE.toString( ) );
+                T updateItem;
+                if ( lastItem != null && lastItem.getName( ).equals( name ) )
+                {
+                    updateItem = lastItem;
+                }
+                else
+                {
+                    updateItem = metadataFacetFactory.createMetadataFacet( repositoryId, name );
+                }
+                if ( StringUtils.isNotEmpty( key ) )
+                {
+                    Map<String, String> map = new HashMap<>( );
+                    map.put( key, value );
+                    updateItem.fromProperties( map );
+                }
+                return updateItem;
 
-
-
-        return StreamSupport.stream( createResultSpliterator( result, ( Row<String, String, String> row, T lastItem)-> {
-            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            String name = getStringValue( columnSlice, NAME.toString( ) );
-            T updateItem;
-            if (lastItem!=null && lastItem.getName().equals(name))
-            {
-                updateItem = lastItem;
-            } else
-            {
-                updateItem = metadataFacetFactory.createMetadataFacet( repositoryId, name );
-            }
-            String key = getStringValue( columnSlice, KEY.toString() );
-            if (StringUtils.isNotEmpty( key ))
-            {
-                Map<String, String> map = new HashMap<>( );
-                map.put( key , getStringValue( columnSlice, VALUE.toString( ) ) );
-                updateItem.fromProperties( map );
-            }
-            return updateItem;
-
-        }), false ).sorted( (f1, f2) -> f1.getName()!=null ? f1.getName().compareTo( f2.getName() ) : 1 ).skip( queryParameter.getOffset()).limit( queryParameter.getLimit());
+            } ), false )
+                .sorted( getFacetComparator( queryParameter.isAscending() ) )
+                .skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
+        }
     }
 
     @Override
     public boolean hasMetadataFacet( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
-        return !getMetadataFacets( session, repositoryId, facetId ).isEmpty();
+        return !getMetadataFacets( session, repositoryId, facetId ).isEmpty( );
     }
 
     @Override
-    public <T extends MetadataFacet> T getMetadataFacet( RepositorySession session, final String repositoryId, final Class<T> facetClazz, final String name )
+    public <T extends MetadataFacet> T getMetadataFacet( RepositorySession repositorySession, final String repositoryId, final Class<T> facetClazz, final String name )
         throws MetadataRepositoryException
     {
         final MetadataFacetFactory<T> metadataFacetFactory = getFacetFactory( facetClazz );
-        if (metadataFacetFactory==null) {
+        if ( metadataFacetFactory == null )
+        {
             return null;
         }
         final String facetId = metadataFacetFactory.getFacetId( );
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( KEY.toString(), VALUE.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( FACET_ID.toString(), facetId ) //
-            .addEqualsExpression( NAME.toString(), name ) //
-            .execute();
-
+        final String table = cassandraArchivaManager.getMetadataFacetFamilyName( );
         T metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
-        int size = result.get().getCount();
-        if ( size < 1 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            return null;
+
+            Select query = selectFrom( table )
+                .column( KEY.toString( ) )
+                .column( VALUE.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( FACET_ID.toString( ) ).isEqualTo( literal( facetId ) )
+                .whereColumn( NAME.toString( ) ).isEqualTo( literal( name ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            if ( result.getAvailableWithoutFetching( ) == 0 )
+            {
+                return null;
+            }
+            Map<String, String> props = StreamSupport.stream( result.spliterator( ), false )
+                .filter(row -> !row.isNull(KEY.toString()))
+                .collect( Collectors.toMap( row -> row.getString( KEY.toString( ) ), row -> row.getString( VALUE.toString( ) ) ) );
+            metadataFacet.fromProperties( props );
+            return metadataFacet;
         }
-        Map<String, String> map = new HashMap<>( size );
-        for ( Row<String, String, String> row : result.get() )
-        {
-            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            map.put( getStringValue( columnSlice, KEY.toString() ), getStringValue( columnSlice, VALUE.toString() ) );
-        }
-        metadataFacet.fromProperties( map );
-        return metadataFacet;
     }
 
     @Override
-    public MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name ) throws MetadataRepositoryException
+    public MetadataFacet getMetadataFacet( RepositorySession repositorySession, String repositoryId, String facetId, String name ) throws MetadataRepositoryException
     {
-        return getMetadataFacet( session, repositoryId, getFactoryClassForId( facetId ), name );
+        return getMetadataFacet( repositorySession, repositoryId, getFactoryClassForId( facetId ), name );
     }
 
     @Override
-    public void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
+    public void addMetadataFacet( RepositorySession repositorySession, String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
 
@@ -1772,251 +1487,191 @@ public class CassandraMetadataRepository
         {
             return;
         }
-
-        if ( metadataFacet.toProperties().isEmpty() )
+        final String table = this.cassandraArchivaManager.getMetadataFacetFamilyName( );
+        if ( metadataFacet.toProperties( ).isEmpty( ) )
         {
-            String key = new MetadataFacetModel.KeyBuilder().withRepositoryId( repositoryId ).withFacetId(
-                metadataFacet.getFacetId() ).withName( metadataFacet.getName() ).build();
+            String key = new MetadataFacetModel.KeyBuilder( ).withRepositoryId( repositoryId ).withFacetId(
+                metadataFacet.getFacetId( ) ).withName( metadataFacet.getName( ) ).build( );
 
-            boolean exists = this.metadataFacetTemplate.isColumnsExist( key );
-
-            if ( exists )
+            CqlSession session = cassandraArchivaManager.getSession( );
             {
-                ColumnFamilyUpdater<String, String> updater = this.metadataFacetTemplate.createUpdater( key );
-                addUpdateStringValue( updater, FACET_ID.toString(), metadataFacet.getFacetId() );
-                addUpdateStringValue( updater, NAME.toString(), metadataFacet.getName() );
-                this.metadataFacetTemplate.update( updater );
+                Update update = update( table )
+                    .setColumn( REPOSITORY_NAME.toString( ), literal( repositoryId ) )
+                    .setColumn( FACET_ID.toString( ), literal( metadataFacet.getFacetId( ) ) )
+                    .setColumn( NAME.toString( ), literal( metadataFacet.getName( ) ) )
+                    .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+                session.execute( update.build( ) );
             }
-            else
-            {
-                String cf = this.cassandraArchivaManager.getMetadataFacetFamilyName();
-                this.metadataFacetTemplate.createMutator() //
-                    .addInsertion( key, cf, column( REPOSITORY_NAME.toString(), repositoryId ) ) //
-                    .addInsertion( key, cf, column( FACET_ID.toString(), metadataFacet.getFacetId() ) ) //
-                    .addInsertion( key, cf, column( NAME.toString(), metadataFacet.getName() ) ) //
-                    .execute();
-            }
-
         }
         else
         {
-            for ( Map.Entry<String, String> entry : metadataFacet.toProperties().entrySet() )
+            CqlSession session = cassandraArchivaManager.getSession( );
             {
-                String key = new MetadataFacetModel.KeyBuilder().withRepositoryId( repositoryId ).withFacetId(
-                    metadataFacet.getFacetId() ).withName( metadataFacet.getName() ).withKey( entry.getKey() ).build();
-
-                boolean exists = this.metadataFacetTemplate.isColumnsExist( key );
-                if ( !exists )
+                for ( Map.Entry<String, String> entry : metadataFacet.toProperties( ).entrySet( ) )
                 {
-                    String cf = this.cassandraArchivaManager.getMetadataFacetFamilyName();
-                    this.metadataFacetTemplate.createMutator() //
-                        .addInsertion( key, cf, column( REPOSITORY_NAME.toString(), repositoryId ) ) //
-                        .addInsertion( key, cf, column( FACET_ID.toString(), metadataFacet.getFacetId() ) ) //
-                        .addInsertion( key, cf, column( NAME.toString(), metadataFacet.getName() ) ) //
-                        .addInsertion( key, cf, column( KEY.toString(), entry.getKey() ) ) //
-                        .addInsertion( key, cf, column( VALUE.toString(), entry.getValue() ) ) //
-                        .execute();
-                }
-                else
-                {
-                    ColumnFamilyUpdater<String, String> updater = this.metadataFacetTemplate.createUpdater( key );
-                    addUpdateStringValue( updater, VALUE.toString(), entry.getValue() );
-                    this.metadataFacetTemplate.update( updater );
+                    String key = new MetadataFacetModel.KeyBuilder( ).withRepositoryId( repositoryId ).withFacetId(
+                        metadataFacet.getFacetId( ) ).withName( metadataFacet.getName( ) ).withKey( entry.getKey( ) ).build( );
+                    Update update = update( table )
+                        .setColumn( REPOSITORY_NAME.toString( ), literal( repositoryId ) )
+                        .setColumn( FACET_ID.toString( ), literal( metadataFacet.getFacetId( ) ) )
+                        .setColumn( NAME.toString( ), literal( metadataFacet.getName( ) ) )
+                        .setColumn( KEY.toString( ), literal( entry.getKey( ) ) )
+                        .setColumn( VALUE.toString( ), literal( entry.getValue( ) ) )
+                        .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+                    session.execute( update.build( ) );
                 }
             }
         }
     }
 
     @Override
-    public void removeMetadataFacets( RepositorySession session, final String repositoryId, final String facetId )
+    public void removeMetadataFacets( RepositorySession repositorySession, final String repositoryId, final String facetId )
         throws MetadataRepositoryException
     {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( KEY.toString(), VALUE.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( FACET_ID.toString(), facetId ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get() )
+        final String table = cassandraArchivaManager.getMetadataFacetFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            this.metadataFacetTemplate.deleteRow( row.getKey() );
+            Select deleteRows = selectFrom( table )
+                .column( DEFAULT_PRIMARY_KEY )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( FACET_ID.toString( ) ).isEqualTo( literal( facetId ) )
+                .allowFiltering( );
+            ResultSet result = session.execute( deleteRows.build( ) );
+            StreamSupport.stream( result.spliterator(), false ).map(row -> row.getString(DEFAULT_PRIMARY_KEY))
+                .distinct().forEach( delKey ->
+                    session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal(delKey) ).build(  ) )
+                );
         }
 
     }
 
     @Override
-    public void removeMetadataFacet( RepositorySession session, final String repositoryId, final String facetId, final String name )
+    public void removeMetadataFacet( RepositorySession repositorySession, final String repositoryId, final String facetId, final String name )
         throws MetadataRepositoryException
     {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( KEY.toString(), VALUE.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( FACET_ID.toString(), facetId ) //
-            .addEqualsExpression( NAME.toString(), name ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get() )
+        final String table = cassandraArchivaManager.getMetadataFacetFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            this.metadataFacetTemplate.deleteRow( row.getKey() );
+            Select deleteRows = selectFrom( table )
+                .column( DEFAULT_PRIMARY_KEY )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( FACET_ID.toString( ) ).isEqualTo( literal( facetId ) )
+                .whereColumn( NAME.toString( ) ).isEqualTo( literal( name ) )
+                .allowFiltering( );
+            ResultSet result = session.execute( deleteRows.build( ) );
+            StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( DEFAULT_PRIMARY_KEY ) )
+                .distinct( )
+                .forEach(
+                    delKey ->
+                        session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( delKey ) ).build( ) )
+                );
+
         }
+
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, final String repositoryId, final ZonedDateTime startTime,
+    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession repositorySession, final String repositoryId, final ZonedDateTime startTime,
                                                            final ZonedDateTime endTime, QueryParameter queryParameter )
         throws MetadataRepositoryException
     {
-
-        LongSerializer ls = LongSerializer.get();
-        RangeSlicesQuery<String, String, Long> query = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ls ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
-
-
-        if ( startTime != null )
+        final String table = cassandraArchivaManager.getArtifactMetadataFamilyName();
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            query = query.addGteExpression( WHEN_GATHERED.toString(), startTime.toInstant().toEpochMilli() );
+            long start = startTime == null ? Long.MIN_VALUE : startTime.toInstant( ).toEpochMilli( );
+            long end = endTime == null ? Long.MAX_VALUE : endTime.toInstant( ).toEpochMilli( );
+            Select query = selectFrom( table )
+                .all( )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( WHEN_GATHERED.toString( ) ).isGreaterThanOrEqualTo( literal( start ) )
+                .whereColumn( WHEN_GATHERED.toString( ) ).isLessThanOrEqualTo( literal( end ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .map( this::mapArtifactMetadata )
+                .collect( Collectors.toList( ) );
         }
-        if ( endTime != null )
-        {
-            query = query.addLteExpression( WHEN_GATHERED.toString(), endTime.toInstant().toEpochMilli() );
-        }
-        QueryResult<OrderedRows<String, String, Long>> result = query.execute();
-
-        List<ArtifactMetadata> artifactMetadatas = new ArrayList<>( result.get().getCount() );
-        Iterator<Row<String, String, Long>> keyIter = result.get().iterator();
-        if (keyIter.hasNext()) {
-            String key = keyIter.next().getKey();
-            for (Row<String, String, Long> row : result.get()) {
-                ColumnSlice<String, Long> columnSlice = row.getColumnSlice();
-                String repositoryName = getAsStringValue(columnSlice, REPOSITORY_NAME.toString());
-                if (StringUtils.equals(repositoryName, repositoryId)) {
-
-                    artifactMetadatas.add(mapArtifactMetadataLongColumnSlice(key, columnSlice));
-                }
-            }
-        }
-
-        return artifactMetadatas;
     }
 
     /**
      * For documentation see {@link MetadataRepository#getArtifactByDateRangeStream(RepositorySession, String, ZonedDateTime, ZonedDateTime, QueryParameter)}
-     *
+     * <p>
      * This implementation orders the stream. It does not order the query in the backend.
      *
-     * @param session The repository session
-     * @param repositoryId The repository id
-     * @param startTime The start time, can be <code>null</code>
-     * @param endTime The end time, can be <code>null</code>
+     * @param session        The repository session
+     * @param repositoryId   The repository id
+     * @param startTime      The start time, can be <code>null</code>
+     * @param endTime        The end time, can be <code>null</code>
      * @param queryParameter Additional parameters for the query that affect ordering and number of returned results.
      * @return
      * @throws MetadataRepositoryException
      * @see MetadataRepository#getArtifactByDateRangeStream
      */
     @Override
-    public Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter) throws MetadataRepositoryException
+    public Stream<ArtifactMetadata> getArtifactByDateRangeStream( RepositorySession session, String repositoryId, ZonedDateTime startTime, ZonedDateTime endTime, QueryParameter queryParameter ) throws MetadataRepositoryException
     {
-        Comparator<ArtifactMetadata> comp = getArtifactMetadataComparator(queryParameter, "whenGathered");
-        return getArtifactsByDateRange(session, repositoryId, startTime, endTime, queryParameter).stream().sorted(comp).skip(queryParameter.getOffset()).limit(queryParameter.getLimit());
+        Comparator<ArtifactMetadata> comp = getArtifactMetadataComparator( queryParameter, "whenGathered" );
+        return getArtifactsByDateRange( session, repositoryId, startTime, endTime, queryParameter ).stream( ).sorted( comp ).skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
     }
 
 
-    protected ArtifactMetadata mapArtifactMetadataLongColumnSlice( String key, ColumnSlice<String, Long> columnSlice )
+    protected ArtifactMetadata mapArtifactMetadata( Row row )
     {
-        ArtifactMetadata artifactMetadata = new ArtifactMetadata();
-        artifactMetadata.setNamespace( getAsStringValue( columnSlice, NAMESPACE_ID.toString() ) );
-        artifactMetadata.setSize( getLongValue( columnSlice, SIZE.toString() ) );
-        artifactMetadata.setId( getAsStringValue( columnSlice, ID.toString() ) );
-        artifactMetadata.setFileLastModified( getLongValue( columnSlice, FILE_LAST_MODIFIED.toString() ) );
-        artifactMetadata.setMd5( getAsStringValue( columnSlice, MD5.toString() ) );
-        artifactMetadata.setProject( getAsStringValue( columnSlice, PROJECT.toString() ) );
-        artifactMetadata.setProjectVersion( getAsStringValue( columnSlice, PROJECT_VERSION.toString() ) );
-        artifactMetadata.setRepositoryId( getAsStringValue( columnSlice, REPOSITORY_NAME.toString() ) );
-        artifactMetadata.setSha1( getAsStringValue( columnSlice, SHA1.toString() ) );
-        artifactMetadata.setVersion( getAsStringValue( columnSlice, VERSION.toString() ) );
-        Long whenGathered = getLongValue( columnSlice, WHEN_GATHERED.toString() );
+        ArtifactMetadata artifactMetadata = new ArtifactMetadata( );
+        artifactMetadata.setNamespace( row.getString( NAMESPACE_ID.toString( ) ) );
+        artifactMetadata.setSize( row.getLong( SIZE.toString( ) ) );
+        artifactMetadata.setId( row.getString( ID.toString( ) ) );
+        artifactMetadata.setFileLastModified( row.getLong( FILE_LAST_MODIFIED.toString( ) ) );
+        artifactMetadata.setMd5( row.getString( MD5.toString( ) ) );
+        artifactMetadata.setProject( row.getString( PROJECT_ID.toString( ) ) );
+        artifactMetadata.setProjectVersion( row.getString( PROJECT_VERSION.toString( ) ) );
+        artifactMetadata.setRepositoryId( row.getString( REPOSITORY_NAME.toString( ) ) );
+        artifactMetadata.setSha1( row.getString( SHA1.toString( ) ) );
+        artifactMetadata.setVersion( row.getString( VERSION.toString( ) ) );
+        Long whenGathered = row.getLong( WHEN_GATHERED.toString( ) );
         if ( whenGathered != null )
         {
-            artifactMetadata.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(whenGathered), STORAGE_TZ));
+            artifactMetadata.setWhenGathered( ZonedDateTime.ofInstant( Instant.ofEpochMilli( whenGathered ), STORAGE_TZ ) );
         }
-        artifactMetadata.setChecksums(mapChecksumsReverse(getChecksums(key)));
-        return artifactMetadata;
-    }
-
-    protected ArtifactMetadata mapArtifactMetadataStringColumnSlice( String key, ColumnSlice<String, String> columnSlice )
-    {
-        ArtifactMetadata artifactMetadata = new ArtifactMetadata();
-        artifactMetadata.setNamespace( getStringValue( columnSlice, NAMESPACE_ID.toString() ) );
-        artifactMetadata.setSize( getAsLongValue( columnSlice, SIZE.toString() ) );
-        artifactMetadata.setId( getStringValue( columnSlice, ID.toString() ) );
-        artifactMetadata.setFileLastModified( getAsLongValue( columnSlice, FILE_LAST_MODIFIED.toString() ) );
-        artifactMetadata.setMd5( getStringValue( columnSlice, MD5.toString() ) );
-        artifactMetadata.setProject( getStringValue( columnSlice, PROJECT.toString() ) );
-        artifactMetadata.setProjectVersion( getStringValue( columnSlice, PROJECT_VERSION.toString() ) );
-        artifactMetadata.setRepositoryId( getStringValue( columnSlice, REPOSITORY_NAME.toString() ) );
-        artifactMetadata.setSha1( getStringValue( columnSlice, SHA1.toString() ) );
-        artifactMetadata.setVersion( getStringValue( columnSlice, VERSION.toString() ) );
-        Long whenGathered = getAsLongValue( columnSlice, WHEN_GATHERED.toString() );
-        if ( whenGathered != null )
-        {
-            artifactMetadata.setWhenGathered(ZonedDateTime.ofInstant(Instant.ofEpochMilli(whenGathered), STORAGE_TZ));
-        }
-        artifactMetadata.setChecksums(mapChecksumsReverse(getChecksums(key)));
+        artifactMetadata.setChecksums( mapChecksumsReverse( getChecksums( row.getString( DEFAULT_PRIMARY_KEY ) ) ) );
         return artifactMetadata;
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByChecksum(RepositorySession session, final String repositoryId, final String checksum )
+    public List<ArtifactMetadata> getArtifactsByChecksum( RepositorySession repositorySession, final String repositoryId, final String checksum )
         throws MetadataRepositoryException
     {
-
-        // cql cannot run or in queries so running twice the query
-        Map<String, ArtifactMetadata> artifactMetadataMap = new HashMap<>();
-
-        RangeSlicesQuery<String, String, String> query = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getChecksumFamilyName()) //
-            .setColumnNames(ARTIFACT_METADATA_MODEL_KEY); //
-
-        query = query.addEqualsExpression( CHECKSUM_VALUE.toString(), checksum )
-                .addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
-
-        QueryResult<OrderedRows<String, String, String>> result = query.execute();
-
-        List<String> artifactKeys = new ArrayList<>();
-        for ( Row<String, String, String> row : result.get() )
+        String table = cassandraArchivaManager.getChecksumFamilyName( );
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
+            Select query = selectFrom( table )
+                .column( ARTIFACT_METADATA_MODEL_KEY.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( CHECKSUM_VALUE.toString( ) ).isEqualTo( literal( checksum ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            List<String> artifactKeys = StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( ARTIFACT_METADATA_MODEL_KEY.toString( ) ) )
+                .distinct( )
+                .collect( Collectors.toList( ) );
+            List<ArtifactMetadata> metadataList = new ArrayList<>( );
+            for ( String key : artifactKeys )
+            {
+                table = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+                query = selectFrom( table )
+                    .all( )
+                    .whereColumn( DEFAULT_PRIMARY_KEY.toString( ) ).isEqualTo( literal( key ) );
+                Row row = session.execute( query.build( ) ).one( );
+                if ( row != null )
+                {
+                    metadataList.add( mapArtifactMetadata( row ) );
+                }
 
-            artifactKeys.add(columnSlice.getColumnByName(ARTIFACT_METADATA_MODEL_KEY).getValue());
-
-        }
-
-        for (String key : artifactKeys) {
-            query = HFactory //
-                    .createRangeSlicesQuery(keyspace, ss, ss, ss) //
-                    .setColumnFamily(cassandraArchivaManager.getArtifactMetadataFamilyName()) //
-                    .setColumnNames(NAMESPACE_ID.toString(), SIZE.toString(), ID.toString(), FILE_LAST_MODIFIED.toString(), MD5.toString(), PROJECT.toString(), PROJECT_VERSION.toString(),
-                            REPOSITORY_NAME.toString(), VERSION.toString(), WHEN_GATHERED.toString(), SHA1.toString())
-                    .setKeys(key, key);
-            result = query.execute();
-
-            for (Row<String, String, String> row : result.get()) {
-                ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-
-                artifactMetadataMap.put(row.getKey(), mapArtifactMetadataStringColumnSlice(key, columnSlice));
             }
-        }
+            return metadataList;
 
-        return new ArrayList<>(artifactMetadataMap.values());
+        }
     }
 
     /**
@@ -2030,349 +1685,329 @@ public class CassandraMetadataRepository
         return this.getArtifactsByAttribute( session, key, value, repositoryId );
     }
 
-    @Override
-    public List<ArtifactMetadata> getArtifactsByAttribute( RepositorySession session, String key, String value, String repositoryId )
-        throws MetadataRepositoryException
+    MetadataFacetModel mapMetadataFacet( Row row )
     {
-        RangeSlicesQuery<String, String, String> query =
-            HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( MetadataFacetModel.COLUMNS ) //
-            .addEqualsExpression( VALUE.toString(), value );
-
-        if ( key != null )
-        {
-            query.addEqualsExpression( KEY.toString(), key ); //
-        }
-        if ( repositoryId != null )
-        {
-            query.addEqualsExpression( "repositoryName", repositoryId );
-        }
-
-        QueryResult<OrderedRows<String, String, String>> metadataFacetResult = query.execute();
-        if ( metadataFacetResult.get() == null || metadataFacetResult.get().getCount() < 1 )
-        {
-            return Collections.emptyList();
-        }
-
-        List<ArtifactMetadata> artifactMetadatas = new LinkedList<>( );
-
-        // TODO doing multiple queries, there should be a way to get all the artifactMetadatas for any number of
-        // projects
-        for ( Row<String, String, String> row : metadataFacetResult.get() )
-        {
-            QueryResult<OrderedRows<String, String, String>> artifactMetadataResult =
-                HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-                .setColumnNames( ArtifactMetadataModel.COLUMNS ) //
-                .setRowCount( Integer.MAX_VALUE ) //
-                .addEqualsExpression( REPOSITORY_NAME.toString(),
-                                      getStringValue( row.getColumnSlice(), REPOSITORY_NAME ) ) //
-                .addEqualsExpression( NAMESPACE_ID.toString(), getStringValue( row.getColumnSlice(), NAMESPACE_ID ) ) //
-                .addEqualsExpression( PROJECT.toString(), getStringValue( row.getColumnSlice(), PROJECT_ID ) ) //
-                .addEqualsExpression( PROJECT_VERSION.toString(),
-                                      getStringValue( row.getColumnSlice(), PROJECT_VERSION ) ) //
-                .execute();
-
-            if ( artifactMetadataResult.get() == null || artifactMetadataResult.get().getCount() < 1 )
-            {
-                return Collections.emptyList();
-            }
-
-            for ( Row<String, String, String> artifactMetadataRow : artifactMetadataResult.get() )
-            {
-                String artifactKey = artifactMetadataRow.getKey();
-                artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( artifactKey, artifactMetadataRow.getColumnSlice() ) );
-            }
-        }
-
-        return mapArtifactFacetToArtifact( metadataFacetResult, artifactMetadatas );
+        MetadataFacetModel metadataFacetModel = new MetadataFacetModel( );
+        metadataFacetModel.setFacetId( row.getString( FACET_ID.toString( ) ) );
+        metadataFacetModel.setName( row.getString( NAME.toString( ) ) );
+        metadataFacetModel.setValue( row.getString( VALUE.toString( ) ) );
+        metadataFacetModel.setKey( row.getString( KEY.toString( ) ) );
+        metadataFacetModel.setProjectVersion( row.getString( PROJECT_VERSION.toString( ) ) );
+        return metadataFacetModel;
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProjectVersionAttribute( RepositorySession session, String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByAttribute( RepositorySession repositorySession, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( PROJECT_ID.toString(), REPOSITORY_NAME.toString(), NAMESPACE_ID.toString(),
-                             PROJECT_VERSION.toString() ) //
-            .addEqualsExpression( key, value ) //
-            .execute();
 
-        int count = result.get().getCount();
-
-        if ( count < 1 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            return Collections.emptyList();
-        }
-
-        List<ArtifactMetadata> artifacts = new LinkedList<>( );
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            // TODO doing multiple queries, there should be a way to get all the artifactMetadatas for any number of
-            // projects
-            try
+            String table = cassandraArchivaManager.getMetadataFacetFamilyName( );
+            Select query = selectFrom( table )
+                .all( )
+                .whereColumn( VALUE.toString( ) ).isEqualTo( literal( value ) )
+                .allowFiltering();
+            if ( key != null )
             {
-                artifacts.addAll( getArtifacts( session,
-                    getStringValue( row.getColumnSlice(), REPOSITORY_NAME ),
-                    getStringValue( row.getColumnSlice(), NAMESPACE_ID ),
-                    getStringValue( row.getColumnSlice(), PROJECT_ID ), getStringValue( row.getColumnSlice(), PROJECT_VERSION ) ) );
+                query = query.whereColumn( KEY.toString( ) ).isEqualTo( literal( key ) );
             }
-            catch ( MetadataResolutionException e )
+            if ( repositoryId != null )
             {
-                // never raised
-                throw new IllegalStateException( e );
+                query = query.whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) );
             }
+
+
+            final List<ArtifactMetadata> artifactMetadatas = new LinkedList<>( );
+            final List<MetadataFacetModel> metadataFacetModels = new ArrayList<>( );
+            table = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+            ResultSet result = session.execute( query.build( ) );
+            Iterator<Row> iterator = result.iterator( );
+            while ( iterator.hasNext( ) )
+            {
+                Row row = iterator.next( );
+                metadataFacetModels.add( mapMetadataFacet( row ) );
+
+                query = selectFrom( table )
+                    .all( )
+                    .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( row.getString( REPOSITORY_NAME.toString( ) ) ) )
+                    .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( row.getString( NAMESPACE_ID.toString( ) ) ) )
+                    .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( row.getString( PROJECT_ID.toString( ) ) ) )
+                    .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( row.getString( PROJECT_VERSION.toString( ) ) ) )
+                    .allowFiltering();
+
+                ResultSet subResult = session.execute( query.build( ) );
+                subResult.forEach( sRow ->
+                    artifactMetadatas.add( mapArtifactMetadata( sRow ) ) );
+
+            }
+
+            return mapArtifactFacetToArtifact( metadataFacetModels, artifactMetadatas );
+
         }
-        return artifacts;
     }
 
     @Override
-    public void removeArtifact( RepositorySession session, final String repositoryId, final String namespace, final String project,
+    public List<ArtifactMetadata> getArtifactsByProjectVersionAttribute( RepositorySession repositorySession, String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        CqlSession session = cassandraArchivaManager.getSession( );
+        {
+            String searchKey = StringUtils.wrapIfMissing( key, '"' );
+            String table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            Select query = selectFrom( table )
+                .columns( PROJECT_ID.toString( ), REPOSITORY_NAME.toString( ), NAMESPACE_ID.toString( ),
+                    PROJECT_VERSION.toString( ) ).allowFiltering();
+            if (Arrays.binarySearch( cassandraArchivaManager.getProjectVersionMetadataColumns(), key )>=0){
+                query = query.whereColumn( searchKey ).isEqualTo( literal( value ) );
+            } else {
+                query = query.whereMapValue( VERSION_PROPERTIES.toString( ), literal( key ) ).isEqualTo( literal( value ) );
+            }
+            ResultSet result = session.execute( query.build( ) );
+            List<ArtifactMetadata> artifacts = new LinkedList<>( );
+            Iterator<Row> iterator = result.iterator( );
+            while ( iterator.hasNext( ) )
+            {
+                Row row = iterator.next( );
+                try
+                {
+                    artifacts.addAll( getArtifacts( repositorySession,
+                        row.getString( REPOSITORY_NAME.toString( ) ),
+                        row.getString( NAMESPACE_ID.toString( ) ),
+                        row.getString( PROJECT_ID.toString( ) ), row.getString( PROJECT_VERSION.toString( ) ) ) );
+                }
+                catch ( MetadataResolutionException e )
+                {
+                    // never raised
+                    throw new IllegalStateException( e );
+                }
+            }
+            return artifacts;
+
+        }
+    }
+
+    @Override
+    public void removeArtifact( RepositorySession repositorySession, final String repositoryId, final String namespace, final String project,
                                 final String version, final String id )
         throws MetadataRepositoryException
     {
         logger.debug( "removeTimestampedArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
-                      repositoryId, namespace, project, version, id );
-        String key =
-            new ArtifactMetadataModel.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespace ).withId(
-                id ).withProjectVersion( version ).withProject( project ).build();
+            repositoryId, namespace, project, version, id );
 
-        this.artifactMetadataTemplate.deleteRow( key );
+        CqlSession session = cassandraArchivaManager.getSession( );
+        {
+            String key =
+                new ArtifactMetadataModel.KeyBuilder( ).withRepositoryId( repositoryId ).withNamespace( namespace ).withId(
+                    id ).withProjectVersion( version ).withProject( project ).build( );
+            String table = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+            Delete delete = deleteFrom( table )
+                .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+            session.execute( delete.build( ) );
 
-        key = new ProjectVersionMetadataModel.KeyBuilder() //
-            .withRepository( repositoryId ) //
-            .withNamespace( namespace ) //
-            .withProjectId( project ) //
-            .withProjectVersion( version ) //
-            .withId( id ) //
-            .build();
+            key = new ProjectVersionMetadataModel.KeyBuilder( ) //
+                .withRepository( repositoryId ) //
+                .withNamespace( namespace ) //
+                .withProjectId( project ) //
+                .withProjectVersion( version ) //
+                .withId( id ) //
+                .build( );
+            table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            delete = deleteFrom( table )
+                .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+            session.execute( delete.build( ) );
 
-        this.projectVersionMetadataTemplate.deleteRow( key );
+        }
+
     }
 
     @Override
-    public void removeTimestampedArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
+    public void removeTimestampedArtifact( RepositorySession repositorySession, ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
         logger.debug( "removeTimestampedArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
-                      artifactMetadata.getRepositoryId(), artifactMetadata.getNamespace(),
-                      artifactMetadata.getProject(), baseVersion, artifactMetadata.getId() );
-        String key =
-            new ArtifactMetadataModel.KeyBuilder().withRepositoryId( artifactMetadata.getRepositoryId() ).withNamespace(
-                artifactMetadata.getNamespace() ).withId( artifactMetadata.getId() ).withProjectVersion(
-                baseVersion ).withProject( artifactMetadata.getProject() ).build();
-
-        this.artifactMetadataTemplate.deleteRow( key );
+            artifactMetadata.getRepositoryId( ), artifactMetadata.getNamespace( ),
+            artifactMetadata.getProject( ), baseVersion, artifactMetadata.getId( ) );
+        CqlSession session = cassandraArchivaManager.getSession( );
+        {
+            String key =
+                new ArtifactMetadataModel.KeyBuilder( ).withRepositoryId( artifactMetadata.getRepositoryId( ) ).withNamespace(
+                    artifactMetadata.getNamespace( ) ).withId( artifactMetadata.getId( ) ).withProjectVersion(
+                    baseVersion ).withProject( artifactMetadata.getProject( ) ).build( );
+            String table = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+            Delete delete = deleteFrom( table )
+                .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+            session.execute( delete.build( ) );
+        }
 
     }
 
     @Override
-    public void removeFacetFromArtifact( RepositorySession session, final String repositoryId, final String namespace, final String project,
+    public void removeFacetFromArtifact( RepositorySession repositorySession, final String repositoryId, final String namespace, final String project,
                                          final String version, final MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
-
-        RangeSlicesQuery<String, String, String> query = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( NAMESPACE_ID.toString() ); //
-
-        query = query.addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT.toString(), project ) //
-            .addEqualsExpression( VERSION.toString(), version );
-
-        QueryResult<OrderedRows<String, String, String>> result = query.execute();
-
-        for ( Row<String, String, String> row : result.get() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            this.artifactMetadataTemplate.deleteRow( row.getKey() );
+            String table = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+            Delete delete = deleteFrom( table )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespace ) )
+                .whereColumn( PROJECT.toString( ) ).isEqualTo( literal( project ) )
+                .whereColumn( VERSION.toString( ) ).isEqualTo( literal( version ) );
+            session.execute( delete.build( ) );
         }
     }
 
 
     @Override
-    public List<ArtifactMetadata> getArtifacts( RepositorySession session, final String repositoryId )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession repositorySession, final String repositoryId )
         throws MetadataRepositoryException
     {
-
-        RangeSlicesQuery<String, String, String> query = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
-
-        query = query.addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
-
-        QueryResult<OrderedRows<String, String, String>> result = query.execute();
-
-
-
-        List<ArtifactMetadata> artifactMetadatas = new ArrayList<>( result.get().getCount() );
-
-        for ( Row<String, String, String> row : result.get() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            String key = row.getKey();
-            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( key, columnSlice ) );
-
+            String table = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+            Select query = selectFrom( table )
+                .all( )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( result.spliterator( ), false )
+                .map( this::mapArtifactMetadata )
+                .collect( Collectors.toList( ) );
         }
-
-        return artifactMetadatas;
     }
 
 
     @Override
-    public List<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
+    public List<ProjectVersionReference> getProjectReferences( RepositorySession repositorySession, String repoId, String namespace, String projectId,
                                                                String projectVersion )
         throws MetadataResolutionException
     {
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getDependencyFamilyName() ) //
-            .setColumnNames( "projectVersionMetadataModel.key" ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( GROUP_ID.toString(), namespace ) //
-            .addEqualsExpression( ARTIFACT_ID.toString(), projectId ) //
-            .addEqualsExpression( VERSION.toString(), projectVersion ) //
-            .execute();
-
-        List<String> dependenciesIds = new ArrayList<>( result.get().getCount() );
-
-        for ( Row<String, String, String> row : result.get().getList() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            dependenciesIds.add( getStringValue( row.getColumnSlice(), "projectVersionMetadataModel.key" ) );
+            String table = cassandraArchivaManager.getDependencyFamilyName( );
+            Select query = selectFrom( table )
+                .column( "\"projectVersionMetadataModel.key\"" )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) )
+                .whereColumn( GROUP_ID.toString( ) ).isEqualTo( literal( namespace ) )
+                .whereColumn( ARTIFACT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( VERSION.toString( ) ).isEqualTo( literal( projectVersion ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            List<String> dependenciesIds = StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( "\"projectVersionMetadataModel.key\"" ) )
+                .collect( Collectors.toList( ) );
+
+            List<ProjectVersionReference> references = new ArrayList<>( );
+
+
+            table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            for ( String key : dependenciesIds )
+            {
+                query = selectFrom( table )
+                    .columns( PROJECT_ID.toString( ), NAMESPACE_ID.toString( ), PROJECT_VERSION.toString( ) )
+                    .whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) );
+                Row rowResult = session.execute( query.build( ) ).one( );
+                if ( rowResult != null )
+                {
+                    references.add( new ProjectVersionReference( ProjectVersionReference.ReferenceType.DEPENDENCY,
+                        rowResult.getString( PROJECT_ID.toString( ) ),
+                        rowResult.getString( NAMESPACE_ID.toString( ) ),
+                        rowResult.getString( PROJECT_VERSION.toString( ) )
+                    ) );
+                }
+
+            }
+            return references;
         }
-
-        List<ProjectVersionReference> references = new ArrayList<>( result.get().getCount() );
-
-        for ( String key : dependenciesIds )
-        {
-            ColumnFamilyResult<String, String> columnFamilyResult =
-                this.projectVersionMetadataTemplate.queryColumns( key );
-            references.add( new ProjectVersionReference( ProjectVersionReference.ReferenceType.DEPENDENCY, //
-                                                         columnFamilyResult.getString( PROJECT_ID.toString() ), //
-                                                         columnFamilyResult.getString( NAMESPACE_ID.toString() ), //
-                                                         columnFamilyResult.getString( PROJECT_VERSION.toString() ) ) );
-        }
-
-        return references;
     }
 
     @Override
-    public void removeProjectVersion( RepositorySession session, final String repoId, final String namespace, final String projectId,
+    public void removeProjectVersion( RepositorySession repositorySession, final String repoId, final String namespace, final String projectId,
                                       final String projectVersion )
         throws MetadataRepositoryException
     {
-
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( VERSION.toString() ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
-            .execute();
-
-        for ( Row<String, String, String> row : result.get().getList() )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
-            removeMailingList( row.getKey() );
-            removeLicenses( row.getKey() );
-            removeDependencies( row.getKey() );
-        }
+            String table = cassandraArchivaManager.getProjectVersionMetadataFamilyName( );
+            Select query = selectFrom( table )
+                .columns( DEFAULT_PRIMARY_KEY, VERSION.toString( ) )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespace ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( projectVersion ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            Iterator<Row> iterator = result.iterator( );
+            while ( iterator.hasNext( ) )
+            {
+                Row row = iterator.next( );
+                String key = row.getString( DEFAULT_PRIMARY_KEY );
+                session.execute( deleteFrom( table ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( key ) ).build( ) );
+                removeMailingList( key );
+                removeLicenses( key );
+                removeDependencies( key );
+            }
 
-        RangeSlicesQuery<String, String, String> query = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( NAMESPACE_ID.toString() ); //
-
-        query = query.addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT.toString(), projectId ) //
-            .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion );
-
-        result = query.execute();
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            this.artifactMetadataTemplate.deleteRow( row.getKey() );
+            final String deleteTable = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+            Select deleteRows = selectFrom( deleteTable )
+                .column( DEFAULT_PRIMARY_KEY )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespace ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( projectVersion ) )
+                .allowFiltering();
+            result = session.execute( deleteRows.build( ) );
+            StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> row.getString( DEFAULT_PRIMARY_KEY ) )
+                .distinct( )
+                .forEach( delKey ->
+                    session.execute( deleteFrom( deleteTable ).whereColumn( DEFAULT_PRIMARY_KEY ).isEqualTo( literal( delKey ) ).build( ) ) );
 
         }
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifacts( RepositorySession session, final String repoId, final String namespace,
+    public List<ArtifactMetadata> getArtifacts( RepositorySession repositorySession, final String repoId, final String namespace,
                                                 final String projectId, final String projectVersion )
         throws MetadataResolutionException
     {
-
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-                .setColumnNames( ArtifactMetadataModel.COLUMNS )//
-                .setRowCount( Integer.MAX_VALUE ) //
-                .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-                .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-                .addEqualsExpression( PROJECT.toString(), projectId ) //
-                .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
-                .execute();
-
-        if ( result.get() == null || result.get().getCount() < 1 )
+        CqlSession session = cassandraArchivaManager.getSession( );
         {
-            return Collections.emptyList();
+            String table = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+            Select query = selectFrom( table )
+                .all( )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespace ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( projectVersion ) )
+                .allowFiltering();
+            ResultSet result = session.execute( query.build( ) );
+            List<ArtifactMetadata> artifactMetadatas = StreamSupport.stream( result.spliterator( ), false )
+                .map( this::mapArtifactMetadata )
+                .collect( Collectors.toList( ) );
+
+
+            table = cassandraArchivaManager.getMetadataFacetFamilyName( );
+            query = selectFrom( table )
+                .all( )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repoId ) )
+                .whereColumn( NAMESPACE_ID.toString( ) ).isEqualTo( literal( namespace ) )
+                .whereColumn( PROJECT_ID.toString( ) ).isEqualTo( literal( projectId ) )
+                .whereColumn( PROJECT_VERSION.toString( ) ).isEqualTo( literal( projectVersion ) )
+                .allowFiltering();
+            result = session.execute( query.build( ) );
+            List<MetadataFacetModel> facetMetadata = StreamSupport.stream( result.spliterator( ), false )
+                .map( row -> mapMetadataFacet( row ) )
+                .collect( Collectors.toList( ) );
+            return mapArtifactFacetToArtifact( facetMetadata, artifactMetadatas );
+
         }
-
-        List<ArtifactMetadata> artifactMetadatas = new ArrayList<>( result.get().getCount() );
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            String key = row.getKey();
-            artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( key, row.getColumnSlice() ) );
-        }
-
-        result = HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( MetadataFacetModel.COLUMNS ) //
-            .setRowCount( Integer.MAX_VALUE ) //
-            .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
-            .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
-            .addEqualsExpression( PROJECT_ID.toString(), projectId ) //
-            .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
-            .execute();
-
-        return mapArtifactFacetToArtifact(result, artifactMetadatas);
     }
 
-    /**
-     * Attach metadata to each of the  ArtifactMetadata objects
-     */
-    private List<ArtifactMetadata> mapArtifactFacetToArtifact( QueryResult<OrderedRows<String, String, String>> result, List<ArtifactMetadata> artifactMetadatas) {
-        if ( result.get() == null || result.get().getCount() < 1 )
-        {
-            return artifactMetadatas;
-        }
-
-        final List<MetadataFacetModel> metadataFacetModels = new ArrayList<>( result.get().getCount() );
-
-        for ( Row<String, String, String> row : result.get() )
-        {
-            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            MetadataFacetModel metadataFacetModel = new MetadataFacetModel();
-            metadataFacetModel.setFacetId( getStringValue( columnSlice, FACET_ID.toString() ) );
-            metadataFacetModel.setName( getStringValue( columnSlice, NAME.toString() ) );
-            metadataFacetModel.setValue( getStringValue( columnSlice, VALUE.toString() ) );
-            metadataFacetModel.setKey( getStringValue( columnSlice, KEY.toString() ) );
-            metadataFacetModel.setProjectVersion( getStringValue( columnSlice, PROJECT_VERSION.toString() ) );
-            metadataFacetModels.add( metadataFacetModel );
-        }
-
-        // rebuild MetadataFacet for artifacts
-
+    private List<ArtifactMetadata> mapArtifactFacetToArtifact( List<MetadataFacetModel> metadataFacetModels, List<ArtifactMetadata> artifactMetadatas )
+    {
         for ( final ArtifactMetadata artifactMetadata : artifactMetadatas )
         {
             Iterator<MetadataFacetModel> iterator = metadataFacetModels.stream( ).filter( metadataFacetModel -> {
@@ -2384,33 +2019,33 @@ public class CassandraMetadataRepository
                 return false;
 
             } ).iterator( );
-            Map<String, List<MetadataFacetModel>> metadataFacetValuesPerFacetId = new HashMap<>();
-            while ( iterator.hasNext() )
+            Map<String, List<MetadataFacetModel>> metadataFacetValuesPerFacetId = new HashMap<>( );
+            while ( iterator.hasNext( ) )
             {
-                MetadataFacetModel metadataFacetModel = iterator.next();
-                List<MetadataFacetModel> values = metadataFacetValuesPerFacetId.get( metadataFacetModel.getName() );
+                MetadataFacetModel metadataFacetModel = iterator.next( );
+                List<MetadataFacetModel> values = metadataFacetValuesPerFacetId.get( metadataFacetModel.getName( ) );
                 if ( values == null )
                 {
-                    values = new ArrayList<>();
-                    metadataFacetValuesPerFacetId.put( metadataFacetModel.getFacetId(), values );
+                    values = new ArrayList<>( );
+                    metadataFacetValuesPerFacetId.put( metadataFacetModel.getFacetId( ), values );
                 }
                 values.add( metadataFacetModel );
 
             }
 
-            for ( Map.Entry<String, List<MetadataFacetModel>> entry : metadataFacetValuesPerFacetId.entrySet() )
+            for ( Map.Entry<String, List<MetadataFacetModel>> entry : metadataFacetValuesPerFacetId.entrySet( ) )
             {
-                MetadataFacetFactory<?> metadataFacetFactory = getFacetFactory( entry.getKey() );
+                MetadataFacetFactory<?> metadataFacetFactory = getFacetFactory( entry.getKey( ) );
                 if ( metadataFacetFactory != null )
                 {
-                    List<MetadataFacetModel> facetModels = entry.getValue();
-                    if ( !facetModels.isEmpty() )
+                    List<MetadataFacetModel> facetModels = entry.getValue( );
+                    if ( !facetModels.isEmpty( ) )
                     {
-                        MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet();
-                        Map<String, String> props = new HashMap<>( facetModels.size() );
+                        MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( );
+                        Map<String, String> props = new HashMap<>( facetModels.size( ) );
                         for ( MetadataFacetModel metadataFacetModel : facetModels )
                         {
-                            props.put( metadataFacetModel.getKey(), metadataFacetModel.getValue() );
+                            props.put( metadataFacetModel.getKey( ), metadataFacetModel.getValue( ) );
                         }
                         metadataFacet.fromProperties( props );
                         artifactMetadata.addFacet( metadataFacet );
@@ -2422,8 +2057,9 @@ public class CassandraMetadataRepository
         return artifactMetadatas;
     }
 
+
     @Override
-    public void close()
+    public void close( )
         throws MetadataRepositoryException
     {
         logger.trace( "close" );
@@ -2432,10 +2068,10 @@ public class CassandraMetadataRepository
 
     private static class ModelMapperHolder
     {
-        private static ModelMapper MODEL_MAPPER = new ModelMapper();
+        private static ModelMapper MODEL_MAPPER = new ModelMapper( );
     }
 
-    protected ModelMapper getModelMapper()
+    protected ModelMapper getModelMapper( )
     {
         return ModelMapperHolder.MODEL_MAPPER;
     }
@@ -2468,23 +2104,18 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession session, final String repositoryId,
+    public Stream<ArtifactMetadata> getArtifactStream( final RepositorySession repositorySession, final String repositoryId,
                                                        final QueryParameter queryParameter ) throws MetadataResolutionException
     {
-        RangeSlicesQuery<String, String, String> query = HFactory //
-            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName( ) ) //
-            .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
-
-        query = query.addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
-
-        QueryResult<OrderedRows<String, String, String>> result = query.execute();
-
-        try
-        {
-            return StreamSupport.stream( createResultSpliterator( result, ( Row<String, String, String> row, ArtifactMetadata last ) ->
-                mapArtifactMetadataStringColumnSlice( row.getKey( ), row.getColumnSlice( ) ) ), false )
-                .skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
+        CqlSession session = cassandraArchivaManager.getSession( );
+        try {
+            String table = cassandraArchivaManager.getArtifactMetadataFamilyName( );
+            Select query = selectFrom( table )
+                .columns( ArtifactMetadataModel.COLUMNS )
+                .whereColumn( REPOSITORY_NAME.toString( ) ).isEqualTo( literal( repositoryId ) );
+            ResultSet result = session.execute( query.build( ) );
+            return StreamSupport.stream( createResultSpliterator( result, ( Row row, ArtifactMetadata last ) ->
+                mapArtifactMetadata( row ) ), false ).skip( queryParameter.getOffset( ) ).limit( queryParameter.getLimit( ) );
         }
         catch ( MetadataRepositoryException e )
         {

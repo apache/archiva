@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
+import com.datastax.oss.driver.api.core.CqlSession;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -28,22 +29,32 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.truncate;
+import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.dropTable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
  */
+@ExtendWith( SpringExtension.class )
+@TestInstance( TestInstance.Lifecycle.PER_CLASS )
 public class CassandraMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
 {
@@ -59,6 +70,9 @@ public class CassandraMetadataRepositoryTest
     IMocksControl sessionControl;
     RepositorySession session;
 
+    long cTime;
+    int testNum = 0;
+    AtomicBoolean clearedTables = new AtomicBoolean( false );
 
 
     @Override
@@ -73,13 +87,14 @@ public class CassandraMetadataRepositoryTest
         return cmr;
     }
 
-    @Before
-    @Override
-    public void setUp()
+    @BeforeEach
+    public void setUp( TestInfo testInfo )
         throws Exception
     {
-
+        cTime = System.currentTimeMillis( );
+        System.err.println( "Setting up "+(testNum++) + " - " + testInfo.getDisplayName() );
         super.setUp();
+        System.err.println( "Setting up 2 " + testInfo.getDisplayName( ) + " - " + (System.currentTimeMillis( ) - cTime) );
         assertMaxTries =1;
         assertRetrySleepMs=10;
 
@@ -104,7 +119,12 @@ public class CassandraMetadataRepositoryTest
 
         sessionFactoryControl.replay();
 
-        clearReposAndNamespace( cassandraArchivaManager );
+        if (!clearedTables.get())
+        {
+            clearReposAndNamespace( cassandraArchivaManager );
+            clearedTables.set( true );
+        }
+        System.err.println( "Finished setting up "+testInfo.getDisplayName() + " - " + (System.currentTimeMillis( ) - cTime) );
     }
 
     /**
@@ -139,44 +159,44 @@ public class CassandraMetadataRepositoryTest
     }
 
 
-    @After
-    public void shutdown()
+    @AfterEach
+    public void shutdown(TestInfo testInfo)
         throws Exception
     {
+        System.err.println( "Shutting down " + testInfo.getDisplayName( ) + " - " + ( System.currentTimeMillis( ) - cTime ) );
         clearReposAndNamespace( cassandraArchivaManager );
+        clearedTables.set( true );
         super.tearDown();
+        System.err.println( "Shutting down finished" + testInfo.getDisplayName( ) + " - " + ( System.currentTimeMillis( ) - cTime ) );
     }
 
     static void clearReposAndNamespace( CassandraArchivaManager cassandraArchivaManager )
         throws Exception
     {
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getProjectFamilyName() );
+        if (cassandraArchivaManager!=null)
+        {
+            CqlSession session = cassandraArchivaManager.getSession( );
+            {
+                List<String> tables = Arrays.asList(
+                    cassandraArchivaManager.getProjectFamilyName( ),
+                    cassandraArchivaManager.getNamespaceFamilyName( ),
+                    cassandraArchivaManager.getRepositoryFamilyName( ),
+                    cassandraArchivaManager.getProjectVersionMetadataFamilyName( ),
+                    cassandraArchivaManager.getArtifactMetadataFamilyName( ),
+                    cassandraArchivaManager.getMetadataFacetFamilyName( ),
+                    cassandraArchivaManager.getMailingListFamilyName( ),
+                    cassandraArchivaManager.getLicenseFamilyName( ),
+                    cassandraArchivaManager.getDependencyFamilyName( )
+                );
+                for ( String table : tables )
+                {
+                    session.execute( truncate( table ).build( ) );
+                }
 
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getNamespaceFamilyName() );
-
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getRepositoryFamilyName() );
-
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getProjectVersionMetadataFamilyName() );
-
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getArtifactMetadataFamilyName() );
-
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getMetadataFacetFamilyName() );
-
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getMailingListFamilyName() );
-
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getLicenseFamilyName() );
-
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       cassandraArchivaManager.getDependencyFamilyName() );
-
+            }
+        } else {
+            System.err.println( "cassandraArchivaManager is null" );
+        }
     }
 
 }

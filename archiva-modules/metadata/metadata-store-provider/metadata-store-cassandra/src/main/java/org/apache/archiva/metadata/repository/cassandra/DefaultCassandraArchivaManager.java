@@ -19,18 +19,14 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import me.prettyprint.cassandra.model.BasicColumnDefinition;
-import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
-import me.prettyprint.cassandra.serializers.StringSerializer;
-import me.prettyprint.cassandra.service.CassandraHostConfigurator;
-import me.prettyprint.cassandra.service.ThriftKsDef;
-import me.prettyprint.hector.api.Cluster;
-import me.prettyprint.hector.api.HConsistencyLevel;
-import me.prettyprint.hector.api.Keyspace;
-import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
-import me.prettyprint.hector.api.ddl.ColumnIndexType;
-import me.prettyprint.hector.api.ddl.ComparatorType;
-import me.prettyprint.hector.api.factory.HFactory;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
+import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
+import com.datastax.oss.driver.api.core.type.DataTypes;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateIndex;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
+import com.datastax.oss.driver.api.querybuilder.schema.CreateTableWithOptions;
 import org.apache.archiva.metadata.repository.RepositorySessionFactoryBean;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,8 +39,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
+import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.literal;
+import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.*;
 import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
 
 /**
@@ -53,12 +53,12 @@ import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames
  * @author Olivier Lamy
  * @since 2.0.0
  */
-@Service("archivaEntityManagerFactory#cassandra")
+@Service( "archivaEntityManagerFactory#cassandra" )
 public class DefaultCassandraArchivaManager
     implements CassandraArchivaManager
 {
 
-    private Logger logger = LoggerFactory.getLogger( getClass() );
+    private Logger logger = LoggerFactory.getLogger( getClass( ) );
 
     @Inject
     private ApplicationContext applicationContext;
@@ -69,16 +69,12 @@ public class DefaultCassandraArchivaManager
 
     private boolean started;
 
-    private Cluster cluster;
-
-    private Keyspace keyspace;
-
     // configurable???
     private String repositoryFamilyName = "repository";
 
     private String namespaceFamilyName = "namespace";
 
-    private String projectFamilyName = PROJECT.toString();
+    private String projectFamilyName = PROJECT.toString( );
 
     private String projectVersionMetadataFamilyName = "projectversionmetadata";
 
@@ -94,513 +90,448 @@ public class DefaultCassandraArchivaManager
 
     private String checksumFamilyName = "checksum";
 
-    @Value("${cassandra.host}")
+
+    private static String[] projectVersionMetadataColumns;
+
+
+    static
+    {
+        projectVersionMetadataColumns = new String[]{
+            DEFAULT_PRIMARY_KEY,
+            NAMESPACE_ID.toString( ),
+            REPOSITORY_NAME.toString( ),
+            PROJECT_VERSION.toString( ),
+            PROJECT_ID.toString( ),
+            DESCRIPTION.toString( ),
+            URL.toString( ),
+            NAME.toString( ),
+            VERSION.toString( ),
+            VERSION_PROPERTIES.toString( ),
+            "incomplete",
+            "ciManagement.system",
+            "ciManagement.url",
+            "issueManagement.system",
+            "issueManagement.url",
+            "organization.name",
+            "organization.url",
+            "scm.url",
+            "scm.connection",
+            "scm.developerConnection"
+        };
+        Arrays.sort( projectVersionMetadataColumns );
+    }
+
+    @Value( "${cassandra.host}" )
     private String cassandraHost;
 
-    @Value("${cassandra.port}")
+    @Value( "${cassandra.port}" )
     private String cassandraPort;
 
-    @Value("${cassandra.maxActive}")
+    @Value( "${cassandra.maxActive}" )
     private int maxActive;
 
-    @Value("${cassandra.readConsistencyLevel}")
+    @Value( "${cassandra.readConsistencyLevel}" )
     private String readConsistencyLevel;
 
-    @Value("${cassandra.writeConsistencyLevel}")
+    @Value( "${cassandra.writeConsistencyLevel}" )
     private String writeConsistencyLevel;
 
-    @Value("${cassandra.replicationFactor}")
+    @Value( "${cassandra.replicationFactor}" )
     private int replicationFactor;
 
-    @Value("${cassandra.keyspace.name}")
+    @Value( "${cassandra.keyspace.name}" )
     private String keyspaceName;
 
-    @Value("${cassandra.cluster.name}")
+    @Value( "${cassandra.cluster.name}" )
     private String clusterName;
 
     @Inject
     private RepositorySessionFactoryBean repositorySessionFactoryBean;
 
+    DriverConfigLoader configLoader;
+
+    CqlSession cqlSession;
+
+    @Override
+    public CqlSessionBuilder getSessionBuilder( )
+    {
+        return CqlSession.builder( ).withConfigLoader( configLoader ).withKeyspace( keyspaceName ).withLocalDatacenter( "datacenter1" );
+    }
+
+    @Override
+    public CqlSession getSession( )
+    {
+        if (cqlSession==null || cqlSession.isClosed()) {
+            this.cqlSession = getSessionBuilder( ).build( );
+        }
+        return this.cqlSession;
+    }
+
     @PostConstruct
-    public void initialize()
+    public void initialize( )
     {
         // skip initialisation if not cassandra
-        if ( !StringUtils.equals( repositorySessionFactoryBean.getId(), "cassandra" ) )
+        if ( !StringUtils.equals( repositorySessionFactoryBean.getId( ), "cassandra" ) )
         {
             return;
         }
-        final CassandraHostConfigurator configurator =
-            new CassandraHostConfigurator( cassandraHost + ":" + cassandraPort );
-        configurator.setMaxActive( maxActive );
-        //configurator.setCassandraThriftSocketTimeout(  );
 
-        cluster = HFactory.getOrCreateCluster( clusterName, configurator );
+        List<String> hostNames = new ArrayList<>( );
+        hostNames.add( cassandraHost + ":" + cassandraPort );
+        System.out.println( "Contact point: " + cassandraHost + ":" + cassandraPort );
+        configLoader =
+            DriverConfigLoader.programmaticBuilder( )
 
-        final ConfigurableConsistencyLevel consistencyLevelPolicy = new ConfigurableConsistencyLevel();
-        consistencyLevelPolicy.setDefaultReadConsistencyLevel( HConsistencyLevel.valueOf( readConsistencyLevel ) );
-        consistencyLevelPolicy.setDefaultWriteConsistencyLevel( HConsistencyLevel.valueOf( writeConsistencyLevel ) );
-        keyspace = HFactory.createKeyspace( keyspaceName, cluster, consistencyLevelPolicy );
+                .withStringList( DefaultDriverOption.CONTACT_POINTS, hostNames )
+                .withInt( DefaultDriverOption.CONNECTION_POOL_LOCAL_SIZE, maxActive )
+                .withInt( DefaultDriverOption.CONNECTION_POOL_REMOTE_SIZE, maxActive )
+                //.withInt( DefaultDriverOption.CONNECTION_MAX_REQUESTS, maxActive )
+                .withString( DefaultDriverOption.REQUEST_CONSISTENCY, readConsistencyLevel )
+                .build( );
 
-        List<ColumnFamilyDefinition> cfds = new ArrayList<>();
-
-        // namespace table
         {
 
-            final ColumnFamilyDefinition namespace =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getNamespaceFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
-            cfds.add( namespace );
-
-            // creating indexes for cql query
-
-            BasicColumnDefinition nameColumn = new BasicColumnDefinition();
-            nameColumn.setName( StringSerializer.get().toByteBuffer( NAME.toString() ) );
-            nameColumn.setIndexName( NAME.toString() );
-            nameColumn.setIndexType( ColumnIndexType.KEYS );
-            nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            namespace.addColumnDefinition( nameColumn );
-
-            BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
-            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
-            repositoryIdColumn.setIndexName( REPOSITORY_NAME.toString() );
-            repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
-            repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            namespace.addColumnDefinition( repositoryIdColumn );
+            CreateKeyspace cKeySpace = createKeyspace( keyspaceName ).ifNotExists( ).withSimpleStrategy( replicationFactor );
+            CqlSession.builder( ).withConfigLoader( configLoader ).withLocalDatacenter( "datacenter1" ).build().execute( cKeySpace.build( ) );
         }
 
-        // repository table
-        {
-            final ColumnFamilyDefinition repository =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getRepositoryFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
+        CqlSession session = getSession( );
 
-            cfds.add( repository );
-
-            BasicColumnDefinition nameColumn = new BasicColumnDefinition();
-            nameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
-            nameColumn.setIndexName( REPOSITORY_NAME.toString() );
-            nameColumn.setIndexType( ColumnIndexType.KEYS );
-            nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            repository.addColumnDefinition( nameColumn );
-        }
-
-        // project table
         {
 
-            final ColumnFamilyDefinition project = HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                                                          getProjectFamilyName(), //
-                                                                                          ComparatorType.UTF8TYPE );
-            cfds.add( project );
-
-            // creating indexes for cql query
-
-            BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
-            projectIdColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_ID.toString() ) );
-            projectIdColumn.setIndexName( PROJECT_ID.toString() );
-            projectIdColumn.setIndexType( ColumnIndexType.KEYS );
-            projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            project.addColumnDefinition( projectIdColumn );
-
-            BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
-            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
-            repositoryIdColumn.setIndexName( REPOSITORY_NAME.toString() );
-            repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
-            repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            project.addColumnDefinition( repositoryIdColumn );
-
-            BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
-            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( NAMESPACE_ID.toString() ) );
-            namespaceIdColumn.setIndexName( NAMESPACE_ID.toString() );
-            namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
-            namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            project.addColumnDefinition( namespaceIdColumn );
-        }
-
-        //projectversionmetadatamodel
-        {
-
-            final ColumnFamilyDefinition projectVersionMetadataModel =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getProjectVersionMetadataFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
-            cfds.add( projectVersionMetadataModel );
-
-            // creating indexes for cql query
-
-            BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
-            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( NAMESPACE_ID.toString() ) );
-            namespaceIdColumn.setIndexName( NAMESPACE_ID.toString() );
-            namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
-            namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            projectVersionMetadataModel.addColumnDefinition( namespaceIdColumn );
-
-            BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
-            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
-            repositoryNameColumn.setIndexName( REPOSITORY_NAME.toString() );
-            repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
-            repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            projectVersionMetadataModel.addColumnDefinition( repositoryNameColumn );
-
-            BasicColumnDefinition idColumn = new BasicColumnDefinition();
-            idColumn.setName( StringSerializer.get().toByteBuffer( ID.toString() ) );
-            idColumn.setIndexName( ID.toString() );
-            idColumn.setIndexType( ColumnIndexType.KEYS );
-            idColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            projectVersionMetadataModel.addColumnDefinition( idColumn );
-
-            BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
-            projectIdColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_ID.toString() ) );
-            projectIdColumn.setIndexName( PROJECT_ID.toString() );
-            projectIdColumn.setIndexType( ColumnIndexType.KEYS );
-            projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            projectVersionMetadataModel.addColumnDefinition( projectIdColumn );
-
-        }
-
-        // artifactmetadatamodel table
-        {
-
-            final ColumnFamilyDefinition artifactMetadataModel =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getArtifactMetadataFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
-            cfds.add( artifactMetadataModel );
-
-            // creating indexes for cql query
-
-            BasicColumnDefinition idColumn = new BasicColumnDefinition();
-            idColumn.setName( StringSerializer.get().toByteBuffer( ID.toString() ) );
-            idColumn.setIndexName( ID.toString() );
-            idColumn.setIndexType( ColumnIndexType.KEYS );
-            idColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( idColumn );
-
-            BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
-            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
-            repositoryNameColumn.setIndexName( REPOSITORY_NAME.toString() );
-            repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
-            repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( repositoryNameColumn );
-
-            BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
-            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( NAMESPACE_ID.toString() ) );
-            namespaceIdColumn.setIndexName( NAMESPACE_ID.toString() );
-            namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
-            namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( namespaceIdColumn );
-
-            BasicColumnDefinition projectColumn = new BasicColumnDefinition();
-            projectColumn.setName( StringSerializer.get().toByteBuffer( PROJECT.toString() ) );
-            projectColumn.setIndexName( PROJECT.toString() );
-            projectColumn.setIndexType( ColumnIndexType.KEYS );
-            projectColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( projectColumn );
-
-            BasicColumnDefinition projectVersionColumn = new BasicColumnDefinition();
-            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_VERSION.toString() ) );
-            projectVersionColumn.setIndexName( PROJECT_VERSION.toString() );
-            projectVersionColumn.setIndexType( ColumnIndexType.KEYS );
-            projectVersionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( projectVersionColumn );
-
-            BasicColumnDefinition versionColumn = new BasicColumnDefinition();
-            versionColumn.setName( StringSerializer.get().toByteBuffer( VERSION.toString() ) );
-            versionColumn.setIndexName( VERSION.toString() );
-            versionColumn.setIndexType( ColumnIndexType.KEYS );
-            versionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( versionColumn );
-
-            BasicColumnDefinition whenGatheredColumn = new BasicColumnDefinition();
-            whenGatheredColumn.setName( StringSerializer.get().toByteBuffer( WHEN_GATHERED.toString() ) );
-            whenGatheredColumn.setIndexName( WHEN_GATHERED.toString() );
-            whenGatheredColumn.setIndexType( ColumnIndexType.KEYS );
-            whenGatheredColumn.setValidationClass( ComparatorType.LONGTYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( whenGatheredColumn );
-
-            BasicColumnDefinition sha1Column = new BasicColumnDefinition();
-            sha1Column.setName( StringSerializer.get().toByteBuffer( SHA1.toString() ) );
-            sha1Column.setIndexName( SHA1.toString() );
-            sha1Column.setIndexType( ColumnIndexType.KEYS );
-            sha1Column.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( sha1Column );
-
-            BasicColumnDefinition md5Column = new BasicColumnDefinition();
-            md5Column.setName( StringSerializer.get().toByteBuffer( MD5.toString() ) );
-            md5Column.setIndexName( MD5.toString() );
-            md5Column.setIndexType( ColumnIndexType.KEYS );
-            md5Column.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            artifactMetadataModel.addColumnDefinition( md5Column );
-
-
-        }
-
-        // metadatafacetmodel table
-        {
-            final ColumnFamilyDefinition metadataFacetModel =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getMetadataFacetFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
-            cfds.add( metadataFacetModel );
-
-            // creating indexes for cql query
-
-            BasicColumnDefinition facetIdColumn = new BasicColumnDefinition();
-            facetIdColumn.setName( StringSerializer.get().toByteBuffer( FACET_ID.toString() ) );
-            facetIdColumn.setIndexName( FACET_ID.toString() );
-            facetIdColumn.setIndexType( ColumnIndexType.KEYS );
-            facetIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            metadataFacetModel.addColumnDefinition( facetIdColumn );
-
-            BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
-            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
-            repositoryNameColumn.setIndexName( REPOSITORY_NAME.toString() );
-            repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
-            repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            metadataFacetModel.addColumnDefinition( repositoryNameColumn );
-
-            BasicColumnDefinition nameColumn = new BasicColumnDefinition();
-            nameColumn.setName( StringSerializer.get().toByteBuffer( NAME.toString() ) );
-            nameColumn.setIndexName( NAME.toString() );
-            nameColumn.setIndexType( ColumnIndexType.KEYS );
-            nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            metadataFacetModel.addColumnDefinition( nameColumn );
-
-            BasicColumnDefinition namespaceColumn = new BasicColumnDefinition();
-            namespaceColumn.setName( StringSerializer.get().toByteBuffer( NAMESPACE_ID.toString() ) );
-            namespaceColumn.setIndexName( NAMESPACE_ID.toString() );
-            namespaceColumn.setIndexType( ColumnIndexType.KEYS );
-            namespaceColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            metadataFacetModel.addColumnDefinition( namespaceColumn );
-
-            BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
-            projectIdColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_ID.toString() ) );
-            projectIdColumn.setIndexName( PROJECT_ID.toString() );
-            projectIdColumn.setIndexType( ColumnIndexType.KEYS );
-            projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            metadataFacetModel.addColumnDefinition( projectIdColumn );
-
-            BasicColumnDefinition projectVersionColumn = new BasicColumnDefinition();
-            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_VERSION.toString() ) );
-            projectVersionColumn.setIndexName( PROJECT_VERSION.toString() );
-            projectVersionColumn.setIndexType( ColumnIndexType.KEYS );
-            projectVersionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            metadataFacetModel.addColumnDefinition( projectVersionColumn );
-
-        }
-
-        // Checksum table
-        {
-            final ColumnFamilyDefinition checksumCf =
-                    HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                            getChecksumFamilyName(), //
-                            ComparatorType.UTF8TYPE );
-
-            BasicColumnDefinition artifactMetatadaModel_key = new BasicColumnDefinition();
-            artifactMetatadaModel_key.setName( StringSerializer.get().toByteBuffer( "artifactMetadataModel.key" ) );
-            artifactMetatadaModel_key.setIndexName( "artifactMetadataModel_key" );
-            artifactMetatadaModel_key.setIndexType( ColumnIndexType.KEYS );
-            artifactMetatadaModel_key.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            checksumCf.addColumnDefinition( artifactMetatadaModel_key );
-
-
-            BasicColumnDefinition checksumAlgorithmColumn = new BasicColumnDefinition();
-            checksumAlgorithmColumn.setName( StringSerializer.get().toByteBuffer( CHECKSUM_ALG.toString() ) );
-            checksumAlgorithmColumn.setIndexName( CHECKSUM_ALG.toString() );
-            checksumAlgorithmColumn.setIndexType( ColumnIndexType.KEYS );
-            checksumAlgorithmColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            checksumCf.addColumnDefinition( checksumAlgorithmColumn );
-
-            BasicColumnDefinition checksumValueColumn = new BasicColumnDefinition();
-            checksumValueColumn.setName( StringSerializer.get().toByteBuffer( CHECKSUM_VALUE.toString() ) );
-            checksumValueColumn.setIndexName( CHECKSUM_VALUE.toString() );
-            checksumValueColumn.setIndexType( ColumnIndexType.KEYS );
-            checksumValueColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            checksumCf.addColumnDefinition( checksumValueColumn );
-
-            BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
-            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
-            repositoryNameColumn.setIndexName( REPOSITORY_NAME.toString() );
-            repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
-            repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            checksumCf.addColumnDefinition( repositoryNameColumn );
-
-
-            cfds.add( checksumCf );
-
-            // creating indexes for cql query
-
-        }
-
-        // mailinglist table
-        {
-            final ColumnFamilyDefinition mailingListCf =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getMailingListFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
-
-            BasicColumnDefinition projectVersionMetadataModel_key = new BasicColumnDefinition();
-            projectVersionMetadataModel_key.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataModel.key" ) );
-            projectVersionMetadataModel_key.setIndexName( "projectVersionMetadataModel_key" );
-            projectVersionMetadataModel_key.setIndexType( ColumnIndexType.KEYS );
-            projectVersionMetadataModel_key.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            mailingListCf.addColumnDefinition( projectVersionMetadataModel_key );
-
-            cfds.add( mailingListCf );
-
-            // creating indexes for cql query
-
-        }
-
-        // license table
-        {
-            final ColumnFamilyDefinition licenseCf =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getLicenseFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
-
-            BasicColumnDefinition projectVersionMetadataModel_key = new BasicColumnDefinition();
-            projectVersionMetadataModel_key.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataModel.key" ) );
-            projectVersionMetadataModel_key.setIndexName( "projectVersionMetadataModel_key" );
-            projectVersionMetadataModel_key.setIndexType( ColumnIndexType.KEYS );
-            projectVersionMetadataModel_key.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            licenseCf.addColumnDefinition( projectVersionMetadataModel_key );
-
-            cfds.add( licenseCf );
-
-            // creating indexes for cql query
-
-        }
-
-        // dependency table
-        {
-            final ColumnFamilyDefinition dependencyCf =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getDependencyFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
-            cfds.add( dependencyCf );
-
-            // creating indexes for cql query
-
-            BasicColumnDefinition groupIdColumn = new BasicColumnDefinition();
-            groupIdColumn.setName( StringSerializer.get().toByteBuffer( GROUP_ID.toString() ) );
-            groupIdColumn.setIndexName( "groupIdIdx" );
-            groupIdColumn.setIndexType( ColumnIndexType.KEYS );
-            groupIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            dependencyCf.addColumnDefinition( groupIdColumn );
-
-            BasicColumnDefinition projectVersionMetadataModel_key = new BasicColumnDefinition();
-            projectVersionMetadataModel_key.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataModel.key" ) );
-            projectVersionMetadataModel_key.setIndexName( "projectVersionMetadataModel_key" );
-            projectVersionMetadataModel_key.setIndexType( ColumnIndexType.KEYS );
-            projectVersionMetadataModel_key.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            dependencyCf.addColumnDefinition( projectVersionMetadataModel_key );
-
-        }
-
-        // TODO take care of update new table!!
-        { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
-            if ( cluster.describeKeyspace( keyspaceName ) == null )
+            // namespace table
             {
-                logger.info( "Creating Archiva Cassandra '{}' keyspace.", keyspaceName );
-                cluster.addKeyspace( HFactory.createKeyspaceDefinition( keyspaceName, //
-                                                                        ThriftKsDef.DEF_STRATEGY_CLASS, //
-                                                                        replicationFactor, //
-                                                                        cfds )
-                );
+                String tableName = getNamespaceFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( NAME.toString( ), DataTypes.TEXT )
+                    .withColumn( REPOSITORY_NAME.toString( ), DataTypes.TEXT )
+                    .withCompactStorage( );
+                session.execute( table.build( ) );
+                CreateIndex index = createIndex( NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( NAME.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( REPOSITORY_NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( REPOSITORY_NAME.toString( ) );
+                session.execute( index.build( ) );
             }
+
+            // Repository Table
+            {
+                String tableName = getRepositoryFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( REPOSITORY_NAME.toString( ), DataTypes.TEXT )
+                    .withCompactStorage( );
+                session.execute( table.build( ) );
+                CreateIndex index = createIndex( REPOSITORY_NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( REPOSITORY_NAME.toString( ) );
+                session.execute( index.build( ) );
+
+            }
+
+            // Project table
+            {
+                String tableName = getProjectFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( PROJECT_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( REPOSITORY_NAME.toString( ), DataTypes.TEXT )
+                    .withColumn( NAMESPACE_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( PROJECT_PROPERTIES.toString( ), DataTypes.frozenMapOf( DataTypes.TEXT, DataTypes.TEXT ) )
+                    .withCompactStorage( );
+                session.execute( table.build( ) );
+                CreateIndex index = createIndex( PROJECT_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( PROJECT_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( REPOSITORY_NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( REPOSITORY_NAME.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( NAMESPACE_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( NAMESPACE_ID.toString( ) );
+                session.execute( index.build( ) );
+
+            }
+
+            // Project Version Metadata Model
+            {
+                String tableName = getProjectVersionMetadataFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( NAMESPACE_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( REPOSITORY_NAME.toString( ), DataTypes.TEXT )
+                    .withColumn( PROJECT_VERSION.toString( ), DataTypes.TEXT )
+                    .withColumn( PROJECT_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( DESCRIPTION.toString( ), DataTypes.TEXT )
+                    .withColumn( URL.toString( ), DataTypes.TEXT )
+                    .withColumn( NAME.toString(), DataTypes.TEXT )
+                    .withColumn( VERSION.toString(), DataTypes.TEXT )
+                    .withColumn( VERSION_PROPERTIES.toString(), DataTypes.mapOf( DataTypes.TEXT, DataTypes.TEXT ) )
+                    .withColumn( "incomplete", DataTypes.BOOLEAN )
+                    .withColumn( "\"ciManagement.system\"", DataTypes.TEXT )
+                    .withColumn( "\"ciManagement.url\"", DataTypes.TEXT )
+                    .withColumn( "\"issueManagement.system\"", DataTypes.TEXT )
+                    .withColumn( "\"issueManagement.url\"", DataTypes.TEXT )
+                    .withColumn( "\"organization.name\"", DataTypes.TEXT )
+                    .withColumn( "\"organization.url\"", DataTypes.TEXT )
+                    .withColumn( "\"scm.url\"", DataTypes.TEXT )
+                    .withColumn( "\"scm.connection\"", DataTypes.TEXT )
+                    .withColumn( "\"scm.developerConnection\"", DataTypes.TEXT );
+                session.execute( table.build( ) );
+                CreateIndex index = createIndex( NAMESPACE_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( NAMESPACE_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( REPOSITORY_NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( REPOSITORY_NAME.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( PROJECT_VERSION.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( PROJECT_VERSION.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( PROJECT_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( PROJECT_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( VERSION_PROPERTIES.toString( ) + "_idx" ).ifNotExists( ).onTable( tableName ).andColumnEntries(  VERSION_PROPERTIES.toString( ) );
+                session.execute( index.build( ) );
+            }
+
+            // Artifact Metadata Model
+            {
+                String tableName = getArtifactMetadataFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( ID.toString( ), DataTypes.TEXT )
+                    .withColumn( REPOSITORY_NAME.toString( ), DataTypes.TEXT )
+                    .withColumn( NAMESPACE_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( PROJECT_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( PROJECT_VERSION.toString( ), DataTypes.TEXT )
+                    .withColumn( VERSION.toString( ), DataTypes.TEXT )
+                    .withColumn( WHEN_GATHERED.toString( ), DataTypes.BIGINT )
+                    .withColumn( SHA1.toString( ), DataTypes.TEXT )
+                    .withColumn( MD5.toString( ), DataTypes.TEXT )
+                    .withColumn( FILE_LAST_MODIFIED.toString(), DataTypes.BIGINT)
+                    .withColumn( SIZE.toString(), DataTypes.BIGINT )
+                    .withCompactStorage( );
+                session.execute( table.build( ) );
+
+                CreateIndex index = createIndex( ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( REPOSITORY_NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( REPOSITORY_NAME.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( NAMESPACE_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( NAMESPACE_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( PROJECT_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( PROJECT_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( PROJECT_VERSION.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( PROJECT_VERSION.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( VERSION.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( VERSION.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( WHEN_GATHERED.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( WHEN_GATHERED.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( SHA1.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( SHA1.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( MD5.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( MD5.toString( ) );
+                session.execute( index.build( ) );
+
+            }
+            // Metadata Facet Model
+            {
+                String tableName = getMetadataFacetFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( FACET_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( REPOSITORY_NAME.toString( ), DataTypes.TEXT )
+                    .withColumn( NAME.toString( ), DataTypes.TEXT )
+                    .withColumn( NAMESPACE_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( PROJECT_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( PROJECT_VERSION.toString( ), DataTypes.TEXT )
+                    .withColumn( KEY.toString(), DataTypes.TEXT )
+                    .withColumn( VALUE.toString(), DataTypes.TEXT)
+                    .withColumn( WHEN_GATHERED.toString(), DataTypes.BIGINT )
+                    .withCompactStorage( );
+                session.execute( table.build( ) );
+
+                CreateIndex index = createIndex( FACET_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( FACET_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( REPOSITORY_NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( REPOSITORY_NAME.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( NAME.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( NAMESPACE_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( NAMESPACE_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( PROJECT_ID.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( PROJECT_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( PROJECT_VERSION.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( PROJECT_VERSION.toString( ) );
+                session.execute( index.build( ) );
+            }
+            // Checksum Table
+            {
+                String tableName = getChecksumFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( "\"artifactMetadataModel.key\"", DataTypes.TEXT )
+                    .withColumn( CHECKSUM_ALG.toString( ), DataTypes.TEXT )
+                    .withColumn( CHECKSUM_VALUE.toString( ), DataTypes.TEXT )
+                    .withColumn( REPOSITORY_NAME.toString( ), DataTypes.TEXT )
+                    .withCompactStorage( );
+                session.execute( table.build( ) );
+
+                CreateIndex index = createIndex( CHECKSUM_ALG.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( CHECKSUM_ALG.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( CHECKSUM_VALUE.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( CHECKSUM_VALUE.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( REPOSITORY_NAME.toString( ) ).ifNotExists( ).onTable( tableName ).andColumn( REPOSITORY_NAME.toString( ) );
+                session.execute( index.build( ) );
+            }
+            // Mailinglist Table
+            {
+                String tableName = getMailingListFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( NAME.toString(), DataTypes.TEXT )
+                    .withColumn( "\"projectVersionMetadataModel.key\"", DataTypes.TEXT )
+                    .withColumn( "mainArchiveUrl", DataTypes.TEXT )
+                    .withColumn( "postAddress", DataTypes.TEXT )
+                    .withColumn( "subscribeAddress", DataTypes.TEXT )
+                    .withColumn( "unsubscribeAddress", DataTypes.TEXT )
+                    .withColumn( "otherArchive", DataTypes.frozenListOf( DataTypes.TEXT ) )
+                    .withCompactStorage( );
+                session.execute( table.build( ) );
+
+                CreateIndex index = createIndex( "\"projectVersionMetadataModel_key\"" ).ifNotExists( ).onTable( tableName ).andColumn( "\"\"projectVersionMetadataModel.key\"\"" );
+                session.execute( index.build( ) );
+            }
+
+            // License Table
+            {
+                String tableName = getLicenseFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( "\"projectVersionMetadataModel.key\"", DataTypes.TEXT )
+                    .withColumn( NAME.toString(), DataTypes.TEXT )
+                    .withColumn( URL.toString(), DataTypes.TEXT )
+                    .withCompactStorage( );
+                session.execute( table.build( ) );
+
+                CreateIndex index = createIndex( "\"projectVersionMetadataModel_key\"" ).ifNotExists( ).onTable( tableName ).andColumn( "\"\"projectVersionMetadataModel.key\"\"" );
+                session.execute( index.build( ) );
+            }
+
+            // Dependency Table
+            {
+                String tableName = getDependencyFamilyName( );
+                CreateTableWithOptions table = createTable( keyspaceName, tableName ).ifNotExists( )
+                    .withPartitionKey( CassandraArchivaManager.DEFAULT_PRIMARY_KEY, DataTypes.TEXT )
+                    .withColumn( REPOSITORY_NAME.toString( ), DataTypes.TEXT )
+                    .withColumn( GROUP_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( ARTIFACT_ID.toString( ), DataTypes.TEXT )
+                    .withColumn( VERSION.toString( ), DataTypes.TEXT )
+                    .withColumn( "\"projectVersionMetadataModel.key\"", DataTypes.TEXT )
+                    .withColumn( "classifier", DataTypes.TEXT )
+                    .withColumn( "optional", DataTypes.TEXT )
+                    .withColumn( "scope", DataTypes.TEXT )
+                    .withColumn( "systemPath", DataTypes.TEXT )
+                    .withColumn( "type", DataTypes.TEXT )
+                    .withCompactStorage( );
+
+                session.execute( table.build( ) );
+
+                CreateIndex index = createIndex( "groupIdIdx" ).ifNotExists( ).onTable( tableName ).andColumn( GROUP_ID.toString( ) );
+                session.execute( index.build( ) );
+                index = createIndex( "\"projectVersionMetadataModel_key\"" ).ifNotExists( ).onTable( tableName ).andColumn( "\"\"projectVersionMetadataModel.key\"\"" );
+                session.execute( index.build( ) );
+
+            }
+
         }
+
 
     }
 
     @Override
-    public void start()
+    public void start( )
     {
     }
 
     @PreDestroy
     @Override
-    public void shutdown()
+    public void shutdown( )
     {
+        if (this.cqlSession!=null) {
+            this.cqlSession.close( );
+        }
     }
 
 
     @Override
-    public boolean started()
+    public boolean started( )
     {
         return started;
     }
 
 
     @Override
-    public Keyspace getKeyspace()
-    {
-        return keyspace;
-    }
-
-    @Override
-    public Cluster getCluster()
-    {
-        return cluster;
-    }
-
-    @Override
-    public String getRepositoryFamilyName()
+    public String getRepositoryFamilyName( )
     {
         return repositoryFamilyName;
     }
 
     @Override
-    public String getNamespaceFamilyName()
+    public String getNamespaceFamilyName( )
     {
         return namespaceFamilyName;
     }
 
     @Override
-    public String getProjectFamilyName()
+    public String getProjectFamilyName( )
     {
         return projectFamilyName;
     }
 
     @Override
-    public String getProjectVersionMetadataFamilyName()
+    public String getProjectVersionMetadataFamilyName( )
     {
         return projectVersionMetadataFamilyName;
     }
 
+    public String[] getProjectVersionMetadataColumns() {
+        return projectVersionMetadataColumns;
+    }
+
     @Override
-    public String getArtifactMetadataFamilyName()
+    public String getArtifactMetadataFamilyName( )
     {
         return artifactMetadataFamilyName;
     }
 
     @Override
-    public String getMetadataFacetFamilyName()
+    public String getMetadataFacetFamilyName( )
     {
         return metadataFacetFamilyName;
     }
 
     @Override
-    public String getMailingListFamilyName()
+    public String getMailingListFamilyName( )
     {
         return mailingListFamilyName;
     }
 
     @Override
-    public String getLicenseFamilyName()
+    public String getLicenseFamilyName( )
     {
         return licenseFamilyName;
     }
 
     @Override
-    public String getDependencyFamilyName()
+    public String getDependencyFamilyName( )
     {
         return dependencyFamilyName;
     }
 
     @Override
-    public String getChecksumFamilyName() {
+    public String getChecksumFamilyName( )
+    {
         return checksumFamilyName;
+    }
+
+    @Override
+    public DriverConfigLoader getConfigLoader( )
+    {
+        return configLoader;
+    }
+
+    @Override
+    public String getKeyspaceName( )
+    {
+        return keyspaceName;
     }
 }

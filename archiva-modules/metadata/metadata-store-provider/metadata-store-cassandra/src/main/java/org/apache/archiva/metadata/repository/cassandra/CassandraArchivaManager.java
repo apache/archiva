@@ -19,8 +19,9 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import me.prettyprint.hector.api.Cluster;
-import me.prettyprint.hector.api.Keyspace;
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.CqlSessionBuilder;
+import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 
 /**
  * @author Olivier Lamy
@@ -28,15 +29,13 @@ import me.prettyprint.hector.api.Keyspace;
  */
 public interface CassandraArchivaManager
 {
+    String DEFAULT_PRIMARY_KEY = "key";
+
     void start();
 
     void shutdown();
 
     boolean started();
-
-    Keyspace getKeyspace();
-
-    Cluster getCluster();
 
     String getRepositoryFamilyName();
 
@@ -45,6 +44,8 @@ public interface CassandraArchivaManager
     String getProjectFamilyName();
 
     String getProjectVersionMetadataFamilyName();
+
+    String[] getProjectVersionMetadataColumns();
 
     String getArtifactMetadataFamilyName();
 
@@ -57,5 +58,13 @@ public interface CassandraArchivaManager
     String getDependencyFamilyName();
 
     String getChecksumFamilyName();
+
+    DriverConfigLoader getConfigLoader();
+
+    CqlSessionBuilder getSessionBuilder( );
+
+    CqlSession getSession();
+
+    String getKeyspaceName();
 
 }

@@ -35,7 +35,7 @@
 
     <logger name="org.apache.archiva.metadata.repository.cassandra" level="debug"/>
 
-    <root level="info" includeLocation="true">
+    <root level="debug" includeLocation="true">
       <appender-ref ref="console"/>
     </root>
   </loggers>
