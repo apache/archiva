@@ -185,6 +185,7 @@ public class DefaultCassandraArchivaManager
                 .withInt( DefaultDriverOption.CONNECTION_POOL_REMOTE_SIZE, maxActive )
                 //.withInt( DefaultDriverOption.CONNECTION_MAX_REQUESTS, maxActive )
                 .withString( DefaultDriverOption.REQUEST_CONSISTENCY, readConsistencyLevel )
+                .withInt( DefaultDriverOption.REQUEST_TIMEOUT, 10 )
                 .build( );
 
         {
