@@ -191,8 +191,11 @@ public class CassandraMetadataRepositoryTest
                 );
                 CompletableFuture.allOf( tables.stream( ).map( table -> session.executeAsync( truncate( table ).build( ) ) )
                         .map( CompletionStage::toCompletableFuture ).collect( Collectors.toList( ) ).toArray( new CompletableFuture[0] ) )
-                    .thenAccept( ( c ) -> {
+                    .whenComplete( ( c, e ) -> {
                         if ( clearedFlag != null ) clearedFlag.set( true );
+                        if (e!=null) {
+                            System.err.println( "TRUNCATE ERROR DETECTED: " + e.getMessage( ) );
+                        }
                     } ).get( )
                 ;
             }

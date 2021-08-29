@@ -398,13 +398,16 @@
               <startNativeTransport>true</startNativeTransport>
               <logLevel>INFO</logLevel>
               <loadAfterFirstStart>false</loadAfterFirstStart>
-              <yaml>
-                broadcast_rpc_address: 127.0.0.1
-              </yaml>
               <systemPropertyVariables>
-                <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
+                <cassandra.jmx.local.port>${cassandra.jmxPort}</cassandra.jmx.local.port>
               </systemPropertyVariables>
-
+              <yaml><![CDATA[rpc_address: 127.0.0.1
+broadcast_rpc_address: 127.0.0.1
+listen_address: 127.0.0.1
+auto_snapshot: false
+snapshot_before_compaction: false
+num_tokens: 1
+]]></yaml>
             </configuration>
           </execution>
           <execution>
