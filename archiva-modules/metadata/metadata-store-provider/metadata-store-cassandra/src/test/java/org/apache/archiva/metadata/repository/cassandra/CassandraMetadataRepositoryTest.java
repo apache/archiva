@@ -44,7 +44,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.truncate;
 import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.dropTable;
@@ -72,7 +75,7 @@ public class CassandraMetadataRepositoryTest
 
     long cTime;
     int testNum = 0;
-    AtomicBoolean clearedTables = new AtomicBoolean( false );
+    final AtomicBoolean clearedTables = new AtomicBoolean( false );
 
 
     @Override
@@ -121,8 +124,7 @@ public class CassandraMetadataRepositoryTest
 
         if (!clearedTables.get())
         {
-            clearReposAndNamespace( cassandraArchivaManager );
-            clearedTables.set( true );
+            clearReposAndNamespace( cassandraArchivaManager, clearedTables );
         }
         System.err.println( "Finished setting up - "+testInfo.getDisplayName() + " - " + (System.currentTimeMillis( ) - cTime) +"ms");
     }
@@ -164,13 +166,12 @@ public class CassandraMetadataRepositoryTest
         throws Exception
     {
         System.err.println( "Shutting down - " + (testNum-1) + " - " + testInfo.getDisplayName( ) + " - " + ( System.currentTimeMillis( ) - cTime ) +"ms");
-        clearReposAndNamespace( cassandraArchivaManager );
-        clearedTables.set( true );
+        clearReposAndNamespace( cassandraArchivaManager, clearedTables );
         super.tearDown();
         System.err.println( "Shutting down finished - " + testInfo.getDisplayName( ) + " - " + ( System.currentTimeMillis( ) - cTime ) +"ms");
     }
 
-    static void clearReposAndNamespace( CassandraArchivaManager cassandraArchivaManager )
+    static void clearReposAndNamespace( final CassandraArchivaManager cassandraArchivaManager, final AtomicBoolean clearedFlag )
         throws Exception
     {
         if (cassandraArchivaManager!=null)
@@ -188,15 +189,21 @@ public class CassandraMetadataRepositoryTest
                     cassandraArchivaManager.getLicenseFamilyName( ),
                     cassandraArchivaManager.getDependencyFamilyName( )
                 );
-                for ( String table : tables )
-                {
-                    session.execute( truncate( table ).build( ) );
-                }
-
+                CompletableFuture.allOf( tables.stream( ).map( table -> session.executeAsync( truncate( table ).build( ) ) )
+                        .map( CompletionStage::toCompletableFuture ).collect( Collectors.toList( ) ).toArray( new CompletableFuture[0] ) )
+                    .thenAccept( ( c ) -> {
+                        if ( clearedFlag != null ) clearedFlag.set( true );
+                    } ).get( )
+                ;
             }
         } else {
             System.err.println( "cassandraArchivaManager is null" );
         }
+    }
+
+    static void clearReposAndNamespace( final CassandraArchivaManager cassandraArchivaManager)
+        throws Exception {
+        clearReposAndNamespace( cassandraArchivaManager, null );
     }
 
 }

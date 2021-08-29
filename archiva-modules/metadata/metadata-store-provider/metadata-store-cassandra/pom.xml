@@ -396,7 +396,7 @@
               <addTestClasspath>false</addTestClasspath>
               <startWaitSeconds>500</startWaitSeconds>
               <startNativeTransport>true</startNativeTransport>
-              <logLevel>DEBUG</logLevel>
+              <logLevel>INFO</logLevel>
               <loadAfterFirstStart>false</loadAfterFirstStart>
               <yaml>
                 broadcast_rpc_address: 127.0.0.1
@@ -404,6 +404,7 @@
               <systemPropertyVariables>
                 <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
               </systemPropertyVariables>
+
             </configuration>
           </execution>
           <execution>
