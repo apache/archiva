@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -185,7 +186,7 @@ public class DefaultCassandraArchivaManager
                 .withInt( DefaultDriverOption.CONNECTION_POOL_REMOTE_SIZE, maxActive )
                 //.withInt( DefaultDriverOption.CONNECTION_MAX_REQUESTS, maxActive )
                 .withString( DefaultDriverOption.REQUEST_CONSISTENCY, readConsistencyLevel )
-                .withInt( DefaultDriverOption.REQUEST_TIMEOUT, 10 )
+                .withDuration( DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofSeconds( 10 ) )
                 .build( );
 
         {
