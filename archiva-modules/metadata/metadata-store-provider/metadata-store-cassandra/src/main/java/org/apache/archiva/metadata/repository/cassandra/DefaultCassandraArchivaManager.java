@@ -129,6 +129,9 @@ public class DefaultCassandraArchivaManager
     @Value( "${cassandra.maxActive}" )
     private int maxActive;
 
+    @Value( "${cassandra.driverTimeoutMs}" )
+    private int driverTimeoutMs;
+
     @Value( "${cassandra.readConsistencyLevel}" )
     private String readConsistencyLevel;
 
@@ -186,7 +189,7 @@ public class DefaultCassandraArchivaManager
                 .withInt( DefaultDriverOption.CONNECTION_POOL_REMOTE_SIZE, maxActive )
                 //.withInt( DefaultDriverOption.CONNECTION_MAX_REQUESTS, maxActive )
                 .withString( DefaultDriverOption.REQUEST_CONSISTENCY, readConsistencyLevel )
-                .withDuration( DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofSeconds( 10 ) )
+                .withDuration( DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis( driverTimeoutMs ) )
                 .build( );
 
         {
