@@ -81,6 +81,10 @@
           <groupId>org.apache.lucene</groupId>
           <artifactId>lucene-suggest</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.tika</groupId>
+          <artifactId>tika-core</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <!-- We reapply the original transitive dependencies -->
@@ -112,6 +116,11 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-search</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-core</artifactId>
+      <version>1.27</version>
     </dependency>
   </dependencies>
 

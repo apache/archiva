@@ -31,7 +31,7 @@
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
-    <cassandraVersion>4.0.0</cassandraVersion>
+    <cassandraVersion>3.11.10</cassandraVersion>
     <datastax.driver.version>4.13.0</datastax.driver.version>
   </properties>
 
@@ -103,85 +103,6 @@
       <artifactId>modelmapper</artifactId>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>1.27</version>
-    </dependency>
--->
-    <dependency>
-      <groupId>org.apache.cassandra</groupId>
-      <artifactId>cassandra-all</artifactId>
-      <version>${cassandraVersion}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jcl-over-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.mortbay.jetty</groupId>
-          <artifactId>jetty</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.logging</groupId>
-          <artifactId>jboss-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.inject</groupId>
-          <artifactId>javax.inject</artifactId>
-        </exclusion>
-          <exclusion>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-          </exclusion>
-        <exclusion>
-          <groupId>com.fasterxml.jackson.core</groupId>
-          <artifactId>jackson-core</artifactId>
-        </exclusion>
-        <!-- Brings hibernate-validator dependency with ancient version, which is vulnerable. Not necessary for archiva. -->
-        <exclusion>
-          <groupId>com.addthis.metrics</groupId>
-          <artifactId>reporter-config3</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.openhft</groupId>
-          <artifactId>chronicle-wire</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>net.openhft</groupId>
-      <artifactId>chronicle-wire</artifactId>
-      <version>2.21.89</version>
-      <scope>test</scope>
-    </dependency>
-
     <dependency>
       <groupId>com.datastax.oss</groupId>
       <artifactId>java-driver-core</artifactId>
@@ -198,93 +119,6 @@
       <version>${datastax.driver.version}</version>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>org.hectorclient</groupId>
-      <artifactId>hector-core</artifactId>
-      <version>1.1-4</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.ecyrd.speed4j</groupId>
-          <artifactId>speed4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.yammer.metrics</groupId>
-          <artifactId>metrics-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>log4j-over-slf4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    -->
-    <!--
-    <dependency>
-      <groupId>org.apache.cassandra</groupId>
-      <artifactId>cassandra-thrift</artifactId>
-      <version>${cassandraVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-          <exclusion>
-            <groupId>org.apache.ant</groupId>
-            <artifactId>ant</artifactId>
-          </exclusion>
-      </exclusions>
-    </dependency>
-    -->
-    <!-- Transient dependencies of cassandra that are selected to use a higher version -->
-    <!--
-    <dependency>
-      <groupId>org.apache.thrift</groupId>
-      <artifactId>libthrift</artifactId>
-      <version>0.13.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.annotation</groupId>
-          <artifactId>javax.annotation-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.mindrot</groupId>
-      <artifactId>jbcrypt</artifactId>
-      <version>0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.tika</groupId>
-      <artifactId>tika-core</artifactId>
-      <version>1.26</version>
-    </dependency>
--->
-    <!-- Transitive dependency. Declared here to increase the version. -->
-    <!--
-    <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
-      <version>${netty.version}</version>
-    </dependency>
-    -->
-    <!--
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-    </dependency>
--->
-    <!-- Is a dependency of cassandra -> hibernate-validator and replaced by new version -->
-    <!--
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-    </dependency>
-    -->
 
     <!-- TEST Scope -->
     <dependency>
@@ -352,6 +186,7 @@
         <filtering>true</filtering>
       </testResource>
     </testResources>
+
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -432,7 +267,7 @@ num_tokens: 1
             <dependency>
               <groupId>org.apache.cassandra</groupId>
               <artifactId>cassandra-all</artifactId>
-              <version>3.11.10</version>
+              <version>${cassandraVersion}</version>
             </dependency>
         </dependencies>
       </plugin>
@@ -479,7 +314,6 @@ num_tokens: 1
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <executions>
-
           </executions>
           <configuration>
             <skip>true</skip>
@@ -492,6 +326,7 @@ num_tokens: 1
           <configuration>
             <excludes>
               <exclude>src/cassandra/**</exclude>
+              <exclude>src/test/resources/cassandra-test.yaml</exclude>
             </excludes>
           </configuration>
         </plugin>

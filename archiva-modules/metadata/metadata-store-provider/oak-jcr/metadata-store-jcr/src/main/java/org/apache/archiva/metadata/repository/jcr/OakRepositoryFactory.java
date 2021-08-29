@@ -131,6 +131,7 @@ public class OakRepositoryFactory
     int cacheSizeInMB = 20;
     int cacheExpiryInSecs = 300;
     int threadPoolSize = 5;
+    long queueTimeOutMs = 60000;
 
     private StatisticsProvider statisticsProvider;
 
@@ -281,7 +282,7 @@ public class OakRepositoryFactory
             log.info("Hybrid indexing feature disabled");
             return;
         }
-        documentQueue = new DocumentQueue( queueSize, tracker, getExecutorService(), statisticsProvider);
+        documentQueue = new DocumentQueue( queueSize, queueTimeOutMs, tracker, getExecutorService(), statisticsProvider);
         LocalIndexObserver localIndexObserver = new LocalIndexObserver(documentQueue, statisticsProvider);
 
         int observerQueueSize = 1000;

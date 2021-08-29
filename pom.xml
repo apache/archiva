@@ -64,8 +64,8 @@
 
 
     <!-- dependencies of maven modules -->
-    <jsoup.version>1.12.1</jsoup.version>
-    <rome.version>1.13.1</rome.version>
+    <jsoup.version>1.14.2</jsoup.version>
+    <rome.version>1.16.0</rome.version>
     <cronutils.version>9.1.3</cronutils.version>
 
     <lucene.version>4.10.4</lucene.version>
@@ -74,7 +74,7 @@
     <javax.jcr.version>2.0</javax.jcr.version>
     <!-- If you change the JCR OAK version, you may have to update the pom.xml in the module oak-jcr-lucene
          to adapt to dependency changes -->
-    <jcr-oak.version>1.30.0</jcr-oak.version>
+    <jcr-oak.version>1.40.0</jcr-oak.version>
     <netty.version>4.1.50.Final</netty.version>
 
 
