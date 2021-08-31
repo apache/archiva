@@ -36,7 +36,7 @@ import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryRequest;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.Wagon;
@@ -103,7 +103,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
 
     private WagonFactory wagonFactory;

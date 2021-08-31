@@ -21,14 +21,13 @@ package org.apache.archiva.consumers.lucene;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.utils.PathUtil;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
-import org.apache.archiva.components.taskqueue.TaskQueueException;
-import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
-import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
+import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -45,7 +44,11 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * NexusIndexerConsumerTest
@@ -100,11 +103,7 @@ public class NexusIndexerConsumerTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     @Override
     @Before

@@ -26,24 +26,21 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
@@ -65,11 +62,7 @@ public abstract class AbstractArtifactConsumerTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
 
     @Before

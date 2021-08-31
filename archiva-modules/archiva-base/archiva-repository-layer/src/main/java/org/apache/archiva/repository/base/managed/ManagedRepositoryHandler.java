@@ -32,7 +32,6 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryHandler;
 import org.apache.archiva.repository.RepositoryHandlerManager;
 import org.apache.archiva.repository.RepositoryProvider;
-import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryState;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.AbstractRepositoryHandler;
@@ -66,21 +65,21 @@ public class ManagedRepositoryHandler
     implements RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration>
 {
     private static final Logger log = LoggerFactory.getLogger( ManagedRepositoryHandler.class );
-    private final RepositoryHandlerManager repositoryRegistry;
+    private final RepositoryHandlerManager repositoryHandlerManager;
     private final RepositoryContentFactory repositoryContentFactory;
 
 
     IndexManagerFactory indexManagerFactory;
 
 
-    public ManagedRepositoryHandler( RepositoryHandlerManager repositoryRegistry,
+    public ManagedRepositoryHandler( RepositoryHandlerManager repositoryHandlerManager,
                                      ConfigurationHandler configurationHandler, IndexManagerFactory indexManagerFactory,
                                      @Named( "repositoryContentFactory#default" )
                                          RepositoryContentFactory repositoryContentFactory
     )
     {
         super( ManagedRepository.class, ManagedRepositoryConfiguration.class, configurationHandler );
-        this.repositoryRegistry = repositoryRegistry;
+        this.repositoryHandlerManager = repositoryHandlerManager;
         this.indexManagerFactory = indexManagerFactory;
         this.repositoryContentFactory = repositoryContentFactory;
     }
@@ -89,10 +88,10 @@ public class ManagedRepositoryHandler
     @PostConstruct
     public void init( )
     {
-        log.debug( "Initializing managed repository handler " + repositoryRegistry.toString( ) );
+        log.debug( "Initializing repository handler " + ManagedRepositoryHandler.class );
         initializeStorage( );
         // We are registering this class on the registry. This is necessary to avoid circular dependencies via injection.
-        this.repositoryRegistry.registerHandler( this );
+        this.repositoryHandlerManager.registerHandler( this );
     }
 
     private void initializeStorage( )
@@ -174,6 +173,10 @@ public class ManagedRepositoryHandler
             for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
             {
                 String id = repoConfig.getId( );
+                if (result.containsKey( id )) {
+                    log.error( "There are repositories with the same id in the configuration: {}", id );
+                    continue;
+                }
                 ManagedRepository repo;
                 if ( currentInstances.containsKey( id ) )
                 {
@@ -246,7 +249,7 @@ public class ManagedRepositoryHandler
         {
             throw new RepositoryException( "Could not create repository '" + id + "': " + e.getMessage( ) );
         }
-        repo.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
+        repo.registerEventHandler( RepositoryEvent.ANY, repositoryHandlerManager );
         updateReferences( repo, null );
         repo.setLastState( RepositoryState.REFERENCES_SET );
         return repo;
@@ -309,7 +312,7 @@ public class ManagedRepositoryHandler
             throw new RepositoryException( "Provider not found for repository type: " + repositoryConfiguration.getType( ) );
         }
         final ManagedRepository repo = provider.createManagedInstance( repositoryConfiguration );
-        repo.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
+        repo.registerEventHandler( RepositoryEvent.ANY, repositoryHandlerManager );
         updateReferences( repo, null );
         if ( repo instanceof EditableRepository )
         {
@@ -337,28 +340,28 @@ public class ManagedRepositoryHandler
     }
 
     @Override
-    public ManagedRepository put( ManagedRepository managedRepository ) throws RepositoryException
+    public ManagedRepository put( ManagedRepository repository ) throws RepositoryException
     {
-        final String id = managedRepository.getId( );
+        final String id = repository.getId( );
         ManagedRepository originRepo = getRepositories( ).remove( id );
-        if ( originRepo == null && repositoryRegistry.isRegisteredId( id ) )
+        if ( originRepo == null && repositoryHandlerManager.isRegisteredId( id ) )
         {
             throw new RepositoryException( "There exists a repository with id " + id + ". Could not update with managed repository." );
         }
         try
         {
-            if ( originRepo != null && managedRepository != originRepo )
+            if ( originRepo != null && repository != originRepo )
             {
                 deactivateRepository( originRepo );
                 pushEvent( LifecycleEvent.UNREGISTERED, originRepo );
             }
-            RepositoryProvider provider = getProvider( managedRepository.getType( ) );
-            ManagedRepositoryConfiguration newCfg = provider.getManagedConfiguration( managedRepository );
+            RepositoryProvider provider = getProvider( repository.getType( ) );
+            ManagedRepositoryConfiguration newCfg = provider.getManagedConfiguration( repository );
             getConfigurationHandler( ).getLock( ).writeLock( ).lock( );
             try
             {
                 Configuration configuration = getConfigurationHandler( ).getBaseConfiguration( );
-                updateReferences( managedRepository, newCfg );
+                updateReferences( repository, newCfg );
                 ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById( id );
                 if ( oldCfg != null )
                 {
@@ -366,16 +369,16 @@ public class ManagedRepositoryHandler
                 }
                 configuration.addManagedRepository( newCfg );
                 getConfigurationHandler( ).save( configuration, ConfigurationHandler.REGISTRY_EVENT_TAG );
-                setLastState( managedRepository, RepositoryState.SAVED );
-                activateRepository( managedRepository );
+                setLastState( repository, RepositoryState.SAVED );
+                activateRepository( repository );
             }
             finally
             {
                 getConfigurationHandler( ).getLock( ).writeLock( ).unlock( );
             }
-            getRepositories( ).put( id, managedRepository );
-            setLastState( managedRepository, RepositoryState.REGISTERED );
-            return managedRepository;
+            getRepositories( ).put( id, repository );
+            setLastState( repository, RepositoryState.REGISTERED );
+            return repository;
         }
         catch ( Exception e )
         {
@@ -395,10 +398,10 @@ public class ManagedRepositoryHandler
 
 
     @Override
-    public ManagedRepository put( ManagedRepositoryConfiguration managedRepositoryConfiguration ) throws RepositoryException
+    public ManagedRepository put( ManagedRepositoryConfiguration repositoryConfiguration ) throws RepositoryException
     {
-        final String id = managedRepositoryConfiguration.getId( );
-        final RepositoryType repositoryType = RepositoryType.valueOf( managedRepositoryConfiguration.getType( ) );
+        final String id = repositoryConfiguration.getId( );
+        final RepositoryType repositoryType = RepositoryType.valueOf( repositoryConfiguration.getType( ) );
         final RepositoryProvider provider = getProvider( repositoryType );
         ReentrantReadWriteLock.WriteLock configLock = this.getConfigurationHandler( ).getLock( ).writeLock( );
         configLock.lock( );
@@ -413,16 +416,16 @@ public class ManagedRepositoryHandler
             oldRepository = repo == null ? null : clone( repo, id );
             if ( repo == null )
             {
-                repo = put( managedRepositoryConfiguration, configuration );
+                repo = put( repositoryConfiguration, configuration );
             }
             else
             {
-                setManagedRepositoryDefaults( managedRepositoryConfiguration );
-                provider.updateManagedInstance( (EditableManagedRepository) repo, managedRepositoryConfiguration );
+                setRepositoryDefaults( repositoryConfiguration );
+                provider.updateManagedInstance( (EditableManagedRepository) repo, repositoryConfiguration );
                 updated = true;
                 pushEvent( LifecycleEvent.UPDATED, repo );
             }
-            registerNewRepository( managedRepositoryConfiguration, repo, configuration, updated );
+            registerNewRepository( repositoryConfiguration, repo, configuration, updated );
         }
         catch ( IndeterminateConfigurationException | RegistryException e )
         {
@@ -452,7 +455,7 @@ public class ManagedRepositoryHandler
         final String id = repositoryConfiguration.getId( );
         final RepositoryType repoType = RepositoryType.valueOf( repositoryConfiguration.getType( ) );
         ManagedRepository repo;
-        setManagedRepositoryDefaults( repositoryConfiguration );
+        setRepositoryDefaults( repositoryConfiguration );
         if ( getRepositories( ).containsKey( id ) )
         {
             repo = clone( getRepositories( ).get( id ), id );
@@ -480,7 +483,7 @@ public class ManagedRepositoryHandler
     }
 
     @SuppressWarnings( "unused" )
-    private void setManagedRepositoryDefaults( ManagedRepositoryConfiguration repositoryConfiguration )
+    private void setRepositoryDefaults( ManagedRepositoryConfiguration repositoryConfiguration )
     {
         // We do nothing here
     }
@@ -492,7 +495,7 @@ public class ManagedRepositoryHandler
         ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration( repo );
         cfg.setId( id );
         ManagedRepository cloned = provider.createManagedInstance( cfg );
-        cloned.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
+        cloned.registerEventHandler( RepositoryEvent.ANY, repositoryHandlerManager );
         setLastState( cloned, RepositoryState.CREATED );
         return cloned;
     }
@@ -538,20 +541,7 @@ public class ManagedRepositoryHandler
                 createIndexingContext( editableRepo );
             }
         }
-        repo.registerEventHandler( RepositoryEvent.ANY, repositoryRegistry );
+        repo.registerEventHandler( RepositoryEvent.ANY, repositoryHandlerManager );
     }
 
-    @Override
-    public void close( )
-    {
-        getRepositories( ).values( ).stream( ).forEach(
-            r -> deactivateRepository( r )
-        );
-    }
-
-    @Override
-    public void deactivateRepository( ManagedRepository repository )
-    {
-        repository.close( );
-    }
 }

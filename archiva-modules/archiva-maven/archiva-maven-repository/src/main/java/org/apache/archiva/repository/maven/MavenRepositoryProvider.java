@@ -315,10 +315,11 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             credentials.setPassword(new char[0]);
         }
         IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
-        if (cfg.getIndexDir() != null) {
-            indexCreationFeature.setIndexPath(getURIFromString(cfg.getIndexDir()));
+        if ( !StringUtils.isEmpty( cfg.getIndexDir( ) ) )
+        {
+            indexCreationFeature.setIndexPath( getURIFromString( cfg.getIndexDir( ) ) );
         }
-        if (cfg.getPackedIndexDir() != null) {
+        if (!StringUtils.isEmpty( cfg.getPackedIndexDir() )) {
             indexCreationFeature.setPackedIndexPath(getURIFromString(cfg.getPackedIndexDir()));
         }
         log.debug("Updated remote instance {}", repo);
@@ -400,20 +401,26 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         cfg.setPackedIndexDir(convertUriToPath(indexCreationFeature.getPackedIndexPath()));
 
         RemoteIndexFeature remoteIndexFeature = remoteRepository.getFeature(RemoteIndexFeature.class).get();
-        if (remoteIndexFeature.getIndexUri() != null) {
+        if ( remoteIndexFeature.getIndexUri( ) == null )
+        {
+            cfg.setRemoteIndexUrl( "" );
+        }
+        else
+        {
             cfg.setRemoteIndexUrl(remoteIndexFeature.getIndexUri().toString());
         }
         cfg.setRemoteDownloadTimeout((int) remoteIndexFeature.getDownloadTimeout().get(ChronoUnit.SECONDS));
         cfg.setDownloadRemoteIndexOnStartup(remoteIndexFeature.isDownloadRemoteIndexOnStartup());
         cfg.setDownloadRemoteIndex(remoteIndexFeature.isDownloadRemoteIndex());
         cfg.setRemoteDownloadNetworkProxyId(remoteIndexFeature.getProxyId());
-        if (!StringUtils.isEmpty(remoteIndexFeature.getProxyId())) {
-            cfg.setRemoteDownloadNetworkProxyId(remoteIndexFeature.getProxyId());
-        } else {
+        if ( StringUtils.isEmpty( remoteIndexFeature.getProxyId( ) ) )
+        {
             cfg.setRemoteDownloadNetworkProxyId("");
         }
-
-
+        else
+        {
+            cfg.setRemoteDownloadNetworkProxyId(remoteIndexFeature.getProxyId());
+        }
 
 
         return cfg;

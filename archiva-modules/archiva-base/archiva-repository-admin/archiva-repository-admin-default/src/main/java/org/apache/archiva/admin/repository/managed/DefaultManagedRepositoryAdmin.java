@@ -23,28 +23,27 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
+import org.apache.archiva.components.cache.Cache;
+import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.IndexManagerFactory;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.metadata.repository.*;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataSessionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
-import org.apache.archiva.components.cache.Cache;
-import org.apache.archiva.components.registry.RegistryException;
-import org.apache.archiva.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
@@ -88,11 +87,9 @@ public class DefaultManagedRepositoryAdmin
     @Inject
     private RepositoryRegistry repositoryRegistry;
 
+    @SuppressWarnings( "unused" )
     @Inject
-    private ManagedRepositoryHandler managedRepositoryHandler;
-
-    @Inject
-    private RepositoryGroupHandler repositoryGroupHandler;
+    private RepositoryHandlerDependencies managedRepositoryHandler;
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")

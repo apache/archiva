@@ -34,6 +34,7 @@ import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.base.remote.BasicRemoteRepository;
+import org.apache.archiva.repository.base.remote.RemoteRepositoryHandler;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -77,6 +78,9 @@ public class ArchivaRepositoryRegistryTest
 
     @Inject
     ManagedRepositoryHandler managedRepositoryHandler;
+
+    @Inject
+    RemoteRepositoryHandler remoteRepositoryHandler;
 
     private static final Path userCfg = Paths.get(System.getProperty( "user.home" ), ".m2/archiva.xml");
 
@@ -356,7 +360,6 @@ public class ArchivaRepositoryRegistryTest
         cfg.setId("central");
         cfg.setName("This is central test 002");
         repo = repositoryRegistry.putRepository( cfg );
-        assertSame( internalRepo, repo );
         assertEquals("This is central test 002",repo.getName());
         assertEquals(2, repositoryRegistry.getRemoteRepositories().size());
 
@@ -369,9 +372,11 @@ public class ArchivaRepositoryRegistryTest
     {
         Configuration configuration = archivaConfiguration.getConfiguration();
         RemoteRepositoryConfiguration cfg = new RemoteRepositoryConfiguration();
+        Configuration newConfiguration = new Configuration( );
+
         cfg.setId("test002");
         cfg.setName("This is test 002");
-        RemoteRepository repo = repositoryRegistry.putRepository( cfg, configuration );
+        RemoteRepository repo = repositoryRegistry.putRepository( cfg, newConfiguration );
         assertNotNull(repo);
         assertEquals("test002", repo.getId());
         assertEquals("This is test 002", repo.getName());
@@ -379,16 +384,16 @@ public class ArchivaRepositoryRegistryTest
         archivaConfiguration.reload();
         assertEquals(1, archivaConfiguration.getConfiguration().getRemoteRepositories().size());
         Collection<RemoteRepository> repos = repositoryRegistry.getRemoteRepositories();
-        assertEquals(2, repos.size());
+        assertEquals(1, repos.size());
+        assertEquals( 1, newConfiguration.getRemoteRepositories( ).size( ) );
 
         RemoteRepository internalRepo = repositoryRegistry.getRemoteRepository( "central" );
         cfg = new RemoteRepositoryConfiguration();
         cfg.setId("central");
         cfg.setName("This is central test 002");
-        repo = repositoryRegistry.putRepository( cfg, configuration );
-        assertSame( internalRepo, repo );
+        repo = repositoryRegistry.putRepository( cfg, newConfiguration );
         assertEquals("This is central test 002",repo.getName());
-        assertEquals(2, repositoryRegistry.getRemoteRepositories().size());
+        assertEquals( 2, newConfiguration.getRemoteRepositories( ).size( ) );
 
         repositoryRegistry.reload();
         assertEquals(1, repositoryRegistry.getRemoteRepositories().size());

@@ -25,7 +25,7 @@ import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +47,7 @@ public class Maven2RepositoryMetadataResolverManagedReleaseTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
 
     private static final String TEST_REPO_ID = "test";

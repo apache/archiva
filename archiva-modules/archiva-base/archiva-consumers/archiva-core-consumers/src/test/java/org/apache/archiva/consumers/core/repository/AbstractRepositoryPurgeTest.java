@@ -24,8 +24,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.repository.maven.metadata.storage.Maven2RepositoryPathTranslator;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -114,11 +113,7 @@ public abstract class AbstractRepositoryPurgeTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
 
     @Before

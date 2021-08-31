@@ -33,13 +33,9 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
-import org.apache.archiva.repository.maven.content.MavenContentHelper;
-import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.repository.EditableManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.Repository;
@@ -49,8 +45,11 @@ import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.repository.maven.content.ManagedDefaultRepositoryContent;
+import org.apache.archiva.repository.maven.content.MavenContentHelper;
 import org.apache.archiva.repository.maven.content.MavenRepositoryRequestInfo;
+import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
@@ -162,11 +161,7 @@ public class ArchivaDavResourceFactoryTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     public Path getProjectBase() {
         if (this.projectBase.get()==null) {

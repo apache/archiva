@@ -185,7 +185,7 @@ public abstract class AbstractRepositoryHandler<R extends Repository, C extends 
     @Override
     public void deactivateRepository( R repository )
     {
-
+        repository.close();
     }
 
     @Override
@@ -378,6 +378,7 @@ public abstract class AbstractRepositoryHandler<R extends Repository, C extends 
         }
         addRepositoryConfiguration( configuration, repositoryGroupConfiguration );
     }
+
 
 
 }

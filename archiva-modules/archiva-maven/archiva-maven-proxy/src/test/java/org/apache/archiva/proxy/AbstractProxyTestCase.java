@@ -20,12 +20,25 @@ package org.apache.archiva.proxy;
  */
 
 import net.sf.ehcache.CacheManager;
-import org.apache.archiva.configuration.*;
-import org.apache.archiva.policies.*;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.policies.CachedFailuresPolicy;
+import org.apache.archiva.policies.ChecksumPolicy;
+import org.apache.archiva.policies.PolicyOption;
+import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
+import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
+import org.apache.archiva.policies.ReleasesPolicy;
+import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.wagon.Wagon;
@@ -49,7 +62,12 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -73,8 +91,7 @@ public abstract class AbstractProxyTestCase
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
-
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     protected static final String ID_PROXIED1 = "proxied1";
 

@@ -133,10 +133,6 @@ public class DefaultNetworkProxyAdmin
             throw new RepositoryAdminException(
                 "cannot delete NetworkProxy with id " + networkProxyId + " as not exist" );
         }
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
-        NetworkProxyConfiguration networkProxyConfiguration = getNetworkProxyConfiguration( networkProxy );
-        configuration.removeNetworkProxy( networkProxyConfiguration );
-
         for ( RemoteRepository repo : repositoryRegistry.getRemoteRepositories()) {
             if (repo.supportsFeature( RemoteIndexFeature.class )) {
                 RemoteIndexFeature rif = repo.getFeature( RemoteIndexFeature.class ).get();
@@ -144,7 +140,7 @@ public class DefaultNetworkProxyAdmin
                     rif.setProxyId( null );
                     try
                     {
-                        repositoryRegistry.putRepository( repo, configuration);
+                        repositoryRegistry.putRepository( repo );
                     }
                     catch ( RepositoryException e )
                     {
@@ -154,9 +150,11 @@ public class DefaultNetworkProxyAdmin
             }
         }
 
-        triggerAuditEvent( networkProxy.getId(), null, AuditEvent.DELETE_NETWORK_PROXY, auditInformation );
-
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        NetworkProxyConfiguration networkProxyConfiguration = getNetworkProxyConfiguration( networkProxy );
+        configuration.removeNetworkProxy( networkProxyConfiguration );
         saveConfiguration( configuration );
+        triggerAuditEvent( networkProxy.getId(), null, AuditEvent.DELETE_NETWORK_PROXY, auditInformation );
     }
 
     protected NetworkProxy getNetworkProxy( NetworkProxyConfiguration networkProxyConfiguration )

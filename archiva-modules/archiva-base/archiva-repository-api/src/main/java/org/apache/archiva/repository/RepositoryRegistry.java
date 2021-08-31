@@ -241,19 +241,6 @@ public interface RepositoryRegistry extends EventSource, RepositoryHandlerManage
      * Adds or updates the given remote repository. If a remote repository with the given id exists already, it is updated
      * from the data of the given instance. Otherwise a new repository is created and updated by the data of the given instance.
      *
-     * This method can be used, if the archiva configuration should not be saved. It will only update the given configuration object.
-     *
-     * @param remoteRepository the remote repository
-     * @param configuration the configuration that is updated
-     * @return the repository instance, that was created or updated
-     * @throws RepositoryException if an error occurred while creating or updating the instance
-     */
-    RemoteRepository putRepository( RemoteRepository remoteRepository, Configuration configuration ) throws RepositoryException;
-
-    /**
-     * Adds or updates the given remote repository. If a remote repository with the given id exists already, it is updated
-     * from the data of the given instance. Otherwise a new repository is created and updated by the data of the given instance.
-     *
      * The archiva configuration is updated and saved after updating the registered repository instance.
      *
      * @param remoteRepository the remote repository

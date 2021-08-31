@@ -19,20 +19,21 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.apache.commons.io.FileUtils;
@@ -104,11 +105,7 @@ public abstract class AbstractRepositoryServletTestCase
 
     @SuppressWarnings( "unused" )
     @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     @Inject
     ArchivaRepositoryRegistry repositoryRegistry;

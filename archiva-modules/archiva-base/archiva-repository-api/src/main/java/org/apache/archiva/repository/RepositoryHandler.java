@@ -42,6 +42,7 @@ import java.util.Map;
  *     <li>Instance initialized: </li>
  * </ul>
  *
+ * The repository handler are not thread safe. Synchronization is done by registry if necessary.
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
@@ -259,7 +260,15 @@ public interface RepositoryHandler<R extends Repository, C extends AbstractRepos
      */
     void setRepositoryValidator( List<RepositoryValidator<? extends Repository>> repositoryValidatorList );
 
+    /**
+     * Returns the repository variant, this handler manages.
+     * @return the concrete variant class
+     */
     Class<R> getVariant();
 
+    /**
+     * Returns the repository configuration variant, this handler manages.
+     * @return the concrete configuration variant class
+     */
     Class<C> getConfigurationVariant();
 }

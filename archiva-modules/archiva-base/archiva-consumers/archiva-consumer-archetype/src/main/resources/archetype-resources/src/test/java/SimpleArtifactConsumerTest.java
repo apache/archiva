@@ -23,7 +23,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.junit.Before;
@@ -59,11 +59,7 @@ public class SimpleArtifactConsumerTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    private ManagedRepositoryHandler managedRepositoryHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    private org.apache.archiva.repository.base.group.RepositoryGroupHandler repositoryGroupHandler;
+    private RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     @Inject
     private RepositorySessionFactory repositorySessionFactory;

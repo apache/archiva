@@ -30,7 +30,7 @@ import org.apache.archiva.components.taskqueue.execution.TaskExecutor;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.After;
@@ -69,11 +69,7 @@ public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    RepositoryGroupHandler groupHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     @Inject
     @Named( value = "taskExecutor#test-repository-scanning" )

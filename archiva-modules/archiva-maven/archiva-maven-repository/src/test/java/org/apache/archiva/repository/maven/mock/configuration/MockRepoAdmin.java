@@ -33,7 +33,6 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -123,13 +122,6 @@ public class MockRepoAdmin
 
     @Override
     public Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
-        throws RepositoryAdminException
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public ArchivaIndexingContext createIndexContext( RemoteRepository repository )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

@@ -51,12 +51,4 @@ public interface RemoteRepositoryAdmin
     Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
         throws RepositoryAdminException;
 
-    /**
-     * @param repository
-     * @return
-     * @throws RepositoryAdminException
-     * @since 1.4-M2
-     */
-    ArchivaIndexingContext createIndexContext( RemoteRepository repository )
-        throws RepositoryAdminException;
 }

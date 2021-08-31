@@ -29,10 +29,9 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.proxy.ProxyRegistry;
-import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.SystemUtils;
@@ -97,12 +96,7 @@ public abstract class AbstractMavenRepositorySearch
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    RepositoryGroupHandler groupHandler;
-
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     @Inject
     ProxyRegistry proxyRegistry;

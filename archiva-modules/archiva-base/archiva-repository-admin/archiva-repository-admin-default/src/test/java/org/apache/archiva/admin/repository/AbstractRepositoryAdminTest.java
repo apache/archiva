@@ -32,8 +32,7 @@ import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
@@ -91,12 +90,7 @@ public abstract class AbstractRepositoryAdminTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
-
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     @Before
     public void initialize() {

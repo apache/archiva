@@ -22,14 +22,13 @@ package org.apache.archiva.scheduler.indexing.maven;
 import junit.framework.TestCase;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
-import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
-import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
+import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index.ArtifactInfo;
@@ -77,11 +76,7 @@ public class ArchivaIndexingTaskExecutorTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    RepositoryGroupHandler repositoryGroupHandler;
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     @Inject
     private IndexUpdater indexUpdater;

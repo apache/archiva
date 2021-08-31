@@ -24,10 +24,12 @@ import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryHandler;
@@ -36,6 +38,7 @@ import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
+import org.apache.archiva.repository.base.remote.BasicRemoteRepository;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.ValidationError;
@@ -89,6 +92,9 @@ class RepositoryGroupHandlerTest
 
     @Mock
     RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration> managedRepositoryHandler;
+
+    @Mock
+    RepositoryHandler<RemoteRepository, RemoteRepositoryConfiguration> remoteRepositoryHandler;
 
     @Inject
     ArchivaConfiguration archivaConfiguration;
@@ -154,6 +160,20 @@ class RepositoryGroupHandlerTest
         }
         Mockito.when( managedRepositoryHandler.get( ArgumentMatchers.eq("internal") ) ).thenReturn( internalRepo );
         repositoryRegistry.registerHandler( managedRepositoryHandler );
+
+        Mockito.when( remoteRepositoryHandler.getVariant( ) ).thenReturn( RemoteRepository.class );
+        final RemoteRepository centralRepo;
+        try
+        {
+            centralRepo = getRemote( "central", "central");
+        }
+        catch ( IOException e )
+        {
+            throw new Error( e );
+        }
+        repositoryRegistry.registerHandler( remoteRepositoryHandler );
+
+
         RepositoryGroupHandler groupHandler = new RepositoryGroupHandler( repositoryRegistry, configurationHandler, mergedRemoteIndexesScheduler);
         groupHandler.init( );
         return groupHandler;
@@ -174,6 +194,14 @@ class RepositoryGroupHandlerTest
         FileLockManager lockManager = new DefaultFileLockManager();
         FilesystemStorage storage = new FilesystemStorage(path.toAbsolutePath(), lockManager);
         return new BasicManagedRepository( id, name, storage );
+    }
+
+    protected RemoteRepository getRemote(String id, String name) throws IOException
+    {
+        Path path = getRepoBaseDir().resolve( "../remote" );
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(path.toAbsolutePath(), lockManager);
+        return new BasicRemoteRepository( id, name, storage );
     }
 
 

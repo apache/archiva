@@ -22,10 +22,9 @@ package org.apache.archiva.indexer.maven;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
-import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.maven.MavenManagedRepository;
@@ -65,12 +64,7 @@ public class MavenIndexManagerTest {
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    RepositoryGroupHandler groupHandler;
-
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     private Path indexPath;
     private MavenManagedRepository repository;

@@ -24,8 +24,7 @@ import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
-import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
-import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.After;
 import org.junit.Test;
@@ -49,12 +48,7 @@ public class MavenRepositorySearchPaginateTest
 
     @SuppressWarnings( "unused" )
     @Inject
-    ManagedRepositoryHandler managedRepositoryHandler;
-
-    @SuppressWarnings( "unused" )
-    @Inject
-    RepositoryGroupHandler groupHandler;
-
+    RepositoryHandlerDependencies repositoryHandlerDependencies;
 
     @After
     public void endTests() {
