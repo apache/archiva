@@ -198,13 +198,13 @@
             <id>config</id>
             <phase>process-resources</phase>
             <configuration>
-              <tasks>
+              <target name="copy-config-files" description="Copies the archiva configuration to the jetty destination" >
                 <copy todir="target/generated-resources/appassembler/jsw/archiva/conf">
                   <fileset dir="src/main/conf" />
                 </copy>
                 <mkdir dir="target/generated-resources/appassembler/jsw/archiva/logs" />
                 <mkdir dir="target/generated-resources/appassembler/jsw/archiva/temp" />
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
@@ -214,9 +214,9 @@
             <id>fix-appassembler-bug</id>
             <phase>prepare-package</phase>
             <configuration>
-              <tasks>
+              <target name="copy-wrapper-config" description="Copies the wrapper configuration" >
                 <replaceregexp file="target/generated-resources/appassembler/jsw/archiva/conf/wrapper.conf" match="set.ARCHIVA_BASE" replace="set.default.ARCHIVA_BASE" />
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
