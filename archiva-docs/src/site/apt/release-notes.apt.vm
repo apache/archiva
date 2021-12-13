@@ -28,17 +28,46 @@ Release Notes for Archiva ${project.version}
  Archiva is an application for managing one or more remote repositories,
  including administration, artifact handling, browsing and searching.
 
+ This is a security fix release. Users are advised to update their systems to the new
+ version as soon as possible.
+
+ For further information see:  {{https://archiva.apache.org/security.html}}
+
  If you have any questions, please consult:
 
   * the web site: {{https://archiva.apache.org/}}
 
   * the archiva-user mailing list: {{https://archiva.apache.org/mail-lists.html}}
 
-* New in Archiva ${project.version}
+ Apache Archiva ${project.version} is a security fix release:
 
- Apache Archiva ${project.version} is a bug fix release:
+** Compatibility Changes
 
- Released: <<${releaseDate}>>
+  * No API changes or known side effects.
+
+** New Feature
+
+  * There are no new features in this release.
+
+** Improvements
+
+  * There are no improvements
+
+** Bug/Security Fix
+
+  * Update of the log4j2 version to mitigate the log4j2 vulnerability (CVE-2021-44228)
+
+  * Deactivated directory listings by the file servlet
+
+
+
+Previous Release Notes
+
+* Release Notes for Archiva 2.2.5
+
+ Apache Archiva 2.2.5 is a bug fix release:
+
+ Released: 2020-06-19
 
 ** Compatibility Changes
 
@@ -58,8 +87,6 @@ Release Notes for Archiva ${project.version}
 
   * Better handling of LDAP filter 
 
-
-Previous Release Notes
 
 * Release Notes for Archiva 2.2.4
 
