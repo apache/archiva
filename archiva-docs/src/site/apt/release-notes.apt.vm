@@ -39,6 +39,8 @@ Release Notes for Archiva ${project.version}
 
   * the archiva-user mailing list: {{https://archiva.apache.org/mail-lists.html}}
 
+* New in Archiva ${project.version}
+
  Apache Archiva ${project.version} is a security fix release:
 
 ** Compatibility Changes
