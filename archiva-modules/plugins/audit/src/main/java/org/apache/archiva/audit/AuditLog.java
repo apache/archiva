@@ -54,7 +54,6 @@ public class AuditLog
         msg.append( checkNull( event.getRemoteIP() ) ).append( DELIM );
         msg.append( '\"' ).append( checkNull( event.getResource() ) ).append( '\"' ).append( DELIM );
         msg.append( '\"' ).append( event.getAction() ).append( '\"' );
-
         logger.info( msg.toString() );
     }
 

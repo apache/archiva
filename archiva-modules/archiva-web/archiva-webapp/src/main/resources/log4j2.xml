@@ -40,7 +40,7 @@
 
     <RollingRandomAccessFile name="auditlog" fileName="${logsDirectory}/archiva-audit.log"
                  filePattern="${logsDirectory}/archiva-audit-%d{yyyyMMdd}.log"
-                 immediateFlush="false" append="true">
+                 immediateFlush="true" append="true">
       <PatternLayout>
         <pattern>%d{yyyy-MM-dd HH:mm:ss} %m%n</pattern>
       </PatternLayout>
@@ -49,23 +49,8 @@
       </Policies>
     </RollingRandomAccessFile>
 
-    <RollingRandomAccessFile name="redbackAuditLog" fileName="${logsDirectory}/archiva-security-audit.log"
-                 filePattern="${logsDirectory}/archiva-security-audit.log-%d{yyyyMMdd}.log"
-                 immediateFlush="false" append="true">
-      <PatternLayout>
-        <pattern>%d{yyyy-MM-dd HH:mm:ss} - %X{redback.currentUser} - %m%n</pattern>
-      </PatternLayout>
-      <Policies>
-        <TimeBasedTriggeringPolicy />
-      </Policies>
-    </RollingRandomAccessFile>
-
   </appenders>
   <loggers>
-
-    <logger name="org.apache.archiva.redback.struts2.action.AuditEvent" additivity="false" level="info">
-      <appender-ref ref="redbackAuditLog" />
-    </logger>
 
     <logger name="org.apache.archiva.AuditLog" additivity="false" level="info">
       <appender-ref ref="auditlog" />

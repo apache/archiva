@@ -20,6 +20,7 @@ package org.apache.archiva.web.security;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationConstants;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
@@ -35,6 +36,8 @@ import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.rest.services.interceptors.AuditInfoFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -65,6 +68,9 @@ public class ArchivaUserManagerAuthenticator
     @Inject
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
+    @Inject
+    private List<AuditListener> auditListeners = new ArrayList<>();
+
     private List<UserManager> userManagers;
 
     private boolean valid = false;
@@ -94,6 +100,27 @@ public class ArchivaUserManagerAuthenticator
         }
     }
 
+    protected AuditInfoFilter.AuditInfo getAuditInformation()
+    {
+        return AuditInfoFilter.getAuditInfo( );
+    }
+
+    public List<AuditListener> getAuditListeners()
+    {
+        return auditListeners;
+    }
+
+    protected void triggerAuditEvent( String repositoryId, String filePath, String action, String user )
+    {
+        AuditEvent auditEvent = new AuditEvent( repositoryId, user, filePath, action );
+        AuditInfoFilter.AuditInfo auditInformation = getAuditInformation();
+        auditEvent.setUserId( user );
+        auditEvent.setRemoteIP( auditInformation.getRemoteHost() + ":" + auditInformation.getRemotePort() );
+        for ( AuditListener auditListener : getAuditListeners() )
+        {
+            auditListener.auditEvent( auditEvent );
+        }
+    }
 
     @Override
     public AuthenticationResult authenticate( AuthenticationDataSource ds )
@@ -104,21 +131,23 @@ public class ArchivaUserManagerAuthenticator
         Exception resultException = null;
         PasswordBasedAuthenticationDataSource source = (PasswordBasedAuthenticationDataSource) ds;
         List<AuthenticationFailureCause> authnResultErrors = new ArrayList<>();
+        final String loginUserId = source.getUsername( );
 
         for ( UserManager userManager : userManagers )
         {
             try
             {
                 log.debug( "Authenticate: {} with userManager: {}", source, userManager.getId() );
-                User user = userManager.findUser( source.getUsername() );
+                User user = userManager.findUser( loginUserId );
                 username = user.getUsername();
 
                 if ( user.isLocked() )
                 {
                     //throw new AccountLockedException( "Account " + source.getUsername() + " is locked.", user );
                     AccountLockedException e =
-                        new AccountLockedException( "Account " + source.getUsername() + " is locked.", user );
+                        new AccountLockedException( "Account " + loginUserId + " is locked.", user );
                     log.warn( "{}", e.getMessage() );
+                    triggerAuditEvent( "", "", "login-account-locked", loginUserId );
                     resultException = e;
                     authnResultErrors.add(
                         new AuthenticationFailureCause( AuthenticationConstants.AUTHN_LOCKED_USER_EXCEPTION,
@@ -131,6 +160,7 @@ public class ArchivaUserManagerAuthenticator
                     MustChangePasswordException e = new MustChangePasswordException( "Password expired.", user );
                     log.warn( "{}", e.getMessage() );
                     resultException = e;
+                    triggerAuditEvent( "", "", "login-password-change-required", loginUserId );
                     authnResultErrors.add(
                         new AuthenticationFailureCause( AuthenticationConstants.AUTHN_MUST_CHANGE_PASSWORD_EXCEPTION,
                                                         e.getMessage() ) );
@@ -142,13 +172,15 @@ public class ArchivaUserManagerAuthenticator
                 boolean isPasswordValid = encoder.isPasswordValid( user.getEncodedPassword(), source.getPassword() );
                 if ( isPasswordValid )
                 {
-                    log.debug( "User {} provided a valid password", source.getUsername() );
+                    log.debug( "User {} provided a valid password", loginUserId );
 
                     try
                     {
                         securityPolicy.extensionPasswordExpiration( user );
 
                         authenticationSuccess = true;
+                        triggerAuditEvent( "", "", "login-success", loginUserId );
+
 
                         //REDBACK-151 do not make unnessesary updates to the user object
                         if ( user.getCountFailedLoginAttempts() > 0 )
@@ -160,11 +192,12 @@ public class ArchivaUserManagerAuthenticator
                             }
                         }
 
-                        return new AuthenticationResult( true, source.getUsername(), null );
+                        return new AuthenticationResult( true, loginUserId, null );
                     }
                     catch ( MustChangePasswordException e )
                     {
                         user.setPasswordChangeRequired( true );
+                        triggerAuditEvent( "", "", "login-password-change-required", loginUserId );
                         //throw e;
                         resultException = e;
                         authnResultErrors.add( new AuthenticationFailureCause(
@@ -175,6 +208,8 @@ public class ArchivaUserManagerAuthenticator
                 {
                     log.warn( "Password is Invalid for user {} and userManager '{}'.", source.getUsername(),
                               userManager.getId() );
+                    triggerAuditEvent( "", "", "login-authentication-failed", loginUserId );
+
                     authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                                                            "Password is Invalid for user "
                                                                                + source.getUsername() + "." ).user( user ) );
@@ -198,18 +233,20 @@ public class ArchivaUserManagerAuthenticator
             }
             catch ( UserNotFoundException e )
             {
-                log.warn( "Login for user {} and userManager {} failed. user not found.", source.getUsername(),
+                log.warn( "Login for user {} and userManager {} failed. user not found.", loginUserId,
                           userManager.getId() );
                 resultException = e;
+                triggerAuditEvent( "", "", "login-user-unknown", loginUserId );
                 authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                                                        "Login for user " + source.getUsername()
                                                                            + " failed. user not found." ) );
             }
             catch ( Exception e )
             {
-                log.warn( "Login for user {} and userManager {} failed, message: {}", source.getUsername(),
+                log.warn( "Login for user {} and userManager {} failed, message: {}", loginUserId,
                           userManager.getId(), e.getMessage() );
                 resultException = e;
+                triggerAuditEvent( "", "", "login-error", loginUserId );
                 authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
                                                                        "Login for user " + source.getUsername()
                                                                            + " failed, message: " + e.getMessage() ) );
