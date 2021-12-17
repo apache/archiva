@@ -860,17 +860,15 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     return $.inArray(karmaName,window.redbackModel.operatioNames)>=0;
   };
 
-  addValidationTokenHeader=function(user) {
-    if(user) {
+  addValidationTokenHeader = function (user) {
+    if (user) {
       if (user.validationToken) {
-        $.log("Adding validation token "+user.validationToken);
-        $.ajaxSetup({
-                      beforeSend: function (xhr) {
-                        xhr.setRequestHeader('X-XSRF-TOKEN', user.validationToken);
-                      }
-                    });
+        $.log("Adding validation token " + user.validationToken);
+        $(document).ajaxSend(function (ev, xhr, settings) {
+          xhr.setRequestHeader('X-XSRF-TOKEN', user.validationToken);
+        });
       } else {
-        $.log("No validation token in user object "+user.username+", "+user.validationToken);
+        $.log("No validation token in user object " + user.username + ", " + user.validationToken);
       }
     }
   };
