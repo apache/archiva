@@ -1,0 +1,41 @@
+--- target/generated-resources/appassembler/jsw/archiva/bin/archiva	2021-12-17 21:30:22.738291117 +0100
++++ target/generated-resources/appassembler/jsw/archiva/bin/archiva.new	2021-12-17 21:32:39.040022280 +0100
+@@ -40,20 +40,24 @@
+ APP_NAME="archiva"
+ APP_LONG_NAME="Apache Archiva"
+ 
+-# discover BASEDIR
+-BASEDIR=`dirname "$0"`/..
+-BASEDIR=`(cd "$BASEDIR"; pwd)`
+-ls -l "$0" | grep -e '->' > /dev/null 2>&1
+-if [ $? = 0 ]; then
+-  #this is softlink
+-  _PWD=`pwd`
+-  _EXEDIR=`dirname "$0"`
+-  cd "$_EXEDIR"
+-  _BASENAME=`basename "$0"`
+-  _REALFILE=`ls -l "$_BASENAME" | sed 's/.*->\ //g'`
+-   BASEDIR=`dirname "$_REALFILE"`/..
+-   BASEDIR=`(cd "$BASEDIR"; pwd)`
+-   cd "$_PWD"
++if [ -z "$ARCHIVA_BASE" ]; then
++  # discover BASEDIR
++  BASEDIR=`dirname "$0"`/..
++  BASEDIR=`(cd "$BASEDIR"; pwd)`
++  ls -l "$0" | grep -e '->' > /dev/null 2>&1
++  if [ $? = 0 ]; then
++    #this is softlink
++    _PWD=`pwd`
++    _EXEDIR=`dirname "$0"`
++    cd "$_EXEDIR"
++    _BASENAME=`basename "$0"`
++    _REALFILE=`ls -l "$_BASENAME" | sed 's/.*->\ //g'`
++     BASEDIR=`dirname "$_REALFILE"`/..
++     BASEDIR=`(cd "$BASEDIR"; pwd)`
++     cd "$_PWD"
++  fi
++else
++  BASEDIR="$ARCHIVA_BASE"
+ fi
+ 
+ 

@@ -229,6 +229,7 @@
             <configuration>
               <tasks>
                 <replaceregexp file="target/generated-resources/appassembler/jsw/archiva/conf/wrapper.conf" match="set.ARCHIVA_BASE" replace="set.default.ARCHIVA_BASE" />
+                <patch failonerror="true" originalfile="target/generated-resources/appassembler/jsw/archiva/bin/archiva" patchfile="src/main/patches/archiva.patch" />
               </tasks>
             </configuration>
             <goals>
@@ -270,6 +271,7 @@
           <configuration>
             <excludes>
               <exclude>src/main/conf/**</exclude>
+              <exclude>src/main/patches/*.patch</exclude>
             </excludes>
           </configuration>
         </plugin>
