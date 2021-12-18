@@ -232,6 +232,8 @@ public abstract class AbstractRestService
     protected String getArtifactUrl( Artifact artifact, String repositoryId )
         throws ArchivaRestServiceException
     {
+        log.debug( "Getting artifact url {}", artifact );
+        log.debug( "Getting artifact context {}", artifact.getContext() );
         try
         {
 
@@ -244,13 +246,16 @@ public abstract class AbstractRestService
 
             sb.append( "/repository" );
 
+
             // when artifact come from a remote repository when have here the remote repo id
             // we must replace it with a valid managed one available for the user.
             if ( StringUtils.isEmpty( repositoryId ) )
             {
                 List<String> userRepos = userRepositories.getObservableRepositoryIds( getPrincipal() );
+                log.debug( "Available repositories: {}", StringUtils.join( userRepos, "," ) );
                 // is it a good one? if yes nothing to
                 // if not search the repo who is proxy for this remote
+                boolean found = false;
                 if ( !userRepos.contains( artifact.getContext() ) )
                 {
                     for ( Map.Entry<String, List<ProxyConnector>> entry : proxyConnectorAdmin.getProxyConnectorAsMap().entrySet() )
@@ -262,8 +267,16 @@ public abstract class AbstractRestService
                                 && userRepos.contains( entry.getKey() ) )
                             {
                                 sb.append( '/' ).append( entry.getKey() );
+                                found = true;
+                                break;
                             }
                         }
+                        if (found) {
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        sb.append( '/' ).append( artifact.getRepositoryId( ) );
                     }
 
                 }

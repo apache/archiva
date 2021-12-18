@@ -77,22 +77,22 @@ public class DefaultSearchService
     {
         if ( StringUtils.isBlank( queryString ) )
         {
-            return Collections.emptyList();
+            return Collections.emptyList( );
         }
 
         SearchResultLimits limits = new SearchResultLimits( 0 );
         try
         {
             SearchResults searchResults =
-                repositorySearch.search( getPrincipal(), getObservableRepos(), queryString, limits,
-                                         Collections.<String>emptyList() );
+                repositorySearch.search( getPrincipal( ), getObservableRepos( ), queryString, limits,
+                    Collections.<String>emptyList( ) );
             return getArtifacts( searchResults );
 
         }
         catch ( RepositorySearchException e )
         {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new ArchivaRestServiceException( e.getMessage( ), e );
         }
     }
 
@@ -100,29 +100,29 @@ public class DefaultSearchService
     public List<Artifact> quickSearchWithRepositories( SearchRequest searchRequest )
         throws ArchivaRestServiceException
     {
-        String queryString = searchRequest.getQueryTerms();
+        String queryString = searchRequest.getQueryTerms( );
         if ( StringUtils.isBlank( queryString ) )
         {
-            return Collections.emptyList();
+            return Collections.emptyList( );
         }
-        List<String> repositories = searchRequest.getRepositories();
-        if ( repositories == null || repositories.isEmpty() )
+        List<String> repositories = searchRequest.getRepositories( );
+        if ( repositories == null || repositories.isEmpty( ) )
         {
-            repositories = getObservableRepos();
+            repositories = getObservableRepos( );
         }
         SearchResultLimits limits =
-            new SearchResultLimits( searchRequest.getPageSize(), searchRequest.getSelectedPage() );
+            new SearchResultLimits( searchRequest.getPageSize( ), searchRequest.getSelectedPage( ) );
         try
         {
-            SearchResults searchResults = repositorySearch.search( getPrincipal(), repositories, queryString, limits,
-                                                                   Collections.<String>emptyList() );
+            SearchResults searchResults = repositorySearch.search( getPrincipal( ), repositories, queryString, limits,
+                Collections.<String>emptyList( ) );
             return getArtifacts( searchResults );
 
         }
         catch ( RepositorySearchException e )
         {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new ArchivaRestServiceException( e.getMessage( ), e );
         }
     }
 
@@ -132,23 +132,23 @@ public class DefaultSearchService
     {
         if ( StringUtils.isBlank( groupId ) || StringUtils.isBlank( artifactId ) )
         {
-            return Collections.emptyList();
+            return Collections.emptyList( );
         }
-        SearchFields searchField = new SearchFields();
+        SearchFields searchField = new SearchFields( );
         searchField.setGroupId( groupId );
         searchField.setArtifactId( artifactId );
         searchField.setPackaging( StringUtils.isBlank( packaging ) ? "jar" : packaging );
-        searchField.setRepositories( getObservableRepos() );
+        searchField.setRepositories( getObservableRepos( ) );
 
         try
         {
-            SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, null );
+            SearchResults searchResults = repositorySearch.search( getPrincipal( ), searchField, null );
             return getArtifacts( searchResults );
         }
         catch ( RepositorySearchException e )
         {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new ArchivaRestServiceException( e.getMessage( ), e );
         }
     }
 
@@ -158,27 +158,27 @@ public class DefaultSearchService
     {
         if ( searchRequest == null )
         {
-            return Collections.emptyList();
+            return Collections.emptyList( );
         }
-        SearchFields searchField = getModelMapper().map( searchRequest, SearchFields.class );
+        SearchFields searchField = getModelMapper( ).map( searchRequest, SearchFields.class );
         SearchResultLimits limits = new SearchResultLimits( 0 );
-        limits.setPageSize( searchRequest.getPageSize() );
+        limits.setPageSize( searchRequest.getPageSize( ) );
 
         // if no repos set we use ones available for the user
-        if ( searchField.getRepositories() == null || searchField.getRepositories().isEmpty() )
+        if ( searchField.getRepositories( ) == null || searchField.getRepositories( ).isEmpty( ) )
         {
-            searchField.setRepositories( getObservableRepos() );
+            searchField.setRepositories( getObservableRepos( ) );
         }
 
         try
         {
-            SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, limits );
+            SearchResults searchResults = repositorySearch.search( getPrincipal( ), searchField, limits );
             return getArtifacts( searchResults );
         }
         catch ( RepositorySearchException e )
         {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new ArchivaRestServiceException( e.getMessage( ), e );
         }
     }
 
@@ -186,20 +186,20 @@ public class DefaultSearchService
     public GroupIdList getAllGroupIds( List<String> selectedRepos )
         throws ArchivaRestServiceException
     {
-        List<String> observableRepos = getObservableRepos();
+        List<String> observableRepos = getObservableRepos( );
         List<String> repos = ListUtils.intersection( observableRepos, selectedRepos );
-        if ( repos == null || repos.isEmpty() )
+        if ( repos == null || repos.isEmpty( ) )
         {
-            return new GroupIdList( Collections.<String>emptyList() );
+            return new GroupIdList( Collections.<String>emptyList( ) );
         }
         try
         {
-            return new GroupIdList( new ArrayList<>( repositorySearch.getAllGroupIds( getPrincipal(), repos ) ) );
+            return new GroupIdList( new ArrayList<>( repositorySearch.getAllGroupIds( getPrincipal( ), repos ) ) );
         }
         catch ( RepositorySearchException e )
         {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new ArchivaRestServiceException( e.getMessage( ), e );
         }
 
     }
@@ -210,23 +210,23 @@ public class DefaultSearchService
     {
 
         // if no repos set we use ones available for the user
-        if ( checksumSearch.getRepositories() == null || checksumSearch.getRepositories().isEmpty() )
+        if ( checksumSearch.getRepositories( ) == null || checksumSearch.getRepositories( ).isEmpty( ) )
         {
-            checksumSearch.setRepositories( getObservableRepos() );
+            checksumSearch.setRepositories( getObservableRepos( ) );
         }
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = repositorySessionFactory.createSession( );
 
-        MetadataRepository metadataRepository = repositorySession.getRepository();
+        MetadataRepository metadataRepository = repositorySession.getRepository( );
 
-        Set<Artifact> artifactSet = new HashSet<>();
+        Set<Artifact> artifactSet = new HashSet<>( );
 
         try
         {
-            for ( String repoId : checksumSearch.getRepositories() )
+            for ( String repoId : checksumSearch.getRepositories( ) )
             {
                 Collection<ArtifactMetadata> artifactMetadatas =
-                    metadataRepository.getArtifactsByChecksum( repoId, checksumSearch.getChecksum() );
+                    metadataRepository.getArtifactsByChecksum( repoId, checksumSearch.getChecksum( ) );
                 artifactSet.addAll( buildArtifacts( artifactMetadatas, repoId ) );
             }
 
@@ -235,22 +235,22 @@ public class DefaultSearchService
         }
         catch ( MetadataRepositoryException e )
         {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            log.error( e.getMessage( ), e );
+            throw new ArchivaRestServiceException( e.getMessage( ), e );
         }
         finally
         {
-            repositorySession.closeQuietly();
+            repositorySession.closeQuietly( );
         }
 
 
     }
 
     @Override
-    public StringList getObservablesRepoIds()
+    public StringList getObservablesRepoIds( )
         throws ArchivaRestServiceException
     {
-        return new StringList( getObservableRepos() );
+        return new StringList( getObservableRepos( ) );
     }
 
     @Override
@@ -264,124 +264,125 @@ public class DefaultSearchService
 
             if ( StringUtils.isEmpty( groupId ) )
             {
-                return Response.status( new Response.StatusType()
+                return Response.status( new Response.StatusType( )
                 {
                     @Override
-                    public int getStatusCode()
+                    public int getStatusCode( )
                     {
-                        return Response.Status.BAD_REQUEST.getStatusCode();
+                        return Response.Status.BAD_REQUEST.getStatusCode( );
                     }
 
                     @Override
-                    public Response.Status.Family getFamily()
+                    public Response.Status.Family getFamily( )
                     {
-                        return Response.Status.BAD_REQUEST.getFamily();
+                        return Response.Status.BAD_REQUEST.getFamily( );
                     }
 
                     @Override
-                    public String getReasonPhrase()
+                    public String getReasonPhrase( )
                     {
                         return "groupId mandatory";
                     }
-                } ).build();
+                } ).build( );
             }
 
             if ( StringUtils.isEmpty( version ) )
             {
-                return Response.status( new Response.StatusType()
+                return Response.status( new Response.StatusType( )
                 {
                     @Override
-                    public int getStatusCode()
+                    public int getStatusCode( )
                     {
-                        return Response.Status.BAD_REQUEST.getStatusCode();
+                        return Response.Status.BAD_REQUEST.getStatusCode( );
                     }
 
                     @Override
-                    public Response.Status.Family getFamily()
+                    public Response.Status.Family getFamily( )
                     {
-                        return Response.Status.BAD_REQUEST.getFamily();
+                        return Response.Status.BAD_REQUEST.getFamily( );
                     }
 
                     @Override
-                    public String getReasonPhrase()
+                    public String getReasonPhrase( )
                     {
                         return "version mandatory";
                     }
-                } ).build();
+                } ).build( );
             }
 
             if ( StringUtils.isEmpty( artifactId ) )
             {
-                return Response.status( new Response.StatusType()
+                return Response.status( new Response.StatusType( )
                 {
                     @Override
-                    public int getStatusCode()
+                    public int getStatusCode( )
                     {
-                        return Response.Status.BAD_REQUEST.getStatusCode();
+                        return Response.Status.BAD_REQUEST.getStatusCode( );
                     }
 
                     @Override
-                    public Response.Status.Family getFamily()
+                    public Response.Status.Family getFamily( )
                     {
-                        return Response.Status.BAD_REQUEST.getFamily();
+                        return Response.Status.BAD_REQUEST.getFamily( );
                     }
 
                     @Override
-                    public String getReasonPhrase()
+                    public String getReasonPhrase( )
                     {
                         return "artifactId mandatory";
                     }
-                } ).build();
+                } ).build( );
             }
 
-            SearchFields searchField = new SearchFields();
+            SearchFields searchField = new SearchFields( );
             searchField.setGroupId( groupId );
             searchField.setArtifactId( artifactId );
             searchField.setPackaging( StringUtils.isBlank( packaging ) ? "jar" : packaging );
-            if ( literalVersion.booleanValue() || !StringUtils.equals( version, LATEST_KEYWORD ) )
+            if ( literalVersion.booleanValue( ) || !StringUtils.equals( version, LATEST_KEYWORD ) )
             {
                 searchField.setVersion( version );
             }
             searchField.setClassifier( classifier );
-            List<String> userRepos = getObservablesRepoIds().getStrings();
+            List<String> userRepos = getObservablesRepoIds( ).getStrings( );
             searchField.setRepositories(
                 StringUtils.isEmpty( repositoryId ) ? userRepos : Arrays.asList( repositoryId ) );
+            log.debug( "Searching repository {}", repositoryId );
             searchField.setExactSearch( true );
-            SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, null );
-            List<Artifact> artifacts = getArtifacts( searchResults );
+            SearchResults searchResults = repositorySearch.search( getPrincipal( ), searchField, null );
+            List<Artifact> artifacts = getArtifacts( searchResults, repositoryId );
 
-            if ( artifacts.isEmpty() )
+            if ( artifacts.isEmpty( ) )
             {
-                return Response.status( new Response.StatusType()
+                return Response.status( new Response.StatusType( )
                 {
                     @Override
-                    public int getStatusCode()
+                    public int getStatusCode( )
                     {
-                        return Response.Status.NO_CONTENT.getStatusCode();
+                        return Response.Status.NO_CONTENT.getStatusCode( );
                     }
 
                     @Override
-                    public Response.Status.Family getFamily()
+                    public Response.Status.Family getFamily( )
                     {
-                        return Response.Status.NO_CONTENT.getFamily();
+                        return Response.Status.NO_CONTENT.getFamily( );
                     }
 
                     @Override
-                    public String getReasonPhrase()
+                    public String getReasonPhrase( )
                     {
                         return "your query doesn't return any artifact";
                     }
-                } ).build();
+                } ).build( );
             }
 
             // TODO improve that with querying lucene with null value for classifier
             // so simple loop and retain only artifact with null classifier
             if ( classifier == null )
             {
-                List<Artifact> filteredArtifacts = new ArrayList<>( artifacts.size() );
+                List<Artifact> filteredArtifacts = new ArrayList<>( artifacts.size( ) );
                 for ( Artifact artifact : artifacts )
                 {
-                    if ( artifact.getClassifier() == null )
+                    if ( artifact.getClassifier( ) == null )
                     {
                         filteredArtifacts.add( artifact );
                     }
@@ -391,60 +392,65 @@ public class DefaultSearchService
             }
 
             // TODO return json result of the query ?
-            if ( artifacts.size() > 1 && !StringUtils.equals( version, LATEST_KEYWORD ) )
+            if ( artifacts.size( ) > 1 && ( literalVersion || !StringUtils.equals( version, LATEST_KEYWORD ) ) )
             {
-                return Response.status( new Response.StatusType()
+                return Response.status( new Response.StatusType( )
                 {
                     @Override
-                    public int getStatusCode()
+                    public int getStatusCode( )
                     {
-                        return Response.Status.BAD_REQUEST.getStatusCode();
+                        return Response.Status.BAD_REQUEST.getStatusCode( );
                     }
 
                     @Override
-                    public Response.Status.Family getFamily()
+                    public Response.Status.Family getFamily( )
                     {
-                        return Response.Status.BAD_REQUEST.getFamily();
+                        return Response.Status.BAD_REQUEST.getFamily( );
                     }
 
                     @Override
-                    public String getReasonPhrase()
+                    public String getReasonPhrase( )
                     {
                         return "your query return more than one artifact";
                     }
-                } ).build();
+                } ).build( );
             }
 
             // version is LATEST so we have to find the latest one from the result
-            if ( artifacts.size() > 1 && StringUtils.equals( version, LATEST_KEYWORD ) )
+            if ( !literalVersion && ( artifacts.size( ) > 1 && StringUtils.equals( version, LATEST_KEYWORD ) ) )
             {
-                TreeMap<String, Artifact> artifactPerVersion = new TreeMap<>( VersionComparator.getInstance() );
+                TreeMap<String, Artifact> artifactPerVersion = new TreeMap<>( VersionComparator.getInstance( ) );
 
                 for ( Artifact artifact : artifacts )
                 {
-                    artifactPerVersion.put( artifact.getVersion(), artifact );
+                    artifactPerVersion.put( artifact.getVersion( ), artifact );
                 }
 
                 return Response.temporaryRedirect(
-                    new URI( artifactPerVersion.lastEntry().getValue().getUrl() ) ).build();
+                    new URI( artifactPerVersion.lastEntry( ).getValue( ).getUrl( ) ) ).build( );
 
             }
 
             Artifact artifact = artifacts.get( 0 );
-
-            return Response.temporaryRedirect( new URI( artifact.getUrl() ) ).build();
+            log.debug( "Returning artifact {}, {}", artifact.getUrl( ), artifact.getRepositoryId( ) );
+            return Response.temporaryRedirect( new URI( artifact.getUrl( ) ) ).build( );
         }
         catch ( Exception e )
         {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage( ), e );
         }
     }
 
+    protected List<Artifact> getArtifacts( SearchResults searchResults )
+           throws ArchivaRestServiceException
+    {
+        return getArtifacts( searchResults, null );
+    }
 
     //-------------------------------------
     // internal
     //-------------------------------------
-    protected List<Artifact> getArtifacts( SearchResults searchResults )
+    protected List<Artifact> getArtifacts( SearchResults searchResults, String repositoryId )
         throws ArchivaRestServiceException
     {
 
@@ -466,7 +472,7 @@ public class DefaultSearchService
                     if ( StringUtils.isNotBlank( version ) )
                     {
                         versionned.setVersion( version );
-                        versionned.setUrl( getArtifactUrl( versionned ) );
+                        versionned.setUrl( getArtifactUrl( versionned, repositoryId ) );
 
                         artifacts.add( versionned );
 
