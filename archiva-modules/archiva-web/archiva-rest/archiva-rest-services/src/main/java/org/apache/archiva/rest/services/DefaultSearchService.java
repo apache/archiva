@@ -255,7 +255,7 @@ public class DefaultSearchService
 
     @Override
     public Response redirectToArtifactFile( String repositoryId, String groupId, String artifactId, String version,
-                                            String packaging, String classifier )
+                                            String packaging, String classifier, Boolean literalVersion )
         throws ArchivaRestServiceException
     {
         try
@@ -338,7 +338,7 @@ public class DefaultSearchService
             searchField.setGroupId( groupId );
             searchField.setArtifactId( artifactId );
             searchField.setPackaging( StringUtils.isBlank( packaging ) ? "jar" : packaging );
-            if ( !StringUtils.equals( version, LATEST_KEYWORD ) )
+            if ( literalVersion.booleanValue() || !StringUtils.equals( version, LATEST_KEYWORD ) )
             {
                 searchField.setVersion( version );
             }

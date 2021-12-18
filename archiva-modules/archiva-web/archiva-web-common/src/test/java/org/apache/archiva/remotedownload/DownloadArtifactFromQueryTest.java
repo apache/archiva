@@ -135,7 +135,7 @@ public class DownloadArtifactFromQueryTest
         {
             Response response =
                 getSearchService().redirectToArtifactFile( null, "org.apache.archiva", "archiva-test", "1.0", null,
-                                                           null );
+                                                           null, Boolean.FALSE );
 
         }
         catch ( RedirectionException e )
@@ -163,7 +163,7 @@ public class DownloadArtifactFromQueryTest
         {
             Response response =
                 getSearchService().redirectToArtifactFile( null, "org.apache.archiva", "archiva-test", "LATEST", null,
-                                                           null );
+                                                           null , Boolean.FALSE);
 
         }
         catch ( RedirectionException e )
@@ -190,7 +190,7 @@ public class DownloadArtifactFromQueryTest
         {
             Response response =
                 getSearchService().redirectToArtifactFile( null, "org.apache.archiva.beer", "archiva-wine", "LATEST",
-                                                           null, null );
+                                                           null, null, Boolean.FALSE );
 
             Assert.assertEquals( Response.Status.NO_CONTENT.getStatusCode(), response.getStatus() );
 

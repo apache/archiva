@@ -27,6 +27,7 @@ import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.model.StringList;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -120,7 +121,21 @@ public interface SearchService
         throws ArchivaRestServiceException;
     */
 
-
+    /**
+     * Returns a redirect to a artifact file, that matches given search parameter
+     * @param repositoryId The repository id (optional)
+     * @param groupId The search pattern for the group id of the artifact (required)
+     * @param artifactId  The search pattern for the artifact id of the artifact (required)
+     * @param version The search pattern for the version of the artifact (required)
+     *                LATEST returns the latest version of the artifact.
+     * @param packaging the packaging
+     * @param classifier the artifact classifier
+     * @param literalVersion true, if the version string should be treated literally, which means
+     *                       LATEST search for versions with LATEST in the version string.
+     *                       false, is default and treats v=LATEST special
+     * @return the redirect response, if a artifact was found
+     * @throws ArchivaRestServiceException
+     */
     @GET
     @Path( "/artifact" )
     @Produces( "text/html" )
@@ -130,7 +145,9 @@ public interface SearchService
                                      @QueryParam( "a" ) String artifactId, //
                                      @QueryParam( "v" ) String version, //
                                      @QueryParam( "p" ) String packaging, //
-                                     @QueryParam( "c" ) String classifier )
+                                     @QueryParam( "c" ) String classifier,
+                                     @DefaultValue( "false" )
+                                     @QueryParam( "literalVersion" ) Boolean literalVersion)
         throws ArchivaRestServiceException;
 
 

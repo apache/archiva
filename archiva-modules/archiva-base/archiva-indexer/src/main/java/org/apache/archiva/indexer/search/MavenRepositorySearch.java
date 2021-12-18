@@ -182,8 +182,8 @@ public class MavenRepositorySearch
 
         if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.VERSION, searchFields.isExactSearch() ? new SourcedSearchExpression(
-                searchFields.getVersion() ) : new SourcedSearchExpression( searchFields.getVersion() ) ), Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression(
+                searchFields.getVersion( ) ) ), Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
