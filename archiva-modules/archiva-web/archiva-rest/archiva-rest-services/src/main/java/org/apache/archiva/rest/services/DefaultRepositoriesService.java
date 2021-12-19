@@ -339,7 +339,7 @@ public class DefaultRepositoriesService
         try
         {
             boolean authz =
-                securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
+                securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_READ_REPOSITORY,
                                              artifactTransferRequest.getRepositoryId() );
             if ( !authz )
             {
@@ -357,7 +357,7 @@ public class DefaultRepositoriesService
         try
         {
             boolean authz =
-                securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
+                securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_ADD_ARTIFACT,
                                              artifactTransferRequest.getTargetRepositoryId() );
             if ( !authz )
             {

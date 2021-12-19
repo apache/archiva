@@ -84,8 +84,8 @@ public class ArchivaStandardRolesCheck
                 ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, ArchivaRoleConstants.OPERATION_REGENERATE_INDEX,
                 ArchivaRoleConstants.OPERATION_RUN_INDEXER, ArchivaRoleConstants.OPERATION_ACCESS_REPORT,
                 ArchivaRoleConstants.OPERATION_ADD_REPOSITORY, ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY,
-                ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY,
-                ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
+                ArchivaRoleConstants.OPERATION_READ_REPOSITORY, ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY,
+                ArchivaRoleConstants.OPERATION_ADD_ARTIFACT, ArchivaRoleConstants.OPERATION_READ_REPOSITORY,
                 "archiva-guest" };
 
             log.info( "Checking the existance of required operations." );

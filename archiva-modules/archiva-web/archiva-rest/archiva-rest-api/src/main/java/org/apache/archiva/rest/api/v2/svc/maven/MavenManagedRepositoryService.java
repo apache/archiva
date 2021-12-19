@@ -50,9 +50,10 @@ import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.apache.archiva.rest.api.v2.svc.RestConfiguration.DEFAULT_PAGE_LIMIT;
+import static org.apache.archiva.security.common.ArchivaRoleConstants.*;
 
 /**
- * Service interface for managing managed maven repositories
+ * Service interface for update, delete, add of Managed Maven Repositories
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  * @since 3.0
@@ -66,7 +67,7 @@ public interface MavenManagedRepositoryService
     @Path( "" )
     @GET
     @Produces( {APPLICATION_JSON} )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = OPERATION_MANAGE_CONFIGURATION )
     @Operation( summary = "Returns all managed repositories.",
         parameters = {
             @Parameter( name = "q", description = "Search term" ),
@@ -77,7 +78,7 @@ public interface MavenManagedRepositoryService
         },
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
             )
         },
         responses = {
@@ -101,11 +102,18 @@ public interface MavenManagedRepositoryService
     @Path( "{id}" )
     @GET
     @Produces( {MediaType.APPLICATION_JSON} )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization(
+        permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_READ_REPOSITORY},
+        resource = "{id}"
+    )
     @Operation( summary = "Returns the managed repository with the given id.",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_READ_REPOSITORY,
+                scopes = "{id}"
             )
         },
         responses = {
@@ -126,11 +134,18 @@ public interface MavenManagedRepositoryService
     @Path( "{id}" )
     @DELETE
     @Produces( {MediaType.APPLICATION_JSON} )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization(
+        permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_DELETE_REPOSITORY },
+        resource = "{id}"
+    )
     @Operation( summary = "Deletes the managed repository with the given id.",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_DELETE_REPOSITORY,
+                scopes = "{id}"
             )
         },
         responses = {
@@ -152,11 +167,18 @@ public interface MavenManagedRepositoryService
     @POST
     @Consumes( {MediaType.APPLICATION_JSON} )
     @Produces( {MediaType.APPLICATION_JSON} )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization(
+        permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_ADD_REPOSITORY },
+        resource = "{id}"
+    )
     @Operation( summary = "Creates the managed repository",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_ADD_REPOSITORY,
+                scopes = "{id}"
             )
         },
         responses = {
@@ -183,11 +205,18 @@ public interface MavenManagedRepositoryService
     @PUT
     @Consumes( {MediaType.APPLICATION_JSON} )
     @Produces( {MediaType.APPLICATION_JSON} )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization(
+        permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_EDIT_REPOSITORY },
+        resource = "{id}"
+    )
     @Operation( summary = "Updates the managed repository with the given id",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_EDIT_REPOSITORY,
+                scopes = "{id}"
             )
         },
         responses = {
@@ -210,12 +239,20 @@ public interface MavenManagedRepositoryService
     @Path( "{id}/path/{filePath: .+}" )
     @GET
     @Produces( {MediaType.APPLICATION_JSON} )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, resource = "{id}")
+    @RedbackAuthorization(
+        permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_READ_REPOSITORY},
+        resource = "{id}"
+    )
     @Operation( summary = "Returns the status of a given file in the repository",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_READ_REPOSITORY,
+                scopes = "{id}"
             )
+
         },
         responses = {
             @ApiResponse( responseCode = "200",
@@ -243,13 +280,13 @@ public interface MavenManagedRepositoryService
     @Operation( summary = "Copies a artifact from the source repository to the destination repository",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
+                name = OPERATION_READ_REPOSITORY,
                 scopes = {
                     "{srcId}"
                 }
             ),
             @SecurityRequirement(
-                name= ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
+                name= OPERATION_ADD_ARTIFACT,
                 scopes = {
                     "{dstId}"
                 }
@@ -274,12 +311,20 @@ public interface MavenManagedRepositoryService
     @Path ("{id}/path/{path: .+}")
     @DELETE
     @Consumes ({ APPLICATION_JSON })
-    @RedbackAuthorization (noPermission = true)
+    @RedbackAuthorization (
+        permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_DELETE_ARTIFACT },
+        resource = "{id}"
+    )
     @Operation( summary = "Deletes a artifact in the repository.",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_RUN_INDEXER
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_DELETE_ARTIFACT,
+                scopes = "{id}"
             )
+
         },
         responses = {
             @ApiResponse( responseCode = "200",
@@ -297,12 +342,20 @@ public interface MavenManagedRepositoryService
     @Path ( "{id}/co/{group}/{project}/{version}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
-    @RedbackAuthorization (noPermission = true)
+    @RedbackAuthorization (
+        permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_DELETE_VERSION},
+        resource = "{id}"
+    )
     @Operation( summary = "Removes a version tree in the repository",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_DELETE_VERSION,
+                scopes = "{id}"
             )
+
         },
         responses = {
             @ApiResponse( responseCode = "200",
@@ -327,8 +380,13 @@ public interface MavenManagedRepositoryService
     @Operation( summary = "Removes a project tree in the repository",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_DELETE_PROJECT,
+                scopes = "{id}"
             )
+
         },
         responses = {
             @ApiResponse( responseCode = "200",
@@ -346,11 +404,18 @@ public interface MavenManagedRepositoryService
     @Path ( "{id}/co/{namespace}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
-    @RedbackAuthorization (noPermission = true)
+    @RedbackAuthorization (
+        permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_DELETE_NAMESPACE },
+        resource = "{id}"
+    )
     @Operation( summary = "Removes a namespace tree in the repository",
         security = {
             @SecurityRequirement(
-                name = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION
+                name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_DELETE_NAMESPACE,
+                scopes = "{id}"
             )
         },
         responses = {

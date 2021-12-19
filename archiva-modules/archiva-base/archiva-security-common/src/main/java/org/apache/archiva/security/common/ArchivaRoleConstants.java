@@ -45,29 +45,84 @@ public class ArchivaRoleConstants
     // operations
     public static final String OPERATION_MANAGE_USERS = "archiva-manage-users";
 
+    /**
+     * Maintenance role, that allows to run all configuration changes
+     */
     public static final String OPERATION_MANAGE_CONFIGURATION = "archiva-manage-configuration";
 
     public static final String OPERATION_ACTIVE_GUEST = "archiva-guest";
 
+    /**
+     * Allows to run the indexer update
+     */
     public static final String OPERATION_RUN_INDEXER = "archiva-run-indexer";
+
 
     public static final String OPERATION_REGENERATE_INDEX = "archiva-regenerate-index";
 
     public static final String OPERATION_ACCESS_REPORT = "archiva-access-reports";
 
+    /**
+     * Permission to add a repository
+     * Scope: application
+     */
     public static final String OPERATION_ADD_REPOSITORY = "archiva-add-repository";
 
-    public static final String OPERATION_REPOSITORY_ACCESS = "archiva-read-repository";
+    /**
+     * Permission to read the attributes and contents of a repository
+     * Scope: repository
+     */
+    public static final String OPERATION_READ_REPOSITORY = "archiva-read-repository";
 
+    /**
+     * Permission to delete a repository
+     * Scope: repository
+     */
     public static final String OPERATION_DELETE_REPOSITORY = "archiva-delete-repository";
 
+    /**
+     * Permission edit attributes of a repository
+     * Scope: repository
+     */
     public static final String OPERATION_EDIT_REPOSITORY = "archiva-edit-repository";
 
-    public static final String OPERATION_REPOSITORY_UPLOAD = "archiva-upload-repository";
+    /**
+     * Permission to upload a artifact to a specific repository
+     * Scope: repository
+     */
+    public static final String OPERATION_ADD_ARTIFACT = "archiva-add-artifact";
 
+    /**
+     * Permission to delete a artifact from a repository
+     * Scope: repository
+     */
+    public static final String OPERATION_DELETE_ARTIFACT = "archiva-delete-artifact";
+
+    /**
+     * Permission to delete a namespace (maven group) from a repository.
+     * Scope: repository
+     */
+    public static final String OPERATION_DELETE_NAMESPACE = "archiva-delete-namespace";
+
+    /**
+     * Permission to delete a project
+     * Scope: repository
+     */
+    public static final String OPERATION_DELETE_PROJECT = "archiva-delete-project";
+
+    /**
+     * Permission to delete a version
+     * Scope: repository
+     */
+    public static final String OPERATION_DELETE_VERSION = "archiva-delete-version";
+
+    /**
+     * Permission to upload a file to the upload workspace
+     * Scope: application
+     */
     public static final String OPERATION_FILE_UPLOAD = "archiva-upload-file";
 
-    public static final String OPERATION_REPOSITORY_DELETE = "archiva-delete-artifact";
+
 
     public static final String OPERATION_MERGE_REPOSITORY = "archiva-merge-repository";
     

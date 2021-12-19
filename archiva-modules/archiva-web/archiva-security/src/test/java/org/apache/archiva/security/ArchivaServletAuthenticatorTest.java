@@ -110,7 +110,7 @@ public class ArchivaServletAuthenticatorTest
 
         SecuritySession session = new DefaultSecuritySession( result, user );
         boolean isAuthorized =
-            servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
+            servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_ADD_ARTIFACT );
 
         assertTrue( isAuthorized );
 
@@ -139,7 +139,7 @@ public class ArchivaServletAuthenticatorTest
 
         try
         {
-            servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
+            servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_ADD_ARTIFACT );
             fail( "UnauthorizedException should have been thrown." );
         }
         catch ( UnauthorizedException e )
@@ -167,7 +167,7 @@ public class ArchivaServletAuthenticatorTest
 
         SecuritySession session = new DefaultSecuritySession( result, user );
         boolean isAuthorized =
-            servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+            servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_READ_REPOSITORY );
 
         assertTrue( isAuthorized );
 
@@ -188,7 +188,7 @@ public class ArchivaServletAuthenticatorTest
         SecuritySession session = new DefaultSecuritySession( result, user );
         try
         {
-            servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+            servletAuth.isAuthorized( request, session, "corporate", ArchivaRoleConstants.OPERATION_READ_REPOSITORY );
             fail( "UnauthorizedException should have been thrown." );
         }
         catch ( UnauthorizedException e )
@@ -205,7 +205,7 @@ public class ArchivaServletAuthenticatorTest
     {
         assignRepositoryManagerRole( USER_GUEST, "corporate" );
         boolean isAuthorized =
-            servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
+            servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_ADD_ARTIFACT );
 
         assertTrue( isAuthorized );
 
@@ -221,7 +221,7 @@ public class ArchivaServletAuthenticatorTest
         assignRepositoryObserverRole( USER_GUEST, "corporate" );
 
         boolean isAuthorized =
-            servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
+            servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_ADD_ARTIFACT );
         assertFalse( isAuthorized );
 
         // cleanup previously add karma
@@ -236,7 +236,7 @@ public class ArchivaServletAuthenticatorTest
         assignRepositoryObserverRole( USER_GUEST, "corporate" );
 
         boolean isAuthorized =
-            servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+            servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_READ_REPOSITORY );
 
         assertTrue( isAuthorized );
 
@@ -249,7 +249,7 @@ public class ArchivaServletAuthenticatorTest
         throws Exception
     {
         boolean isAuthorized =
-            servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+            servletAuth.isAuthorized( USER_GUEST, "corporate", ArchivaRoleConstants.OPERATION_READ_REPOSITORY );
 
         assertFalse( isAuthorized );
     }

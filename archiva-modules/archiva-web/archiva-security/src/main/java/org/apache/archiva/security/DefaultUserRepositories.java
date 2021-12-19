@@ -64,7 +64,7 @@ public class DefaultUserRepositories
     public List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
     {
-        String operation = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
+        String operation = ArchivaRoleConstants.OPERATION_READ_REPOSITORY;
 
         return getAccessibleRepositoryIds( principal, operation );
     }
@@ -73,7 +73,7 @@ public class DefaultUserRepositories
     public List<String> getManagableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
     {
-        String operation = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
+        String operation = ArchivaRoleConstants.OPERATION_ADD_ARTIFACT;
 
         return getAccessibleRepositoryIds( principal, operation );
     }
@@ -96,12 +96,12 @@ public class DefaultUserRepositories
     public List<ManagedRepository> getAccessibleRepositories( String principal )
         throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
     {
-        return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+        return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_READ_REPOSITORY );
     }
 
     @Override
     public List<ManagedRepository> getManagableRepositories(String principal) throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException {
-        return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
+        return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_ADD_ARTIFACT );
     }
 
     private List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
@@ -206,7 +206,7 @@ public class DefaultUserRepositories
         {
             SecuritySession securitySession = createSession( principal );
 
-            return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
+            return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_ADD_ARTIFACT,
                                                 repoId );
 
         }
@@ -224,7 +224,7 @@ public class DefaultUserRepositories
         {
             SecuritySession securitySession = createSession( principal );
 
-            return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_DELETE,
+            return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_DELETE_ARTIFACT,
                                                 repoId );
 
         }

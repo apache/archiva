@@ -48,10 +48,30 @@
           <name>archiva-merge-repository</name>
           <description>Archiva Merge Repository</description>
         </operation>
-         <operation>
+        <operation>
+          <id>archiva-delete-namespace</id>
+          <name>archiva-delete-namespace</name>
+          <description>Delete Namespace (GroupID) from Archiva Repository</description>
+        </operation>
+        <operation>
+          <id>archiva-delete-project</id>
+          <name>archiva-delete-project</name>
+          <description>Delete Project (all versions) from Archiva Repository</description>
+        </operation>
+        <operation>
+          <id>archiva-delete-version</id>
+          <name>archiva-delete-version</name>
+          <description>Delete Version from Archiva Repository</description>
+        </operation>
+        <operation>
           <id>archiva-delete-artifact</id>
           <name>archiva-delete-artifact</name>
           <description>Delete Artifact</description>
+        </operation>
+        <operation>
+          <id>archiva-add-artifact</id>
+          <name>archiva-add-artifact</name>
+          <description>Add artifact to Archiva Repository</description>
         </operation>
         <operation>
           <id>archiva-access-reports</id>
@@ -77,11 +97,6 @@
           <id>archiva-edit-repository</id>
           <name>archiva-edit-repository</name>
           <description>Edit Archiva Repository</description>
-        </operation>
-        <operation>
-          <id>archiva-upload-repository</id>
-          <name>archiva-upload-repository</name>
-          <description>Upload Archiva Repository</description>
         </operation>
         <operation>
           <id>archiva-upload-file</id>
@@ -238,10 +253,34 @@
           <namePrefix>Repository Manager</namePrefix>
           <assignable>true</assignable>
           <permissions>
-             <permission>
+            <permission>
+              <id>archiva-delete-namespace</id>
+              <name>Archiva Delete Namespace (GroupId)</name>
+              <operation>archiva-delete-namespace</operation>
+              <resource>${resource}</resource>
+            </permission>
+            <permission>
+              <id>archiva-delete-project</id>
+              <name>Archiva Delete Project</name>
+              <operation>archiva-delete-project</operation>
+              <resource>${resource}</resource>
+            </permission>
+            <permission>
+              <id>archiva-delete-version</id>
+              <name>Archiva Delete Version</name>
+              <operation>archiva-delete-version</operation>
+              <resource>${resource}</resource>
+            </permission>
+            <permission>
               <id>archiva-delete-artifact</id>
               <name>Delete Artifact</name>
               <operation>archiva-delete-artifact</operation>
+              <resource>${resource}</resource>
+            </permission>
+            <permission>
+              <id>archiva-add-artifact</id>
+              <name>Add Artifact</name>
+              <operation>archiva-add-artifact</operation>
               <resource>${resource}</resource>
             </permission>
             <permission>
@@ -254,12 +293,6 @@
               <id>archiva-delete-repository</id>
               <name>Archiva Delete Repository</name>
               <operation>archiva-delete-repository</operation>
-              <resource>${resource}</resource>
-            </permission>
-            <permission>
-              <id>archiva-upload-repository</id>
-              <name>Archiva Upload to Repository</name>
-              <operation>archiva-upload-repository</operation>
               <resource>${resource}</resource>
             </permission>
             <permission>

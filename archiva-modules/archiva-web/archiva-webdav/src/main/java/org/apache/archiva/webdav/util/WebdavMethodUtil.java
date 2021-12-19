@@ -53,15 +53,15 @@ public class WebdavMethodUtil
         }
         if ( READ_METHODS.contains( method.toUpperCase( Locale.US ) ) )
         {
-            return ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
+            return ArchivaRoleConstants.OPERATION_READ_REPOSITORY;
         }
         else if ( "DELETE".equals( method.toUpperCase( Locale.US ) ) )
         {
-            return ArchivaRoleConstants.OPERATION_REPOSITORY_DELETE;
+            return ArchivaRoleConstants.OPERATION_DELETE_ARTIFACT;
         }
         else
         {
-            return ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
+            return ArchivaRoleConstants.OPERATION_ADD_ARTIFACT;
         }
     }
 

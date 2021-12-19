@@ -308,7 +308,7 @@ public class RssFeedServlet
                     && servletAuth.isAuthorized( req, //
                                                  securitySession, //
                                                  repoId, //
-                                                 ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) )
+                                                 ArchivaRoleConstants.OPERATION_READ_REPOSITORY ) )
                 {
                     return true;
                 }

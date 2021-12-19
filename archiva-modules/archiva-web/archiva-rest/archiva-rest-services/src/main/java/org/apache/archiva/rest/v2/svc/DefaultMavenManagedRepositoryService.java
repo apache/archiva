@@ -64,8 +64,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.apache.archiva.security.common.ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
-import static org.apache.archiva.security.common.ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
+import static org.apache.archiva.security.common.ArchivaRoleConstants.OPERATION_READ_REPOSITORY;
+import static org.apache.archiva.security.common.ArchivaRoleConstants.OPERATION_ADD_ARTIFACT;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -327,11 +327,11 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         try
         {
             boolean authz =
-                securitySystem.isAuthorized( securitySession, OPERATION_REPOSITORY_ACCESS,
+                securitySystem.isAuthorized( securitySession, OPERATION_READ_REPOSITORY,
                     srcRepositoryId );
             if ( !authz )
             {
-                throw new ArchivaRestServiceException(ErrorMessage.of( ErrorKeys.PERMISSION_REPOSITORY_DENIED, srcRepositoryId, OPERATION_REPOSITORY_ACCESS ), 403);
+                throw new ArchivaRestServiceException(ErrorMessage.of( ErrorKeys.PERMISSION_REPOSITORY_DENIED, srcRepositoryId, OPERATION_READ_REPOSITORY ), 403);
             }
         }
         catch ( AuthorizationException e )
@@ -344,11 +344,11 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         try
         {
             boolean authz =
-                securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
+                securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_ADD_ARTIFACT,
                     dstRepositoryId );
             if ( !authz )
             {
-                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.PERMISSION_REPOSITORY_DENIED, dstRepositoryId, OPERATION_REPOSITORY_UPLOAD ) );
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.PERMISSION_REPOSITORY_DENIED, dstRepositoryId, OPERATION_ADD_ARTIFACT ) );
             }
         }
         catch ( AuthorizationException e )
