@@ -34,7 +34,7 @@
 
   <context:annotation-config/>
   <context:component-scan
-      base-package="org.apache.archiva.rest.services,org.apache.archiva.redback.rest.services"/>
+      base-package="org.apache.archiva.rest.services,org.apache.archiva.redback.rest.services,org.apache.archiva.rest.v2"/>
 
   <!-- CXF OpenApiFeature -->
   <bean id="archivaOpenApiFeature" class="org.apache.cxf.jaxrs.openapi.OpenApiFeature">

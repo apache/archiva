@@ -1,6 +1,6 @@
 resourcePackages:
-  - org.apache.archiva.rest.api.services.v2
-  - org.apache.archiva.rest.api.model.v2
+  - org.apache.archiva.rest.api.v2.svc
+  - org.apache.archiva.rest.api.v2.model
 
 prettyPrint: true
 cacheTTL: 0
