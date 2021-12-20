@@ -79,6 +79,11 @@
           <description>Access Archiva Reports</description>
         </operation>
         <operation>
+          <id>archiva-list-repositories</id>
+          <name>archiva-list-repositories</name>
+          <description>List all repositories</description>
+        </operation>
+        <operation>
           <id>archiva-add-repository</id>
           <name>archiva-add-repository</name>
           <description>Add Archiva Repository</description>
@@ -253,6 +258,12 @@
           <namePrefix>Repository Manager</namePrefix>
           <assignable>true</assignable>
           <permissions>
+            <permission>
+              <id>archiva-list-repositories</id>
+              <name>Archiva List Repositories</name>
+              <operation>archiva-list-repositories</operation>
+              <resource>global</resource>
+            </permission>
             <permission>
               <id>archiva-delete-namespace</id>
               <name>Archiva Delete Namespace (GroupId)</name>

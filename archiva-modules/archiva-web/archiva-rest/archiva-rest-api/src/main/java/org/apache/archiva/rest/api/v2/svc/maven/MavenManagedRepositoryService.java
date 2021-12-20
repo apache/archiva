@@ -32,7 +32,6 @@ import org.apache.archiva.rest.api.v2.model.MavenManagedRepository;
 import org.apache.archiva.rest.api.v2.model.MavenManagedRepositoryUpdate;
 import org.apache.archiva.rest.api.v2.svc.ArchivaRestError;
 import org.apache.archiva.rest.api.v2.svc.ArchivaRestServiceException;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -53,12 +52,25 @@ import static org.apache.archiva.rest.api.v2.svc.RestConfiguration.DEFAULT_PAGE_
 import static org.apache.archiva.security.common.ArchivaRoleConstants.*;
 
 /**
+ *
  * Service interface for update, delete, add of Managed Maven Repositories
+ *
+ * The add, delete, update methods for a repository use "/{id}" with the classical CRUD actions.
+ * Where {id} is the repository ID.
+ *
+ * There are subpaths for certain repository management functions:
+ * <ul>
+ * <li>{@code /{id}/path/{groupsection1/groupsection2/... }/{project}/{version}/{artifact-file}}
+ *  is used for accessing artifacts and directories by their repository path</li>
+ * <li>{@code /{id}/co/{groupid}/{artifactid}/{version} } is used to access Maven artifacts by their coordinates.
+ *  Which means, {groupid} is a '.' separated string.
+ * </li>
+ * </ul>
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  * @since 3.0
  */
-@Schema( name = "ManagedRepositoryService", description = "Managing and configuration of managed repositories" )
+@Schema( name = "MavenManagedRepositoryService", description = "Managing and configuration of managed maven repositories" )
 @Path( "repositories/maven/managed" )
 @Tag(name = "v2")
 @Tag(name = "v2/Repositories")
@@ -67,7 +79,7 @@ public interface MavenManagedRepositoryService
     @Path( "" )
     @GET
     @Produces( {APPLICATION_JSON} )
-    @RedbackAuthorization( permissions = OPERATION_MANAGE_CONFIGURATION )
+    @RedbackAuthorization( permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_LIST_REPOSITORIES } )
     @Operation( summary = "Returns all managed repositories.",
         parameters = {
             @Parameter( name = "q", description = "Search term" ),
@@ -79,7 +91,11 @@ public interface MavenManagedRepositoryService
         security = {
             @SecurityRequirement(
                 name = OPERATION_MANAGE_CONFIGURATION
+            ),
+            @SecurityRequirement(
+                name = OPERATION_LIST_REPOSITORIES
             )
+
         },
         responses = {
             @ApiResponse( responseCode = "200",
@@ -159,7 +175,8 @@ public interface MavenManagedRepositoryService
         }
     )
     Response deleteManagedRepository( @PathParam( "id" ) String repositoryId,
-                                      @QueryParam( "deleteContent" ) boolean deleteContent )
+                                      @DefaultValue( "false" )
+                                      @QueryParam( "deleteContent" ) Boolean deleteContent )
         throws ArchivaRestServiceException;
 
 
@@ -243,7 +260,7 @@ public interface MavenManagedRepositoryService
         permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_READ_REPOSITORY},
         resource = "{id}"
     )
-    @Operation( summary = "Returns the status of a given file in the repository",
+    @Operation( summary = "Returns the status of a given artifact file in the repository",
         security = {
             @SecurityRequirement(
                 name = OPERATION_MANAGE_CONFIGURATION
@@ -277,7 +294,7 @@ public interface MavenManagedRepositoryService
     @POST
     @Produces({APPLICATION_JSON})
     @RedbackAuthorization (noPermission = true)
-    @Operation( summary = "Copies a artifact from the source repository to the destination repository",
+    @Operation( summary = "Copies a artifact from the source repository to the destination repository with the same path",
         security = {
             @SecurityRequirement(
                 name = OPERATION_READ_REPOSITORY,
@@ -315,7 +332,7 @@ public interface MavenManagedRepositoryService
         permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_DELETE_ARTIFACT },
         resource = "{id}"
     )
-    @Operation( summary = "Deletes a artifact in the repository.",
+    @Operation( summary = "Deletes a artifact from the repository.",
         security = {
             @SecurityRequirement(
                 name = OPERATION_MANAGE_CONFIGURATION
@@ -339,14 +356,14 @@ public interface MavenManagedRepositoryService
     Response deleteArtifact( @PathParam( "id" ) String repositoryId, @PathParam( "path" ) String path )
         throws ArchivaRestServiceException;
 
-    @Path ( "{id}/co/{group}/{project}/{version}" )
+    @Path ( "{id}/co/{groupid}/{artifactid}/{version}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (
         permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_DELETE_VERSION},
         resource = "{id}"
     )
-    @Operation( summary = "Removes a version tree in the repository",
+    @Operation( summary = "Removes a version and all its content from the repository",
         security = {
             @SecurityRequirement(
                 name = OPERATION_MANAGE_CONFIGURATION
@@ -368,16 +385,16 @@ public interface MavenManagedRepositoryService
         }
     )
     Response removeProjectVersion( @PathParam ( "id" ) String repositoryId,
-                                   @PathParam ( "group" ) String namespace, @PathParam ( "project" ) String projectId,
+                                   @PathParam ( "groupid" ) String namespace, @PathParam ( "artifactid" ) String projectId,
                                    @PathParam ( "version" ) String version )
         throws org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 
 
-    @Path ( "{id}/co/{group}/{project}" )
+    @Path ( "{id}/co/{groupid}/{artifactid}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (noPermission = true)
-    @Operation( summary = "Removes a project tree in the repository",
+    @Operation( summary = "Removes a artifact and all its versions from the repository",
         security = {
             @SecurityRequirement(
                 name = OPERATION_MANAGE_CONFIGURATION
@@ -394,21 +411,21 @@ public interface MavenManagedRepositoryService
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to delete in repositories",
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
-            @ApiResponse( responseCode = "404", description = "The managed repository with this id does not exist. Or the project does not exist.",
+            @ApiResponse( responseCode = "404", description = "The managed repository with this id does not exist. Or the artifact does not exist.",
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
-    Response deleteProject( @PathParam ("id") String repositoryId, @PathParam ( "group" ) String namespace, @PathParam ( "project" ) String projectId )
+    Response deleteProject( @PathParam ("id") String repositoryId, @PathParam ( "groupid" ) String namespace, @PathParam ( "artifactid" ) String projectId )
         throws org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 
-    @Path ( "{id}/co/{namespace}" )
+    @Path ( "{id}/co/{groupid}" )
     @DELETE
     @Produces ({ MediaType.APPLICATION_JSON })
     @RedbackAuthorization (
         permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_DELETE_NAMESPACE },
         resource = "{id}"
     )
-    @Operation( summary = "Removes a namespace tree in the repository",
+    @Operation( summary = "Removes a group and all subfolders from the repository",
         security = {
             @SecurityRequirement(
                 name = OPERATION_MANAGE_CONFIGURATION
@@ -424,11 +441,11 @@ public interface MavenManagedRepositoryService
             ),
             @ApiResponse( responseCode = "403", description = "Authenticated user is not permitted to delete namespaces in repositories",
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) ),
-            @ApiResponse( responseCode = "404", description = "The managed repository with this id does not exist. Or the namespace does not exist.",
+            @ApiResponse( responseCode = "404", description = "The managed repository with this id does not exist. Or the groupid does not exist.",
                 content = @Content( mediaType = APPLICATION_JSON, schema = @Schema( implementation = ArchivaRestError.class ) ) )
         }
     )
-    Response deleteNamespace( @PathParam ("id") String repositoryId, @PathParam ( "namespace" ) String namespace )
+    Response deleteNamespace( @PathParam ("id") String repositoryId, @PathParam ( "groupid" ) String namespace )
         throws org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 
 }

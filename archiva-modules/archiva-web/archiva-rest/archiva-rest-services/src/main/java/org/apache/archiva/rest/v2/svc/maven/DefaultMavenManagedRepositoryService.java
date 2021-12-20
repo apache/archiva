@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.v2.svc;
+package org.apache.archiva.rest.v2.svc.maven;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -155,7 +155,7 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
     }
 
     @Override
-    public Response deleteManagedRepository( String repositoryId, boolean deleteContent ) throws ArchivaRestServiceException
+    public Response deleteManagedRepository( String repositoryId, Boolean deleteContent ) throws ArchivaRestServiceException
     {
         ManagedRepository repo = repositoryRegistry.getManagedRepository( repositoryId );
         if (repo==null) {

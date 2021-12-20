@@ -64,7 +64,7 @@ public class ArchivaRoleConstants
 
     /**
      * Permission to add a repository
-     * Scope: application
+     * Scope: global
      */
     public static final String OPERATION_ADD_REPOSITORY = "archiva-add-repository";
 
@@ -118,10 +118,15 @@ public class ArchivaRoleConstants
 
     /**
      * Permission to upload a file to the upload workspace
-     * Scope: application
+     * Scope: global
      */
     public static final String OPERATION_FILE_UPLOAD = "archiva-upload-file";
 
+    /**
+     * Permission to list all available repositories
+     * Scope: global
+     */
+    public static final String OPERATION_LIST_REPOSITORIES = "archiva-list-repositories";
 
 
     public static final String OPERATION_MERGE_REPOSITORY = "archiva-merge-repository";
@@ -138,7 +143,8 @@ public class ArchivaRoleConstants
     public static final String TEMPLATE_SYSTEM_ADMIN = "archiva-system-administrator";
     
     public static final String TEMPLATE_GUEST = "archiva-guest";
-    
+
+
     public static String toRepositoryObserverRoleName( String repoId )
     {
         return REPOSITORY_OBSERVER_ROLE_PREFIX + " - " + repoId;
