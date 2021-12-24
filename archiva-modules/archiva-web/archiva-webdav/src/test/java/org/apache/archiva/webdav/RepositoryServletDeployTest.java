@@ -22,7 +22,7 @@ package org.apache.archiva.webdav;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
+import org.apache.archiva.webdav.mock.httpunit.MkColMethodWebRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

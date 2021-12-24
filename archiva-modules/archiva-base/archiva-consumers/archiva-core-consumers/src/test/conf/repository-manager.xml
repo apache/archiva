@@ -24,7 +24,7 @@
     <managedRepository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <location>file://${appserver.base}/repositories/internal</location>
+      <location>${appserver.base}/repositories/internal</location>
       <indexDir>${appserver.base}/repositories/internal/.indexer</indexDir>
       <layout>default</layout>
       <releases>true</releases>
@@ -35,7 +35,7 @@
     <managedRepository>
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
-      <location>file://${appserver.base}/repositories/snapshots</location>
+      <location>${appserver.base}/repositories/snapshots</location>
       <indexDir>.indexer</indexDir>
       <layout>default</layout>
       <releases>false</releases>
@@ -46,7 +46,7 @@
     <managedRepository>
       <id>test-repo</id>
       <name>Test Repository</name>
-      <location>file://${appserver.base}/test-repo</location>
+      <location>${appserver.base}/test-repo</location>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>true</snapshots>

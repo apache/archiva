@@ -34,7 +34,7 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.metadata.audit.TestAuditListener;
+import org.apache.archiva.webdav.mock.metadata.audit.TestAuditListener;
 import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.security.common.ArchivaRoleConstants;

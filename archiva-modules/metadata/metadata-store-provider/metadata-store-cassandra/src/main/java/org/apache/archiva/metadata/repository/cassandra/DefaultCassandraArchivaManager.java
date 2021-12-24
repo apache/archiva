@@ -180,7 +180,6 @@ public class DefaultCassandraArchivaManager
 
         List<String> hostNames = new ArrayList<>( );
         hostNames.add( cassandraHost + ":" + cassandraPort );
-        System.out.println( "Contact point: " + cassandraHost + ":" + cassandraPort );
         configLoader =
             DriverConfigLoader.programmaticBuilder( )
 

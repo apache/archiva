@@ -95,9 +95,7 @@ public class CassandraMetadataRepositoryTest
         throws Exception
     {
         cTime = System.currentTimeMillis( );
-        System.err.println( "Setting up - "+(testNum++) + " - " + testInfo.getDisplayName() + " - 0ms");
         super.setUp();
-        System.err.println( "Setting up - " + testInfo.getDisplayName( ) + " - " + (System.currentTimeMillis( ) - cTime) +"ms");
         assertMaxTries =1;
         assertRetrySleepMs=10;
 
@@ -126,7 +124,6 @@ public class CassandraMetadataRepositoryTest
         {
             clearReposAndNamespace( cassandraArchivaManager, clearedTables );
         }
-        System.err.println( "Finished setting up - "+testInfo.getDisplayName() + " - " + (System.currentTimeMillis( ) - cTime) +"ms");
     }
 
     /**
@@ -165,10 +162,8 @@ public class CassandraMetadataRepositoryTest
     public void shutdown(TestInfo testInfo)
         throws Exception
     {
-        System.err.println( "Shutting down - " + (testNum-1) + " - " + testInfo.getDisplayName( ) + " - " + ( System.currentTimeMillis( ) - cTime ) +"ms");
         clearReposAndNamespace( cassandraArchivaManager, clearedTables );
         super.tearDown();
-        System.err.println( "Shutting down finished - " + testInfo.getDisplayName( ) + " - " + ( System.currentTimeMillis( ) - cTime ) +"ms");
     }
 
     static void clearReposAndNamespace( final CassandraArchivaManager cassandraArchivaManager, final AtomicBoolean clearedFlag )
