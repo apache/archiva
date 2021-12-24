@@ -92,9 +92,9 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         QUERY_HELPER.addNullsafeFieldComparator( "name", ManagedRepository::getName );
     }
 
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-    private RepositoryRegistry repositoryRegistry;
-    private SecuritySystem securitySystem;
+    private final ManagedRepositoryAdmin managedRepositoryAdmin;
+    private final RepositoryRegistry repositoryRegistry;
+    private final SecuritySystem securitySystem;
 
     public DefaultMavenManagedRepositoryService( SecuritySystem securitySystem,
                                                  RepositoryRegistry repositoryRegistry,
@@ -133,7 +133,7 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
             final Comparator<ManagedRepository> comparator = QUERY_HELPER.getComparator( orderBy, order );
             int totalCount = Math.toIntExact( repos.stream( ).filter( queryFilter ).count( ) );
             return PagedResult.of( totalCount, offset, limit, repos.stream( ).filter( queryFilter ).sorted( comparator )
-                .map(mr -> MavenManagedRepository.of(mr)).skip( offset ).limit( limit ).collect( Collectors.toList( ) ) );
+                .map( MavenManagedRepository::of ).skip( offset ).limit( limit ).collect( Collectors.toList( ) ) );
         }
         catch (ArithmeticException e) {
             log.error( "Invalid number of repositories detected." );
@@ -157,21 +157,20 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
     @Override
     public Response deleteManagedRepository( String repositoryId, Boolean deleteContent ) throws ArchivaRestServiceException
     {
-        ManagedRepository repo = repositoryRegistry.getManagedRepository( repositoryId );
-        if (repo==null) {
+        MavenManagedRepository repo = getManagedRepository( repositoryId );
+        if (repo != null)
+        {
+            try
+            {
+                managedRepositoryAdmin.deleteManagedRepository( repositoryId, getAuditInformation( ), deleteContent );
+                return Response.ok( ).build( );
+            }
+            catch ( RepositoryAdminException e )
+            {
+                throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_DELETE_FAILED, e.getMessage( ) ) );
+            }
+        } else {
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_NOT_FOUND, repositoryId ), 404 );
-        }
-        if (repo.getType()!=RepositoryType.MAVEN) {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_WRONG_TYPE, repositoryId, repo.getType().name() ), 404 );
-        }
-        try
-        {
-            managedRepositoryAdmin.deleteManagedRepository( repositoryId, getAuditInformation( ), deleteContent );
-            return Response.ok( ).build( );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_DELETE_FAILED, e.getMessage( ) ) );
         }
     }
 
@@ -306,7 +305,7 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
     }
 
     private void checkAuthority(final String userName, final String srcRepositoryId, final String dstRepositoryId ) throws ArchivaRestServiceException {
-        User user = null;
+        User user;
         try
         {
             user = securitySystem.getUserManager().findUser( userName );
