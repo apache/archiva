@@ -1,4 +1,4 @@
-package org.apache.archiva.proxy;
+package org.apache.archiva.proxy.base;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,8 +9,7 @@ package org.apache.archiva.proxy;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,17 +19,20 @@ package org.apache.archiva.proxy;
  */
 
 /**
+ * NotFoundException - thrown when the resource requested was not found on the remote repository. 
+ *
+ *
  */
-public class ProxyException
-    extends Exception
+public class NotFoundException
+    extends ProxyException
 {
-    public ProxyException( String message )
-    {
-        super( message );
-    }
-
-    public ProxyException( String message, Throwable t )
+    public NotFoundException( String message, Throwable t )
     {
         super( message, t );
+    }
+
+    public NotFoundException( String message )
+    {
+        super( message );
     }
 }

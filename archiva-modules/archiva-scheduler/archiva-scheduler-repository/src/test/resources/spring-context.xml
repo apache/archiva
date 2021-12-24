@@ -30,11 +30,11 @@
   <context:annotation-config/>
 
 
-  <bean name="archivaAdministration#mock" class="org.apache.archiva.mock.MockArchivaAdministration">
+  <bean name="archivaAdministration#mock" class="org.apache.archiva.scheduler.repository.mock.MockArchivaAdministration">
     <property name="archivaConfiguration" ref="archivaConfiguration#test-repository-scanning"/>
   </bean>
 
-  <bean name="remoteRepositoryAdmin#mock" class="org.apache.archiva.mock.MockRemoteRepositoryAdmin">
+  <bean name="remoteRepositoryAdmin#mock" class="org.apache.archiva.scheduler.repository.mock.MockRemoteRepositoryAdmin">
     <property name="archivaConfiguration" ref="archivaConfiguration#test-repository-scanning"/>
   </bean>
 
