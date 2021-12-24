@@ -27,7 +27,7 @@
        default-lazy-init="false">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.scheduler.indexing,org.apache.maven.index"/>
+  <context:component-scan base-package="org.apache.archiva.maven.scheduler.indexing,org.apache.maven.index"/>
 
 
 
