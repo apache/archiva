@@ -29,7 +29,7 @@
        default-lazy-init="false">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.indexer.maven,org.apache.maven.index"/>
+  <context:component-scan base-package="org.apache.archiva.maven.indexer,org.apache.maven.index"/>
 
 
   <bean name="taskScheduler#mergeRemoteIndexes"
