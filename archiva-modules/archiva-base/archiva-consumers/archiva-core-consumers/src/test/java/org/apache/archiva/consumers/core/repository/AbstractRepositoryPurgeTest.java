@@ -25,7 +25,7 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
-import org.apache.archiva.repository.maven.metadata.storage.Maven2RepositoryPathTranslator;
+import org.apache.archiva.maven.repository.metadata.storage.Maven2RepositoryPathTranslator;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryContentProvider;

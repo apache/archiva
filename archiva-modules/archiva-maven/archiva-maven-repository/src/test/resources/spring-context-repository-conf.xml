@@ -27,7 +27,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.repository.maven.metadata.storage.mock,org.apache.archiva.repository.maven.mock,org.apache.archiva.repository.maven"/>
+  <context:component-scan base-package="org.apache.archiva.maven.repository.metadata.storage.mock,org.apache.archiva.maven.repository.mock,org.apache.archiva.maven.repository"/>
 
   <alias name="archivaTaskScheduler#repositoryMock" alias="archivaTaskScheduler#repository" />
 
