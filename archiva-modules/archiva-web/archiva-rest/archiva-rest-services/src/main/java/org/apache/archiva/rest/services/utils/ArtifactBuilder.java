@@ -20,7 +20,7 @@ package org.apache.archiva.rest.services.utils;
 
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
+import org.apache.archiva.maven.metadata.model.MavenArtifactFacet;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.LayoutException;

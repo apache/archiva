@@ -21,7 +21,7 @@ package org.apache.archiva.metadata.repository.jcr;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.metadata.QueryParameter;
-import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
+import org.apache.archiva.maven.metadata.model.MavenArtifactFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;

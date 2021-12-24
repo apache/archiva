@@ -19,7 +19,7 @@ package org.apache.archiva.repository.maven.metadata.storage;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.metadata.maven.MavenMetadataReader;
+import org.apache.archiva.maven.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;

@@ -19,13 +19,13 @@ package org.apache.archiva.repository.maven.metadata.storage;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.metadata.maven.MavenMetadataReader;
+import org.apache.archiva.maven.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.SnapshotVersion;
-import org.apache.archiva.proxy.maven.WagonFactory;
-import org.apache.archiva.proxy.maven.WagonFactoryException;
-import org.apache.archiva.proxy.maven.WagonFactoryRequest;
+import org.apache.archiva.maven.proxy.WagonFactory;
+import org.apache.archiva.maven.proxy.WagonFactoryException;
+import org.apache.archiva.maven.proxy.WagonFactoryRequest;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;

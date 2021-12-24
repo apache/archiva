@@ -23,7 +23,7 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
-import org.apache.archiva.metadata.maven.MavenMetadataReader;
+import org.apache.archiva.maven.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.ManagedRepository;

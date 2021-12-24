@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.maven;
+package org.apache.archiva.maven.metadata;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file

@@ -21,7 +21,7 @@ package org.apache.archiva.repository.mock;
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
+import org.apache.archiva.maven.metadata.model.MavenArtifactFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.ContentAccessException;

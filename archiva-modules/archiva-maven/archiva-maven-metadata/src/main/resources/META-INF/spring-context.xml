@@ -28,6 +28,6 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.metadata.maven"/>
+  <context:component-scan base-package="org.apache.archiva.maven.metadata"/>
 
 </beans>

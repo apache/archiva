@@ -25,7 +25,7 @@ import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.model.TreeEntry;
-import org.apache.archiva.metadata.maven.MavenMetadataReader;
+import org.apache.archiva.maven.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.ManagedRepository;

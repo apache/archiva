@@ -18,7 +18,7 @@ package org.apache.archiva.repository.maven.content;
  * under the License.
  */
 
-import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
+import org.apache.archiva.maven.metadata.model.MavenArtifactFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.maven.metadata.storage.ArtifactMappingProvider;

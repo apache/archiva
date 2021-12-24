@@ -19,7 +19,7 @@ package org.apache.archiva.repository.maven.content;
  */
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
-import org.apache.archiva.metadata.maven.MavenMetadataReader;
+import org.apache.archiva.maven.metadata.MavenMetadataReader;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.base.ArchivaItemSelector;
 import org.apache.archiva.repository.storage.StorageAsset;

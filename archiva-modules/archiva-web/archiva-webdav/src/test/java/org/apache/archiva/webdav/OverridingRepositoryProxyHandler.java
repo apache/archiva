@@ -19,7 +19,7 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.proxy.maven.MavenRepositoryProxyHandler;
+import org.apache.archiva.maven.proxy.MavenRepositoryProxyHandler;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.storage.StorageAsset;

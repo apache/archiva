@@ -26,7 +26,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationEvent;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.proxy.maven.WagonFactory;
+import org.apache.archiva.maven.proxy.WagonFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang3.StringUtils;

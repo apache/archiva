@@ -20,8 +20,8 @@ package org.apache.archiva.proxy.common;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.proxy.maven.WagonFactory;
-import org.apache.archiva.proxy.maven.WagonFactoryRequest;
+import org.apache.archiva.maven.proxy.WagonFactory;
+import org.apache.archiva.maven.proxy.WagonFactoryRequest;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.wagon.Wagon;
 import org.junit.Test;
@@ -47,9 +47,9 @@ public class WagonFactoryTest
         throws Exception
     {
 
-        Wagon first = factory.getWagon( new org.apache.archiva.proxy.maven.WagonFactoryRequest().protocol( "wagon#file" ) );
+        Wagon first = factory.getWagon( new WagonFactoryRequest().protocol( "wagon#file" ) );
 
-        Wagon second = factory.getWagon( new org.apache.archiva.proxy.maven.WagonFactoryRequest().protocol( "wagon#file" ) );
+        Wagon second = factory.getWagon( new WagonFactoryRequest().protocol( "wagon#file" ) );
 
         // ensure we support only protocol name too
         Wagon third = factory.getWagon( new WagonFactoryRequest().protocol( "file" ) );

@@ -21,7 +21,7 @@ package org.apache.archiva.repository.scanner.mock;
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.metadata.maven.model.MavenArtifactFacet;
+import org.apache.archiva.maven.metadata.model.MavenArtifactFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.ContentAccessException;
@@ -34,7 +34,6 @@ import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseDataItemTypes;
 import org.apache.archiva.repository.content.ContentItem;
 import org.apache.archiva.repository.content.DataItem;
-import org.apache.archiva.repository.content.ItemNotFoundException;
 import org.apache.archiva.repository.content.ItemSelector;
 import org.apache.archiva.repository.content.Namespace;
 import org.apache.archiva.repository.content.Project;
