@@ -18,7 +18,7 @@ package org.apache.archiva.rest.services.utils;
  * under the License.
  */
 
-import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.maven.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.maven.metadata.model.MavenArtifactFacet;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;

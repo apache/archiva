@@ -19,7 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.maven.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;

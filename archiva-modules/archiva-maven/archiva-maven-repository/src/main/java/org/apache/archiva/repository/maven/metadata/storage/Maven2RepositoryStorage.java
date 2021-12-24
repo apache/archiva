@@ -39,7 +39,7 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.ProxyRegistry;
-import org.apache.archiva.maven.proxy.WagonFactory;
+import org.apache.archiva.maven.common.proxy.WagonFactory;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;

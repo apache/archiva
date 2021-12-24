@@ -21,7 +21,7 @@ package org.apache.archiva.rest.api.services;
 
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.maven.model.Artifact;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.ChecksumSearch;
 import org.apache.archiva.rest.api.model.GroupIdList;

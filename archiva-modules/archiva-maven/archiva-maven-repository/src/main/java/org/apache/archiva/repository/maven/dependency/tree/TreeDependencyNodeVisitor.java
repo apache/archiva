@@ -17,8 +17,8 @@ package org.apache.archiva.repository.maven.dependency.tree;
  * under the License.
  */
 
-import org.apache.archiva.maven2.model.Artifact;
-import org.apache.archiva.maven2.model.TreeEntry;
+import org.apache.archiva.maven.model.Artifact;
+import org.apache.archiva.maven.model.TreeEntry;
 import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.graph.DependencyVisitor;
 import org.modelmapper.ModelMapper;

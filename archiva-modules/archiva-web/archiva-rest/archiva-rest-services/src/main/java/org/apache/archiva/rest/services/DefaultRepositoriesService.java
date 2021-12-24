@@ -27,7 +27,7 @@ import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.components.taskqueue.TaskQueueException;
-import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.maven.model.Artifact;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.maven.metadata.model.MavenArtifactFacet;
 import org.apache.archiva.metadata.model.ArtifactMetadata;

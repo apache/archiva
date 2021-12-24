@@ -18,6 +18,9 @@ package org.apache.archiva.maven.proxy;
  * under the License.
  */
 
+import org.apache.archiva.maven.common.proxy.WagonFactory;
+import org.apache.archiva.maven.common.proxy.WagonFactoryException;
+import org.apache.archiva.maven.common.proxy.WagonFactoryRequest;
 import org.apache.archiva.proxy.DefaultRepositoryProxyHandler;
 import org.apache.archiva.proxy.NotFoundException;
 import org.apache.archiva.proxy.NotModifiedException;
@@ -171,7 +174,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
             urlFailureCache.cacheFailure(url);
             throw e;
         }
-        catch (WagonFactoryException e) {
+        catch ( WagonFactoryException e) {
             throw new ProxyException(e.getMessage(), e);
         } finally {
             if (wagon != null) {

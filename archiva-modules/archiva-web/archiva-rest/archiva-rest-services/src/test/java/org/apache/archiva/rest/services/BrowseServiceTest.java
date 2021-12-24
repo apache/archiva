@@ -19,7 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.maven.model.Artifact;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.redback.rest.api.model.Role;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;

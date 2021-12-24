@@ -234,6 +234,23 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+            <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
+            <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
+            <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
+            <openjpa.Log>${openjpa.Log}</openjpa.Log>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
   <!--

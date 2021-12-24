@@ -28,7 +28,7 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.metadata.repository,org.apache.archiva.proxy,org.apache.archiva.repository.mock"/>
+  <context:component-scan base-package="org.apache.archiva.metadata,org.apache.archiva.proxy,org.apache.archiva.maven.proxy.mock"/>
   <alias name="mockRepositoryProvider" alias="mavenRepositoryProvider" />
 
   <alias name="archivaConfiguration#mock" alias="archivaConfiguration#default"/>
@@ -47,7 +47,7 @@
     </property>
   </bean>
 
-  <bean name="repositoryContentProvider#mocked" class="org.apache.archiva.repository.mock.RepositoryContentProviderMock" />
+  <bean name="repositoryContentProvider#mocked" class="org.apache.archiva.maven.proxy.mock.repository.RepositoryContentProviderMock" />
 
 
   <bean name="repositoryProxyHandler#test" class="org.apache.archiva.maven.proxy.MavenRepositoryProxyHandler">
@@ -81,7 +81,7 @@
     <property name="timeToLiveSeconds" value="1800"/>
   </bean>
 
-  <bean name="wagon#http" class="org.apache.archiva.proxy.WagonDelegate" scope="singleton"/>
+  <bean name="wagon#http" class="org.apache.archiva.maven.proxy.WagonDelegate" scope="singleton"/>
   <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>
 
   <alias name="userConfiguration#redback" alias="userConfiguration#default"/>

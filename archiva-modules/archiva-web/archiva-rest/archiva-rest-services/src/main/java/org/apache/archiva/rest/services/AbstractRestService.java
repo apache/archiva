@@ -26,7 +26,7 @@ import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.indexer.search.SearchResultHit;
-import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.maven.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;

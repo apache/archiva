@@ -27,7 +27,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
        default-lazy-init="true">
 
-  <context:component-scan base-package="org.apache.archiva.proxy.maven"/>
+  <context:component-scan base-package="org.apache.archiva.maven.proxy"/>
 
   <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>
 

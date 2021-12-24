@@ -28,7 +28,7 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.proxy.maven"/>
+  <context:component-scan base-package="org.apache.archiva.maven.proxy"/>
 
   <bean name="wagon#http" scope="prototype" class="org.apache.maven.wagon.providers.http.HttpWagon"/>
 
