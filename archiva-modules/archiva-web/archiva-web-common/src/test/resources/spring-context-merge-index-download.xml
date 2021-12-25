@@ -51,12 +51,12 @@
     </property>
   </bean>
 
-  <bean name="repositorySessionFactory" class="org.apache.archiva.webtest.memory.TestRepositorySessionFactory"/>
+  <bean name="repositorySessionFactory" class="org.apache.archiva.web.webtest.memory.TestRepositorySessionFactory"/>
   <alias name="userConfiguration#archiva" alias="userConfiguration#default"/>
   <alias name="authorizer#rbac" alias="authorizer#default"/>
   <alias name="userManager#configurable" alias="userManager#default"/>
 
-  <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.TestRepositorySessionFactoryBean">
+  <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.web.TestRepositorySessionFactoryBean">
     <constructor-arg>
       <value>jcr</value>
     </constructor-arg>

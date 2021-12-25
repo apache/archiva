@@ -31,7 +31,7 @@
 
   <context:annotation-config/>
   <context:component-scan
-      base-package="org.apache.archiva.repository.content.maven2,org.apache.archiva.redback.keys,org.apache.archiva.rest.services.utils"/>
+      base-package="org.apache.archiva.maven.repository.content,org.apache.archiva.redback.keys,org.apache.archiva.rest.services.utils"/>
 
   <bean name="scheduler" class="org.apache.archiva.components.scheduler.DefaultScheduler">
     <property name="properties">
@@ -68,7 +68,7 @@
   </bean>
 
 
-  <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.TestRepositorySessionFactoryBean">
+  <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.web.TestRepositorySessionFactoryBean">
     <constructor-arg>
       <value>jcr</value>
     </constructor-arg>

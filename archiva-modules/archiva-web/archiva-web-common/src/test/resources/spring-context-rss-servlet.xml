@@ -30,11 +30,11 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.webtest.memory"/>
+  <context:component-scan base-package="org.apache.archiva.web.webtest.memory"/>
 
   <alias name="repositorySessionFactory#test" alias="repositorySessionFactory"/>
 
-  <bean name="userRepositories#test" class="org.apache.archiva.security.UserRepositoriesStub"/>
+  <bean name="userRepositories#test" class="org.apache.archiva.web.mock.security.UserRepositoriesStub"/>
 
   <alias name="userRepositories#test" alias="userRepositories"/>
 
@@ -49,7 +49,7 @@
 
   <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
 
-  <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.TestRepositorySessionFactoryBean">
+  <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.web.TestRepositorySessionFactoryBean">
     <constructor-arg>
       <value>jcr</value>
     </constructor-arg>

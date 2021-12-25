@@ -1,4 +1,4 @@
-package org.apache.archiva.security;
+package org.apache.archiva.web.mock.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,8 +9,7 @@ package org.apache.archiva.security;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,6 +19,10 @@ package org.apache.archiva.security;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.security.AccessDeniedException;
+import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.security.PrincipalNotFoundException;
+import org.apache.archiva.security.UserRepositories;
 
 import java.util.Collections;
 import java.util.List;

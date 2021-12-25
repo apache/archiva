@@ -1,4 +1,4 @@
-package org.apache.archiva;
+package org.apache.archiva.web;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -8,8 +8,7 @@ package org.apache.archiva;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,7 +19,6 @@ package org.apache.archiva;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
-import org.apache.archiva.remotedownload.DownloadArtifactsTest;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.web.api.RuntimeInfoService;
 import org.apache.archiva.web.model.ApplicationRuntimeInfo;
@@ -37,7 +35,6 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 
 /**

@@ -394,6 +394,7 @@ public class DefaultFileUploadService
 
             org.apache.archiva.repository.ManagedRepository repository = repositoryRegistry.getManagedRepository(repositoryId);
 
+            log.debug( "Finding artifact path for {}, {}, {}, {}", groupId, artifactId, version, packaging );
             ItemSelector selector = ArchivaItemSelector.builder( )
                 .withNamespace( groupId )
                 .withProjectId( artifactId )

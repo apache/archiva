@@ -135,6 +135,7 @@ public class ManagedDefaultRepositoryContent
 
     private StorageAsset getAssetByPath( String assetPath )
     {
+        log.debug( "Get asset {}", assetPath );
         return getStorage( ).getAsset( assetPath );
     }
 

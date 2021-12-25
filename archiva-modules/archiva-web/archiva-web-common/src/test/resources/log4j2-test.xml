@@ -29,7 +29,8 @@
 
     <logger name="org.springframework" level="error"/>
     <logger name="org.apache.archiva" level="error"/>
-    <logger name="org.apache.archiva.web" level="info"/>
+    <logger name="org.apache.archiva.web" level="debug"/>
+    <logger name="org.apache.archiva.repository" level="debug"/>
     <logger name="org.apache.commons.configuration" level="error"/>
     <logger name="org.apache.archiva.scheduler.indexing" level="info"/>
     <logger name="org.apache.archiva.remotedownload" level="info"/>

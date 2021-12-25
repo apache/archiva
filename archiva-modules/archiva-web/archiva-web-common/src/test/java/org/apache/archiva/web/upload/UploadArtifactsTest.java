@@ -1,4 +1,4 @@
-package org.apache.archiva.upload;
+package org.apache.archiva.web.upload;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -8,8 +8,7 @@ package org.apache.archiva.upload;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,10 +19,9 @@ package org.apache.archiva.upload;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
-import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.web.AbstractRestServicesTest;
 import org.apache.archiva.web.api.FileUploadService;
 import org.apache.archiva.web.model.FileMetadata;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +52,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(ArchivaBlockJUnit4ClassRunner.class)
 public class UploadArtifactsTest
-        extends AbstractRestServicesTest {
+        extends AbstractRestServicesTest
+{
 
     private static String PREVIOUS_ARCHIVA_PATH;
     private AtomicReference<Path> projectDir = new AtomicReference<>( );
@@ -64,8 +63,17 @@ public class UploadArtifactsTest
             throws Exception
     {
         PREVIOUS_ARCHIVA_PATH = System.getProperty(ArchivaConfiguration.USER_CONFIG_PROPERTY);
-        System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY,
+        if (System.getProperties().containsKey( "test.resources.path" ))
+        {
+            System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY,
                 System.getProperty( "test.resources.path" ) + "/archiva.xml" );
+        } else {
+            Path path = Paths.get( "src/test/resources/archiva.xml" ).toAbsolutePath();
+            System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY,
+                path.toString() );
+
+        }
+        System.err.println( "USER_CONFIG_DIR " + System.getProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY ) );
     }
 
 
@@ -91,6 +99,7 @@ public class UploadArtifactsTest
             }
             projectDir.compareAndSet(null, newVal);
         }
+        System.err.println( "project dir: " + projectDir.get( ).toString( ) );
         return projectDir.get();
     }
 
@@ -196,7 +205,7 @@ public class UploadArtifactsTest
         try {
             FileUploadService service = getUploadService();
             Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
-            Path targetDir = Paths.get("target/testDelete").toAbsolutePath();
+            Path targetDir = getProjectDirectory().resolve("target/testDelete").toAbsolutePath();
             if (!Files.exists(targetDir)) Files.createDirectories(targetDir);
             Path tempDir = SystemUtils.getJavaIoTmpDir().toPath();
             testFile = Files.createTempFile(targetDir, "TestFile", ".txt");
@@ -224,7 +233,7 @@ public class UploadArtifactsTest
 
     @Test
     public void failSaveFileWithBadParams() throws IOException, ArchivaRestServiceException {
-        Path path = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.jar");
+        Path path = getProjectDirectory().resolve("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.jar");
         Files.deleteIfExists(path);
         FileUploadService service = getUploadService();
         Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
@@ -244,17 +253,17 @@ public class UploadArtifactsTest
         } catch (ClientErrorException e) {
             assertEquals(422, e.getResponse().getStatus());
         }
-        assertFalse(Files.exists(Paths.get("target/test-testSave.4")));
+        assertFalse(Files.exists(getProjectDirectory().resolve("target/test-testSave.4")));
     }
 
     @Test
     public void saveFile() throws IOException, ArchivaRestServiceException {
         log.debug("Starting saveFile()");
 
-        Path path = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.jar");
+        Path path = getProjectDirectory().resolve("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.jar");
         log.debug("Jar exists: {}",Files.exists(path));
         Files.deleteIfExists(path);
-        path = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
+        path = getProjectDirectory().resolve("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
         Files.deleteIfExists(path);
         FileUploadService service = getUploadService();
         service.clearUploadedFiles();
@@ -270,10 +279,10 @@ public class UploadArtifactsTest
     public void saveFileWithOtherExtension() throws IOException, ArchivaRestServiceException {
         log.debug("Starting saveFileWithOtherExtension()");
 
-        Path path = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.bin");
+        Path path = getProjectDirectory().resolve("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.bin");
         log.debug("Jar exists: {}",Files.exists(path));
         Files.deleteIfExists(path);
-        Path pomPath = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
+        Path pomPath = getProjectDirectory().resolve("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
         Files.deleteIfExists(pomPath);
         FileUploadService service = getUploadService();
         service.clearUploadedFiles();
