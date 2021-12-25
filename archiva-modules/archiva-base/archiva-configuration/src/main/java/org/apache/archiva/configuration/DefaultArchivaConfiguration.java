@@ -854,7 +854,7 @@ public class DefaultArchivaConfiguration
             Path repoLocation = Paths.get(repoPath);
 
             if (Files.exists(repoLocation) && Files.isDirectory(repoLocation) && !repoPath.endsWith(
-                    "data/repositories/" + repo.getId())) {
+                    "/repositories/" + repo.getId())) {
                 repo.setLocation(repoPath + "/data/repositories/" + repo.getId());
             }
         }
