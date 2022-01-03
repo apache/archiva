@@ -159,7 +159,7 @@ public class DefaultRepositoriesService
      */
     @Inject
     @Named(value = "cache#namespaces")
-    private Cache<String, Collection<String>> namespacesCache;
+    private Cache<String, List<String>> namespacesCache;
 
     private List<ChecksumAlgorithm> algorithms = Arrays.asList(ChecksumAlgorithm.SHA256, ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 );
 

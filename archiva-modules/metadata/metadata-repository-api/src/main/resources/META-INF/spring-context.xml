@@ -41,11 +41,13 @@
 
   <bean name="cache#namespaces" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
+    <constructor-arg index="0" value="java.lang.String" />
+    <constructor-arg index="1" value="java.util.ArrayList"/>
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
     <property name="maxElementsInMemory" value="1000"/>
     <property name="memoryEvictionPolicy" value="LRU"/>
-    <property name="name" value="usersCache"/>
+    <property name="name" value="namespaces"/>
     <property name="timeToIdleSeconds" value="600"/>
     <property name="timeToLiveSeconds" value="600"/>
   </bean>

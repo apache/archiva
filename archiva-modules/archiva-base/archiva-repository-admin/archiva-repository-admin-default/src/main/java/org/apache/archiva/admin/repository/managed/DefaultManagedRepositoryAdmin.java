@@ -109,7 +109,7 @@ public class DefaultManagedRepositoryAdmin
 
     @Inject
     @Named(value = "cache#namespaces")
-    private Cache<String, Collection<String>> namespacesCache;
+    private Cache<String, List<String>> namespacesCache;
 
     @Inject
     private IndexManagerFactory indexManagerFactory;

@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.v2.svc;
+package org.apache.archiva.rest.v2.svc.maven;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,6 +22,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.apache.archiva.rest.api.v2.model.MavenManagedRepository;
 import org.apache.archiva.rest.api.v2.svc.RestConfiguration;
+import org.apache.archiva.rest.v2.svc.AbstractNativeRestServices;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +40,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * @author Martin Stockhammer <martin_s@apache.org>
+ * @author Martin Schreier <martin_s@apache.org>
  */
 @TestInstance( TestInstance.Lifecycle.PER_CLASS )
 @Tag( "rest-native" )

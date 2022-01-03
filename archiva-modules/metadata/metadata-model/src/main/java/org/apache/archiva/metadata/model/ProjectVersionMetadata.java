@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +29,10 @@ import java.util.Properties;
 
 @XmlRootElement( name = "projectVersionMetadata" )
 public class ProjectVersionMetadata
-    extends FacetedMetadata
+    extends FacetedMetadata implements Serializable
 {
+
+    private static final long serialVersionUID = 5506968284780639002L;
     /**
      * id is the version
      */

@@ -33,6 +33,7 @@ import org.apache.archiva.redback.policy.CookieSettings;
 import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.ActionStatus;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
@@ -88,7 +89,7 @@ public class DefaultRedbackRuntimeConfigurationService
 
     @Inject
     @Named(value = "cache#users")
-    private Cache usersCache;
+    private Cache<String, User> usersCache;
 
     @Inject
     private LdapUserMapper ldapUserMapper;

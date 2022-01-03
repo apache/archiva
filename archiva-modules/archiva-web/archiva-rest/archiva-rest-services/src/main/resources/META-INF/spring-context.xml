@@ -128,11 +128,13 @@
 
   <bean name="browse#versionMetadata" class="org.apache.archiva.components.cache.ehcache.EhcacheCache"
         init-method="initialize">
+    <constructor-arg index="0" value="java.lang.String" />
+    <constructor-arg index="1" value="org.apache.archiva.metadata.model.ProjectVersionMetadata"/>
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>
     <property name="maxElementsInMemory" value="1000"/>
     <property name="memoryEvictionPolicy" value="LRU"/>
-    <property name="name" value="userPermissions"/>
+    <property name="name" value="versionMetadata"/>
     <property name="timeToIdleSeconds" value="300"/>
     <property name="timeToLiveSeconds" value="600"/>
   </bean>

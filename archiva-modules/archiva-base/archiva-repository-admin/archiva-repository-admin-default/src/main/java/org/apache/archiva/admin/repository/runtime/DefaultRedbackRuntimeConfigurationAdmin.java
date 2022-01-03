@@ -34,6 +34,7 @@ import org.apache.archiva.configuration.util.ConfigMapper;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationException;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
+import org.apache.archiva.redback.users.User;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,13 +101,13 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         LDAP_MAPPER.addBooleanMapping( LDAP_BIND_AUTHENTICATOR_ENABLED, LdapConfiguration::isBindAuthenticatorEnabled );
     }
 
-    private Cache usersCache;
+    private Cache<String, User> usersCache;
 
     @Inject
     public DefaultRedbackRuntimeConfigurationAdmin( ArchivaConfiguration archivaConfiguration,//
                                                     @Named( value = "userConfiguration#redback" ) //
                                                         UserConfiguration userConfiguration,
-                                                    @Named( value = "cache#users" ) Cache usersCache )
+                                                    @Named( value = "cache#users" ) Cache<String, User> usersCache )
     {
         this.archivaConfiguration = archivaConfiguration;
         this.userConfiguration = userConfiguration;

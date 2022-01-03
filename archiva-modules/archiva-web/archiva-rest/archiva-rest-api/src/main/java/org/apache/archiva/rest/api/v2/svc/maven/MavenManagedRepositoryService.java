@@ -67,7 +67,7 @@ import static org.apache.archiva.security.common.ArchivaRoleConstants.*;
  * </li>
  * </ul>
  *
- * @author Martin Stockhammer <martin_s@apache.org>
+ * @author Martin Schreier <martin_s@apache.org>
  * @since 3.0
  */
 @Schema( name = "MavenManagedRepositoryService", description = "Managing and configuration of managed maven repositories" )
@@ -425,7 +425,7 @@ public interface MavenManagedRepositoryService
         permissions = { OPERATION_MANAGE_CONFIGURATION, OPERATION_DELETE_NAMESPACE },
         resource = "{id}"
     )
-    @Operation( summary = "Removes a group and all subfolders from the repository",
+    @Operation( summary = "Removes a maven group and all containing artifacts and sub groups from the repository",
         security = {
             @SecurityRequirement(
                 name = OPERATION_MANAGE_CONFIGURATION

@@ -324,6 +324,8 @@
   </bean>
 
   <bean name="cache#url-failures-cache" class="org.apache.archiva.components.cache.ehcache.EhcacheCache">
+    <constructor-arg index="0" value="java.lang.String"/>
+    <constructor-arg index="1" value="java.util.Date"/>
     <property name="diskExpiryThreadIntervalSeconds" value="600"/>
     <property name="diskPersistent" value="false"/>
     <property name="eternal" value="false"/>

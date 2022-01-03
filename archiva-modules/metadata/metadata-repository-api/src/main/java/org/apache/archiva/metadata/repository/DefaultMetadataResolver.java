@@ -93,7 +93,7 @@ public class DefaultMetadataResolver
      */
     @Inject
     @Named( value = "cache#namespaces" )
-    private Cache<String, Collection<String>> namespacesCache;
+    private Cache<String, List<String>> namespacesCache;
 
     @Override
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
@@ -193,7 +193,7 @@ public class DefaultMetadataResolver
         try
         {
 
-            Collection<String> namespaces = namespacesCache.get( repoId );
+            List<String> namespaces = namespacesCache.get( repoId );
             if ( namespaces != null )
             {
                 return namespaces;
@@ -246,7 +246,7 @@ public class DefaultMetadataResolver
         {
             MetadataRepository metadataRepository = session.getRepository();
             String cacheKey = repoId + "-" + namespace;
-            Collection<String> namespaces = namespacesCache.get( cacheKey );
+            List<String> namespaces = namespacesCache.get( cacheKey );
             if ( namespaces == null )
             {
                 namespaces = metadataRepository.getChildNamespaces( session, repoId, namespace );
@@ -299,7 +299,7 @@ public class DefaultMetadataResolver
             Collection<String> exclusions = new ArrayList<>( projects );
 
             String cacheKey = repoId + "-" + namespace;
-            Collection<String> namespaces = namespacesCache.get( cacheKey );
+            List<String> namespaces = namespacesCache.get( cacheKey );
             if ( namespaces == null )
             {
                 namespaces = metadataRepository.getChildNamespaces( session, repoId, namespace );

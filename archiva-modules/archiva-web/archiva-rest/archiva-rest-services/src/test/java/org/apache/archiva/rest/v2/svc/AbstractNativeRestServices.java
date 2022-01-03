@@ -68,7 +68,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Native REST tests do not use the JAX-RS client and can be used with a remote
  * REST API service. The tests
  *
- * @author Martin Stockhammer <martin_s@apache.org>
+ * @author Martin Schreier <martin_s@apache.org>
  */
 @Tag( "rest-native" )
 @Tag( "rest-v2" )
