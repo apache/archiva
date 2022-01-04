@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -34,14 +35,13 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.nio.charset.Charset;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test the configuration store.
@@ -219,16 +219,12 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
         // add a change listener
-        ConfigurationListener listener = createMock( ConfigurationListener.class );
+        ConfigurationListener listener = mock( ConfigurationListener.class );
         archivaConfiguration.addListener( listener );
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
 
-        replay( listener );
-
         archivaConfiguration.save( configuration );
-
-        verify( listener );
 
         assertTrue( "Check file exists", Files.exists(file) );
 
@@ -246,7 +242,7 @@ public class ArchivaConfigurationTest
 
     private static ConfigurationListener createConfigurationListenerMockControl()
     {
-        return createMock( ConfigurationListener.class );// MockControl.createControl( ConfigurationListener.class );
+        return mock( ConfigurationListener.class );// MockControl.createControl( ConfigurationListener.class );
     }
 
     @Test
@@ -308,11 +304,7 @@ public class ArchivaConfigurationTest
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
 
-        replay( listener );
-
         archivaConfiguration.save( configuration );
-
-        verify( listener );
 
         assertTrue( "Check file exists", Files.exists(userFile) );
         assertFalse( "Check file not created", Files.exists(baseFile) );

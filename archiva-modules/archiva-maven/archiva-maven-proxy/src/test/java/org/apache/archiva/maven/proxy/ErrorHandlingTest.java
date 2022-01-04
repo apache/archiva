@@ -18,23 +18,34 @@ package org.apache.archiva.maven.proxy;
  * under the License.
  */
 
-import org.apache.archiva.policies.*;
+import org.apache.archiva.policies.CachedFailuresPolicy;
+import org.apache.archiva.policies.ChecksumPolicy;
+import org.apache.archiva.policies.PolicyOption;
+import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
+import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
+import org.apache.archiva.policies.ProxyDownloadException;
+import org.apache.archiva.policies.ReleasesPolicy;
+import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.LayoutException;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.authorization.AuthorizationException;
-import org.easymock.EasyMock;
 import org.junit.Test;
+import org.mockito.stubbing.Stubber;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 
 /**
  * ErrorHandlingTest
@@ -68,7 +79,7 @@ public class ErrorHandlingTest
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ) ) );
 
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
@@ -83,9 +94,7 @@ public class ErrorHandlingTest
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.STOP );
 
-        simulateGetError( path, expectedFile, createResourceNotFoundException() );
-
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createResourceNotFoundException( ), createTransferException( ) ) );
 
         confirmSingleFailure( path, ID_MOCKED_PROXIED2 );
     }
@@ -115,7 +124,7 @@ public class ErrorHandlingTest
 
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false  );
 
-        simulateGetError( path, expectedFile, createResourceNotFoundException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createResourceNotFoundException( ) ) );
 
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED2 );
     }
@@ -131,7 +140,7 @@ public class ErrorHandlingTest
 
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false  );
 
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ) ) );
 
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
@@ -161,9 +170,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.QUEUE );
 
-        simulateGetError( path, expectedFile, createResourceNotFoundException() );
-
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createResourceNotFoundException( ), createTransferException( ) ) );
 
         confirmSingleFailure( path, ID_MOCKED_PROXIED2 );
     }
@@ -179,9 +186,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.QUEUE );
 
-        simulateGetError( path, expectedFile, createTransferException() );
-
-        simulateGetError( path, expectedFile, createResourceNotFoundException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ), createResourceNotFoundException( ) ) );
 
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
@@ -197,9 +202,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.QUEUE );
 
-        simulateGetError( path, expectedFile, createTransferException() );
-
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ), createTransferException( ) ) );
 
         confirmFailures( path, new String[]{ID_MOCKED_PROXIED1, ID_MOCKED_PROXIED2} );
     }
@@ -215,7 +218,7 @@ public class ErrorHandlingTest
 
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false  );
 
-        simulateGetError( path, expectedFile, createResourceNotFoundException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createResourceNotFoundException( ) ) );
 
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED2 );
     }
@@ -231,7 +234,7 @@ public class ErrorHandlingTest
 
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false  );
 
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ) ) );
 
         confirmSuccess( path, expectedFile, REPOPATH_PROXIED2 );
     }
@@ -261,9 +264,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.IGNORE );
 
-        simulateGetError( path, expectedFile, createResourceNotFoundException() );
-
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createResourceNotFoundException( ), createTransferException( ) ) );
 
         confirmNotDownloadedNoError( path );
     }
@@ -279,9 +280,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.IGNORE );
 
-        simulateGetError( path, expectedFile, createTransferException() );
-
-        simulateGetError( path, expectedFile, createResourceNotFoundException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ), createResourceNotFoundException( ) ) );
 
         confirmNotDownloadedNoError( path );
     }
@@ -297,9 +296,7 @@ public class ErrorHandlingTest
 
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.IGNORE );
 
-        simulateGetError( path, expectedFile, createTransferException() );
-
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ), createTransferException( ) ) );
 
         confirmNotDownloadedNoError( path );
     }
@@ -316,7 +313,7 @@ public class ErrorHandlingTest
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.STOP,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
 
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ) ) );
 
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
@@ -350,8 +347,7 @@ public class ErrorHandlingTest
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.QUEUE,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
 
-        simulateGetError( path, expectedFile, createTransferException() );
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ), createTransferException( ) ) );
 
         confirmFailures( path, new String[] { ID_MOCKED_PROXIED1, ID_MOCKED_PROXIED2 } );
     }
@@ -386,8 +382,7 @@ public class ErrorHandlingTest
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.IGNORE,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
 
-        simulateGetError( path, expectedFile, createTransferException() );
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ), createTransferException( ) ) );
 
         confirmNotDownloadedNoError( path );
     }
@@ -423,7 +418,7 @@ public class ErrorHandlingTest
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.STOP,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
 
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ) ) );
 
         confirmSingleFailure( path, ID_MOCKED_PROXIED1 );
     }
@@ -458,8 +453,7 @@ public class ErrorHandlingTest
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.QUEUE,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
 
-        simulateGetError( path, expectedFile, createTransferException() );
-        simulateGetError( path, expectedFile, createTransferException() );
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ), createTransferException( ) ) );
 
         confirmFailures( path, new String[] { ID_MOCKED_PROXIED1, ID_MOCKED_PROXIED2 } );
     }
@@ -495,9 +489,7 @@ public class ErrorHandlingTest
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.IGNORE,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
 
-        simulateGetError( path, expectedFile, createTransferException() );
-        simulateGetError( path, expectedFile, createTransferException() );
-
+        simulateGetError( path, expectedFile, Arrays.asList( createTransferException( ), createTransferException( ) ) );
         confirmNotDownloadedNoError( path );
     }
 
@@ -562,18 +554,23 @@ public class ErrorHandlingTest
         return file;
     }
 
-    private void simulateGetError( String path, Path expectedFile, Exception throwable )
+    private void simulateGetError( String path, Path expectedFile, List<Exception> throwables )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
-        EasyMock.expectLastCall().andThrow(throwable );
+        Stubber stubber = doThrow( throwables.get( 0 ) );
+        if (throwables.size()>1) {
+            for(int i=1; i<throwables.size(); i++)
+            {
+                stubber = stubber.doThrow( throwables.get( i ) );
+            }
+        }
+        stubber.when( wagonMock ).get( eq( path ), any( ) );
     }
 
     private void simulateGetIfNewerError( String path, Path expectedFile, TransferFailedException exception )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException, IOException
     {
-        wagonMock.getIfNewer( EasyMock.eq( path ), EasyMock.anyObject( File.class ), EasyMock.eq( Files.getLastModifiedTime( expectedFile ).toMillis() ));
-        EasyMock.expectLastCall().andThrow( exception );
+        doThrow( exception ).when( wagonMock ).getIfNewer( eq( path ), any( ), eq( Files.getLastModifiedTime( expectedFile ).toMillis( ) ) );
     }
 
     private Path createExpectedTempFile( Path expectedFile )
@@ -590,8 +587,6 @@ public class ErrorHandlingTest
     private void confirmFailures( String path, String[] ids )
         throws LayoutException
     {
-        wagonMockControl.replay();
-
         // Attempt the proxy fetch.
         StorageAsset downloadedFile = null;
         try
@@ -609,9 +604,6 @@ public class ErrorHandlingTest
                 assertTrue( e.getFailures().keySet().contains( id ) );
             }
         }
-
-        wagonMockControl.verify();
-
         assertNotDownloaded( downloadedFile );
     }
 
@@ -635,15 +627,11 @@ public class ErrorHandlingTest
     private StorageAsset performDownload( String path )
         throws ProxyDownloadException, LayoutException
     {
-        wagonMockControl.replay();
-
         // Attempt the proxy fetch.
         BaseRepositoryContentLayout layout = managedDefaultRepository.getLayout( BaseRepositoryContentLayout.class );
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(),
             layout.getArtifact( path ) );
-
-        wagonMockControl.verify();
         return downloadedFile;
     }
 

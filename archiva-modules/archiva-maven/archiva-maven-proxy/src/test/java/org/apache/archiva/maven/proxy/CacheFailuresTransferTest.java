@@ -28,7 +28,6 @@ import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.easymock.EasyMock;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -39,6 +38,9 @@ import java.nio.file.Paths;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * CacheFailuresTransferTest
@@ -77,23 +79,11 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
             SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
-
-        EasyMock.expectLastCall( ).andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
-
-
-        wagonMockControl.replay( );
+        doThrow(new ResourceDoesNotExistException( "resource does not exist." )).when(wagonMock).get( eq( path ), any(  ) );
 
         //noinspection UnusedAssignment
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
-
-        wagonMockControl.verify( );
-
-        // Second attempt to download same artifact use cache
-        wagonMockControl.reset( );
-        wagonMockControl.replay( );
         downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
-        wagonMockControl.verify( );
 
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -123,26 +113,16 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
             SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
-        EasyMock.expectLastCall( ).andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
-
-        wagonMockControl.replay( );
+        doThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).when( wagonMock ).get( eq( path ), any( ) );
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
+        verify( wagonMock, times( 2 ) ).get( eq( path ), any( ) );
 
-        wagonMockControl.verify( );
-
-        // Second attempt to download same artifact DOES NOT use cache
-        wagonMockControl.reset( );
-
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
-        EasyMock.expectLastCall( ).andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
-
-        wagonMockControl.replay( );
+        reset( wagonMock );
+        doThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).when( wagonMock ).get( eq( path ), any( ) );
 
         downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
-
-        wagonMockControl.verify( );
+        verify( wagonMock, times( 2 ) ).get( eq( path ), any( ) );
 
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );

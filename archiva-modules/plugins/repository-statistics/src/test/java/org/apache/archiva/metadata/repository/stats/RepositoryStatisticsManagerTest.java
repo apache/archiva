@@ -19,19 +19,16 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
-import junit.framework.TestCase;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.maven.metadata.model.MavenArtifactFacet;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.easymock.IMocksControl;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,17 +40,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static org.easymock.EasyMock.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@RunWith( ArchivaBlockJUnit4ClassRunner.class )
+
 public class RepositoryStatisticsManagerTest
-    extends TestCase
 {
     private DefaultRepositoryStatisticsManager repositoryStatisticsManager;
 
     private static final String TEST_REPO_ID = "test-repo";
 
-    private IMocksControl metadataRepositoryControl;
 
     private MetadataRepository metadataRepository;
 
@@ -66,8 +62,6 @@ public class RepositoryStatisticsManagerTest
     private static final SimpleDateFormat TIMESTAMP_FORMAT = createTimestampFormat();
 
     private RepositorySessionFactory repositorySessionFactory;
-    private IMocksControl factoryControl;
-    private IMocksControl sessionControl;
     private RepositorySession session;
 
     private static SimpleDateFormat createTimestampFormat()
@@ -77,25 +71,19 @@ public class RepositoryStatisticsManagerTest
         return fmt;
     }
 
-    @Override
-    @Before
+    @BeforeEach
     public void setUp()
         throws Exception
     {
-        super.setUp();
-
         repositoryStatisticsManager = new DefaultRepositoryStatisticsManager();
 
-        metadataRepositoryControl = createControl();
-        metadataRepository = metadataRepositoryControl.createMock( MetadataRepository.class );
+        metadataRepository = mock( MetadataRepository.class );
 
-        factoryControl = createControl();
-        repositorySessionFactory = factoryControl.createMock(RepositorySessionFactory.class);
+        repositorySessionFactory = mock(RepositorySessionFactory.class);
 
         repositoryStatisticsManager.setRepositorySessionFactory( repositorySessionFactory );
 
-        sessionControl = createControl( );
-        session = sessionControl.createMock( RepositorySession.class );
+        session = mock( RepositorySession.class );
 
     }
 
@@ -117,22 +105,16 @@ public class RepositoryStatisticsManagerTest
         stats.setTotalGroupCount( 529 );
         stats.setTotalFileCount( 56229 );
 
-
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
-        expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID)).andReturn(
+
+        when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID)).thenReturn(
                     Arrays.asList(FIRST_TEST_SCAN, SECOND_TEST_SCAN));
 
-        expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    DefaultRepositoryStatistics.FACET_ID, SECOND_TEST_SCAN)).andReturn(stats);
-        metadataRepositoryControl.replay();
+        when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    DefaultRepositoryStatistics.FACET_ID, SECOND_TEST_SCAN)).thenReturn(stats);
 
         stats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertNotNull( stats );
@@ -146,7 +128,6 @@ public class RepositoryStatisticsManagerTest
         assertEquals( SECOND_TEST_SCAN, stats.getName() );
         assertEquals( endTime, stats.getScanEndTime() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -154,23 +135,16 @@ public class RepositoryStatisticsManagerTest
         throws Exception
     {
 
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
+        when( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn(
             Collections.<String>emptyList() );
-        metadataRepositoryControl.replay();
 
         RepositoryStatistics stats = repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID );
         assertNull( stats );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -184,24 +158,17 @@ public class RepositoryStatisticsManagerTest
 
         walkRepository( 1 );
 
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
         metadataRepository.addMetadataFacet(session , TEST_REPO_ID, stats );
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
+        when( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn(
             Arrays.asList( stats.getName() ) );
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID,
-            DefaultRepositoryStatistics.FACET_ID, stats.getName() ) ).andReturn( stats );
-
-        metadataRepositoryControl.replay();
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID,
+            DefaultRepositoryStatistics.FACET_ID, stats.getName() ) ).thenReturn( stats );
 
         repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime, current, 56345,
                                                             45 );
@@ -217,7 +184,6 @@ public class RepositoryStatisticsManagerTest
         assertEquals( current.getTime() - 12345, stats.getScanStartTime().getTime() );
         assertEquals( current, stats.getScanEndTime() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -230,15 +196,9 @@ public class RepositoryStatisticsManagerTest
 
         Date startTime1 = new Date( current.getTime() - 12345 );
         DefaultRepositoryStatistics stats1 = createTestStats( startTime1, new Date( current.getTime() - 6000 ) );
-
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
         metadataRepository.addMetadataFacet(session , TEST_REPO_ID, stats1 );
 
@@ -247,20 +207,16 @@ public class RepositoryStatisticsManagerTest
         metadataRepository.addMetadataFacet(session , TEST_REPO_ID, stats2 );
 
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
-            Arrays.asList( stats1.getName(), stats2.getName() ) );
+        when( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn(
+            Arrays.asList( stats1.getName(), stats2.getName() ) ).thenReturn( Collections.emptyList() );
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID,
-            DefaultRepositoryStatistics.FACET_ID, stats2.getName() ) ).andReturn( stats2 );
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID,
+            DefaultRepositoryStatistics.FACET_ID, stats2.getName() ) ).thenReturn( stats2 );
         metadataRepository.removeMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
-            Collections.<String>emptyList() );
-
-        metadataRepositoryControl.replay();
-
         repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime1,
-                                                            stats1.getScanEndTime(), 56345, 45 );
+            stats1.getScanEndTime(), 56345, 45 );
+
         repositoryStatisticsManager.addStatisticsAfterScan( TEST_REPO_ID, startTime2,
                                                             stats2.getScanEndTime(), 56345, 45 );
 
@@ -270,35 +226,27 @@ public class RepositoryStatisticsManagerTest
 
         assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
     public void testDeleteStatsWhenEmpty()
         throws Exception
     {
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
-            Collections.<String>emptyList() ).times( 2 );
+        when( metadataRepository.getMetadataFacets( session, TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn(
+            Collections.<String>emptyList( ) );
         metadataRepository.removeMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
-
-        metadataRepositoryControl.replay();
 
         assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
 
         repositoryStatisticsManager.deleteStatistics( TEST_REPO_ID );
 
         assertNull( repositoryStatisticsManager.getLastStatistics( TEST_REPO_ID ) );
+        verify( metadataRepository, times( 2 ) ).getMetadataFacets( session, TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -309,32 +257,23 @@ public class RepositoryStatisticsManagerTest
 
         Date current = new Date();
 
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
-
-
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        when( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn( keys );
 
         // only match the middle one
         String key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).thenReturn(
             statsCreated.get( key ) );
 
-
-        metadataRepositoryControl.replay();
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
@@ -351,7 +290,6 @@ public class RepositoryStatisticsManagerTest
         assertEquals( 1, list.size() );
         assertEquals( new Date( current.getTime() - 3000 ), list.get( 0 ).getScanStartTime() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -362,14 +300,9 @@ public class RepositoryStatisticsManagerTest
 
         Date current = new Date();
 
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
@@ -377,21 +310,19 @@ public class RepositoryStatisticsManagerTest
 
         List<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        when( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn( keys );
 
         String key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet(session, TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        when( metadataRepository.getMetadataFacet(session, TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).thenReturn(
             statsCreated.get( key ) );
 
         key = keys.get( 2 );
 
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).thenReturn(
             statsCreated.get( key ) );
 
-
-        metadataRepositoryControl.replay();
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
@@ -408,7 +339,6 @@ public class RepositoryStatisticsManagerTest
         assertEquals( new Date( current.getTime() - 3000 ), list.get( 1 ).getScanStartTime() );
         assertEquals( new Date( current.getTime() - 1000 ), list.get( 0 ).getScanStartTime() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -419,14 +349,9 @@ public class RepositoryStatisticsManagerTest
 
         Date current = new Date();
 
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
@@ -434,18 +359,16 @@ public class RepositoryStatisticsManagerTest
 
         List<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        when( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn( keys );
 
         String key = keys.get( 0 );
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).thenReturn(
             statsCreated.get( key ) );
         key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).thenReturn(
             statsCreated.get( key ) );
-
-        metadataRepositoryControl.replay();
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
@@ -463,7 +386,6 @@ public class RepositoryStatisticsManagerTest
         assertEquals( new Date( current.getTime() - 12345 ), list.get( 1 ).getScanStartTime() );
         assertEquals( new Date( current.getTime() - 3000 ), list.get( 0 ).getScanStartTime() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -474,14 +396,9 @@ public class RepositoryStatisticsManagerTest
 
         Date current = new Date();
 
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
@@ -489,22 +406,20 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        when( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn( keys );
 
         String key = keys.get( 0 );
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).thenReturn(
             statsCreated.get( key ) );
         key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).thenReturn(
             statsCreated.get( key ) );
         key = keys.get( 2 );
 
-        expect( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        when( metadataRepository.getMetadataFacet(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).thenReturn(
             statsCreated.get( key ) );
-
-        metadataRepositoryControl.replay();
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
@@ -522,7 +437,6 @@ public class RepositoryStatisticsManagerTest
         assertEquals( new Date( current.getTime() - 3000 ), list.get( 1 ).getScanStartTime() );
         assertEquals( new Date( current.getTime() - 1000 ), list.get( 0 ).getScanStartTime() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -532,14 +446,9 @@ public class RepositoryStatisticsManagerTest
         walkRepository( 3 );
 
         Date current = new Date();
-        sessionControl.reset();
-        factoryControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        expect( session.getRepository() ).andStubReturn( metadataRepository );
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
+        when( session.getRepository() ).thenReturn( metadataRepository );
         session.close();
-        expectLastCall( ).anyTimes( );
-        factoryControl.replay();
-        sessionControl.replay();
 
         addStats( new Date( current.getTime() - 12345 ), new Date( current.getTime() - 6000 ) );
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
@@ -547,9 +456,7 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
-
-        metadataRepositoryControl.replay();
+        when( metadataRepository.getMetadataFacets(session , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).thenReturn( keys );
 
         for ( RepositoryStatistics stats : statsCreated.values() )
         {
@@ -565,7 +472,6 @@ public class RepositoryStatisticsManagerTest
 
         assertEquals( 0, list.size() );
 
-        metadataRepositoryControl.verify();
     }
 
     private void addStats( Date startTime, Date endTime )
@@ -616,114 +522,112 @@ public class RepositoryStatisticsManagerTest
     private void walkRepository( int count )
         throws Exception
     {
-        sessionControl.reset();
-        expect( repositorySessionFactory.createSession( ) ).andStubReturn( session );
-        factoryControl.replay();
+        when( repositorySessionFactory.createSession( ) ).thenReturn( session );
 
         for ( int i = 0; i < count; i++ )
         {
 
 
-            expect( metadataRepository.getRootNamespaces(session , TEST_REPO_ID ) ).andReturn( Arrays.asList( "com", "org" ) );
+            when( metadataRepository.getRootNamespaces(session , TEST_REPO_ID ) ).thenReturn( Arrays.asList( "com", "org" ) );
 
-            expect( metadataRepository.getProjects(session , TEST_REPO_ID, "com" ) ).andReturn( Arrays.<String>asList() );
+            when( metadataRepository.getProjects(session , TEST_REPO_ID, "com" ) ).thenReturn( Arrays.<String>asList() );
 
-            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "com" ) ).andReturn( Arrays.asList( "example" ) );
+            when( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "com" ) ).thenReturn( Arrays.asList( "example" ) );
 
-            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "com.example" ) ).andReturn(
+            when( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "com.example" ) ).thenReturn(
                 Arrays.<String>asList() );
 
-            expect( metadataRepository.getProjects(session , TEST_REPO_ID, "com.example" ) ).andReturn(
+            when( metadataRepository.getProjects(session , TEST_REPO_ID, "com.example" ) ).thenReturn(
                 Arrays.asList( "example-project" ) );
 
-            expect( metadataRepository.getProjectVersions(session , TEST_REPO_ID, "com.example", "example-project" ) ).andReturn(
+            when( metadataRepository.getProjectVersions(session , TEST_REPO_ID, "com.example", "example-project" ) ).thenReturn(
                 Arrays.asList( "1.0", "1.1" ) );
 
-            expect(
-                metadataRepository.getArtifacts(session , TEST_REPO_ID, "com.example", "example-project", "1.0" ) ).andReturn(
+            when(
+                metadataRepository.getArtifacts(session , TEST_REPO_ID, "com.example", "example-project", "1.0" ) ).thenReturn(
                 Arrays.asList( createArtifact( "com.example", "example-project", "1.0", "jar" ),
                                createArtifact( "com.example", "example-project", "1.0", "pom" ) ) );
 
-            expect(
-                metadataRepository.getArtifacts(session , TEST_REPO_ID, "com.example", "example-project", "1.1" ) ).andReturn(
+            when(
+                metadataRepository.getArtifacts(session , TEST_REPO_ID, "com.example", "example-project", "1.1" ) ).thenReturn(
                 Arrays.asList( createArtifact( "com.example", "example-project", "1.1", "jar" ),
                                createArtifact( "com.example", "example-project", "1.1", "pom" ) ) );
 
 
-            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org" ) ).andReturn( Arrays.asList( "apache", "codehaus" ) );
+            when( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org" ) ).thenReturn( Arrays.asList( "apache", "codehaus" ) );
 
-            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.asList( "archiva", "maven" )  );
-
-
-            expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.<String>asList() );
-
-            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.<String>asList() );
-
-            expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.asList( "metadata-repository-api", "metadata-model" ) );
-
-            expect( metadataRepository.getProjectVersions(session , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api" ) )
-                .andReturn( Arrays.asList( "1.3-SNAPSHOT", "1.3" )  );
+            when( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache" ) ).thenReturn( Arrays.asList( "archiva", "maven" )  );
 
 
-            expect( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT" ) )
-                .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT", "jar" ),
+            when( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache" ) ).thenReturn( Arrays.<String>asList() );
+
+            when( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache.archiva" ) ).thenReturn( Arrays.<String>asList() );
+
+            when( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache.archiva" ) ).thenReturn( Arrays.asList( "metadata-repository-api", "metadata-model" ) );
+
+            when( metadataRepository.getProjectVersions(session , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api" ) )
+                .thenReturn( Arrays.asList( "1.3-SNAPSHOT", "1.3" )  );
+
+
+            when( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT" ) )
+                .thenReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT",
                                                            "pom" ) )  );
 
-            expect( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3" ) )
-                .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "jar" ),
+            when( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3" ) )
+                .thenReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "pom" ) ) );
 
-            expect( metadataRepository.getProjectVersions(session , TEST_REPO_ID, "org.apache.archiva", "metadata-model" ) )
-                .andReturn( Arrays.asList( "1.3-SNAPSHOT", "1.3" )  );
+            when( metadataRepository.getProjectVersions(session , TEST_REPO_ID, "org.apache.archiva", "metadata-model" ) )
+                .thenReturn( Arrays.asList( "1.3-SNAPSHOT", "1.3" )  );
 
-            expect( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT" ) )
-                .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "jar" ),
+            when( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT" ) )
+                .thenReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "pom" ) ) );
 
-            expect( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3" ) )
-                .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3", "jar" ),
+            when( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3" ) )
+                .thenReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-model", "1.3", "pom" ) ) );
 
-            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache.maven" ) ).andReturn( Arrays.<String>asList() );
+            when( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.apache.maven" ) ).thenReturn( Arrays.<String>asList() );
 
-            expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache.maven" ) )
-                .andReturn( Arrays.asList( "maven-model" )  );
+            when( metadataRepository.getProjects(session , TEST_REPO_ID, "org.apache.maven" ) )
+                .thenReturn( Arrays.asList( "maven-model" )  );
 
-            expect( metadataRepository.getProjectVersions(session , TEST_REPO_ID, "org.apache.maven", "maven-model" ) )
-                .andReturn( Arrays.asList( "2.2.1" ) );
+            when( metadataRepository.getProjectVersions(session , TEST_REPO_ID, "org.apache.maven", "maven-model" ) )
+                .thenReturn( Arrays.asList( "2.2.1" ) );
 
-            expect( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.maven", "maven-model", "2.2.1" ) )
-                .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "jar" ),
+            when( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.apache.maven", "maven-model", "2.2.1" ) )
+                .thenReturn( Arrays.asList( createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "jar" ),
                                            createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "pom" ) ) );
 
-            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.codehaus" ) ).andReturn( Arrays.asList( "plexus" ) );
+            when( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.codehaus" ) ).thenReturn( Arrays.asList( "plexus" ) );
 
-            expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org" ) ).andReturn( Arrays.<String>asList(  ) );
+            when( metadataRepository.getProjects(session , TEST_REPO_ID, "org" ) ).thenReturn( Arrays.<String>asList(  ) );
 
-            expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.codehaus" ) )
-                .andReturn( Arrays.<String>asList(  ) );
+            when( metadataRepository.getProjects(session , TEST_REPO_ID, "org.codehaus" ) )
+                .thenReturn( Arrays.<String>asList(  ) );
 
-            expect( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.codehaus.plexus" ) )
-                .andReturn( Arrays.<String>asList(  ) );
+            when( metadataRepository.getChildNamespaces(session , TEST_REPO_ID, "org.codehaus.plexus" ) )
+                .thenReturn( Arrays.<String>asList(  ) );
 
-            expect( metadataRepository.getProjects(session , TEST_REPO_ID, "org.codehaus.plexus" ) )
-                .andReturn( Arrays.asList( "plexus-spring" )  );
+            when( metadataRepository.getProjects(session , TEST_REPO_ID, "org.codehaus.plexus" ) )
+                .thenReturn( Arrays.asList( "plexus-spring" )  );
 
-            expect( metadataRepository.getProjectVersions(session, TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring" ) )
-                .andReturn( Arrays.asList( "1.0", "1.1", "1.2" ) );
+            when( metadataRepository.getProjectVersions(session, TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring" ) )
+                .thenReturn( Arrays.asList( "1.0", "1.1", "1.2" ) );
 
 
-            expect( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.0" ) )
-                .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "jar" ),
+            when( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.0" ) )
+                .thenReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "pom" ) ) );
 
-            expect( metadataRepository.getArtifacts(session, TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.1" ) )
-                .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "jar" ),
+            when( metadataRepository.getArtifacts(session, TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.1" ) )
+                .thenReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "pom" ) )  );
 
-            expect( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2" ) )
-                .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "jar" ),
+            when( metadataRepository.getArtifacts(session , TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2" ) )
+                .thenReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "pom" ) )  );
         }
     }

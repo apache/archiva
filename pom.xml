@@ -86,15 +86,13 @@
 
     <openjpaVersion>3.1.1</openjpaVersion>
 
-    <modelmapper.version>2.3.5</modelmapper.version>
+    <modelmapper.version>2.4.5</modelmapper.version>
 
     <sisu-inject-plexus.version>0.3.3</sisu-inject-plexus.version>
     <plexus-utils.version>3.2.1</plexus-utils.version>
     <html.unit.version>2.27</html.unit.version>
 
     <springockito.version>1.0.9</springockito.version>
-
-    <easymock.version>4.1</easymock.version>
 
     <jacoco.plugin.version>0.7.9</jacoco.plugin.version>
 
@@ -1785,13 +1783,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.easymock</groupId>
-        <artifactId>easymock</artifactId>
-        <version>${easymock.version}</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>20200518</version>
@@ -1851,20 +1842,6 @@
     </dependency>
     
 
-    <!--
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <version>3.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymockclassextension</artifactId>
-      <version>3.2</version>
-      <scope>test</scope>
-    </dependency>
-    -->
   </dependencies>
 
 

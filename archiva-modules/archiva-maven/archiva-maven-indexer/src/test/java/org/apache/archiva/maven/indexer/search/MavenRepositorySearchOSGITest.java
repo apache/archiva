@@ -23,7 +23,6 @@ import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Test;
 
@@ -32,6 +31,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static org.mockito.Mockito.when;
 
 /**
  * @author Olivier Lamy
@@ -66,9 +67,7 @@ public class MavenRepositorySearchOSGITest
 
         // search artifactId
         // EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
-        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
-
-        archivaConfigControl.replay();
+        when( archivaConfig.getConfiguration()).thenReturn(config);
 
         SearchFields searchFields = new SearchFields();
         searchFields.setBundleSymbolicName( "org.apache.felix.bundlerepository" );
@@ -76,8 +75,6 @@ public class MavenRepositorySearchOSGITest
         searchFields.setRepositories( selectedRepos );
 
         SearchResults results = search.search( "user", searchFields, null );
-
-        archivaConfigControl.verify();
 
         assertNotNull( results );
         assertEquals( 1, results.getTotalHits() );

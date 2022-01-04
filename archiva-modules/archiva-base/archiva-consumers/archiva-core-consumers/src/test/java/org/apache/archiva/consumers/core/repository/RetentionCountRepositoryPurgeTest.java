@@ -22,11 +22,11 @@ package org.apache.archiva.consumers.core.repository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -55,14 +55,9 @@ public class RetentionCountRepositoryPurgeTest
         List<RepositoryListener> listeners = Collections.singletonList( listener );
         ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
 
-        sessionControl.reset();
-        sessionFactoryControl.reset();
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
-        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        Mockito.when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
+        Mockito.when( repositorySession.getRepository()).thenReturn( metadataRepository );
         repositorySession.save();
-        EasyMock.expectLastCall().anyTimes();
-        sessionFactoryControl.replay();
-        sessionControl.replay();
 
         repoPurge = new RetentionCountRepositoryPurge( getRepository(), acf.getRetentionCount(),
                                                        repositorySession, listeners );
@@ -122,8 +117,6 @@ public class RetentionCountRepositoryPurgeTest
         listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
                 "1.0RC1-SNAPSHOT", "jruby-rake-plugin-1.0RC1-20070504.153317-1-javadoc.zip");
 
-        listenerControl.replay();
-
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
         when(metadataRepository.getArtifacts( repositorySession, TEST_REPO_ID,
@@ -131,8 +124,6 @@ public class RetentionCountRepositoryPurgeTest
 
 
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
@@ -209,16 +200,12 @@ public class RetentionCountRepositoryPurgeTest
                 "1.1.2-SNAPSHOT", "castor-anttasks-1.1.2-20070427.065136-1.pom.sha1" );
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
                                  "1.1.2-SNAPSHOT", "castor-anttasks-1.1.2-20070427.065136-1.pom" );
-        listenerControl.replay();
-
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
         when(metadataRepository.getArtifacts( repositorySession, TEST_REPO_ID,
             projectNs, projectName, projectVersion )).thenReturn(ml);
 
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_POM );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
@@ -297,16 +284,12 @@ public class RetentionCountRepositoryPurgeTest
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
                                  "maven-assembly-plugin", "1.1.2-SNAPSHOT",
                                  "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
-        listenerControl.replay();
-
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
         when(metadataRepository.getArtifacts( repositorySession, TEST_REPO_ID,
             projectNs, projectName, projectVersion )).thenReturn(ml);
 
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );

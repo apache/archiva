@@ -23,14 +23,15 @@ import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.registry.RegistryListener;
 import org.apache.commons.lang3.StringUtils;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
+import org.mockito.Mockito;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * MockConfiguration
@@ -48,14 +49,12 @@ public class MockConfiguration
 
     private Set<ConfigurationListener> configListeners = new HashSet<ConfigurationListener>();
 
-    private IMocksControl registryControl;
 
     private Registry registryMock;
 
     public MockConfiguration()
     {
-        registryControl = EasyMock.createNiceControl( );
-        registryMock = registryControl.createMock( Registry.class );
+        registryMock = mock( Registry.class );
     }
 
     @PostConstruct

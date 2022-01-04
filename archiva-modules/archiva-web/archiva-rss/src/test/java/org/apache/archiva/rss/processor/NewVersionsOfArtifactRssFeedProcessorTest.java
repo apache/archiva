@@ -34,8 +34,6 @@ import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,8 +49,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.easymock.EasyMock.createControl;
-import static org.easymock.EasyMock.expect;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 
 @RunWith(ArchivaBlockJUnit4ClassRunner.class)
 public class NewVersionsOfArtifactRssFeedProcessorTest
@@ -66,17 +65,12 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
 
     private static final String ARTIFACT_ID = "artifact-two";
 
-    private IMocksControl metadataRepositoryControl;
-
     private MetadataRepository metadataRepository;
 
-    private IMocksControl sessionFactoryControl;
     private RepositorySessionFactory sessionFactory;
 
-    private IMocksControl sessionControl;
     private RepositorySession session;
 
-    private IMocksControl repositoryRegistryControl;
     private RepositoryRegistry repositoryRegistry;
 
 
@@ -90,28 +84,20 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         newVersionsProcessor = new NewVersionsOfArtifactRssFeedProcessor();
         newVersionsProcessor.setGenerator( new RssFeedGenerator() );
 
-        metadataRepositoryControl = createControl();
-        metadataRepository = metadataRepositoryControl.createMock( MetadataRepository.class );
+        metadataRepository = mock( MetadataRepository.class );
 
-        sessionFactoryControl = EasyMock.createControl();
-        sessionControl = EasyMock.createControl();
-        sessionControl.resetToNice();
 
-        sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
-        session = sessionControl.createMock( RepositorySession.class );
+        sessionFactory = mock( RepositorySessionFactory.class );
+        session = mock( RepositorySession.class );
 
-        EasyMock.expect( sessionFactory.createSession() ).andStubReturn( session );
-        EasyMock.expect( session.getRepository( ) ).andStubReturn( metadataRepository );
-        sessionFactoryControl.replay();
-        sessionControl.replay();
+        when( sessionFactory.createSession() ).thenReturn( session );
+        when( session.getRepository( ) ).thenReturn( metadataRepository );
 
-        repositoryRegistryControl = EasyMock.createControl();
-        repositoryRegistry = repositoryRegistryControl.createMock( ArchivaRepositoryRegistry.class );
+        repositoryRegistry = mock( ArchivaRepositoryRegistry.class );
 
         List<Repository> reg = new ArrayList<>( );
         reg.add( new BasicManagedRepository( TEST_REPO, TEST_REPO, new FilesystemStorage( Paths.get("target/test-storage"), new DefaultFileLockManager() ) ) );
-        EasyMock.expect( repositoryRegistry.getRepositories() ).andStubReturn( reg );
-        repositoryRegistryControl.replay();
+        when( repositoryRegistry.getRepositories() ).thenReturn( reg );
 
         newVersionsProcessor.setRepositorySessionFactory( sessionFactory );
         newVersionsProcessor.setRepositoryRegistry( repositoryRegistry );
@@ -137,15 +123,14 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         reqParams.put( RssFeedProcessor.KEY_GROUP_ID, GROUP_ID );
         reqParams.put( RssFeedProcessor.KEY_ARTIFACT_ID, ARTIFACT_ID );
 
-            expect(metadataRepository.getProjectVersions(session, TEST_REPO, GROUP_ID, ARTIFACT_ID)).andReturn(
+            when(metadataRepository.getProjectVersions(session, TEST_REPO, GROUP_ID, ARTIFACT_ID)).thenReturn(
                     Arrays.asList("1.0.1", "1.0.2", "1.0.3-SNAPSHOT"));
-            expect(metadataRepository.getArtifacts(session, TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.1")).andReturn(
+            when(metadataRepository.getArtifacts(session, TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.1")).thenReturn(
                     Collections.singletonList(artifact1));
-            expect(metadataRepository.getArtifacts(session, TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.2")).andReturn(
+            when(metadataRepository.getArtifacts(session, TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.2")).thenReturn(
                     Collections.singletonList(artifact2));
-            expect(metadataRepository.getArtifacts(session, TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.3-SNAPSHOT")).andReturn(
+            when(metadataRepository.getArtifacts(session, TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.3-SNAPSHOT")).thenReturn(
                     Collections.singletonList(artifact3));
-        metadataRepositoryControl.replay();
 
         SyndFeed feed = newVersionsProcessor.process( reqParams );
 
@@ -166,7 +151,6 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
 
         assertEquals( whenGatheredNext.toInstant(), entries.get( 1 ).getPublishedDate().toInstant() );
 
-        metadataRepositoryControl.verify();
     }
 
     private ArtifactMetadata createArtifact(ZonedDateTime whenGathered, String version )

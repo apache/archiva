@@ -30,9 +30,9 @@ import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.metadata.base.MetadataTools;
-import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.test.context.ContextConfiguration;
 import org.xmlunit.assertj.XmlAssert;
 
@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 
@@ -90,19 +90,12 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         archivaConfiguration =
             applicationContext.getBean( "archivaConfiguration#cleanup-released-snapshots", ArchivaConfiguration.class );
 
-        listenerControl = EasyMock.createControl( );
-
-        listener = listenerControl.createMock( RepositoryListener.class );
+        listener = mock( RepositoryListener.class );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
 
-        sessionControl.reset();
-        sessionFactoryControl.reset();
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
-        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        Mockito.when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
+        Mockito.when( repositorySession.getRepository()).thenReturn( metadataRepository );
         repositorySession.save();
-        EasyMock.expectLastCall().anyTimes();
-        sessionFactoryControl.replay();
-        sessionControl.replay();
         repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools,
                                                                  applicationContext.getBean(
                                                                      ArchivaRepositoryRegistry.class ),
@@ -135,7 +128,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         // test listeners for the correct artifacts
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
                                  "maven-plugin-plugin", "2.3-SNAPSHOT", "maven-plugin-plugin-2.3-SNAPSHOT.jar" );
-        listenerControl.replay();
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
@@ -144,8 +136,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
 
         repoPurge.process( PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         // complete snapshot version removal for released
@@ -209,8 +199,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         String repoRoot = prepareTestRepos();
 
         // test listeners for the correct artifacts
-        listenerControl.replay();
-
         Path file = Paths.get(repoRoot, INDEX_PATH );
         if ( !Files.exists(file) )
         {
@@ -221,8 +209,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertTrue( Files.exists(file) );
 
         repoPurge.process( INDEX_PATH );
-
-        listenerControl.verify();
 
         assertTrue( Files.exists(file) );
     }
@@ -260,8 +246,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.archiva",
                                  "released-artifact-in-diff-repo", "1.0-SNAPSHOT",
                                  "released-artifact-in-diff-repo-1.0-SNAPSHOT.jar" );
-        listenerControl.replay();
-
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
         when(metadataRepository.getArtifacts(repositorySession , TEST_REPO_ID,
@@ -273,8 +257,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
 
         repoPurge.process( PATH_TO_RELEASED_SNAPSHOT_IN_DIFF_REPO );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         // Complete version removal for cleanup
@@ -331,8 +313,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         Path vDir3 = repo.resolve(projectPath).resolve(projectName).resolve("2.0.4-SNAPSHOT");
 
         // test listeners for the correct artifacts - no deletions
-        listenerControl.replay();
-
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
         when(metadataRepository.getArtifacts(repositorySession , TEST_REPO_ID,
@@ -346,8 +326,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
 
         repoPurge.process( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_HIGHER_SNAPSHOT_EXISTS_IN_SAME_REPO );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         // No removal

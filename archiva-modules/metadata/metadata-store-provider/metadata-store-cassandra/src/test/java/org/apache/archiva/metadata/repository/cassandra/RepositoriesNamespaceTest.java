@@ -22,7 +22,6 @@ package org.apache.archiva.metadata.repository.cassandra;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

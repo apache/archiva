@@ -31,7 +31,7 @@
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
-    <cassandraVersion>3.11.10</cassandraVersion>
+    <cassandraVersion>3.11.11</cassandraVersion>
     <datastax.driver.version>4.13.0</datastax.driver.version>
   </properties>
 
@@ -139,8 +139,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -213,7 +213,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cassandra-maven-plugin</artifactId>
-        <version>3.6</version>
+        <version>3.7-SNAPSHOT</version>
         <executions>
           <execution>
             <id>start-cassandra</id>
@@ -334,4 +334,15 @@ num_tokens: 1
     </pluginManagement>
   </build>
 
+  <profiles>
+    <profile>
+      <id>jdk9+</id>
+      <activation>
+        <jdk>[1.9,)</jdk>
+      </activation>
+      <properties >
+        <cassandra.addJdk11Options>true</cassandra.addJdk11Options>
+      </properties>
+    </profile>
+  </profiles>
 </project>

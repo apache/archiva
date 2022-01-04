@@ -276,11 +276,6 @@
       <artifactId>xmlunit-assertj</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>

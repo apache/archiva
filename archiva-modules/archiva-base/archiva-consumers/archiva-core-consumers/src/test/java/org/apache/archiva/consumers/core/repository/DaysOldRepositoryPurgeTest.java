@@ -22,7 +22,6 @@ package org.apache.archiva.consumers.core.repository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.audit.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -73,14 +72,9 @@ public class DaysOldRepositoryPurgeTest
         ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
 
 
-        sessionControl.reset();
-        sessionFactoryControl.reset();
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
-        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
+        when( repositorySession.getRepository()).thenReturn( metadataRepository );
         repositorySession.save();
-        EasyMock.expectLastCall().anyTimes();
-        sessionFactoryControl.replay();
-        sessionControl.replay();
 
         repoPurge = new DaysOldRepositoryPurge( getRepository(), atf.getRetentionPeriod().getDays(),
                                                 atf.getRetentionCount(), repositorySession,
@@ -115,7 +109,6 @@ public class DaysOldRepositoryPurgeTest
                     "maven-install-plugin", "2.2-SNAPSHOT",
                     "maven-install-plugin-2.2-20061118.060401-2.pom"+exts[i]);
         }
-        listenerControl.replay();
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
@@ -123,8 +116,6 @@ public class DaysOldRepositoryPurgeTest
             projectNs, projectName, projectVersion )).thenReturn(ml);
 
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
@@ -175,14 +166,9 @@ public class DaysOldRepositoryPurgeTest
         ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
         List<RepositoryListener> listeners = Collections.singletonList( listener );
 
-        sessionControl.reset();
-        sessionFactoryControl.reset();
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
-        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
+        when( repositorySession.getRepository()).thenReturn( metadataRepository );
         repositorySession.save();
-        EasyMock.expectLastCall().anyTimes();
-        sessionFactoryControl.replay();
-        sessionControl.replay();
         repoPurge = new DaysOldRepositoryPurge( getRepository(), atf.getRetentionPeriod().getDays(),
                                                 atf.getRetentionCount(), repositorySession, listeners );
 
@@ -209,8 +195,6 @@ public class DaysOldRepositoryPurgeTest
                     "maven-assembly-plugin", "1.1.2-SNAPSHOT",
                     "maven-assembly-plugin-1.1.2-20070427.065136-1.pom"+exts[i]);
         }
-        listenerControl.replay();
-
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
         when(metadataRepository.getArtifacts(repositorySession , TEST_REPO_ID,
@@ -218,8 +202,6 @@ public class DaysOldRepositoryPurgeTest
 
 
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
@@ -263,14 +245,9 @@ public class DaysOldRepositoryPurgeTest
         ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
         List<RepositoryListener> listeners = Collections.singletonList( listener );
 
-        sessionControl.reset();
-        sessionFactoryControl.reset();
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
-        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
+        when( repositorySession.getRepository()).thenReturn( metadataRepository );
         repositorySession.save();
-        EasyMock.expectLastCall().anyTimes();
-        sessionFactoryControl.replay();
-        sessionControl.replay();
         repoPurge = new DaysOldRepositoryPurge( getRepository(), atf.getRetentionPeriod().getDays(),
             atf.getRetentionCount(), repositorySession, listeners );
 
@@ -317,7 +294,6 @@ public class DaysOldRepositoryPurgeTest
             listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
                     "1.4.3-SNAPSHOT", "plexus-utils-1.4.3-20070113.163208-4.pom"+exts[i]);
         }
-        listenerControl.replay();
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
@@ -326,8 +302,6 @@ public class DaysOldRepositoryPurgeTest
 
 
         repoPurge.process( PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT );
-
-        listenerControl.verify();
 
         // Verify the metadataRepository invocations
         verify(metadataRepository, never()).removeProjectVersion(eq(repositorySession) , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );

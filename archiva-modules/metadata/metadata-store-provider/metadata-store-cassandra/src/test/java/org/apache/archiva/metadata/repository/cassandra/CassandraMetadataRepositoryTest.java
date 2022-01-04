@@ -27,8 +27,6 @@ import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +48,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static com.datastax.oss.driver.api.querybuilder.QueryBuilder.truncate;
-import static com.datastax.oss.driver.api.querybuilder.SchemaBuilder.dropTable;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Olivier Lamy
@@ -67,10 +66,8 @@ public class CassandraMetadataRepositoryTest
 
     CassandraMetadataRepository cmr;
 
-    IMocksControl sessionFactoryControl;
     RepositorySessionFactory sessionFactory;
 
-    IMocksControl sessionControl;
     RepositorySession session;
 
     long cTime;
@@ -111,14 +108,10 @@ public class CassandraMetadataRepositoryTest
 
         this.cmr = new CassandraMetadataRepository( metadataService, cassandraArchivaManager );
 
-        sessionFactoryControl = EasyMock.createControl( );
-        sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
-        sessionControl = EasyMock.createControl( );
-        session = sessionControl.createMock( RepositorySession.class );
+        sessionFactory = mock( RepositorySessionFactory.class );
+        session = mock( RepositorySession.class );
 
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( session );
-
-        sessionFactoryControl.replay();
+        when( sessionFactory.createSession( ) ).thenReturn( session );
 
         if (!clearedTables.get())
         {

@@ -25,10 +25,7 @@ import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.repository.Repository;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,13 +42,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @RunWith(ArchivaBlockJUnit4ClassRunner.class)
 public class AuditManagerTest
     extends TestCase
 {
     private DefaultAuditManager auditManager;
-
-    private IMocksControl metadataRepositoryControl;
 
     private MetadataRepository metadataRepository;
 
@@ -74,8 +72,6 @@ public class AuditManagerTest
     private static final SimpleDateFormat TIMESTAMP_FORMAT = createTimestampFormat();
 
     private static final DecimalFormat MILLIS_FORMAT = new DecimalFormat( "000" );
-    private IMocksControl factoryControl;
-    private IMocksControl sessionControl;
 
     private static SimpleDateFormat createTimestampFormat()
     {
@@ -93,14 +89,11 @@ public class AuditManagerTest
 
         auditManager = new DefaultAuditManager();
 
-        metadataRepositoryControl = EasyMock.createControl();
-        metadataRepository = metadataRepositoryControl.createMock( MetadataRepository.class );
+        metadataRepository = mock( MetadataRepository.class );
 
-        factoryControl = EasyMock.createControl();
-        repositorySessionFactory = factoryControl.createMock(RepositorySessionFactory.class);
+        repositorySessionFactory = mock(RepositorySessionFactory.class);
 
-        sessionControl = EasyMock.createControl( );
-        session = sessionControl.createMock( RepositorySession.class );
+        session = mock( RepositorySession.class );
 
         auditManager.setRepositorySessionFactory( repositorySessionFactory );
 
@@ -121,19 +114,15 @@ public class AuditManagerTest
             expectedEvents.add( event );
         }
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     getEventNames(expectedEvents));
 
             for (AuditEvent event : expectedEvents.subList(1, expectedEvents.size())) {
-                EasyMock.expect(
-                        metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, event.getName())).andReturn(
+                when(
+                        metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, event.getName())).thenReturn(
                         event);
             }
-        metadataRepositoryControl.replay();
 
         List<AuditEvent> events =
             auditManager.getMostRecentAuditEvents( metadataRepository, Collections.singletonList( TEST_REPO_ID ) );
@@ -147,7 +136,6 @@ public class AuditManagerTest
             expectedTimestampCounter--;
         }
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -161,18 +149,14 @@ public class AuditManagerTest
             expectedEvents.add( createEvent( AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i ) ) );
         }
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     getEventNames(expectedEvents));
             for (AuditEvent event : expectedEvents) {
-                EasyMock.expect(
-                        metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, event.getName())).andReturn(
+                when(
+                        metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, event.getName())).thenReturn(
                         event);
             }
-        metadataRepositoryControl.replay();
 
         List<AuditEvent> events =
             auditManager.getMostRecentAuditEvents( metadataRepository, Collections.singletonList( TEST_REPO_ID ) );
@@ -186,7 +170,6 @@ public class AuditManagerTest
             expectedTimestampCounter--;
         }
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -194,10 +177,10 @@ public class AuditManagerTest
         throws Exception
     {
         int numEvents = 11;
-        Map<String, List<String>> eventNames = new LinkedHashMap<String, List<String>>();
+        Map<String, List<String>> eventNames = new LinkedHashMap<>( );
         List<AuditEvent> events = new ArrayList<>();
-        eventNames.put( TEST_REPO_ID, new ArrayList<String>() );
-        eventNames.put( TEST_REPO_ID_2, new ArrayList<String>() );
+        eventNames.put( TEST_REPO_ID, new ArrayList<>( ) );
+        eventNames.put( TEST_REPO_ID_2, new ArrayList<>( ) );
         for ( int i = 0; i < numEvents; i++ )
         {
             String repositoryId = i % 2 == 0 ? TEST_REPO_ID : TEST_REPO_ID_2;
@@ -206,20 +189,16 @@ public class AuditManagerTest
             events.add( event );
             eventNames.get( repositoryId ).add( event.getName() );
         }
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     eventNames.get(TEST_REPO_ID));
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID_2, AuditEvent.FACET_ID)).andReturn(
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID_2, AuditEvent.FACET_ID)).thenReturn(
                     eventNames.get(TEST_REPO_ID_2));
 
             for (AuditEvent event : events.subList(1, events.size())) {
-                EasyMock.expect(metadataRepository.getMetadataFacet(session, event.getRepositoryId(),
-                        AuditEvent.FACET_ID, event.getName())).andReturn(event);
+                when(metadataRepository.getMetadataFacet(session, event.getRepositoryId(),
+                        AuditEvent.FACET_ID, event.getName())).thenReturn(event);
             }
-        metadataRepositoryControl.replay();
 
         events =
             auditManager.getMostRecentAuditEvents( metadataRepository, Arrays.asList( TEST_REPO_ID, TEST_REPO_ID_2 ) );
@@ -234,7 +213,6 @@ public class AuditManagerTest
             expectedTimestampCounter--;
         }
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -242,18 +220,13 @@ public class AuditManagerTest
         throws Exception
 
     {
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
-                    Collections.<String>emptyList());
-        metadataRepositoryControl.replay();
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
+                    Collections.emptyList());
 
         assertTrue( auditManager.getMostRecentAuditEvents( metadataRepository,
                                                            Collections.singletonList( TEST_REPO_ID ) ).isEmpty() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -263,17 +236,12 @@ public class AuditManagerTest
     {
         AuditEvent event = createEvent( new Date() );
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
             metadataRepository.addMetadataFacet(session, TEST_REPO_ID, event);
 
-        metadataRepositoryControl.replay();
 
         auditManager.addAuditEvent( metadataRepository, event );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -285,11 +253,7 @@ public class AuditManagerTest
 
         // should just be ignored
 
-        metadataRepositoryControl.replay();
-
         auditManager.addAuditEvent( metadataRepository, event );
-
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -298,18 +262,12 @@ public class AuditManagerTest
 
     {
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
 
         metadataRepository.removeMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID);
 
-        metadataRepositoryControl.replay();
-
         auditManager.deleteAuditEvents( metadataRepository, TEST_REPO_ID );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -323,19 +281,13 @@ public class AuditManagerTest
         Date expectedTimestamp = new Date( current.getTime() - 3000 );
         AuditEvent expectedEvent = createEvent( expectedTimestamp );
         AuditEvent event3 = createEvent( new Date( current.getTime() - 1000 ) );
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     Arrays.asList(event1.getName(), expectedEvent.getName(), event3.getName()));
 
             // only match the middle one
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent.getName())).andReturn(expectedEvent);
-
-        metadataRepositoryControl.replay();
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent.getName())).thenReturn(expectedEvent);
 
         List<AuditEvent> events =
             auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList( TEST_REPO_ID ),
@@ -345,7 +297,6 @@ public class AuditManagerTest
         assertEquals( 1, events.size() );
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( expectedTimestamp ), expectedEvent.getResource() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -360,19 +311,14 @@ public class AuditManagerTest
         Date ts3 = new Date( current.getTime() - 1000 );
         AuditEvent expectedEvent3 = createEvent( ts3 );
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     Arrays.asList(event1.getName(), expectedEvent2.getName(), expectedEvent3.getName()));
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent2.getName())).andReturn(expectedEvent2);
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent3.getName())).andReturn(expectedEvent3);
-        metadataRepositoryControl.replay();
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent2.getName())).thenReturn(expectedEvent2);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent3.getName())).thenReturn(expectedEvent3);
 
         List<AuditEvent> events =
             auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList( TEST_REPO_ID ),
@@ -381,8 +327,6 @@ public class AuditManagerTest
         assertEquals( 2, events.size() );
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( ts3 ), expectedEvent3.getResource() );
         assertTestEvent( events.get( 1 ), TIMESTAMP_FORMAT.format( expectedTimestamp ), expectedEvent2.getResource() );
-
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -397,20 +341,16 @@ public class AuditManagerTest
         AuditEvent expectedEvent2 = createEvent( expectedTimestamp );
         AuditEvent event3 = createEvent( new Date( current.getTime() - 1000 ) );
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
 
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     Arrays.asList(expectedEvent1.getName(), expectedEvent2.getName(), event3.getName()));
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent1.getName())).andReturn(expectedEvent1);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent1.getName())).thenReturn(expectedEvent1);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent2.getName())).andReturn(expectedEvent2);
-        metadataRepositoryControl.replay();
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent2.getName())).thenReturn(expectedEvent2);
 
         List<AuditEvent> events =
             auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList( TEST_REPO_ID ),
@@ -420,8 +360,6 @@ public class AuditManagerTest
         assertEquals( 2, events.size() );
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( expectedTimestamp ), expectedEvent2.getResource() );
         assertTestEvent( events.get( 1 ), TIMESTAMP_FORMAT.format( ts1 ), expectedEvent1.getResource() );
-
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -437,22 +375,18 @@ public class AuditManagerTest
         Date ts3 = new Date( current.getTime() - 1000 );
         AuditEvent expectedEvent3 = createEvent( ts3 );
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     Arrays.asList(expectedEvent1.getName(), expectedEvent2.getName(), expectedEvent3.getName()));
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent1.getName())).andReturn(expectedEvent1);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent1.getName())).thenReturn(expectedEvent1);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent2.getName())).andReturn(expectedEvent2);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent2.getName())).thenReturn(expectedEvent2);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent3.getName())).andReturn(expectedEvent3);
-        metadataRepositoryControl.replay();
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent3.getName())).thenReturn(expectedEvent3);
 
         List<AuditEvent> events =
             auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList( TEST_REPO_ID ),
@@ -463,7 +397,6 @@ public class AuditManagerTest
         assertTestEvent( events.get( 1 ), TIMESTAMP_FORMAT.format( expectedTimestamp ), expectedEvent2.getResource() );
         assertTestEvent( events.get( 2 ), TIMESTAMP_FORMAT.format( ts1 ), expectedEvent1.getResource() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -480,23 +413,19 @@ public class AuditManagerTest
         Date ts3 = new Date( current.getTime() - 1000 );
         AuditEvent expectedEvent3 = createEvent( ts3 );
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     Arrays.asList(expectedEvent1.getName(), expectedEvent2.getName(), expectedEvent3.getName()));
 
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent1.getName())).andReturn(expectedEvent1);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent1.getName())).thenReturn(expectedEvent1);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent2.getName())).andReturn(expectedEvent2);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent2.getName())).thenReturn(expectedEvent2);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
-                    AuditEvent.FACET_ID, expectedEvent3.getName())).andReturn(expectedEvent3);
-        metadataRepositoryControl.replay();
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID,
+                    AuditEvent.FACET_ID, expectedEvent3.getName())).thenReturn(expectedEvent3);
 
         List<AuditEvent> events =
             auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList( TEST_REPO_ID ),
@@ -506,7 +435,6 @@ public class AuditManagerTest
         assertTestEvent( events.get( 0 ), TIMESTAMP_FORMAT.format( ts3 ), expectedEvent3.getResource() );
         assertTestEvent( events.get( 1 ), TIMESTAMP_FORMAT.format( ts1 ), expectedEvent1.getResource() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -521,21 +449,17 @@ public class AuditManagerTest
         expectedEvent2.setResource( "different-resource" );
         AuditEvent expectedEvent3 = createEvent( new Date( current.getTime() - 1000 ) );
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).andReturn(
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID)).thenReturn(
                     Arrays.asList(expectedEvent1.getName(), expectedEvent2.getName(), expectedEvent3.getName()));
 
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName())).andReturn(expectedEvent1);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName())).thenReturn(expectedEvent1);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent2.getName())).andReturn(expectedEvent2);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent2.getName())).thenReturn(expectedEvent2);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName())).andReturn(expectedEvent3);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName())).thenReturn(expectedEvent3);
 
-        metadataRepositoryControl.replay();
 
         List<AuditEvent> events =
             auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList( TEST_REPO_ID ), "foo",
@@ -543,7 +467,6 @@ public class AuditManagerTest
 
         assertEquals( 0, events.size() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -560,26 +483,22 @@ public class AuditManagerTest
         Date ts3 = new Date( current.getTime() - 1000 );
         AuditEvent expectedEvent3 = createEvent( ts3 );
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID))
-                    .andReturn(Arrays.asList(expectedEvent1.getName(), expectedEvent3.getName()));
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID))
+                    .thenReturn(Arrays.asList(expectedEvent1.getName(), expectedEvent3.getName()));
 
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID_2, AuditEvent.FACET_ID))
-                    .andReturn(Arrays.asList(expectedEvent2.getName()));
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID_2, AuditEvent.FACET_ID))
+                    .thenReturn( Collections.singletonList( expectedEvent2.getName( ) ) );
 
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName()))
-                    .andReturn(expectedEvent1);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent1.getName()))
+                    .thenReturn(expectedEvent1);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID_2, AuditEvent.FACET_ID, expectedEvent2.getName()))
-                    .andReturn(expectedEvent2);
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID_2, AuditEvent.FACET_ID, expectedEvent2.getName()))
+                    .thenReturn(expectedEvent2);
 
-            EasyMock.expect(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName()))
-                    .andReturn(expectedEvent3);
-        metadataRepositoryControl.replay();
+            when(metadataRepository.getMetadataFacet(session, TEST_REPO_ID, AuditEvent.FACET_ID, expectedEvent3.getName()))
+                    .thenReturn(expectedEvent3);
 
         List<AuditEvent> events =
             auditManager.getAuditEventsInRange( metadataRepository, Arrays.asList( TEST_REPO_ID, TEST_REPO_ID_2 ),
@@ -591,7 +510,6 @@ public class AuditManagerTest
                          expectedEvent2.getResource() );
         assertTestEvent( events.get( 2 ), TEST_REPO_ID, TIMESTAMP_FORMAT.format( ts1 ), expectedEvent1.getResource() );
 
-        metadataRepositoryControl.verify();
     }
 
     @Test
@@ -605,13 +523,9 @@ public class AuditManagerTest
         String name2 = createEvent( expectedTimestamp ).getName();
         String name3 = createEvent( new Date( current.getTime() - 1000 ) ).getName();
 
-        sessionControl.reset();
-        factoryControl.reset();
-        EasyMock.expect( repositorySessionFactory.createSession() ).andStubReturn( session );
-        factoryControl.replay();
-            EasyMock.expect(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID))
-                    .andReturn(Arrays.asList(name1, name2, name3));
-        metadataRepositoryControl.replay();
+        when( repositorySessionFactory.createSession() ).thenReturn( session );
+            when(metadataRepository.getMetadataFacets(session, TEST_REPO_ID, AuditEvent.FACET_ID))
+                    .thenReturn(Arrays.asList(name1, name2, name3));
 
         List<AuditEvent> events =
             auditManager.getAuditEventsInRange( metadataRepository, Collections.singletonList( TEST_REPO_ID ),
@@ -620,7 +534,6 @@ public class AuditManagerTest
 
         assertEquals( 0, events.size() );
 
-        metadataRepositoryControl.verify();
     }
 
     private static String getDefaultTestResourceName( String num )

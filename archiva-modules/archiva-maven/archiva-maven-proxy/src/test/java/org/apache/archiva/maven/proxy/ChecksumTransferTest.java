@@ -27,7 +27,6 @@ import org.apache.archiva.repository.content.BaseRepositoryContentLayout;
 import org.apache.archiva.repository.content.Artifact;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.easymock.EasyMock;
 import org.junit.Test;
 
 import java.io.File;
@@ -38,6 +37,9 @@ import java.nio.file.StandardCopyOption;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * ChecksumTransferTest
@@ -457,20 +459,12 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
             SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
-        EasyMock.expectLastCall( ).once( );
-
-        wagonMock.get( EasyMock.eq( path + ".sha1" ), EasyMock.anyObject( File.class ) );
-        EasyMock.expectLastCall( ).once( );
-
-        wagonMock.get( EasyMock.eq( path + ".md5" ), EasyMock.anyObject( File.class ) );
-        EasyMock.expectLastCall( ).andThrow( new ResourceDoesNotExistException( "Resource does not exist." ) ).once( );
-
-        wagonMockControl.replay( );
+        doThrow( new ResourceDoesNotExistException( "Resource does not exist." ) ).when( wagonMock ).get( eq( path + ".md5" ), any( ) );
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository( ), artifact );
-
-        wagonMockControl.verify( );
+        verify( wagonMock, times( 1 ) ).get( eq( path ), any( ) );
+        verify( wagonMock, times( 1 ) ).get( eq( path + ".sha1"), any( ) );
+        verify( wagonMock, times( 1 ) ).get( eq( path + ".md5"), any( ) );
 
         // Do what the mock doesn't do.
         Path proxyPath = Paths.get( REPOPATH_PROXIED1, path ).toAbsolutePath( );

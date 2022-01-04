@@ -30,7 +30,6 @@ import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
-import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,8 +51,8 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -142,7 +141,7 @@ public class RepositoryPurgeConsumerTest
     private void setLastModified( String path ) throws IOException
     {
         Path dir = Paths.get( path );
-        Path[] contents = new Path[0];
+        Path[] contents;
         try
         {
             contents = Files.list( dir ).toArray(Path[]::new);
@@ -152,9 +151,9 @@ public class RepositoryPurgeConsumerTest
             log.error("Could not list files {}: {}", dir, e.getMessage(), e);
             contents = new Path[0];
         }
-        for ( int i = 0; i < contents.length; i++ )
+        for ( Path content : contents )
         {
-            Files.setLastModifiedTime( contents[i], FileTime.fromMillis( 1179382029 ) );
+            Files.setLastModifiedTime( content, FileTime.fromMillis( 1179382029 ) );
         }
     }
 
@@ -172,14 +171,9 @@ public class RepositoryPurgeConsumerTest
         atf.setRetentionCount( TEST_RETENTION_COUNT );
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
-        sessionControl.reset();
-        sessionFactoryControl.reset();
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
-        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
+        when( repositorySession.getRepository()).thenReturn( metadataRepository );
         repositorySession.save();
-        EasyMock.expectLastCall().anyTimes();
-        sessionFactoryControl.replay();
-        sessionControl.replay();
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
@@ -287,14 +281,9 @@ public class RepositoryPurgeConsumerTest
         atf.setRetentionPeriod( Period.ofDays( TEST_DAYS_OLDER ) );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
-        sessionControl.reset();
-        sessionFactoryControl.reset();
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
-        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
+        when( repositorySession.getRepository()).thenReturn( metadataRepository );
         repositorySession.save();
-        EasyMock.expectLastCall().anyTimes();
-        sessionFactoryControl.replay();
-        sessionControl.replay();
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepos();
@@ -402,7 +391,6 @@ public class RepositoryPurgeConsumerTest
             CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
         verify(metadataRepository, never()).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
-        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
         verify(metadataRepository, never()).removeTimestampedArtifact( eq(repositorySession), any(), any() );
         verify(metadataRepository, never()).removeFacetFromArtifact( eq(repositorySession), any(), any(), any(), any(), any(MetadataFacet.class) );
 
@@ -441,14 +429,9 @@ public class RepositoryPurgeConsumerTest
         acf.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
-        sessionControl.reset();
-        sessionFactoryControl.reset();
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
-        EasyMock.expect( repositorySession.getRepository()).andStubReturn( metadataRepository );
+        when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
+        when( repositorySession.getRepository()).thenReturn( metadataRepository );
         repositorySession.save();
-        EasyMock.expectLastCall().anyTimes();
-        sessionFactoryControl.replay();
-        sessionControl.replay();
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepos();
@@ -469,7 +452,6 @@ public class RepositoryPurgeConsumerTest
             CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
         verify(metadataRepository, times(1)).removeProjectVersion( eq(repositorySession), eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
-        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
         verify(metadataRepository, never()).removeTimestampedArtifact( eq(repositorySession), any(), any() );
 
         // check if the snapshot was removed
@@ -485,9 +467,6 @@ public class RepositoryPurgeConsumerTest
         Path artifactMetadataFile = Paths.get( projectRoot + "/maven-metadata.xml" );
 
         String metadataXml = org.apache.archiva.common.utils.FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
-
-        String expectedVersions =
-            "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";
 
         XmlAssert.assertThat( metadataXml ).valueByXPath( "//metadata/versioning/latest" ).isEqualTo( "2.3" );
         // XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );

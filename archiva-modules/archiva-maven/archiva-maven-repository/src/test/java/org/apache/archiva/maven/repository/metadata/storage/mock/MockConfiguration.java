@@ -29,7 +29,6 @@ import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.commons.lang3.StringUtils;
-import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -40,7 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static org.easymock.EasyMock.createNiceControl;
+import static org.mockito.Mockito.mock;
 
 /**
  * MockConfiguration 
@@ -57,14 +56,11 @@ public class MockConfiguration
     private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
     private Set<ConfigurationListener> configListeners = new HashSet<ConfigurationListener>();
 
-    private IMocksControl registryControl;
-
     private Registry registryMock;
 
     public MockConfiguration()
     {
-        registryControl = createNiceControl();
-        registryMock = registryControl.createMock( Registry.class );
+        registryMock = mock( Registry.class );
         configuration.setArchivaRuntimeConfiguration(new ArchivaRuntimeConfiguration());
         configuration.getArchivaRuntimeConfiguration().addChecksumType("sha1");
         configuration.getArchivaRuntimeConfiguration().addChecksumType("sha256");

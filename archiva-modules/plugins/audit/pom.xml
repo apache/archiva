@@ -55,14 +55,14 @@
 
     <!-- Test scope -->
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-test-utils</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-test-utils</artifactId>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 

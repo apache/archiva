@@ -34,11 +34,10 @@ import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -56,6 +55,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  */
@@ -96,14 +96,10 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected RepositoryPurge repoPurge;
 
-    protected IMocksControl listenerControl;
-
     protected RepositoryListener listener;
 
-    protected IMocksControl sessionControl;
     protected RepositorySession repositorySession;
 
-    protected IMocksControl sessionFactoryControl;
     protected RepositorySessionFactory sessionFactory;
 
     protected MetadataRepository metadataRepository;
@@ -121,18 +117,13 @@ public abstract class AbstractRepositoryPurgeTest
         throws Exception
     {
 
-        listenerControl = EasyMock.createControl();
+        listener = mock( RepositoryListener.class );
 
-        listener = listenerControl.createMock( RepositoryListener.class );
-
-        sessionControl = EasyMock.createControl();
-        sessionFactoryControl = EasyMock.createControl( );
-
-        repositorySession = sessionControl.createMock( RepositorySession.class );
+        repositorySession = mock( RepositorySession.class );
         metadataRepository = mock( MetadataRepository.class );
-        sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
-        EasyMock.expect( repositorySession.getRepository() ).andStubReturn( metadataRepository );
-        EasyMock.expect( sessionFactory.createSession( ) ).andStubReturn( repositorySession );
+        sessionFactory = mock( RepositorySessionFactory.class );
+        when( repositorySession.getRepository() ).thenReturn( metadataRepository );
+        when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
 
     }
 

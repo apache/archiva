@@ -27,14 +27,15 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * ArchivaServletAuthenticatorTest
@@ -46,8 +47,6 @@ public class ArchivaServletAuthenticatorTest
     @Named( value = "servletAuthenticator#test" )
     private ServletAuthenticator servletAuth;
 
-    private IMocksControl httpServletRequestControl;
-
     private HttpServletRequest request;
 
     @Before
@@ -57,8 +56,7 @@ public class ArchivaServletAuthenticatorTest
     {
         super.setUp();
 
-        httpServletRequestControl = EasyMock.createControl( );
-        request = httpServletRequestControl.createMock( HttpServletRequest.class );
+        request = mock( HttpServletRequest.class );
 
         setupRepository( "corporate" );
     }
@@ -126,7 +124,7 @@ public class ArchivaServletAuthenticatorTest
         assignRepositoryObserverRole( USER_ALPACA, "corporate" );
 
         //httpServletRequestControl.expectAndReturn( request.getRemoteAddr(), "192.168.111.111" );
-        EasyMock.expect( request.getRemoteAddr() ).andReturn( "192.168.111.111" );
+        when( request.getRemoteAddr() ).thenReturn( "192.168.111.111" );
 
         UserManager userManager = securitySystem.getUserManager();
         User user = userManager.findUser( USER_ALPACA );
@@ -134,8 +132,6 @@ public class ArchivaServletAuthenticatorTest
         AuthenticationResult result = new AuthenticationResult( true, USER_ALPACA, null );
 
         SecuritySession session = new DefaultSecuritySession( result, user );
-
-        httpServletRequestControl.replay();
 
         try
         {
@@ -146,8 +142,6 @@ public class ArchivaServletAuthenticatorTest
         {
             assertEquals( "Access denied for repository corporate", e.getMessage() );
         }
-
-        httpServletRequestControl.verify();
 
         restoreGuestInitialValues( USER_ALPACA );
     }

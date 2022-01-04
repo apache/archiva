@@ -28,7 +28,6 @@ import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.easymock.EasyMock;
 import org.junit.Test;
 
 import java.io.File;
@@ -40,6 +39,9 @@ import java.nio.file.attribute.FileTime;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * ManagedDefaultTransferTest
@@ -434,9 +436,8 @@ public class ManagedDefaultTransferTest
         saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "" +
             "http://bad.machine.com/repo/", "default" );
 
-        wagonMock.get( EasyMock.eq( path), EasyMock.anyObject( File.class ) );
-        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "transfer failed" )  );
-        wagonMockControl.replay();
+        doThrow( new ResourceDoesNotExistException( "transfer failed" ) ).when( wagonMock ).get( eq( path ), any( ) );
+
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", false );
@@ -444,8 +445,7 @@ public class ManagedDefaultTransferTest
 
         // Attempt the proxy fetch.
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
-
-        wagonMockControl.verify();
+        verify( wagonMock, atLeastOnce( ) ).get( eq( path ), any( ) );
 
         Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied2File );
@@ -477,19 +477,14 @@ public class ManagedDefaultTransferTest
 
         Path tmpFile = expectedFile.getParent().resolve(expectedFile.getFileName() + ".tmp" );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
-        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
+        doThrow( new ResourceDoesNotExistException( "Can't find resource." ) ).when( wagonMock ).get( eq( path ), any( ) );
 
-        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
-        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
-
-        wagonMockControl.replay();
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository.getRepository(), artifact );
+        verify( wagonMock, atLeastOnce( ) ).get( eq( path ), any( ) );
 
         assertNotDownloaded( downloadedFile );
 
-        wagonMockControl.verify();
         assertNoTempFiles( expectedFile );
 
         // TODO: do not want failures to present as a not found [MRM-492]

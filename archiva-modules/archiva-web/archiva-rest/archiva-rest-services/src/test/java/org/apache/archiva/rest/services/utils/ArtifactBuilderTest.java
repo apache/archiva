@@ -22,8 +22,8 @@ import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.repository.storage.fs.FilesystemAsset;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
-import org.easymock.TestSubject;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArtifactBuilderTest
 {
-    @TestSubject
+    @InjectMocks
     private ArtifactBuilder builder = new ArtifactBuilder();
 
     StorageAsset getFile(String path) throws IOException {

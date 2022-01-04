@@ -28,23 +28,19 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith (ArchivaBlockJUnit4ClassRunner.class)
 public class NewArtifactsRssFeedProcessorTest
@@ -56,10 +52,8 @@ public class NewArtifactsRssFeedProcessorTest
 
     private MetadataRepositoryMock metadataRepository;
 
-    private IMocksControl sessionFactoryControl;
     private RepositorySessionFactory sessionFactory;
 
-    private IMocksControl sessionControl;
     private RepositorySession session;
 
     @Before
@@ -74,18 +68,11 @@ public class NewArtifactsRssFeedProcessorTest
 
         metadataRepository = new MetadataRepositoryMock();
 
-        sessionFactoryControl = EasyMock.createControl();
-        sessionControl = EasyMock.createControl();
-        sessionControl.resetToNice();
+        sessionFactory = mock( RepositorySessionFactory.class );
+        session = mock( RepositorySession.class );
 
-        sessionFactory = sessionFactoryControl.createMock( RepositorySessionFactory.class );
-        session = sessionControl.createMock( RepositorySession.class );
-
-        EasyMock.expect( sessionFactory.createSession() ).andStubReturn( session );
-        EasyMock.expect( session.getRepository( ) ).andStubReturn( metadataRepository );
-
-        sessionFactoryControl.replay();
-        sessionControl.replay();
+        when( sessionFactory.createSession() ).thenReturn( session );
+        when( session.getRepository( ) ).thenReturn( metadataRepository );
 
         newArtifactsProcessor.setRepositorySessionFactory( sessionFactory );
 

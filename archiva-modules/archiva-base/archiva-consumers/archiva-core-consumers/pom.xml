@@ -168,11 +168,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-jpa</artifactId>
       <scope>test</scope>

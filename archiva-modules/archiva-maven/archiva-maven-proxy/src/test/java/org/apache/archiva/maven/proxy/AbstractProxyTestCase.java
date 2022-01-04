@@ -42,8 +42,6 @@ import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.wagon.Wagon;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -72,6 +70,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * AbstractProxyTestCase
@@ -114,8 +113,6 @@ public abstract class AbstractProxyTestCase
     protected static final String REPOPATH_DEFAULT_MANAGED = "src/test/repositories/managed";
 
     // protected static final String REPOPATH_DEFAULT_MANAGED_TARGET = "target/test-repository/managed";
-
-    protected IMocksControl wagonMockControl;
 
     protected Wagon wagonMock;
 
@@ -185,8 +182,7 @@ public abstract class AbstractProxyTestCase
 
 
         // Setup the wagon mock.
-        wagonMockControl = EasyMock.createNiceControl();
-        wagonMock = wagonMockControl.createMock( Wagon.class );
+        wagonMock = mock( Wagon.class );
 
         delegate = (WagonDelegate) applicationContext.getBean( "wagon#http", Wagon.class );
 

@@ -42,7 +42,6 @@ import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.wagon.TransferFailedException;
-import org.easymock.EasyMock;
 import org.junit.Test;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.diff.Diff;
@@ -58,6 +57,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 /**
  * MetadataTransferTest - Tests the various fetching / merging concepts surrounding the maven-metadata.xml files
@@ -166,15 +169,10 @@ public class MetadataTransferTest
         Path expectedFile = managedDefaultDir.resolve(
                                       metadataTools.getRepositorySpecificName( "badproxied1", requestedResource ) );
 
-        wagonMock.get( EasyMock.eq( requestedResource ), EasyMock.anyObject( File.class ));
-        EasyMock.expectLastCall().andThrow( new TransferFailedException( "can't connect" ) );
+        doThrow( new TransferFailedException( "can't connect" )).when( wagonMock  ).get( eq( requestedResource ), any( File.class ) );
 
-
-        wagonMockControl.replay();
 
         assertFetchProjectOrGroup( requestedResource );
-
-        wagonMockControl.verify();
 
         assertProjectMetadataContents( requestedResource, new String[]{ "1.0.1" }, "1.0.1", "1.0.1" );
         assertNoRepoMetadata( "badproxied1", requestedResource );
