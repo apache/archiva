@@ -18,7 +18,6 @@ package org.apache.archiva.maven.proxy;
  * under the License.
  */
 
-import net.sf.ehcache.CacheManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
@@ -187,8 +186,6 @@ public abstract class AbstractProxyTestCase
         delegate = (WagonDelegate) applicationContext.getBean( "wagon#http", Wagon.class );
 
         delegate.setDelegate( wagonMock );
-
-        CacheManager.getInstance().clearAll();
 
         log.info( "\n.\\ {}() \\._________________________________________\n", name );
     }

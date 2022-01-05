@@ -21,7 +21,6 @@ package org.apache.archiva.webdav;
 
 
 import junit.framework.TestCase;
-import net.sf.ehcache.CacheManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
@@ -158,8 +157,6 @@ public class RepositoryServletSecurityTest
                 createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal.getRoot() ) );
         
         saveConfiguration( archivaConfiguration );
-
-        CacheManager.getInstance().clearAll();
 
 
         servletAuth = mock( ServletAuthenticator.class );

@@ -25,7 +25,6 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import junit.framework.TestCase;
-import net.sf.ehcache.CacheManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
@@ -217,8 +216,6 @@ public abstract class AbstractRepositoryServletTestCase
 //                ctx.close( );
 //            }
 //        }
-
-        CacheManager.getInstance().clearAll();
 
 
     }

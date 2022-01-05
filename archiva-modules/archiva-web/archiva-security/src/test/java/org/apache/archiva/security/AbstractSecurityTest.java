@@ -20,7 +20,6 @@ package org.apache.archiva.security;
  */
 
 import junit.framework.TestCase;
-import net.sf.ehcache.CacheManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.redback.rbac.RBACManager;
@@ -172,6 +171,5 @@ public abstract class AbstractSecurityTest
         }
         userAssignment.setRoleIds( new ArrayList( Arrays.asList( "guest" ) ) );
         rbacManager.saveUserAssignment( userAssignment );
-        CacheManager.getInstance().clearAll();
     }
 }

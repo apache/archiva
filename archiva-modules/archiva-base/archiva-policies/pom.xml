@@ -82,17 +82,6 @@
       <artifactId>spring-context</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-storage-fs</artifactId>
       <scope>test</scope>
