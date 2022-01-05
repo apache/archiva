@@ -43,11 +43,13 @@ import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
-import java.util.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -351,9 +353,10 @@ public class ArchivaVirtualDavResource
         }
 
         // Need to get the ISO8601 date for properties
-        DateTime dt = new DateTime( 0 );
-        DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-        String modifiedDate = fmt.print( dt );
+        // DateTime dt = new DateTime( 0 );
+        // DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+        // String modifiedDate = fmt.print( dt );
+        String modifiedDate = LocalDateTime.now( ).format( DateTimeFormatter.ISO_OFFSET_DATE_TIME );
 
         properties.add( new DefaultDavProperty<>( DavPropertyName.GETLASTMODIFIED, modifiedDate ) );
 
