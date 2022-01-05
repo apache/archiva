@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository.stats;
+package org.apache.archiva.metadata.repository.jcr;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -10,7 +10,6 @@ package org.apache.archiva.metadata.repository.stats;
  * with the License.  You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,16 +22,10 @@ import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.DefaultMetadataResolver;
-import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.jcr.JcrMetadataRepository;
-import org.apache.archiva.metadata.repository.jcr.JcrRepositorySessionFactory;
-import org.apache.archiva.metadata.repository.jcr.JcrRepositorySession;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.junit.After;
@@ -60,8 +53,6 @@ import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )

@@ -1,4 +1,4 @@
-package org.apache.archiva.maven.common.proxy;
+package org.apache.archiva.maven.proxy;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
