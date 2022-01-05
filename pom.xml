@@ -82,7 +82,7 @@
 
     <derbyVersion>10.13.1.1</derbyVersion>
     <httpclient.version>4.5.13</httpclient.version>
-    <httpclient.core.version>4.4.14</httpclient.core.version>
+    <httpclient.core.version>4.4.15</httpclient.core.version>
 
     <openjpaVersion>3.1.1</openjpaVersion>
 
@@ -1524,7 +1524,7 @@
       </dependency>
       <dependency>
         <groupId>org.xmlunit</groupId>
-        <artifactId>xmlunit-assertj</artifactId>
+        <artifactId>xmlunit-assertj3</artifactId>
         <version>${xmlunit.version}</version>
         <scope>test</scope>
       </dependency>
@@ -1704,7 +1704,7 @@
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.13.2</version>
+        <version>${assertj.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>

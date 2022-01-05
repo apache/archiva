@@ -37,7 +37,7 @@ import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.xmlunit.assertj.XmlAssert;
+import org.xmlunit.assertj3.XmlAssert;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
