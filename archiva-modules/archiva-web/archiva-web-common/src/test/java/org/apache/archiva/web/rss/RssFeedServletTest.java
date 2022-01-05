@@ -308,6 +308,12 @@ public class RssFeedServletTest
         }
 
         @Override
+        public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass, boolean b ) throws NoSuchBeanDefinitionException
+        {
+            throw new UnsupportedOperationException( "Not implemented yet." );
+        }
+
+        @Override
         public Object getBean( String s )
             throws BeansException
         {

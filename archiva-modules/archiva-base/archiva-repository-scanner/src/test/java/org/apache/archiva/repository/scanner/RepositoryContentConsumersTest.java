@@ -616,6 +616,12 @@ public class RepositoryContentConsumersTest
         }
 
         @Override
+        public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass, boolean b ) throws NoSuchBeanDefinitionException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        @Override
         public Environment getEnvironment()
         {
             return null;

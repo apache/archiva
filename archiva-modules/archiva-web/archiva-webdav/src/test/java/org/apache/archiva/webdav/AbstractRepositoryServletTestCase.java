@@ -438,6 +438,12 @@ public abstract class AbstractRepositoryServletTestCase
         }
 
         @Override
+        public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass, boolean b ) throws NoSuchBeanDefinitionException
+        {
+            throw new UnsupportedOperationException( "No supported yet." );
+        }
+
+        @Override
         public <T> T getBean( Class<T> aClass, Object... objects )
             throws BeansException
         {
