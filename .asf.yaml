@@ -1,3 +1,15 @@
+github:
+  description: "Apache Archiva Repository"
+  homepage: https://archiva.apache.org
+  labels:
+    - apache
+    - java
+    - archiva
+    - maven-repository
+  enabled_merge_buttons:
+    squash: true
+    merge: false
+    rebase: true
 notifications:
   commits:      commits@archiva.apache.org
   issues:       dev@archiva.apache.org
