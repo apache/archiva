@@ -254,13 +254,12 @@ public abstract class AbstractRepositoryPurge
                                 if ( StringUtils.isNotBlank( reference.getClassifier( ) ) )
                                 {
                                     info.setClassifier( reference.getClassifier( ) );
-                                    metaRemovalList.put( info, artifactMetadata );
                                 }
                                 else
                                 {
-                                    // metadataRepository.removeTimestampedArtifact( artifactMetadata, baseVersion );
-                                    metaRemovalList.put( info, artifactMetadata );
+                                    info.setClassifier( "" );
                                 }
+                                metaRemovalList.put( info, artifactMetadata );
                             }
                         }
                     }
@@ -356,7 +355,7 @@ public abstract class AbstractRepositoryPurge
                 (MavenArtifactFacet) artifactMetadata.getFacet(
                     MavenArtifactFacet.FACET_ID );
 
-            if ( StringUtils.equals( artifactInfo.classifier,
+            if ( mavenArtifactFacet != null && StringUtils.equals( artifactInfo.classifier,
                 mavenArtifactFacet.getClassifier( ) ) )
             {
                 artifactMetadata.removeFacet( MavenArtifactFacet.FACET_ID );
