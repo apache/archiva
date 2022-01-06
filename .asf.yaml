@@ -1,0 +1,6 @@
+notifications:
+  commits:      commits@archiva.apache.org
+  issues:       dev@archiva.apache.org
+  pullrequests: dev@archiva.apache.org
+  jira_options: link label comment
+
