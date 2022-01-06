@@ -10,6 +10,13 @@ github:
     squash: true
     merge: false
     rebase: true
+  features:
+    # Enable wiki for documentation
+    wiki: true
+    # Enable issue management
+    issues: false
+    # Enable projects for project management boards
+    projects: true
 notifications:
   commits:      commits@archiva.apache.org
   issues:       dev@archiva.apache.org
