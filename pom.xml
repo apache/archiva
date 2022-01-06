@@ -1841,6 +1841,7 @@
               <exclude>.travis.yml</exclude>
               <exclude>out/**</exclude>
               <exclude>Jenkinsfile</exclude>
+              <exclude>.asf.yaml</exclude>
             </excludes>
           </configuration>
         </plugin>
