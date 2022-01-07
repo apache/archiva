@@ -42,6 +42,12 @@
     <param-value>/sirona-monitoring</param-value>
   </context-param>
 
+  <!-- Deactivate directory listing of jetty servlet -->
+  <context-param>
+    <param-name>org.eclipse.jetty.servlet.Default.dirAllowed</param-name>
+    <param-value>false</param-value>
+  </context-param>
+
   <filter>
     <filter-name>encodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -160,17 +166,6 @@
     <servlet-name>CXFServlet</servlet-name>
     <url-pattern>/restServices/*</url-pattern>
   </servlet-mapping>
-
-  <!-- Removing dir-listing from Jetty default-servlet -->
-  <servlet>
-    <servlet-name>default</servlet-name>
-    <servlet-class>org.eclipse.jetty.servlet.DefaultServlet</servlet-class>
-    <init-param>
-      <param-name>dirAllowed</param-name>
-      <param-value>false</param-value>
-    </init-param>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
