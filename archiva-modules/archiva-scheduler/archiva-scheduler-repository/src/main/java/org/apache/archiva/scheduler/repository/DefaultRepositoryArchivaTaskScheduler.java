@@ -20,10 +20,10 @@ package org.apache.archiva.scheduler.repository;
  */
 
 import org.apache.archiva.common.ArchivaException;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ConfigurationEvent;
-import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ConfigurationEvent;
+import org.apache.archiva.configuration.provider.ConfigurationListener;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;

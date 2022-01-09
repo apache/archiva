@@ -19,7 +19,7 @@ package org.apache.archiva.metadata.repository.file;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.MetadataRepository;

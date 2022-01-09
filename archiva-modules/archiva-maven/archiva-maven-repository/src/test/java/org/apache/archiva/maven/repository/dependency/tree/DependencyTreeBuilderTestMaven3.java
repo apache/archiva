@@ -19,9 +19,9 @@ package org.apache.archiva.maven.repository.dependency.tree;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
 import org.apache.archiva.maven.model.Artifact;
 import org.apache.archiva.maven.model.TreeEntry;
 import org.apache.archiva.repository.RepositoryRegistry;

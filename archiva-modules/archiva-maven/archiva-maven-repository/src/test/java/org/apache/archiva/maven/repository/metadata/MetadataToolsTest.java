@@ -19,7 +19,7 @@ package org.apache.archiva.maven.repository.metadata;
  */
 
 import org.apache.archiva.common.utils.VersionComparator;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.model.ProxyConnectorConfiguration;
 import org.apache.archiva.maven.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.maven.repository.MavenManagedRepository;
 import org.apache.archiva.maven.repository.metadata.storage.mock.MockConfiguration;

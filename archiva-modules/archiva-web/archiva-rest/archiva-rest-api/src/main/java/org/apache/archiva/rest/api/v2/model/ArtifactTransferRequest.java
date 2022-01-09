@@ -24,7 +24,7 @@ import java.io.Serializable;
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class ArtifactTransferRequest implements Serializable
+public class ArtifactTransferRequest implements Serializable, RestModel
 {
     private static final long serialVersionUID = -7377281345536573342L;
 

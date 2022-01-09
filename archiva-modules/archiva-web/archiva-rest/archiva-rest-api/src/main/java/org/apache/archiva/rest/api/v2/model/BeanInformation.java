@@ -45,7 +45,7 @@ import java.util.Objects;
  */
 @XmlRootElement(name="beanInformation")
 @Schema(name="BeanInformation",description = "Information about a bean instance.")
-public class BeanInformation implements Serializable
+public class BeanInformation implements Serializable, RestModel
 {
     private static final long serialVersionUID = -432385743277355987L;
     private String id;

@@ -20,7 +20,7 @@ package org.apache.archiva.audit;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;

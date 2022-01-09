@@ -18,9 +18,9 @@ package org.apache.archiva.consumers.core.mock.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RepositoryGroupConfiguration;
 import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.base.remote.BasicRemoteRepository;

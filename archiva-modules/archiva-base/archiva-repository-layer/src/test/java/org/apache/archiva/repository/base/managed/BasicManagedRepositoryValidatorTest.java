@@ -20,7 +20,7 @@ package org.apache.archiva.repository.base.managed;
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryException;

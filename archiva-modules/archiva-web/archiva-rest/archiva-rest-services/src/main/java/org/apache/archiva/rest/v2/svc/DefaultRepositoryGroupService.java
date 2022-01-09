@@ -36,7 +36,7 @@ package org.apache.archiva.rest.v2.svc;/*
 
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
-import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.configuration.model.RepositoryGroupConfiguration;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;

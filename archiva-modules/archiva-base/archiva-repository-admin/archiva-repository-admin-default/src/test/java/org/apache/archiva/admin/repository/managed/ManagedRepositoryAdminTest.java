@@ -21,7 +21,7 @@ package org.apache.archiva.admin.repository.managed;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.security.common.ArchivaRoleConstants;

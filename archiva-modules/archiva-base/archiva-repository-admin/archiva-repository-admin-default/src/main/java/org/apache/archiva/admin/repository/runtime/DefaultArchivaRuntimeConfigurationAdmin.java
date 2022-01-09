@@ -24,9 +24,9 @@ import org.apache.archiva.admin.model.beans.CacheConfiguration;
 import org.apache.archiva.admin.model.beans.FileLockConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.provider.IndeterminateConfigurationException;
 import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.components.registry.RegistryException;
 import org.springframework.stereotype.Service;
@@ -146,7 +146,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
     }
 
     protected ArchivaRuntimeConfiguration build(
-        org.apache.archiva.configuration.ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
+        org.apache.archiva.configuration.model.ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
     {
         if ( archivaRuntimeConfiguration == null )
         {
@@ -175,24 +175,24 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         return res;
     }
 
-    protected org.apache.archiva.configuration.ArchivaRuntimeConfiguration build(
+    protected org.apache.archiva.configuration.model.ArchivaRuntimeConfiguration build(
         ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
     {
         if ( archivaRuntimeConfiguration == null )
         {
-            return new org.apache.archiva.configuration.ArchivaRuntimeConfiguration();
+            return new org.apache.archiva.configuration.model.ArchivaRuntimeConfiguration();
         }
 
-        org.apache.archiva.configuration.ArchivaRuntimeConfiguration res =
+        org.apache.archiva.configuration.model.ArchivaRuntimeConfiguration res =
             getModelMapper().map( archivaRuntimeConfiguration,
-                                  org.apache.archiva.configuration.ArchivaRuntimeConfiguration.class );
+                                  org.apache.archiva.configuration.model.ArchivaRuntimeConfiguration.class );
 
         if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration() != null )
         {
 
             res.setUrlFailureCacheConfiguration(
                 getModelMapper().map( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration(),
-                                      org.apache.archiva.configuration.CacheConfiguration.class ) );
+                                      org.apache.archiva.configuration.model.CacheConfiguration.class ) );
 
         }
 
@@ -200,7 +200,7 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         {
             res.setFileLockConfiguration(
                 getModelMapper().map( archivaRuntimeConfiguration.getFileLockConfiguration(),
-                                      org.apache.archiva.configuration.FileLockConfiguration.class ) );
+                                      org.apache.archiva.configuration.model.FileLockConfiguration.class ) );
         }
 
         return res;

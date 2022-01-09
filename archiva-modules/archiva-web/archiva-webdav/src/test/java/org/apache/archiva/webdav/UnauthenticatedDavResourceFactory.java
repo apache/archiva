@@ -19,7 +19,7 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.springframework.context.ApplicationContext;

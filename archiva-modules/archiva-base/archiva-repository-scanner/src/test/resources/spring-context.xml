@@ -24,7 +24,7 @@
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
        default-lazy-init="true">
 
-  <bean name="archivaConfiguration#test-conf" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#test-conf" class="org.apache.archiva.configuration.provider.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#configured"/>
   </bean>
 

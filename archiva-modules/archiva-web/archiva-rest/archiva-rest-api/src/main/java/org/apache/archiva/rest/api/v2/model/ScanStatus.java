@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Schema(name="ScanStatus", description = "Status of repository scan tasks")
-public class ScanStatus implements Serializable
+public class ScanStatus implements Serializable, RestModel
 {
     private boolean scanRunning = false;
     private int scanQueued = 0;

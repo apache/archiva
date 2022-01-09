@@ -20,7 +20,7 @@ package org.apache.archiva.maven.proxy;
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.model.ProxyConnectorConfiguration;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.model.SnapshotVersion;

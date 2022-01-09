@@ -19,10 +19,10 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryListener;
+import org.apache.archiva.configuration.model.ConfigurationNames;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 

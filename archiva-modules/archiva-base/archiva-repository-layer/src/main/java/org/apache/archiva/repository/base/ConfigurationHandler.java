@@ -18,10 +18,10 @@ package org.apache.archiva.repository.base;
  */
 
 import org.apache.archiva.components.registry.RegistryException;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.provider.ConfigurationListener;
+import org.apache.archiva.configuration.provider.IndeterminateConfigurationException;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;

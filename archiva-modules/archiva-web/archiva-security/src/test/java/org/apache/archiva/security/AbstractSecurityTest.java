@@ -20,8 +20,8 @@ package org.apache.archiva.security;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.rbac.UserAssignment;

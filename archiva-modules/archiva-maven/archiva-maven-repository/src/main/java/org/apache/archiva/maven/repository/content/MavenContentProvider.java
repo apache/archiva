@@ -19,7 +19,7 @@ package org.apache.archiva.maven.repository.content;
  */
 
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.provider.FileTypes;
 import org.apache.archiva.maven.repository.metadata.storage.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.repository.ManagedRepository;

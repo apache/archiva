@@ -21,8 +21,8 @@ package org.apache.archiva.scheduler.repository;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.mock.MockRepositorySessionFactory;

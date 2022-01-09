@@ -45,7 +45,7 @@ import java.time.ZoneOffset;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Schema(name="FileInfo",description = "Information about a file stored in the repository")
-public class FileInfo implements Serializable
+public class FileInfo implements Serializable, RestModel
 {
     private static final long serialVersionUID = 900497784542880195L;
     private OffsetDateTime modified;

@@ -50,7 +50,7 @@ import java.util.TreeMap;
  */
 @XmlRootElement(name="ldapConfiguration")
 @Schema(name="LdapConfiguration", description = "LDAP configuration attributes")
-public class LdapConfiguration implements Serializable
+public class LdapConfiguration implements Serializable, RestModel
 {
     private static final long serialVersionUID = -4736767846016398583L;
 

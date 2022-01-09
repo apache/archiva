@@ -3,10 +3,10 @@ package org.apache.archiva.maven.repository.mock.configuration;
 import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.registry.RegistryListener;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.provider.ConfigurationListener;
+import org.apache.archiva.configuration.provider.IndeterminateConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

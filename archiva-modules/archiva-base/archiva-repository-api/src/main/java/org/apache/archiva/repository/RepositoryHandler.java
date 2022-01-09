@@ -17,8 +17,8 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.model.AbstractRepositoryConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
 import org.apache.archiva.repository.validation.CheckedResult;
 import org.apache.archiva.repository.validation.RepositoryChecker;
 import org.apache.archiva.repository.validation.RepositoryValidator;
@@ -139,6 +139,19 @@ public interface RepositoryHandler<R extends Repository, C extends AbstractRepos
      */
     <D> CheckedResult<R, D>
     putWithCheck( C repositoryConfiguration, RepositoryChecker<R, D> checker ) throws RepositoryException;
+
+    /**
+     * Adds or updates a repository from the given configuration data. The resulting repository is
+     * checked by the default repository checker of the handler instance and the result is returned.
+     * If the checker returns a valid result, the registry is updated and configuration is saved.
+     *
+     * @param repositoryConfiguration the repository configuration
+     * @return the repository and the check result as map of attributes -> list of validation errors
+     * @throws RepositoryException if the creation or update failed
+     */
+    CheckedResult<R, Map<String, List<ValidationError>>>
+    putWithCheck( C repositoryConfiguration ) throws RepositoryException;
+
 
     /**
      * Removes the given repository from the registry and updates references and saves the new configuration.

@@ -25,15 +25,14 @@ import org.apache.archiva.admin.model.beans.LdapGroupMapping;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.provider.IndeterminateConfigurationException;
 import org.apache.archiva.components.cache.Cache;
 import org.apache.archiva.components.registry.RegistryException;
-import org.apache.archiva.configuration.util.ConfigMapper;
+import org.apache.archiva.configuration.provider.util.ConfigMapper;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationException;
-import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.users.User;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -349,7 +348,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     public void updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws RepositoryAdminException
     {
-        org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration =
+        org.apache.archiva.configuration.model.RedbackRuntimeConfiguration runtimeConfiguration =
             build( redbackRuntimeConfiguration );
         Configuration configuration = archivaConfiguration.getConfiguration();
         configuration.setRedbackRuntimeConfiguration( runtimeConfiguration );
@@ -368,7 +367,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     }
 
     private RedbackRuntimeConfiguration build(
-        org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration )
+        org.apache.archiva.configuration.model.RedbackRuntimeConfiguration runtimeConfiguration )
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
             getModelMapper().map( runtimeConfiguration, RedbackRuntimeConfiguration.class );
@@ -396,13 +395,13 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             redbackRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
         }
 
-        List<org.apache.archiva.configuration.LdapGroupMapping> mappings = runtimeConfiguration.getLdapGroupMappings();
+        List<org.apache.archiva.configuration.model.LdapGroupMapping> mappings = runtimeConfiguration.getLdapGroupMappings();
 
         if ( mappings != null && mappings.size() > 0 )
         {
             List<LdapGroupMapping> ldapGroupMappings = new ArrayList<>( mappings.size() );
 
-            for ( org.apache.archiva.configuration.LdapGroupMapping mapping : mappings )
+            for ( org.apache.archiva.configuration.model.LdapGroupMapping mapping : mappings )
             {
                 ldapGroupMappings.add( new LdapGroupMapping( mapping.getGroup(), mapping.getRoleNames() ) );
             }
@@ -426,19 +425,19 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         LDAP_MAPPER.getAllAttributes( ).stream( ).forEach( att -> properties.remove( att ) );
     }
 
-    private org.apache.archiva.configuration.RedbackRuntimeConfiguration build(
+    private org.apache.archiva.configuration.model.RedbackRuntimeConfiguration build(
         RedbackRuntimeConfiguration redbackRuntimeConfiguration )
     {
-        org.apache.archiva.configuration.RedbackRuntimeConfiguration res =
+        org.apache.archiva.configuration.model.RedbackRuntimeConfiguration res =
             getModelMapper().map( redbackRuntimeConfiguration,
-                                  org.apache.archiva.configuration.RedbackRuntimeConfiguration.class );
+                                  org.apache.archiva.configuration.model.RedbackRuntimeConfiguration.class );
 
         if ( redbackRuntimeConfiguration.getLdapConfiguration() == null )
         {
             redbackRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
         }
         res.setLdapConfiguration( getModelMapper().map( redbackRuntimeConfiguration.getLdapConfiguration(),
-                                                        org.apache.archiva.configuration.LdapConfiguration.class ) );
+                                                        org.apache.archiva.configuration.model.LdapConfiguration.class ) );
 
         if ( redbackRuntimeConfiguration.getUsersCacheConfiguration() == null )
         {
@@ -446,21 +445,21 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         }
 
         res.setUsersCacheConfiguration( getModelMapper().map( redbackRuntimeConfiguration.getUsersCacheConfiguration(),
-                                                              org.apache.archiva.configuration.CacheConfiguration.class ) );
+                                                              org.apache.archiva.configuration.model.CacheConfiguration.class ) );
 
         List<LdapGroupMapping> ldapGroupMappings = redbackRuntimeConfiguration.getLdapGroupMappings();
 
         if ( ldapGroupMappings != null && ldapGroupMappings.size() > 0 )
         {
 
-            List<org.apache.archiva.configuration.LdapGroupMapping> mappings =
+            List<org.apache.archiva.configuration.model.LdapGroupMapping> mappings =
                 new ArrayList<>( ldapGroupMappings.size() );
 
             for ( LdapGroupMapping ldapGroupMapping : ldapGroupMappings )
             {
 
-                org.apache.archiva.configuration.LdapGroupMapping mapping =
-                    new org.apache.archiva.configuration.LdapGroupMapping();
+                org.apache.archiva.configuration.model.LdapGroupMapping mapping =
+                    new org.apache.archiva.configuration.model.LdapGroupMapping();
                 mapping.setGroup( ldapGroupMapping.getGroup() );
                 mapping.setRoleNames( new ArrayList<>( ldapGroupMapping.getRoleNames() ) );
                 mappings.add( mapping );

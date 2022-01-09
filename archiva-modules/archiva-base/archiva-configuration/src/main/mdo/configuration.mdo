@@ -336,7 +336,7 @@
 
                 connectors.add( proxyConfig );
                 java.util.Collections.sort( connectors,
-                    org.apache.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator.getInstance() );
+                    org.apache.archiva.configuration.provider.functors.ProxyConnectorConfigurationOrderComparator.getInstance() );
             }
         }
 

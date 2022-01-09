@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @XmlRootElement(name = "validationError")
 @Schema(name = "ValidationError", description = "A validation error.")
-public class ValidationError implements Serializable
+public class ValidationError implements Serializable, RestModel
 {
     private static final long serialVersionUID = 2079020598090660171L;
 

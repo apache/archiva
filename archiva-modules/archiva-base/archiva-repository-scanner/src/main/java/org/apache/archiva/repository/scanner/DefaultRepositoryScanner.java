@@ -19,7 +19,7 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.provider.FileTypes;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;

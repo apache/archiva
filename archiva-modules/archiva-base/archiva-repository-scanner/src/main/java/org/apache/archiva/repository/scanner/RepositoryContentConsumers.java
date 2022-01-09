@@ -23,7 +23,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.common.utils.PathUtil;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;

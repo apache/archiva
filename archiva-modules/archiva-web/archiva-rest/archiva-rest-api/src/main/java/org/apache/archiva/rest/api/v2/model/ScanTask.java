@@ -26,7 +26,7 @@ import java.io.Serializable;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Schema(name="ScanTask", description = "Repository scan task information")
-public class ScanTask implements Serializable
+public class ScanTask implements Serializable, RestModel
 {
     private static final long serialVersionUID = -681163357370848098L;
     private String repositoryId="";

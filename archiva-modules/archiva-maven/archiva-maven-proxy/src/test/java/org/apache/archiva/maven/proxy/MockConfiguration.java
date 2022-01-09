@@ -18,12 +18,15 @@ package org.apache.archiva.maven.proxy;
  * under the License.
  */
 
-import org.apache.archiva.configuration.*;
+import org.apache.archiva.configuration.model.ArchivaRuntimeConfiguration;
+import org.apache.archiva.configuration.model.FileType;
+import org.apache.archiva.configuration.model.RepositoryScanningConfiguration;
+import org.apache.archiva.configuration.provider.*;
 import org.apache.archiva.components.registry.Registry;
 import org.apache.archiva.components.registry.RegistryException;
 import org.apache.archiva.components.registry.RegistryListener;
+import org.apache.archiva.configuration.model.Configuration;
 import org.apache.commons.lang3.StringUtils;
-import org.mockito.Mockito;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

@@ -20,9 +20,9 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ConfigurationEvent;
-import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ConfigurationEvent;
+import org.apache.archiva.configuration.provider.ConfigurationListener;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.ManagedRepository;

@@ -55,7 +55,7 @@
     <property name="configuration" ref="archivaConfiguration#default"/>
   </bean>
 
-  <bean name="filetypes" class="org.apache.archiva.configuration.FileTypes">
+  <bean name="filetypes" class="org.apache.archiva.configuration.provider.FileTypes">
     <property name="archivaConfiguration" ref="archivaConfiguration#default"/>
   </bean>
 

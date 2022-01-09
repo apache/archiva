@@ -47,7 +47,7 @@
 
   <alias name="repositoryStatisticsManager#test" alias="repositoryStatisticsManager#default"/>
 
-  <bean name="archivaConfiguration#test-repository-scanning" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#test-repository-scanning" class="org.apache.archiva.configuration.provider.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#test-configured"/>
   </bean>
 

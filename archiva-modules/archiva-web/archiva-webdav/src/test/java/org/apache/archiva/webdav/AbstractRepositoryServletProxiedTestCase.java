@@ -22,8 +22,8 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.model.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.model.RemoteRepositoryConfiguration;
 import org.apache.archiva.policies.*;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.server.HttpConnectionFactory;

@@ -23,9 +23,9 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.*;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.UserInterfaceOptions;
-import org.apache.archiva.configuration.WebappConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.model.UserInterfaceOptions;
+import org.apache.archiva.configuration.model.WebappConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +54,7 @@ public class DefaultArchivaAdministration
     {
         List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths().size() );
-        for ( org.apache.archiva.configuration.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
+        for ( org.apache.archiva.configuration.model.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
         {
             legacyArtifactPaths.add(
                 getModelMapper().map( legacyArtifactPath, LegacyArtifactPath.class ) );
@@ -69,7 +69,7 @@ public class DefaultArchivaAdministration
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
         configuration.addLegacyArtifactPath( getModelMapper().map( legacyArtifactPath,
-                                                                   org.apache.archiva.configuration.LegacyArtifactPath.class ) );
+                                                                   org.apache.archiva.configuration.model.LegacyArtifactPath.class ) );
 
         saveConfiguration( configuration );
         triggerAuditEvent( "", "", AuditEvent.ADD_LEGACY_PATH, auditInformation );
@@ -80,8 +80,8 @@ public class DefaultArchivaAdministration
         throws RepositoryAdminException
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
-        org.apache.archiva.configuration.LegacyArtifactPath legacyArtifactPath =
-            new org.apache.archiva.configuration.LegacyArtifactPath();
+        org.apache.archiva.configuration.model.LegacyArtifactPath legacyArtifactPath =
+            new org.apache.archiva.configuration.model.LegacyArtifactPath();
 
         legacyArtifactPath.setPath( path );
         configuration.removeLegacyArtifactPath( legacyArtifactPath );
@@ -97,7 +97,7 @@ public class DefaultArchivaAdministration
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        org.apache.archiva.configuration.FileType fileType = getFileTypeById( fileTypeId, configuration );
+        org.apache.archiva.configuration.model.FileType fileType = getFileTypeById( fileTypeId, configuration );
         if ( fileType == null )
         {
             return;
@@ -120,7 +120,7 @@ public class DefaultArchivaAdministration
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        org.apache.archiva.configuration.FileType fileType = getFileTypeById( fileTypeId, configuration );
+        org.apache.archiva.configuration.model.FileType fileType = getFileTypeById( fileTypeId, configuration );
         if ( fileType == null )
         {
             return;
@@ -135,7 +135,7 @@ public class DefaultArchivaAdministration
     public FileType getFileType( String fileTypeId )
         throws RepositoryAdminException
     {
-        org.apache.archiva.configuration.FileType fileType =
+        org.apache.archiva.configuration.model.FileType fileType =
             getFileTypeById( fileTypeId, getArchivaConfiguration().getConfiguration() );
         if ( fileType == null )
         {
@@ -156,7 +156,7 @@ public class DefaultArchivaAdministration
         }
 
         configuration.getRepositoryScanning().addFileType(
-            getModelMapper().map( fileType, org.apache.archiva.configuration.FileType.class ) );
+            getModelMapper().map( fileType, org.apache.archiva.configuration.model.FileType.class ) );
         saveConfiguration( configuration );
     }
 
@@ -165,7 +165,7 @@ public class DefaultArchivaAdministration
         throws RepositoryAdminException
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
-        org.apache.archiva.configuration.FileType fileType = new org.apache.archiva.configuration.FileType();
+        org.apache.archiva.configuration.model.FileType fileType = new org.apache.archiva.configuration.model.FileType();
         fileType.setId( fileTypeId );
         configuration.getRepositoryScanning().removeFileType( fileType );
         saveConfiguration( configuration );
@@ -253,14 +253,14 @@ public class DefaultArchivaAdministration
     public List<FileType> getFileTypes()
         throws RepositoryAdminException
     {
-        List<org.apache.archiva.configuration.FileType> configFileTypes =
+        List<org.apache.archiva.configuration.model.FileType> configFileTypes =
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getFileTypes();
         if ( configFileTypes == null || configFileTypes.isEmpty() )
         {
             return Collections.emptyList();
         }
         List<FileType> fileTypes = new ArrayList<>( configFileTypes.size() );
-        for ( org.apache.archiva.configuration.FileType fileType : configFileTypes )
+        for ( org.apache.archiva.configuration.model.FileType fileType : configFileTypes )
         {
             fileTypes.add( getModelMapper().map( fileType, FileType.class ) );
         }
@@ -287,7 +287,7 @@ public class DefaultArchivaAdministration
     public OrganisationInformation getOrganisationInformation()
         throws RepositoryAdminException
     {
-        org.apache.archiva.configuration.OrganisationInformation organisationInformation =
+        org.apache.archiva.configuration.model.OrganisationInformation organisationInformation =
             getArchivaConfiguration().getConfiguration().getOrganisationInfo();
         if ( organisationInformation == null )
         {
@@ -329,9 +329,9 @@ public class DefaultArchivaAdministration
         if ( organisationInformation != null )
         {
             organisationInformation.setName( convertName( organisationInformation.getName() ));
-            org.apache.archiva.configuration.OrganisationInformation organisationInformationModel =
+            org.apache.archiva.configuration.model.OrganisationInformation organisationInformationModel =
                 getModelMapper( ).map( organisationInformation,
-                    org.apache.archiva.configuration.OrganisationInformation.class );
+                    org.apache.archiva.configuration.model.OrganisationInformation.class );
             configuration.setOrganisationInfo( organisationInformationModel );
         }
         else
@@ -382,7 +382,7 @@ public class DefaultArchivaAdministration
     public NetworkConfiguration getNetworkConfiguration()
         throws RepositoryAdminException
     {
-        org.apache.archiva.configuration.NetworkConfiguration networkConfiguration =
+        org.apache.archiva.configuration.model.NetworkConfiguration networkConfiguration =
             getArchivaConfiguration().getConfiguration().getNetworkConfiguration();
 
         if ( networkConfiguration == null )
@@ -404,7 +404,7 @@ public class DefaultArchivaAdministration
         else
         {
             configuration.setNetworkConfiguration( getModelMapper().map( networkConfiguration,
-                                                                         org.apache.archiva.configuration.NetworkConfiguration.class ) );
+                                                                         org.apache.archiva.configuration.model.NetworkConfiguration.class ) );
         }
         // setupWagon( networkConfiguration );
         saveConfiguration( configuration );
@@ -415,9 +415,9 @@ public class DefaultArchivaAdministration
     //
     //-------------------------
 
-    private org.apache.archiva.configuration.FileType getFileTypeById( String id, Configuration configuration )
+    private org.apache.archiva.configuration.model.FileType getFileTypeById( String id, Configuration configuration )
     {
-        for ( org.apache.archiva.configuration.FileType fileType : configuration.getRepositoryScanning().getFileTypes() )
+        for ( org.apache.archiva.configuration.model.FileType fileType : configuration.getRepositoryScanning().getFileTypes() )
         {
             if ( StringUtils.equals( id, fileType.getId() ) )
             {

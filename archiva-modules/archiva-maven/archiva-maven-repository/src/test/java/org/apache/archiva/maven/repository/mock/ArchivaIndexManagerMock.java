@@ -21,7 +21,7 @@ package org.apache.archiva.maven.repository.mock;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;

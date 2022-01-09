@@ -283,8 +283,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-configuration</artifactId>
+      <groupId>org.apache.archiva.configuration</groupId>
+      <artifactId>archiva-configuration-provider</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>

@@ -19,7 +19,7 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.provider.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;

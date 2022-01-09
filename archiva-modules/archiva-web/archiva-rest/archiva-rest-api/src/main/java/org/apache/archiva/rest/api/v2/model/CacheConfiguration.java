@@ -30,7 +30,7 @@ import java.io.Serializable;
 @XmlRootElement( name = "cacheConfiguration" )
 @Schema(name="CacheConfiguration",description = "Cache configuration attributes")
 public class CacheConfiguration
-    implements Serializable
+    implements Serializable, RestModel
 {
     private static final long serialVersionUID = 5479989049980673894L;
     /**

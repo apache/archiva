@@ -19,11 +19,11 @@ package org.apache.archiva.maven.repository;
  */
 
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.configuration.model.AbstractRepositoryConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RepositoryGroupConfiguration;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.repository.EditableManagedRepository;

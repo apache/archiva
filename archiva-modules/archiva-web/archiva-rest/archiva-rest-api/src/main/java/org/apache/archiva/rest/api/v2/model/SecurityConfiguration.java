@@ -49,7 +49,7 @@ import java.util.TreeMap;
  */
 @XmlRootElement(name = "securityConfiguration")
 @Schema(name = "SecurityConfiguration", description = "Security configuration attributes.")
-public class SecurityConfiguration implements Serializable
+public class SecurityConfiguration implements Serializable, RestModel
 {
     private static final long serialVersionUID = -4186866365979053029L;
 

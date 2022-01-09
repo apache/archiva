@@ -50,7 +50,7 @@ import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
  */
 @XmlRootElement(name="mergeConfiguration")
 @Schema(name="MergeConfiguration", description = "Configuration settings for index merge of remote repositories.")
-public class MergeConfiguration implements Serializable
+public class MergeConfiguration implements Serializable, RestModel
 {
     private static final long serialVersionUID = -3629274059574459133L;
 

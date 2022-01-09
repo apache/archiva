@@ -51,7 +51,7 @@ import java.util.TreeMap;
  */
 @XmlRootElement(name="repositoryStatistics")
 @Schema(name="RepositoryStatistics", description = "Statistics data")
-public class RepositoryStatistics implements Serializable
+public class RepositoryStatistics implements Serializable, RestModel
 {
     private static final long serialVersionUID = 7943367882738452531L;
 

@@ -21,7 +21,7 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.model.ProxyConnectorConfiguration;
 import org.apache.archiva.policies.PolicyOption;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.junit.After;

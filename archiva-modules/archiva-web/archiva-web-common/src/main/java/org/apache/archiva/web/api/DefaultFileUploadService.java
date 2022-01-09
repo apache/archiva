@@ -26,7 +26,7 @@ import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.components.taskqueue.TaskQueueException;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.SnapshotVersion;

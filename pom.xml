@@ -344,7 +344,17 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva</groupId>
+        <groupId>org.apache.archiva.configuration</groupId>
+        <artifactId>archiva-configuration-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.configuration</groupId>
+        <artifactId>archiva-configuration-provider</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.configuration</groupId>
         <artifactId>archiva-configuration</artifactId>
         <version>${project.version}</version>
       </dependency>

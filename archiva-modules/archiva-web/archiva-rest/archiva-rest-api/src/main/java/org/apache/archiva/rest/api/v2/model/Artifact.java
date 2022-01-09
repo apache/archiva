@@ -25,7 +25,7 @@ import java.io.Serializable;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Schema(name="Artifact", description = "Information about artifacts")
-public class Artifact implements Serializable
+public class Artifact implements Serializable, RestModel
 {
     private static final long serialVersionUID = 7581578317346876555L;
     private String name;

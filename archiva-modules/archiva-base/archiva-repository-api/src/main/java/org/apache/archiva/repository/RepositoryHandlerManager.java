@@ -17,7 +17,7 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
+import org.apache.archiva.configuration.model.AbstractRepositoryConfiguration;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventHandler;
 

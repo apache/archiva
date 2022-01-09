@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  */
 @XmlRootElement(name="repositoryGroup")
 @Schema(name="RepositoryGroup", description = "Information about a repository group, which combines multiple repositories as one virtual repository.")
-public class RepositoryGroup implements Serializable
+public class RepositoryGroup implements Serializable, RestModel
 {
     private static final long serialVersionUID = -7319687481737616081L;
     private String id;

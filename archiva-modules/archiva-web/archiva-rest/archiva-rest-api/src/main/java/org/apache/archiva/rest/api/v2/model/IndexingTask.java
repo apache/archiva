@@ -25,7 +25,7 @@ import java.io.Serializable;
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Schema(name="IndexingTask",description = "Information about indexing tasks")
-public class IndexingTask implements Serializable
+public class IndexingTask implements Serializable, RestModel
 {
     private static final long serialVersionUID = -1947200162602613310L;
     private String repositoryId = "";

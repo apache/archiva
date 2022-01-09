@@ -46,7 +46,7 @@ import java.util.Locale;
  * @since 3.0
  */
 @Schema(description = "Repository data")
-public class Repository implements Serializable
+public class Repository implements Serializable, RestModel
 {
     private static final long serialVersionUID = -4741025877287175182L;
 

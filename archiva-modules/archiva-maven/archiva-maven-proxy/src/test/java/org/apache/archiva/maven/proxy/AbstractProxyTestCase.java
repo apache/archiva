@@ -18,11 +18,11 @@ package org.apache.archiva.maven.proxy;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.ArchivaRuntimeConfiguration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.model.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.model.RemoteRepositoryConfiguration;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.PolicyOption;

@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
@@ -121,6 +122,12 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         return new AuditInformation( user, remoteAddr );
     }
 
+    public static ManagedRepositoryConfiguration toConfig(MavenManagedRepository repo) {
+        ManagedRepositoryConfiguration cfg = new ManagedRepositoryConfiguration( );
+        return cfg;
+
+    }
+
     @Override
     public PagedResult<MavenManagedRepository> getManagedRepositories( final String searchTerm, final Integer offset,
                                                                        final Integer limit, final List<String> orderBy,
@@ -188,7 +195,10 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         repoBean.setDeleteReleasedSnapshots( repository.isDeleteSnapshotsOfRelease() );
         repoBean.setSkipPackedIndexCreation( repository.isSkipPackedIndexCreation() );
         repoBean.setRetentionCount( repository.getRetentionCount() );
-        repoBean.setRetentionPeriod( repository.getRetentionPeriod().getDays() );
+        if (repository.getRetentionPeriod()!=null)
+        {
+            repoBean.setRetentionPeriod( repository.getRetentionPeriod( ).getDays( ) );
+        }
         repoBean.setIndexDirectory( repository.getIndexPath() );
         repoBean.setPackedIndexDirectory( repository.getPackedIndexPath() );
         repoBean.setLayout( repository.getLayout() );

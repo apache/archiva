@@ -19,10 +19,10 @@ package org.apache.archiva.repository.base;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RemoteRepositoryConfiguration;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;

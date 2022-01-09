@@ -25,147 +25,21 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.archiva.configuration</groupId>
   <artifactId>archiva-configuration</artifactId>
   <name>Archiva Base :: Configuration</name>
+  <version>3.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
   </properties>
 
+  <modules>
+    <module>archiva-configuration-model</module>
+    <module>archiva-configuration-provider</module>
+  </modules>
   <dependencies>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-policies</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.components.registry</groupId>
-      <artifactId>archiva-components-spring-registry-api</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-test</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.components.registry</groupId>
-      <artifactId>archiva-components-spring-registry-commons</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-test</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.components</groupId>
-      <artifactId>archiva-components-expression-evaluator</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.inject</groupId>
-      <artifactId>jakarta.inject-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-configuration2</artifactId>
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-collections4</artifactId>
-    </dependency>
-
-
-    <!-- Test scope -->
-
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-test-utils</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-jcl</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
 
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <basedir>${basedir}</basedir>
-          </systemPropertyVariables>
-          <trimStackTrace>false</trimStackTrace>
-        </configuration>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.rat</groupId>
-          <artifactId>apache-rat-plugin</artifactId>
-          <configuration>
-            <excludes>
-              <exclude>src/main/resources/org/apache/archiva/configuration/default-archiva.xml</exclude>
-              <exclude>src/test/conf/maven-proxy-complete.conf</exclude>
-              <exclude>src/test/resources/org/apache/archiva/configuration/test-default-archiva.xml</exclude>
-              <exclude>nbactions.xml</exclude>
-            </excludes>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 </project>

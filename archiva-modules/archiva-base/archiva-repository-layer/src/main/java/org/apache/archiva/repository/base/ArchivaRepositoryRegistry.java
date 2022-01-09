@@ -20,15 +20,15 @@ package org.apache.archiva.repository.base;
  */
 
 import org.apache.archiva.components.registry.RegistryException;
-import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ConfigurationEvent;
-import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.configuration.model.AbstractRepositoryConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.provider.ConfigurationEvent;
+import org.apache.archiva.configuration.provider.ConfigurationListener;
+import org.apache.archiva.configuration.provider.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RepositoryGroupConfiguration;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.event.EventManager;
@@ -563,6 +563,17 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         }
     }
 
+    @Override
+    public CheckedResult<ManagedRepository, Map<String, List<ValidationError>>> putRepositoryAndValidate( ManagedRepositoryConfiguration configuration ) throws RepositoryException
+    {
+        rwLock.writeLock().lock();
+        try {
+            return managedRepositoryHandler.putWithCheck( configuration );
+        } finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+    }
 
     /**
      * Adds a new repository group to the current list, or replaces the repository group definition with
@@ -620,7 +631,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         rwLock.writeLock( ).lock( );
         try
         {
-            return groupHandler.putWithCheck( repositoryGroupConfiguration, groupHandler.getValidator( ) );
+            return groupHandler.putWithCheck( repositoryGroupConfiguration );
         }
         finally
         {
@@ -692,6 +703,18 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
         finally
         {
             rwLock.writeLock( ).unlock( );
+        }
+    }
+
+    @Override
+    public CheckedResult<RemoteRepository, Map<String, List<ValidationError>>> putRepositoryAndValidate( RemoteRepositoryConfiguration remoteRepositoryConfiguration ) throws RepositoryException
+    {
+        rwLock.writeLock().lock();
+        try {
+            return remoteRepositoryHandler.putWithCheck( remoteRepositoryConfiguration );
+        } finally
+        {
+            rwLock.writeLock().unlock();
         }
     }
 

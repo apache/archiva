@@ -28,7 +28,7 @@
 
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
   <context:component-scan base-package="org.apache.archiva.maven.repository.content" />
-  <bean name="archivaConfiguration#repo-request-test" class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
+  <bean name="archivaConfiguration#repo-request-test" class="org.apache.archiva.configuration.provider.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#configured"/>
   </bean>
 

@@ -22,7 +22,7 @@ package org.apache.archiva.web.rss;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;

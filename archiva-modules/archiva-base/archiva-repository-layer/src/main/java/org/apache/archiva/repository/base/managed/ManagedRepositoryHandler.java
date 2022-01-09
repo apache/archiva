@@ -18,9 +18,9 @@ package org.apache.archiva.repository.base.managed;
  */
 
 import org.apache.archiva.components.registry.RegistryException;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.provider.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexManagerFactory;

@@ -21,7 +21,7 @@ package org.apache.archiva.consumers.core.repository;
 
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;

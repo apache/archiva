@@ -26,7 +26,7 @@ import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

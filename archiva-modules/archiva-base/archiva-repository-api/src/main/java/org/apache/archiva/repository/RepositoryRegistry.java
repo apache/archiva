@@ -19,11 +19,11 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.model.RepositoryGroupConfiguration;
 import org.apache.archiva.event.EventSource;
 import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
@@ -191,6 +191,16 @@ public interface RepositoryRegistry extends EventSource, RepositoryHandlerManage
     ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration ) throws RepositoryException;
 
     /**
+     * Validates the given repository configuration and adds the repository persistent to the registry, if it is valid.
+     * If the validation was not successful, the repository will not be added or persistet, and it will return the list of validation errors.
+     *
+     * @param configuration the managed repository configuration
+     * @return the managed repository or a list of validation errors
+     * @throws RepositoryException if there are errors while adding the repository
+     */
+    CheckedResult<ManagedRepository, Map<String, List<ValidationError>>> putRepositoryAndValidate( ManagedRepositoryConfiguration configuration) throws RepositoryException;
+
+    /**
      * Adds or updates the given repository group. If a repository group with the given id exists already, it is updated
      * from the data of the given instance. Otherwise a new repository is created and updated by the data of the given instance.
      *
@@ -260,6 +270,19 @@ public interface RepositoryRegistry extends EventSource, RepositoryHandlerManage
      * @throws RepositoryException if an error occurred while creating or updating the instance
      */
     RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration ) throws RepositoryException;
+
+    /**
+     * Adds or updates the given remote repository. If a remote repository with the given id exists already, it is updated
+     * from the data of the given configuration. Otherwise a new repository is created and updated by the data of the given configuration.
+     *
+     * The remoteRepositoryConfiguration is validated before adding to the registry and persisting. If the validation fails,
+     * it is not registered or updated.
+     *
+     * @param remoteRepositoryConfiguration the remote repository configuration
+     * @return the repository instance, that was created or updated
+     * @throws RepositoryException if an error occurred while creating or updating the instance
+     */
+    CheckedResult<RemoteRepository, Map<String, List<ValidationError>>>  putRepositoryAndValidate( RemoteRepositoryConfiguration remoteRepositoryConfiguration ) throws RepositoryException;
 
     /**
      * Adds or updates the given remote repository. If a remote repository with the given id exists already, it is updated

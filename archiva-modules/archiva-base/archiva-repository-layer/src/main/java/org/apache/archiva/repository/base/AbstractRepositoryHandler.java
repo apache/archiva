@@ -18,9 +18,9 @@ package org.apache.archiva.repository.base;
  */
 
 import org.apache.archiva.components.registry.RegistryException;
-import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.model.AbstractRepositoryConfiguration;
+import org.apache.archiva.configuration.model.Configuration;
+import org.apache.archiva.configuration.provider.IndeterminateConfigurationException;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventManager;
 import org.apache.archiva.event.EventType;
@@ -214,7 +214,13 @@ public abstract class AbstractRepositoryHandler<R extends Repository, C extends 
 
     }
 
-    protected abstract C findRepositoryConfiguration(Configuration configuration, String id);
+    @Override
+    public CheckedResult<R, Map<String, List<ValidationError>>> putWithCheck( C repositoryConfiguration ) throws RepositoryException
+    {
+        return putWithCheck( repositoryConfiguration, getValidator( ) );
+    }
+
+    protected abstract C findRepositoryConfiguration( Configuration configuration, String id);
 
     protected abstract void removeRepositoryConfiguration(Configuration configuration, C repoConfiguration );
 

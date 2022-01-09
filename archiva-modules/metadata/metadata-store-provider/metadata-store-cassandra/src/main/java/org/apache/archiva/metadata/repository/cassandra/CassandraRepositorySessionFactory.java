@@ -19,7 +19,7 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolver;

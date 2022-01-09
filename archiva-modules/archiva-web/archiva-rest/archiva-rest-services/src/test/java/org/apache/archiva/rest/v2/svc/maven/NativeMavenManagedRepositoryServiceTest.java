@@ -25,6 +25,7 @@ import org.apache.archiva.rest.api.v2.svc.RestConfiguration;
 import org.apache.archiva.rest.v2.svc.AbstractNativeRestServices;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -33,7 +34,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
@@ -82,6 +85,34 @@ public class NativeMavenManagedRepositoryServiceTest extends AbstractNativeRestS
         List<MavenManagedRepository> repositories = json.getList( "data", MavenManagedRepository.class );
         assertEquals( "internal", repositories.get( 0 ).getId( ) );
         assertEquals( "snapshots", repositories.get( 1 ).getId( ) );
+    }
+
+    private Response createRepository(String id, String name, String description, String token) {
+        Map<String, Object> jsonAsMap = new HashMap<>( );
+        jsonAsMap.put( "id", id );
+        jsonAsMap.put( "name", name );
+        jsonAsMap.put( "description", description );
+        return given( ).spec( getRequestSpec( token ) ).contentType( JSON )
+            .when( )
+            .body( jsonAsMap )
+            .post( "" )
+            .then( ).statusCode( 201 ).extract( ).response( );
+    }
+
+
+    @Disabled
+    @Test
+    @Order( 2 )
+    void testCreateRepository() {
+        String token = getAdminToken( );
+        Response response = createRepository( "repo001", "Repository 001", "This is repository 001", token );
+        assertNotNull( response );
+        JsonPath json = response.getBody( ).jsonPath( );
+        assertNotNull( json );
+        assertEquals( "repo001", json.get( "id" ) );
+        assertEquals( "Repository 001", json.get( "name" ) );
+        assertEquals( "maven", json.get( "type" ) );
+        assertEquals( "This is repository 001", json.get( "description" ) );
     }
 
 

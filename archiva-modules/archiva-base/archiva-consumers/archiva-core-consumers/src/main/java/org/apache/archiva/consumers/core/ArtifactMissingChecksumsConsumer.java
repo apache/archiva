@@ -20,8 +20,8 @@ package org.apache.archiva.consumers.core;
  */
 
 import org.apache.archiva.checksum.*;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;

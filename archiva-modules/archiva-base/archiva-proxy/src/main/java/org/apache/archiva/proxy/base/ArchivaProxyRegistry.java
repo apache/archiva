@@ -18,9 +18,9 @@ package org.apache.archiva.proxy.base;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.NetworkProxyConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
+import org.apache.archiva.configuration.model.NetworkProxyConfiguration;
+import org.apache.archiva.configuration.model.ProxyConnectorConfiguration;
 import org.apache.archiva.policies.Policy;
 import org.apache.archiva.policies.PolicyOption;
 import org.apache.archiva.policies.PolicyUtil;

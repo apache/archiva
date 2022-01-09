@@ -20,7 +20,7 @@ package org.apache.archiva.repository.scanner;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.provider.ArchivaConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.repository.base.managed.BasicManagedRepository;
