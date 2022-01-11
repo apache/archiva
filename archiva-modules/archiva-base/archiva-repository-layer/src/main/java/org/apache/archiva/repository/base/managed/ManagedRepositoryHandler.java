@@ -136,7 +136,7 @@ public class ManagedRepositoryHandler
                 result.put( repo.getId( ), repo );
                 if ( repo.supportsFeature( StagingRepositoryFeature.class ) )
                 {
-                    StagingRepositoryFeature stagF = repo.getFeature( StagingRepositoryFeature.class ).get( );
+                    StagingRepositoryFeature stagF = repo.getFeature( StagingRepositoryFeature.class );
                     if ( stagF.getStagingRepository( ) != null )
                     {
                         ManagedRepository stagingRepo = getStagingRepository( repo );
@@ -191,7 +191,7 @@ public class ManagedRepositoryHandler
                 result.put( id, repo );
                 if ( repo.supportsFeature( StagingRepositoryFeature.class ) )
                 {
-                    StagingRepositoryFeature stagF = repo.getFeature( StagingRepositoryFeature.class ).get( );
+                    StagingRepositoryFeature stagF = repo.getFeature( StagingRepositoryFeature.class );
                     if ( stagF.getStagingRepository( ) != null )
                     {
                         String stagingId = getStagingId( id );
@@ -272,7 +272,7 @@ public class ManagedRepositoryHandler
             stageRepo = provider.createStagingInstance( cfg );
             if ( stageRepo.supportsFeature( StagingRepositoryFeature.class ) )
             {
-                stageRepo.getFeature( StagingRepositoryFeature.class ).get( ).setStageRepoNeeded( false );
+                stageRepo.getFeature( StagingRepositoryFeature.class ).setStageRepoNeeded( false );
             }
             updateReferences( stageRepo, cfg );
         }
@@ -509,7 +509,7 @@ public class ManagedRepositoryHandler
         {
             Configuration configuration = getConfigurationHandler( ).getBaseConfiguration( );
             RepositoryProvider provider = getProvider( repo.getType( ) );
-            StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get( );
+            StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class );
             if ( feature.isStageRepoNeeded( ) && feature.getStagingRepository( ) == null )
             {
                 ManagedRepository stageRepo = get( getStagingId( repo.getId( ) ) );

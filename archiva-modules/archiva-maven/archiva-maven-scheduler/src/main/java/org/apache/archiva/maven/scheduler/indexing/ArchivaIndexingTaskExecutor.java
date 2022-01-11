@@ -259,7 +259,7 @@ public class ArchivaIndexingTaskExecutor
 
             if ( repository.supportsFeature( IndexCreationFeature.class ) )
             {
-                IndexCreationFeature icf = repository.getFeature( IndexCreationFeature.class ).get( );
+                IndexCreationFeature icf = repository.getFeature( IndexCreationFeature.class );
                 if ( !icf.isSkipPackedIndexCreation( ) && icf.getLocalPackedIndexPath( ) != null && icf.getLocalIndexPath().getFilePath()!=null )
                 {
 

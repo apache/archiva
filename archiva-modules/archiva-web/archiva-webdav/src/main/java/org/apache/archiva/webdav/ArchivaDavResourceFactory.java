@@ -416,7 +416,7 @@ public class ArchivaDavResourceFactory
 
         String mergedIndexPath = "/";
         if (repoGroup.supportsFeature( IndexCreationFeature.class )) {
-            mergedIndexPath = repoGroup.getFeature( IndexCreationFeature.class ).get().getIndexPath().getPath();
+            mergedIndexPath = repoGroup.getFeature( IndexCreationFeature.class ).getIndexPath().getPath();
         }
 
         if ( StringUtils.endsWith( rootPath, mergedIndexPath ) )
@@ -1051,7 +1051,7 @@ public class ArchivaDavResourceFactory
         String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
         String mergedIndexPath = "/";
         if (repositoryGroup.supportsFeature( IndexCreationFeature.class )) {
-            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class );
             mergedIndexPath = indexCreationFeature.getIndexPath().getPath();
         }
 
@@ -1113,7 +1113,7 @@ public class ArchivaDavResourceFactory
                     if ( resourceFile.exists() && managedRepository.getRepository().supportsFeature( IndexCreationFeature.class ))
                     {
                         // in case of group displaying index directory doesn't have sense !!
-                        IndexCreationFeature idf = managedRepository.getRepository().getFeature(IndexCreationFeature.class).get();
+                        IndexCreationFeature idf = managedRepository.getRepository().getFeature( IndexCreationFeature.class );
                         StorageAsset repoIndexDirectory = idf.getLocalIndexPath();
                         if ( !StringUtils.equals( FilenameUtils.normalize( repoIndexDirectory.getPath() ),
                                                   FilenameUtils.normalize( logicalResource.getPath() ) ) )
@@ -1369,7 +1369,7 @@ public class ArchivaDavResourceFactory
             log.info( "generate temporary merged index for repository group '{}' for repositories '{}'",
                     id, authzRepos );
 
-            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class );
             Path indexPath = indexCreationFeature.getLocalIndexPath().getFilePath();
             if (indexPath!=null)
             {

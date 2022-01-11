@@ -134,18 +134,18 @@ public class MavenRepositoryProviderTest
         assertTrue(mr.blocksRedeployments());
         assertEquals("4 0 0 ? * TUE", mr.getSchedulingDefinition());
         assertTrue(mr.isScanned());
-        ArtifactCleanupFeature artifactCleanupFeature = mr.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature artifactCleanupFeature = mr.getFeature( ArtifactCleanupFeature.class );
         assertEquals( Period.ofDays( 37), artifactCleanupFeature.getRetentionPeriod());
         assertTrue(artifactCleanupFeature.isDeleteReleasedSnapshots());
         assertEquals(33, artifactCleanupFeature.getRetentionCount());
 
-        IndexCreationFeature indexCreationFeature = mr.getFeature( IndexCreationFeature.class ).get();
+        IndexCreationFeature indexCreationFeature = mr.getFeature( IndexCreationFeature.class );
         assertNotNull(indexCreationFeature.getIndexPath());
         assertEquals("testmanaged/.index", indexCreationFeature.getIndexPath().toString());
         assertFalse(indexCreationFeature.getIndexPath().isAbsolute());
         assertTrue(indexCreationFeature.isSkipPackedIndexCreation());
 
-        StagingRepositoryFeature stagingRepositoryFeature = mr.getFeature( StagingRepositoryFeature.class ).get();
+        StagingRepositoryFeature stagingRepositoryFeature = mr.getFeature( StagingRepositoryFeature.class );
         assertTrue(stagingRepositoryFeature.isStageRepoNeeded());
         assertNull(stagingRepositoryFeature.getStagingRepository());
 
@@ -202,22 +202,22 @@ public class MavenRepositoryProviderTest
         assertEquals( "maven2", mr.getLayout());
         try
         {
-            ArtifactCleanupFeature artifactCleanupFeature = mr.getFeature( ArtifactCleanupFeature.class ).get( );
+            ArtifactCleanupFeature artifactCleanupFeature = mr.getFeature( ArtifactCleanupFeature.class );
             throw new Exception("artifactCleanupFeature should not be available");
         } catch ( UnsupportedFeatureException e ) {
             // correct
         }
 
-        IndexCreationFeature indexCreationFeature = mr.getFeature( IndexCreationFeature.class ).get( );
+        IndexCreationFeature indexCreationFeature = mr.getFeature( IndexCreationFeature.class );
         assertEquals("local/.index", indexCreationFeature.getIndexPath().toString());
         try
         {
-            StagingRepositoryFeature stagingRepositoryFeature = mr.getFeature( StagingRepositoryFeature.class ).get( );
+            StagingRepositoryFeature stagingRepositoryFeature = mr.getFeature( StagingRepositoryFeature.class );
             throw new Exception("stagingRepositoryFeature should not be available");
         } catch (UnsupportedFeatureException e) {
             // correct
         }
-        RemoteIndexFeature remoteIndexFeature = mr.getFeature( RemoteIndexFeature.class ).get();
+        RemoteIndexFeature remoteIndexFeature = mr.getFeature( RemoteIndexFeature.class );
         assertNull(remoteIndexFeature.getProxyId());
     }
 
@@ -234,12 +234,12 @@ public class MavenRepositoryProviderTest
         repo.setSchedulingDefinition( "0 0 05 ? * WED" );
         repo.addActiveReleaseScheme( ReleaseScheme.RELEASE );
         repo.addActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
-        StagingRepositoryFeature stagingFeat = repo.getFeature( StagingRepositoryFeature.class ).get( );
+        StagingRepositoryFeature stagingFeat = repo.getFeature( StagingRepositoryFeature.class );
         stagingFeat.setStageRepoNeeded( true );
-        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class ).get();
+        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class );
         indexCreationFeature.setIndexPath( new URI("test/.indexes") );
         indexCreationFeature.setSkipPackedIndexCreation( true );
-        ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature( ArtifactCleanupFeature.class );
         artifactCleanupFeature.setRetentionPeriod( Period.ofDays( 5 ) );
         artifactCleanupFeature.setRetentionCount( 7 );
         artifactCleanupFeature.setDeleteReleasedSnapshots( true );
@@ -276,13 +276,13 @@ public class MavenRepositoryProviderTest
         repo.setLayout( "maven2" );
         repo.setName( repo.getPrimaryLocale(), "test0003" );
         repo.setSchedulingDefinition( "0 0 05 ? * WED" );
-        RemoteIndexFeature remoteIndexFeature = repo.getFeature( RemoteIndexFeature.class ).get();
+        RemoteIndexFeature remoteIndexFeature = repo.getFeature( RemoteIndexFeature.class );
         remoteIndexFeature.setProxyId( "proxyabc" );
         remoteIndexFeature.setDownloadTimeout( Duration.ofSeconds( 54 ) );
         remoteIndexFeature.setDownloadRemoteIndex( false );
         remoteIndexFeature.setIndexUri( new URI("/this/remote/.index") );
         remoteIndexFeature.setDownloadRemoteIndexOnStartup( true );
-        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class ).get();
+        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class );
         indexCreationFeature.setIndexPath( new URI("/this/local/.index") );
 
         RemoteRepositoryConfiguration cfg = provider.getRemoteConfiguration( repo );
@@ -310,7 +310,7 @@ public class MavenRepositoryProviderTest
 
         repositoryGroup.setDescription(repositoryGroup.getPrimaryLocale(), "Repository group");
         repositoryGroup.setLayout("non-default");
-        IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+        IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class );
         indexCreationFeature.setIndexPath( new URI(".index2") );
         repositoryGroup.setName(repositoryGroup.getPrimaryLocale(), "Repo Group 1");
         repositoryGroup.setMergedIndexTTL(1005);
@@ -358,7 +358,7 @@ public class MavenRepositoryProviderTest
         assertEquals("group2", grp.getId());
         assertEquals("Group 2", grp.getName());
         assertEquals("0 0 03 ? * MON", grp.getSchedulingDefinition());
-        IndexCreationFeature indexCreationFeature = grp.getFeature( IndexCreationFeature.class ).get();
+        IndexCreationFeature indexCreationFeature = grp.getFeature( IndexCreationFeature.class );
         try {
             assertEquals(new URI(".index-abc"), indexCreationFeature.getIndexPath());
         } catch (URISyntaxException e) {

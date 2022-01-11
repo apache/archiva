@@ -76,7 +76,7 @@ public class DefaultMergedRemoteIndexesScheduler
         if (repositoryGroup.supportsFeature( IndexCreationFeature.class ))
         {
 
-            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class );
             Path indexPath = indexCreationFeature.getLocalIndexPath().getFilePath();
             if (indexPath!=null)
             {

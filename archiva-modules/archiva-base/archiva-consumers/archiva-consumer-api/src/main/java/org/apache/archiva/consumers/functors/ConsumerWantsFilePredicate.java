@@ -138,7 +138,7 @@ public class ConsumerWantsFilePredicate
             String indexDirectory;
             if ( managedRepository.supportsFeature( IndexCreationFeature.class ) )
             {
-                IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class ).get( );
+                IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class );
                 if ( icf.getIndexPath( ) == null )
                 {
                     indexDirectory = ".index";

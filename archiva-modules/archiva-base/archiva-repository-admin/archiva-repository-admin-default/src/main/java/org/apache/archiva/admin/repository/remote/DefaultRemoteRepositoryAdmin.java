@@ -89,7 +89,7 @@ public class DefaultRemoteRepositoryAdmin
         }
         if ( repo.supportsFeature( RemoteIndexFeature.class ) )
         {
-            RemoteIndexFeature rif = repo.getFeature( RemoteIndexFeature.class ).get( );
+            RemoteIndexFeature rif = repo.getFeature( RemoteIndexFeature.class );
             adminRepo.setRemoteIndexUrl( convertUriToString( rif.getIndexUri( ) ) );
             adminRepo.setDownloadRemoteIndex( rif.isDownloadRemoteIndex( ) );
             adminRepo.setRemoteDownloadNetworkProxyId( rif.getProxyId( ) );
@@ -98,7 +98,7 @@ public class DefaultRemoteRepositoryAdmin
         }
         if ( repo.supportsFeature( IndexCreationFeature.class ) )
         {
-            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get( );
+            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
             adminRepo.setIndexDirectory( PathUtil.getPathFromUri( icf.getIndexPath( ) ).toString( ) );
         }
         adminRepo.setDescription( repo.getDescription( ) );

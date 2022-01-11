@@ -96,7 +96,7 @@ public class DefaultDownloadRemoteIndexScheduler
             {
                 continue;
             }
-            RemoteIndexFeature rif = remoteRepository.getFeature(RemoteIndexFeature.class).get();
+            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class );
 
 
             // TODO record jobs from configuration
@@ -133,7 +133,7 @@ public class DefaultDownloadRemoteIndexScheduler
             log.warn("ignore scheduleDownloadRemote for repo with id {}. Does not support remote index.", repositoryId);
             return;
         }
-        RemoteIndexFeature rif = remoteRepo.getFeature(RemoteIndexFeature.class).get();
+        RemoteIndexFeature rif = remoteRepo.getFeature( RemoteIndexFeature.class );
         NetworkProxy networkProxy = null;
         if ( StringUtils.isNotBlank( rif.getProxyId() ) )
         {

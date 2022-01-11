@@ -205,7 +205,7 @@ public class MavenIndexManagerTest {
         }
         repository = MavenManagedRepository.newLocalInstance("test-repo", "Test Repo", Paths.get("target/repositories"));
         // repository.setLocation(new URI("test-repo"));
-        IndexCreationFeature icf = repository.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature icf = repository.getFeature( IndexCreationFeature.class );
         icf.setIndexPath(new URI(indexPathName));
         ctx = mavenIndexManager.createContext(repository);
         return ctx;
@@ -216,7 +216,7 @@ public class MavenIndexManagerTest {
         Path repoPath = Paths.get("target/repositories").toAbsolutePath();
         repositoryRemote = MavenRemoteRepository.newLocalInstance("test-repo", "Test Repo", repoPath);
         repositoryRemote.setLocation(repoPath.resolve("test-repo").toUri());
-        RemoteIndexFeature icf = repositoryRemote.getFeature(RemoteIndexFeature.class).get();
+        RemoteIndexFeature icf = repositoryRemote.getFeature( RemoteIndexFeature.class );
         icf.setIndexUri(new URI(indexPath.getFileName().toString()));
         ctx = mavenIndexManager.createContext(repositoryRemote);
         return ctx;

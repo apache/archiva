@@ -42,11 +42,6 @@ public class StagingRepositoryFeature implements RepositoryFeature<StagingReposi
         this.stageRepoNeeded = stageRepoNeeded;
     }
 
-    @Override
-    public StagingRepositoryFeature get() {
-        return this;
-    }
-
     /**
      * Returns the staging repository, if it exists.
      *

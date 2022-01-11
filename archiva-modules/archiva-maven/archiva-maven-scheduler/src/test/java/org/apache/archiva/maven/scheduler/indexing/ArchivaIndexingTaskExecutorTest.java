@@ -279,7 +279,7 @@ public class ArchivaIndexingTaskExecutorTest
     {
 
         Path basePath = repo.getRoot().getFilePath();
-        IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
+        IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
         StorageAsset packedIndexDirectory = icf.getLocalPackedIndexPath();
         StorageAsset indexerDirectory = icf.getLocalIndexPath();
 

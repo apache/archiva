@@ -135,7 +135,7 @@ public class DefaultNetworkProxyAdmin
         }
         for ( RemoteRepository repo : repositoryRegistry.getRemoteRepositories()) {
             if (repo.supportsFeature( RemoteIndexFeature.class )) {
-                RemoteIndexFeature rif = repo.getFeature( RemoteIndexFeature.class ).get();
+                RemoteIndexFeature rif = repo.getFeature( RemoteIndexFeature.class );
                 if (networkProxyId.equals(rif.getProxyId())) {
                     rif.setProxyId( null );
                     try

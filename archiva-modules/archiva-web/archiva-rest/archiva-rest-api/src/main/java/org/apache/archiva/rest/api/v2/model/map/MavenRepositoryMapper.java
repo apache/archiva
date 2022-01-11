@@ -74,8 +74,8 @@ public class MavenRepositoryMapper extends RestServiceMapper<MavenManagedReposit
     public MavenManagedRepository reverseMap( ManagedRepository source )
     {
         MavenManagedRepository result = new MavenManagedRepository( );
-        StagingRepositoryFeature srf = source.getFeature( StagingRepositoryFeature.class ).get( );
-        ArtifactCleanupFeature acf = source.getFeature( ArtifactCleanupFeature.class ).get( );
+        StagingRepositoryFeature srf = source.getFeature( StagingRepositoryFeature.class );
+        ArtifactCleanupFeature acf = source.getFeature( ArtifactCleanupFeature.class );
         result.setHasStagingRepository( srf.isStageRepoNeeded() );
         result.setBlocksRedeployments( source.blocksRedeployments() );
         result.setIndex( source.hasIndex() );

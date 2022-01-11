@@ -152,7 +152,7 @@ public abstract class AbstractRepositoryPurgeTest
         config = BasicManagedRepository.newFilesystemInstance( repoId, repoName, basePath.resolve(repoId));
         config.addActiveReleaseScheme( ReleaseScheme.RELEASE );
         config.addActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
-        ArtifactCleanupFeature atf = config.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature atf = config.getFeature( ArtifactCleanupFeature.class );
         atf.setRetentionPeriod( Period.ofDays( TEST_DAYS_OLDER) );
         String path = AbstractRepositoryPurgeTest.fixPath(
             basePath.resolve( repoId ).toAbsolutePath().toString() );

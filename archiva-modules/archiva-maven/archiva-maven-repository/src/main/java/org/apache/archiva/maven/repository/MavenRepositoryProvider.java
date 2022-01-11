@@ -231,17 +231,17 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             repo.removeActiveReleaseScheme(ReleaseScheme.SNAPSHOT);
         }
 
-        StagingRepositoryFeature stagingRepositoryFeature = repo.getFeature(StagingRepositoryFeature.class).get();
+        StagingRepositoryFeature stagingRepositoryFeature = repo.getFeature( StagingRepositoryFeature.class );
         stagingRepositoryFeature.setStageRepoNeeded(cfg.isStageRepoNeeded());
 
-        IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class );
         indexCreationFeature.setSkipPackedIndexCreation(cfg.isSkipPackedIndexCreation());
         String indexDir = StringUtils.isEmpty( cfg.getIndexDir() ) ? DEFAULT_INDEX_PATH : cfg.getIndexDir();
         String packedIndexDir = StringUtils.isEmpty( cfg.getPackedIndexDir() ) ? DEFAULT_PACKED_INDEX_PATH : cfg.getPackedIndexDir();
         indexCreationFeature.setIndexPath(getURIFromString(indexDir));
         indexCreationFeature.setPackedIndexPath(getURIFromString(packedIndexDir));
 
-        ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature(ArtifactCleanupFeature.class).get();
+        ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature( ArtifactCleanupFeature.class );
 
         artifactCleanupFeature.setDeleteReleasedSnapshots(cfg.isDeleteReleasedSnapshots());
         artifactCleanupFeature.setRetentionCount(cfg.getRetentionCount());
@@ -285,7 +285,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             throw new RepositoryException("The url config is not a valid uri: " + cfg.getUrl());
         }
         repo.setTimeout(Duration.ofSeconds(cfg.getTimeout()));
-        RemoteIndexFeature remoteIndexFeature = repo.getFeature(RemoteIndexFeature.class).get();
+        RemoteIndexFeature remoteIndexFeature = repo.getFeature( RemoteIndexFeature.class );
         remoteIndexFeature.setDownloadRemoteIndex(cfg.isDownloadRemoteIndex());
         remoteIndexFeature.setDownloadRemoteIndexOnStartup(cfg.isDownloadRemoteIndexOnStartup());
         remoteIndexFeature.setDownloadTimeout(Duration.ofSeconds(cfg.getRemoteDownloadTimeout()));
@@ -313,7 +313,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         } else {
             credentials.setPassword(new char[0]);
         }
-        IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class );
         if ( !StringUtils.isEmpty( cfg.getIndexDir( ) ) )
         {
             indexCreationFeature.setIndexPath( getURIFromString( cfg.getIndexDir( ) ) );
@@ -347,7 +347,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         repositoryGroup.setMergedIndexTTL(configuration.getMergedIndexTtl());
         repositoryGroup.setSchedulingDefinition(configuration.getCronExpression());
         if (repositoryGroup.supportsFeature( IndexCreationFeature.class )) {
-            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class );
             indexCreationFeature.setIndexPath( getURIFromString(configuration.getMergedIndexPath()) );
             Path localPath = Paths.get(configuration.getMergedIndexPath());
             Path repoGroupPath = repositoryGroup.getRoot().getFilePath().toAbsolutePath();
@@ -395,11 +395,11 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         cfg.setExtraHeaders(remoteRepository.getExtraHeaders());
         cfg.setRefreshCronExpression(remoteRepository.getSchedulingDefinition());
 
-        IndexCreationFeature indexCreationFeature = remoteRepository.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature indexCreationFeature = remoteRepository.getFeature( IndexCreationFeature.class );
         cfg.setIndexDir(convertUriToPath(indexCreationFeature.getIndexPath()));
         cfg.setPackedIndexDir(convertUriToPath(indexCreationFeature.getPackedIndexPath()));
 
-        RemoteIndexFeature remoteIndexFeature = remoteRepository.getFeature(RemoteIndexFeature.class).get();
+        RemoteIndexFeature remoteIndexFeature = remoteRepository.getFeature( RemoteIndexFeature.class );
         if ( remoteIndexFeature.getIndexUri( ) == null )
         {
             cfg.setRemoteIndexUrl( "" );
@@ -442,14 +442,14 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         cfg.setRefreshCronExpression(managedRepository.getSchedulingDefinition());
         cfg.setScanned(managedRepository.isScanned());
         cfg.setBlockRedeployments(managedRepository.blocksRedeployments());
-        StagingRepositoryFeature stagingRepositoryFeature = managedRepository.getFeature(StagingRepositoryFeature.class).get();
+        StagingRepositoryFeature stagingRepositoryFeature = managedRepository.getFeature( StagingRepositoryFeature.class );
         cfg.setStageRepoNeeded(stagingRepositoryFeature.isStageRepoNeeded());
-        IndexCreationFeature indexCreationFeature = managedRepository.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature indexCreationFeature = managedRepository.getFeature( IndexCreationFeature.class );
         cfg.setIndexDir(convertUriToPath(indexCreationFeature.getIndexPath()));
         cfg.setPackedIndexDir(convertUriToPath(indexCreationFeature.getPackedIndexPath()));
         cfg.setSkipPackedIndexCreation(indexCreationFeature.isSkipPackedIndexCreation());
 
-        ArtifactCleanupFeature artifactCleanupFeature = managedRepository.getFeature(ArtifactCleanupFeature.class).get();
+        ArtifactCleanupFeature artifactCleanupFeature = managedRepository.getFeature( ArtifactCleanupFeature.class );
         cfg.setRetentionCount(artifactCleanupFeature.getRetentionCount());
         cfg.setRetentionPeriod(artifactCleanupFeature.getRetentionPeriod().getDays());
         cfg.setDeleteReleasedSnapshots(artifactCleanupFeature.isDeleteReleasedSnapshots());
@@ -470,7 +470,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         cfg.setName(repositoryGroup.getName());
         if (repositoryGroup.supportsFeature( IndexCreationFeature.class ))
         {
-            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class );
 
             cfg.setMergedIndexPath( indexCreationFeature.getIndexPath().toString() );
         }

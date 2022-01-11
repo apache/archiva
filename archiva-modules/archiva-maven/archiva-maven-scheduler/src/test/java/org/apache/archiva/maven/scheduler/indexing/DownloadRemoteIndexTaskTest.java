@@ -189,12 +189,12 @@ public class DownloadRemoteIndexTaskTest
         Files.createDirectories( indexDirectory );
         remoteRepository.setLocation( new URI( "http://localhost:" + port ) );
         repoDirectory.toFile().deleteOnExit();
-        RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get();
+        RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class );
         rif.setDownloadRemoteIndex( true );
         rif.setIndexUri( new URI("http://localhost:" + port + "/index-updates/" ) );
         createIndexingContext( remoteRepository );
 
-        // IndexCreationFeature icf = remoteRepository.getFeature( IndexCreationFeature.class ).get( );
+        // IndexCreationFeature icf = remoteRepository.getFeature( IndexCreationFeature.class );
         // icf.setLocalIndexPath( remoteRepository.getAsset(  "index" ) );
         return remoteRepository;
     }

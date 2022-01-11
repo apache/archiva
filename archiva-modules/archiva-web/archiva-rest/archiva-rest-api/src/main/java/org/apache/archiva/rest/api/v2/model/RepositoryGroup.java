@@ -75,7 +75,7 @@ public class RepositoryGroup implements Serializable, RestModel
         result.setLocation( modelObj.getLocation().toString() );
         result.setRepositories( modelObj.getRepositories().stream().map( Repository::getId ).collect( Collectors.toList()) );
         if (modelObj.supportsFeature( IndexCreationFeature.class )) {
-            IndexCreationFeature icf = modelObj.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature icf = modelObj.getFeature( IndexCreationFeature.class );
             mergeConfig.setMergedIndexPath( icf.getIndexPath( ).toString() );
             mergeConfig.setMergedIndexTtlMinutes( modelObj.getMergedIndexTTL( ) );
             mergeConfig.setIndexMergeSchedule( modelObj.getSchedulingDefinition() );

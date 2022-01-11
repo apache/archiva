@@ -69,7 +69,7 @@ public class DaysOldRepositoryPurgeTest
         throws Exception
     {
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class );
 
 
         when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
@@ -163,7 +163,7 @@ public class DaysOldRepositoryPurgeTest
         throws Exception
     {
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
 
         when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
@@ -242,7 +242,7 @@ public class DaysOldRepositoryPurgeTest
         throws Exception
     {
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
 
         when( sessionFactory.createSession( ) ).thenReturn( repositorySession );

@@ -319,7 +319,7 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
 
             }
             if (supportsFeature(StagingRepositoryFeature.class)) {
-                StagingRepositoryFeature sf = getFeature(StagingRepositoryFeature.class).get();
+                StagingRepositoryFeature sf = getFeature( StagingRepositoryFeature.class );
                 if (sf.getStagingRepository() != null) {
                     sf.getStagingRepository().close();
                 }

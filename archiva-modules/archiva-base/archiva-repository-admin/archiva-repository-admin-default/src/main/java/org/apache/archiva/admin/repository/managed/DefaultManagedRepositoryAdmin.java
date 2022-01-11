@@ -150,19 +150,19 @@ public class DefaultManagedRepositoryAdmin
         adminRepo.setBlockRedeployments( repo.blocksRedeployments() );
         adminRepo.setCronExpression( repo.getSchedulingDefinition() );
         if (repo.supportsFeature( IndexCreationFeature.class )) {
-            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
             adminRepo.setSkipPackedIndexCreation( icf.isSkipPackedIndexCreation() );
         }
         adminRepo.setScanned( repo.isScanned() );
         if (repo.supportsFeature( ArtifactCleanupFeature.class) ) {
-            ArtifactCleanupFeature acf = repo.getFeature( ArtifactCleanupFeature.class ).get();
+            ArtifactCleanupFeature acf = repo.getFeature( ArtifactCleanupFeature.class );
             adminRepo.setRetentionPeriod( acf.getRetentionPeriod().getDays() );
             adminRepo.setRetentionCount( acf.getRetentionCount() );
             adminRepo.setDeleteReleasedSnapshots( acf.isDeleteReleasedSnapshots() );
 
         }
         if (repo.supportsFeature( StagingRepositoryFeature.class )) {
-            StagingRepositoryFeature stf = repo.getFeature( StagingRepositoryFeature.class ).get();
+            StagingRepositoryFeature stf = repo.getFeature( StagingRepositoryFeature.class );
             adminRepo.setStageRepoNeeded( stf.isStageRepoNeeded() );
             if (stf.getStagingRepository()!=null) {
                 adminRepo.setStagingRepository( convertRepo( stf.getStagingRepository() ) );
@@ -240,7 +240,7 @@ public class DefaultManagedRepositoryAdmin
                     scanRepository( newRepo.getId(), true );
                 }
 
-                org.apache.archiva.repository.ManagedRepository stagingRepo = newRepo.getFeature( StagingRepositoryFeature.class ).get( ).getStagingRepository( );
+                org.apache.archiva.repository.ManagedRepository stagingRepo = newRepo.getFeature( StagingRepositoryFeature.class ).getStagingRepository( );
                 if ( stagingRepo!=null)
                 {
                     if (stagingRepo.isScanned()) {
@@ -285,7 +285,7 @@ public class DefaultManagedRepositoryAdmin
             org.apache.archiva.repository.ManagedRepository stagingRepository = null;
             if (repo != null) {
                 if (repo.supportsFeature(StagingRepositoryFeature.class)) {
-                    stagingRepository = repo.getFeature(StagingRepositoryFeature.class).get().getStagingRepository();
+                    stagingRepository = repo.getFeature( StagingRepositoryFeature.class ).getStagingRepository();
                 }
             } else {
                 throw new RepositoryAdminException("A repository with that id does not exist");
@@ -427,7 +427,7 @@ public class DefaultManagedRepositoryAdmin
         org.apache.archiva.repository.ManagedRepository oldRepo = repositoryRegistry.getManagedRepository( managedRepository.getId( ) );
         boolean stagingExists = false;
         if (oldRepo.supportsFeature( StagingRepositoryFeature.class ) ){
-            stagingExists = oldRepo.getFeature( StagingRepositoryFeature.class ).get().getStagingRepository() != null;
+            stagingExists = oldRepo.getFeature( StagingRepositoryFeature.class ).getStagingRepository() != null;
         }
         boolean updateIndexContext = !StringUtils.equals( updatedRepoConfig.getIndexDir(), managedRepository.getIndexDirectory() );
         org.apache.archiva.repository.ManagedRepository newRepo;
@@ -436,7 +436,7 @@ public class DefaultManagedRepositoryAdmin
         {
             newRepo = repositoryRegistry.putRepository( updatedRepoConfig );
             if (newRepo.supportsFeature( StagingRepositoryFeature.class )) {
-                org.apache.archiva.repository.ManagedRepository stagingRepo = newRepo.getFeature( StagingRepositoryFeature.class ).get( ).getStagingRepository( );
+                org.apache.archiva.repository.ManagedRepository stagingRepo = newRepo.getFeature( StagingRepositoryFeature.class ).getStagingRepository( );
                 if (stagingRepo!=null && !stagingExists)
                 {
                     triggerAuditEvent( stagingRepo.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );

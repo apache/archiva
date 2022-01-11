@@ -148,7 +148,7 @@ public class RepositoryPurgeConsumer
 
         if (repository.supportsFeature( ArtifactCleanupFeature.class ))
         {
-            ArtifactCleanupFeature acf = repository.getFeature( ArtifactCleanupFeature.class ).get();
+            ArtifactCleanupFeature acf = repository.getFeature( ArtifactCleanupFeature.class );
             int retentionPeriodInDays = acf.getRetentionPeriod( ).getDays( );
             int retentionCount = acf.getRetentionCount();
             if ( retentionPeriodInDays != 0 )

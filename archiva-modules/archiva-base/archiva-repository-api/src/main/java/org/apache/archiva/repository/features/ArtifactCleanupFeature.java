@@ -43,11 +43,6 @@ public class ArtifactCleanupFeature implements RepositoryFeature<ArtifactCleanup
         this.retentionCount = retentionCount;
     }
 
-    @Override
-    public ArtifactCleanupFeature get() {
-        return this;
-    }
-
     /**
      * Returns true, if snapshot artifacts should be deleted, when artifacts with release version
      * exist in one of the managed repositories.

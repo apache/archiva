@@ -251,7 +251,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
         {
             throw new IndexUpdateFailedException( "The context is not associated to a remote repository with remote index " + context.getId( ) );
         } else {
-            RemoteIndexFeature rif = context.getRepository().getFeature(RemoteIndexFeature.class).get();
+            RemoteIndexFeature rif = context.getRepository().getFeature( RemoteIndexFeature.class );
             remoteUpdateUri = context.getRepository().getLocation().resolve(rif.getIndexUri());
         }
         final RemoteRepository remoteRepository = (RemoteRepository) context.getRepository( );
@@ -277,7 +277,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
                         NetworkProxy networkProxy = null;
                         if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
                         {
-                            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
+                            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class );
                             if ( StringUtils.isNotBlank( rif.getProxyId( ) ) )
                             {
                                 networkProxy = proxyRegistry.getNetworkProxy( rif.getProxyId( ) );
@@ -517,7 +517,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
     @Override
     public void updateLocalIndexPath(Repository repo) {
         if (repo.supportsFeature(IndexCreationFeature.class)) {
-            IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
             try {
                 icf.setLocalIndexPath(getIndexPath(repo));
             } catch (IOException e) {
@@ -534,7 +534,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
 
 
     private StorageAsset getIndexPath( Repository repo) throws IOException {
-        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
         Path repoDir = repo.getRoot().getFilePath();
         URI indexDir = icf.getIndexPath();
         String indexPath = indexDir.getPath();
@@ -587,7 +587,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
         // is there configured indexDirectory ?
         if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
         {
-            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
+            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class );
             indexDirectory = getIndexPath(remoteRepository);
             String remoteIndexUrl = calculateIndexRemoteUrl( remoteRepository.getLocation( ), rif );
             try

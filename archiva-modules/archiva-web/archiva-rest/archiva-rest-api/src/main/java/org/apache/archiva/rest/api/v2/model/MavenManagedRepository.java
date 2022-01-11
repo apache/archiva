@@ -84,16 +84,16 @@ public class MavenManagedRepository extends Repository
         repo.setName( beanRepo.getName());
         repo.setScanned( beanRepo.isScanned() );
         repo.setSchedulingDefinition( beanRepo.getSchedulingDefinition() );
-        ArtifactCleanupFeature artifactCleanupFeature = beanRepo.getFeature( ArtifactCleanupFeature.class ).get( );
+        ArtifactCleanupFeature artifactCleanupFeature = beanRepo.getFeature( ArtifactCleanupFeature.class );
         repo.setDeleteSnapshotsOfRelease( artifactCleanupFeature.isDeleteReleasedSnapshots());
         repo.setRetentionCount( artifactCleanupFeature.getRetentionCount());
         repo.setRetentionPeriod( artifactCleanupFeature.getRetentionPeriod() );
-        IndexCreationFeature icf = beanRepo.getFeature( IndexCreationFeature.class ).get( );
+        IndexCreationFeature icf = beanRepo.getFeature( IndexCreationFeature.class );
         repo.setIndex( icf.hasIndex( ) );
         repo.setIndexPath( icf.getIndexPath( ).getPath( ) );
         repo.setPackedIndexPath( icf.getPackedIndexPath( ).getPath( ) );
         repo.setSkipPackedIndexCreation( icf.isSkipPackedIndexCreation() );
-        StagingRepositoryFeature srf = beanRepo.getFeature( StagingRepositoryFeature.class ).get( );
+        StagingRepositoryFeature srf = beanRepo.getFeature( StagingRepositoryFeature.class );
         repo.setHasStagingRepository( srf.isStageRepoNeeded( ) );
         repo.setStagingRepository( srf.getStagingRepository()!=null?srf.getStagingRepository().getId():"" );
     }

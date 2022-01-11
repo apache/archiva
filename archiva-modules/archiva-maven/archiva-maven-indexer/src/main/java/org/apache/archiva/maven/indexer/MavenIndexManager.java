@@ -272,7 +272,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
         {
             throw new IndexUpdateFailedException( "The context is not associated to a remote repository with remote index " + context.getId( ) );
         } else {
-            RemoteIndexFeature rif = context.getRepository().getFeature(RemoteIndexFeature.class).get();
+            RemoteIndexFeature rif = context.getRepository().getFeature( RemoteIndexFeature.class );
             remoteUpdateUri = context.getRepository().getLocation().resolve(rif.getIndexUri());
         }
         final RemoteRepository remoteRepository = (RemoteRepository) context.getRepository( );
@@ -298,7 +298,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
                     NetworkProxy networkProxy = null;
                     if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
                     {
-                        RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
+                        RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class );
                         if ( StringUtils.isNotBlank( rif.getProxyId( ) ) )
                         {
                             networkProxy = proxyRegistry.getNetworkProxy( rif.getProxyId( ) );
@@ -535,7 +535,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
     @Override
     public void updateLocalIndexPath(Repository repo) {
         if (repo.supportsFeature(IndexCreationFeature.class)) {
-            IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
             try {
                 icf.setLocalIndexPath(getIndexPath(repo));
                 icf.setLocalPackedIndexPath(getPackedIndexPath(repo));
@@ -559,7 +559,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
             log.error("Could not create temporary directory for merged index: {}", e.getMessage(), e);
             throw new IndexCreationFailedException("IO error while creating temporary directory for merged index: "+e.getMessage(), e);
         }
-        IndexCreationFeature indexCreationFeature = destinationRepo.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature indexCreationFeature = destinationRepo.getFeature( IndexCreationFeature.class );
         if (indexCreationFeature.getLocalIndexPath()== null) {
             throw new IllegalArgumentException("The given repository does not have a local index path");
         }
@@ -643,12 +643,12 @@ public class MavenIndexManager implements ArchivaIndexManager {
     }
 
     private StorageAsset getIndexPath( Repository repo) throws IOException {
-        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
         return getIndexPath( icf.getIndexPath(), repo, DEFAULT_INDEX_PATH);
     }
 
     private StorageAsset getPackedIndexPath(Repository repo) throws IOException {
-        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
         return getIndexPath(icf.getPackedIndexPath(), repo, DEFAULT_PACKED_INDEX_PATH);
     }
 
@@ -669,7 +669,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
         // is there configured indexDirectory ?
         if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
         {
-            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
+            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class );
             indexDirectory = getIndexPath(remoteRepository);
             String remoteIndexUrl = calculateIndexRemoteUrl( remoteRepository.getLocation( ), rif );
             try

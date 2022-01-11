@@ -85,11 +85,6 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
         }
     }
 
-    @Override
-    public IndexCreationFeature get() {
-        return this;
-    }
-
     /**
      * Returns true, if no packed index files should be created.
      * @return True, if no packed index files are created, otherwise false.

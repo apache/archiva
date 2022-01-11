@@ -127,14 +127,14 @@ public class RepositoryProviderMock implements RepositoryProvider
             if (configuration.isSnapshots()) {
                 managedRepository.addActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
             }
-            ArtifactCleanupFeature acf = managedRepository.getFeature( ArtifactCleanupFeature.class ).get( );
+            ArtifactCleanupFeature acf = managedRepository.getFeature( ArtifactCleanupFeature.class );
             acf.setRetentionPeriod( Period.ofDays( configuration.getRetentionPeriod( ) ) );
             acf.setDeleteReleasedSnapshots( configuration.isDeleteReleasedSnapshots( ) );
             acf.setRetentionCount( configuration.getRetentionCount( ) );
-            IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class ).get( );
+            IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class );
             icf.setIndexPath( new URI( configuration.getIndexDir( ) ) );
             icf.setSkipPackedIndexCreation( configuration.isSkipPackedIndexCreation( ) );
-            StagingRepositoryFeature srf = managedRepository.getFeature( StagingRepositoryFeature.class ).get( );
+            StagingRepositoryFeature srf = managedRepository.getFeature( StagingRepositoryFeature.class );
             srf.setStageRepoNeeded( configuration.isStageRepoNeeded( ) );
         }
         catch ( Exception e )
@@ -187,7 +187,7 @@ public class RepositoryProviderMock implements RepositoryProvider
             char[] pwd = configuration.getPassword()==null ? "".toCharArray() : configuration.getPassword().toCharArray();
             remoteRepository.setCredentials( new PasswordCredentials( configuration.getUsername( ), pwd ) );
             remoteRepository.setLocation( new URI( configuration.getUrl( )==null ? "" : configuration.getUrl() ) );
-            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
+            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class );
             rif.setDownloadRemoteIndexOnStartup( configuration.isDownloadRemoteIndexOnStartup( ) );
             rif.setDownloadRemoteIndex( configuration.isDownloadRemoteIndex( ) );
             rif.setIndexUri( new URI( configuration.getIndexDir( ) ) );
@@ -215,14 +215,14 @@ public class RepositoryProviderMock implements RepositoryProvider
         configuration.setRefreshCronExpression( managedRepository.getSchedulingDefinition( ) );
         configuration.setReleases( managedRepository.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE) );
         configuration.setSnapshots( managedRepository.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) );
-        ArtifactCleanupFeature acf = managedRepository.getFeature( ArtifactCleanupFeature.class ).get( );
+        ArtifactCleanupFeature acf = managedRepository.getFeature( ArtifactCleanupFeature.class );
         configuration.setRetentionPeriod( acf.getRetentionPeriod( ).getDays( ) );
         configuration.setDeleteReleasedSnapshots( acf.isDeleteReleasedSnapshots( ) );
         configuration.setRetentionCount( acf.getRetentionCount( ) );
-        IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class ).get( );
+        IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class );
         configuration.setSkipPackedIndexCreation( icf.isSkipPackedIndexCreation( ) );
         configuration.setIndexDir( icf.getIndexPath( ) == null ? "" : icf.getIndexPath().toString( ) );
-        StagingRepositoryFeature srf = managedRepository.getFeature( StagingRepositoryFeature.class ).get( );
+        StagingRepositoryFeature srf = managedRepository.getFeature( StagingRepositoryFeature.class );
         configuration.setStageRepoNeeded( srf.isStageRepoNeeded( ) );
         return configuration;
     }
@@ -249,7 +249,7 @@ public class RepositoryProviderMock implements RepositoryProvider
             configuration.setPassword( new String( pwdCreds.getPassword( ) ) );
         }
         configuration.setUrl( remoteRepository.getLocation( ) == null ? "" : remoteRepository.getLocation().toString( ) );
-        RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
+        RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class );
         configuration.setDownloadRemoteIndex( rif.isDownloadRemoteIndex( ) );
         configuration.setDownloadRemoteIndexOnStartup( rif.isDownloadRemoteIndexOnStartup( ) );
         configuration.setIndexDir( rif.getIndexUri( )==null ? "" : rif.getIndexUri().toString( ) );

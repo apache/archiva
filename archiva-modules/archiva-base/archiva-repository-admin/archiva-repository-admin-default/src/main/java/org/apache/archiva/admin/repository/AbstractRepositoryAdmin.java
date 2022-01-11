@@ -123,7 +123,7 @@ public abstract class AbstractRepositoryAdmin
         adminRepo.setDescription( repo.getDescription() );
         adminRepo.setType(repo.getType()==null?"MAVEN": repo.getType().name());
         if (repo.supportsFeature( IndexCreationFeature.class )) {
-            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class );
             adminRepo.setIndexDirectory( convertUriToString( icf.getIndexPath() ) );
             adminRepo.setPackedIndexDirectory(convertUriToString(icf.getPackedIndexPath()));
         }

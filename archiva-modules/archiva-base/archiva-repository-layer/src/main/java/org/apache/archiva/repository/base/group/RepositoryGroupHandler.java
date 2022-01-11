@@ -179,7 +179,7 @@ public class RepositoryGroupHandler
     {
         if ( group != null )
         {
-            return group.getFeature( IndexCreationFeature.class ).get( ).getLocalIndexPath( );
+            return group.getFeature( IndexCreationFeature.class ).getLocalIndexPath( );
         }
         else
         {

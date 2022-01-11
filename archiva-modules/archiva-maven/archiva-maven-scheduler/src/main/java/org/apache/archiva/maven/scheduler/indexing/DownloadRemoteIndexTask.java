@@ -121,7 +121,7 @@ public class DownloadRemoteIndexTask
             if (!this.remoteRepository.supportsFeature(RemoteIndexFeature.class)) {
                 throw new RepositoryException("Repository does not support RemotIndexFeature "+remoteRepository.getId());
             }
-            RemoteIndexFeature rif = this.remoteRepository.getFeature(RemoteIndexFeature.class).get();
+            RemoteIndexFeature rif = this.remoteRepository.getFeature( RemoteIndexFeature.class );
             IndexingContext indexingContext = this.remoteRepository.getIndexingContext().getBaseContext(IndexingContext.class);
             // create a temp directory to download files
             tempIndexDirectory = Paths.get(indexingContext.getIndexDirectoryFile().getParent(), ".tmpIndex" );

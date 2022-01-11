@@ -166,7 +166,7 @@ public class RepositoryPurgeConsumerTest
                                         RepositoryPurgeConsumer.class );
         repoPurgeConsumer.setRepositorySessionFactory( sessionFactory );
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class );
         atf.setRetentionPeriod( Period.ofDays( 0 ) ); // force days older off to allow retention count purge to execute.
         atf.setRetentionCount( TEST_RETENTION_COUNT );
         addRepoToConfiguration( "retention-count", repoConfiguration );
@@ -277,7 +277,7 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.setRepositorySessionFactory( sessionFactory );
 
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class );
         atf.setRetentionPeriod( Period.ofDays( TEST_DAYS_OLDER ) );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
@@ -366,7 +366,7 @@ public class RepositoryPurgeConsumerTest
                                         KnownRepositoryContentConsumer.class );
 
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class );
         acf.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
@@ -425,7 +425,7 @@ public class RepositoryPurgeConsumerTest
                                         RepositoryPurgeConsumer.class );
         repoPurgeConsumer.setRepositorySessionFactory( sessionFactory );
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class );
         acf.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
 

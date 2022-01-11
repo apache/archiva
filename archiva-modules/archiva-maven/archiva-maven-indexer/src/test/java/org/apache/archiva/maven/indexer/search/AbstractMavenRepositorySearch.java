@@ -207,7 +207,7 @@ public abstract class AbstractMavenRepositorySearch
         throws Exception
     {
         final Repository rRepo = repositoryRegistry.getRepository(repository);
-        IndexCreationFeature icf = rRepo.getFeature(IndexCreationFeature.class).get();
+        IndexCreationFeature icf = rRepo.getFeature( IndexCreationFeature.class );
 
 
         ArchivaIndexingContext archivaCtx = rRepo.getIndexingContext();
@@ -269,7 +269,7 @@ public abstract class AbstractMavenRepositorySearch
         repositoryRegistry.reload();
 
         Repository rRepo2 = repositoryRegistry.getRepository( repository );
-        icf = rRepo2.getFeature(IndexCreationFeature.class).get();
+        icf = rRepo2.getFeature( IndexCreationFeature.class );
 
 
         archivaCtx = rRepo2.getIndexingContext();

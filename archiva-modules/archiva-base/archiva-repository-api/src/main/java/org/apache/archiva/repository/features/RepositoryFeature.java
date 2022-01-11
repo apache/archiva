@@ -69,9 +69,4 @@ public interface RepositoryFeature<T extends RepositoryFeature<T>> {
         return this.getClass().equals(clazz);
     }
 
-    /**
-     * Returns the concrete feature instance.
-     * @return the feature instance.
-     */
-    T get();
 }

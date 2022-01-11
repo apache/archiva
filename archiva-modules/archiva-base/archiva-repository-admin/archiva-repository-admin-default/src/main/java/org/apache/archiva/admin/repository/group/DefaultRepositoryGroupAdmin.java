@@ -88,7 +88,7 @@ public class DefaultRepositoryGroupAdmin
     {
         org.apache.archiva.repository.RepositoryGroup group = repositoryRegistry.getRepositoryGroup(repositoryGroupId);
         if (group!=null) {
-            return group.getFeature(IndexCreationFeature.class).get().getLocalIndexPath();
+            return group.getFeature( IndexCreationFeature.class ).getLocalIndexPath();
         } else {
             return null;
         }
@@ -397,7 +397,7 @@ public class DefaultRepositoryGroupAdmin
         RepositoryGroup rg = new RepositoryGroup( group.getId( ), group.getRepositories().stream().map(r -> r.getId()).collect( Collectors.toList()) );
         if (group.supportsFeature( IndexCreationFeature.class ))
         {
-            IndexCreationFeature indexCreationFeature = group.getFeature( IndexCreationFeature.class ).get();
+            IndexCreationFeature indexCreationFeature = group.getFeature( IndexCreationFeature.class );
             rg.setMergedIndexPath( indexCreationFeature.getIndexPath().getPath() );
         }
         rg.setCronExpression( group.getSchedulingDefinition() );

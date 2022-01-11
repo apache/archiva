@@ -47,11 +47,6 @@ public class RemoteIndexFeature implements RepositoryFeature<RemoteIndexFeature>
     private String proxyId = "";
 
 
-    @Override
-    public RemoteIndexFeature get() {
-        return this;
-    }
-
     /**
      * True, if the remote index should be downloaded.
      * @return True if download, otherwise false.

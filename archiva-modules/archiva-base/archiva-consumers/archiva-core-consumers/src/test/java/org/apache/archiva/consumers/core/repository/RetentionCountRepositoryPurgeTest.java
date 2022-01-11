@@ -53,7 +53,7 @@ public class RetentionCountRepositoryPurgeTest
 
         org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
-        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class );
 
         Mockito.when( sessionFactory.createSession( ) ).thenReturn( repositorySession );
         Mockito.when( repositorySession.getRepository()).thenReturn( metadataRepository );
