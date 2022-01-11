@@ -17,13 +17,16 @@ package org.apache.archiva.rest.api.v2.model.map;
  * under the License.
  */
 
-import org.apache.archiva.common.ModelMapper;
+import org.apache.archiva.common.AbstractMapper;
+import org.apache.archiva.common.MultiModelMapper;
 import org.apache.archiva.configuration.model.ConfigurationModel;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.rest.api.v2.model.RestModel;
 
 /**
  * @author Martin Schreier <martin_s@apache.org>
  */
-public interface RestMapper<S extends RestModel, T extends ConfigurationModel> extends ModelMapper<S,T>
+public abstract class RestServiceMapper<S extends RestModel, T extends ConfigurationModel, R extends Repository> extends AbstractMapper<S,T,R>
+    implements MultiModelMapper<S,T,R>
 {
 }

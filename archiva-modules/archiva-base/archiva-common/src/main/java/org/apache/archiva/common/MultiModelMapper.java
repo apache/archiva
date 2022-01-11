@@ -22,57 +22,72 @@ package org.apache.archiva.common;
  *
  * @author Martin Schreier <martin_s@apache.org>
  */
-public interface ModelMapper<S,T>
+public interface MultiModelMapper<B,T,R>
 {
     /**
      * Converts the source instance to a new instance of the target type.
      * @param source the source instance
      * @return a new instance of the target type
      */
-    T map(S source);
+    T map( B source);
 
     /**
      * Updates the target instance based on the source instance
      * @param source the source instance
      * @param target the target instance
      */
-    void update( S source, T target );
+    void update( B source, T target );
 
 
     /**
      * Converts the target instance back to the source type
-     * @param target the target instance
+     * @param source the target instance
      * @return a new instance of the source type
      */
-    S reverseMap(T target);
+    B reverseMap( R source);
 
     /**
      * Updates the source instance based on the target instance
-     * @param target the target instance
-     * @param source the source instance
+     * @param source the target instance
+     * @param target the source instance
      */
-    void reverseUpdate( T target, S source);
+    void reverseUpdate( R source, B target);
 
     /**
      * Returns the class name of the source type
      * @return the source type
      */
-    Class<S> getSourceType();
+    Class<B> getBaseType();
 
     /**
-     * Returns the class name of the target type
+     * Returns the class name of type that is the goal for the mapping.
      * @return the target type
      */
-    Class<T> getTargetType();
+    Class<T> getDestinationType();
+
+    /**
+     * Returns the class name of the source for the reverse mapping.
+     * @return
+     */
+    Class<R> getReverseSourceType();
 
     /**
      * Returns <code>true</code>, if the given type are the same or supertype of the mapping types.
-     * @param sourceType
-     * @param targetType
+     * @param baseType
+     * @param destinationType
+     * @param reverseSourceType
      * @param <S>
      * @param <T>
      * @return
      */
-    <S, T> boolean supports( Class<S> sourceType, Class<T> targetType );
+    <S, T, R> boolean supports( Class<S> baseType, Class<T> destinationType, Class<R> reverseSourceType);
+
+    default int getHash() {
+        return getHash(getBaseType( ), getDestinationType( ), getReverseSourceType( ) );
+    }
+
+    static int getHash(Class<?> baseType, Class<?> destinationType, Class<?> reverseSourceType) {
+        return baseType.hashCode( ) ^ destinationType.hashCode( ) ^ reverseSourceType.hashCode( );
+    }
 
 }

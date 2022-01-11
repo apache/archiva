@@ -1,4 +1,4 @@
-package org.apache.archiva.configuration.model;
+package org.apache.archiva.common;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,10 +18,29 @@ package org.apache.archiva.configuration.model;
  */
 
 /**
- * Marker interface that is used for configuration model classes.
- * 
  * @author Martin Schreier <martin_s@apache.org>
  */
-public interface ConfigurationModel
+public abstract class AbstractMapper<B,T,R> implements MultiModelMapper<B,T,R>
 {
+    @Override
+    public <S2, T2, R2> boolean supports( Class<S2> baseType, Class<T2> destinationType, Class<R2> reverseSourceType )
+    {
+        return (
+            baseType.isAssignableFrom( getBaseType( ) ) &&
+                destinationType.isAssignableFrom( getDestinationType( ) ) &&
+                reverseSourceType.isAssignableFrom( getReverseSourceType( ) )
+        );
+    }
+
+    @Override
+    public int hashCode( )
+    {
+        return getHash();
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        return super.hashCode( ) == obj.hashCode( );
+    }
 }

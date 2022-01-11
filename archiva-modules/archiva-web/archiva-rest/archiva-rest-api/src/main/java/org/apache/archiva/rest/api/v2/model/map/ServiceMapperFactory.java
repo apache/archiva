@@ -17,13 +17,13 @@ package org.apache.archiva.rest.api.v2.model.map;
  * under the License.
  */
 
-import org.apache.archiva.common.ModelMapper;
 import org.apache.archiva.common.ModelMapperFactory;
+import org.apache.archiva.common.MultiModelMapper;
 import org.apache.archiva.configuration.model.ConfigurationModel;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.rest.api.v2.model.RestModel;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
@@ -32,45 +32,40 @@ import java.util.Map;
 /**
  * @author Martin Schreier <martin_s@apache.org>
  */
+@SuppressWarnings( "unchecked" )
 @Service("modelMapperFactory#rest")
-public class ServiceMapperFactory implements ModelMapperFactory<RestModel, ConfigurationModel>
+public class ServiceMapperFactory implements ModelMapperFactory<RestModel, ConfigurationModel, Repository>
 {
+    List<MultiModelMapper> modelMapperList;
+
     @Inject
-    List<ModelMapper> modelMapperList;
+    public ServiceMapperFactory( List<MultiModelMapper> modelMapperList )
+    {
+        this.modelMapperList = modelMapperList;
+        initMapper();
+    }
 
-    Map<Class<? extends RestModel>, Map<Class<? extends ConfigurationModel>,ModelMapper<? extends RestModel, ? extends ConfigurationModel>>> modelMap;
+    Map<Integer, MultiModelMapper<? extends RestModel, ? extends ConfigurationModel, ? extends Repository>> modelMap = new HashMap<>(  );
 
-    @PostConstruct
     void initMapper() {
         modelMap = new HashMap<>( );
-        for ( ModelMapper<?, ?> mapper : modelMapperList )
+        for ( MultiModelMapper<?, ?, ?> mapper : modelMapperList )
         {
-            if (!mapper.supports( RestModel.class, ConfigurationModel.class )) {
+            if (!mapper.supports( RestModel.class, ConfigurationModel.class, Repository.class )) {
                 continue;
             }
-            Class<? extends RestModel> sType = (Class<? extends RestModel>) mapper.getSourceType( );
-            Class<? extends ConfigurationModel> tType = (Class<? extends ConfigurationModel>) mapper.getTargetType( );
-            Map<Class<? extends ConfigurationModel>, ModelMapper<? extends RestModel, ? extends ConfigurationModel>> tMap;
-            if (modelMap.containsKey( sType )) {
-                tMap = modelMap.get( sType );
-            } else {
-                tMap = new HashMap<>( );
-            }
-            tMap.put( tType, (ModelMapper<? extends RestModel, ? extends ConfigurationModel>) mapper );
+            Integer key = mapper.hashCode( );
+            modelMap.put( key, (MultiModelMapper<? extends RestModel, ? extends ConfigurationModel, ? extends Repository>) mapper );
         }
     }
 
     @Override
-    public <S extends RestModel, T extends ConfigurationModel> ModelMapper<S, T> getMapper( Class<S> sourceType, Class<T> targetType ) throws IllegalArgumentException
+    public <S extends RestModel, T extends ConfigurationModel, R extends Repository> MultiModelMapper<S, T, R> getMapper( Class<S> baseType, Class<T> destinationType, Class<R> reverseSourceType ) throws IllegalArgumentException
     {
-        if (!modelMap.containsKey( sourceType )) {
-            throw new IllegalArgumentException( "No mapper defined for the given source type "+sourceType );
+        Integer key = MultiModelMapper.getHash( baseType, destinationType, reverseSourceType );
+        if (!modelMap.containsKey( key )) {
+            throw new IllegalArgumentException( "No mapper defined for the given source type "+baseType );
         }
-        Map<Class<? extends ConfigurationModel>, ModelMapper<? extends RestModel, ? extends ConfigurationModel>> tMap = modelMap.get( sourceType );
-        if ( !tMap.containsKey( targetType ) )
-        {
-            throw new IllegalArgumentException( "No mapper defined for the given target type "+targetType );
-        }
-        return (ModelMapper<S, T>) tMap.get( targetType );
+        return (MultiModelMapper<S, T, R>) modelMap.get( key );
     }
 }

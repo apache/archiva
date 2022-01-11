@@ -23,7 +23,6 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.event.EventSource;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.features.RepositoryFeature;
-import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.net.URI;
 import java.util.Locale;
@@ -136,12 +135,12 @@ public interface Repository extends EventSource, RepositoryStorage {
      * Extension method that allows to provide different features that are not supported by all
      * repository types.
      *
-     * @param clazz The feature class that is requested
      * @param <T> This is the class of the feature
+     * @param clazz The feature class that is requested
      * @return The feature implementation for this repository instance, if it is supported
      * @throws UnsupportedFeatureException if the feature is not supported by this repository type
      */
-    <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature(Class<T> clazz) throws UnsupportedFeatureException;
+    <T extends RepositoryFeature<T>> T getFeature( Class<T> clazz) throws UnsupportedFeatureException;
 
 
     /**

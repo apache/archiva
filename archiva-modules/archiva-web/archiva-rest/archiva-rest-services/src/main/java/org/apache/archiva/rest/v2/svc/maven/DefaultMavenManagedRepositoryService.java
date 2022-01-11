@@ -220,7 +220,7 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         }
         try
         {
-            managedRepositoryAdmin.addManagedRepository( convert( managedRepository ), managedRepository.isHasStagingRepository(), getAuditInformation() );
+            managedRepositoryAdmin.addManagedRepository( convert( managedRepository ), managedRepository.hasStagingRepository(), getAuditInformation() );
             httpServletResponse.setStatus( 201 );
             return MavenManagedRepository.of( repositoryRegistry.getManagedRepository( repoId ) );
         }
@@ -236,7 +236,7 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         org.apache.archiva.admin.model.beans.ManagedRepository repo = convert( managedRepository );
         try
         {
-            managedRepositoryAdmin.updateManagedRepository( repo, managedRepository.isHasStagingRepository( ), getAuditInformation( ), managedRepository.isResetStats( ) );
+            managedRepositoryAdmin.updateManagedRepository( repo, managedRepository.hasStagingRepository( ), getAuditInformation( ), managedRepository.isResetStats( ) );
             ManagedRepository newRepo = repositoryRegistry.getManagedRepository( managedRepository.getId( ) );
             if (newRepo==null) {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_UPDATE_FAILED, repositoryId ) );

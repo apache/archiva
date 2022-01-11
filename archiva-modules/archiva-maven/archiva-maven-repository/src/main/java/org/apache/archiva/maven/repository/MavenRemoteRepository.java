@@ -91,12 +91,12 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
 
     @SuppressWarnings( "unchecked" )
     @Override
-    public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
+    public <T extends RepositoryFeature<T>> T getFeature( Class<T> clazz ) throws UnsupportedFeatureException
     {
         if (RemoteIndexFeature.class.equals( clazz )) {
-            return (RepositoryFeature<T>) remoteIndexFeature;
+            return (T) remoteIndexFeature;
         } else if (IndexCreationFeature.class.equals(clazz)) {
-            return (RepositoryFeature<T>) indexCreationFeature;
+            return (T) indexCreationFeature;
         } else {
             throw new UnsupportedFeatureException(  );
         }

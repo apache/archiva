@@ -22,19 +22,21 @@ package org.apache.archiva.common;
  *
  * @author Martin Schreier <martin_s@apache.org>
  *
- * @param <SB> The base source type for the model mapper
- * @param <TB> The base target type for the model mapper
+ * @param <B> The base type for the model mapper
+ * @param <T> The target type for the model mapper
+ * @param <R> The reverse source type for the model mapper
  */
-public interface ModelMapperFactory<SB,TB>
+public interface ModelMapperFactory<B,T,R>
 {
     /**
      * Returns a mapper for the given source and target type. If no mapper is registered for this combination,
      * it will throw a {@link IllegalArgumentException}
-     * @param sourceType the source type for the mapping
-     * @param targetType the destination type
-     * @param <S> source type
-     * @param <T> destination type
+     * @param baseType the source type for the mapping
+     * @param destinationType the destination type
+     * @param <B2> base type
+     * @param <T2> destination type
+     * @param <R2> Reverse source type
      * @return the mapper instance
      */
-    <S extends SB, T extends TB> ModelMapper<S, T> getMapper( Class<S> sourceType, Class<T> targetType ) throws IllegalArgumentException;
+    <B2 extends B, T2 extends T, R2 extends R> MultiModelMapper<B2, T2, R2> getMapper( Class<B2> baseType, Class<T2> destinationType, Class<R2> reverseSourceType ) throws IllegalArgumentException;
 }

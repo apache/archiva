@@ -96,15 +96,15 @@ public class MavenManagedRepository extends AbstractManagedRepository
 
     @SuppressWarnings( "unchecked" )
     @Override
-    public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
+    public <T extends RepositoryFeature<T>> T getFeature( Class<T> clazz ) throws UnsupportedFeatureException
     {
         if (ArtifactCleanupFeature.class.equals( clazz ))
         {
-            return (RepositoryFeature<T>) artifactCleanupFeature;
+            return (T) artifactCleanupFeature;
         } else if (IndexCreationFeature.class.equals(clazz)) {
-            return (RepositoryFeature<T>) indexCreationFeature;
+            return (T) indexCreationFeature;
         } else if (StagingRepositoryFeature.class.equals(clazz)) {
-            return (RepositoryFeature<T>) stagingRepositoryFeature;
+            return (T) stagingRepositoryFeature;
         } else {
             throw new UnsupportedFeatureException(  );
         }

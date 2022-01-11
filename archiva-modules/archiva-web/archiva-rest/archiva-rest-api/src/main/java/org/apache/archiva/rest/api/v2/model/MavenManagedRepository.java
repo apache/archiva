@@ -200,7 +200,7 @@ public class MavenManagedRepository extends Repository
     }
 
     @Schema(name="has_staging_repository", description = "True, if this repository has a staging repository assigned")
-    public boolean isHasStagingRepository( )
+    public boolean hasStagingRepository( )
     {
         return hasStagingRepository;
     }

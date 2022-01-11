@@ -22,7 +22,6 @@ package org.apache.archiva.repository.base;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.parser.CronParser;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventHandler;
 import org.apache.archiva.event.EventManager;
@@ -38,7 +37,6 @@ import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,10 +198,10 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
 
     @SuppressWarnings( "unchecked" )
     @Override
-    public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
+    public <T extends RepositoryFeature<T>> T getFeature( Class<T> clazz ) throws UnsupportedFeatureException
     {
         if (featureMap.containsKey( clazz )) {
-            return (RepositoryFeature<T>) featureMap.get(clazz);
+            return (T) featureMap.get(clazz);
         } else
         {
             throw new UnsupportedFeatureException( "Feature " + clazz + " not supported" );
