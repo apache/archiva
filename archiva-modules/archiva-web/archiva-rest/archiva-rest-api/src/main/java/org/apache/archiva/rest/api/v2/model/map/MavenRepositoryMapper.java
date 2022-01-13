@@ -22,6 +22,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.archiva.rest.api.v2.model.MavenManagedRepository;
 import org.springframework.stereotype.Service;
@@ -48,24 +49,32 @@ public class MavenRepositoryMapper extends RestServiceMapper<MavenManagedReposit
     @Override
     public void update( MavenManagedRepository source, ManagedRepositoryConfiguration target )
     {
-        target.setId( source.getId() );
-        target.setName( source.getName() );
-        target.setDescription( source.getDescription( ) );
+        if (source.getId()!=null)
+            target.setId( source.getId() );
+        if (source.getName()!=null)
+            target.setName( source.getName() );
+        if (source.getDescription()!=null)
+            target.setDescription( source.getDescription( ) );
         target.setType( TYPE );
 
         target.setBlockRedeployments( source.isBlocksRedeployments() );
         target.setDeleteReleasedSnapshots( source.isDeleteSnapshotsOfRelease() );
-        target.setIndexDir( source.getIndexPath() );
-        target.setLayout( source.getLayout() );
-        target.setLocation( source.getLocation() );
-        target.setPackedIndexDir( source.getPackedIndexPath() );
-        target.setRefreshCronExpression( source.getSchedulingDefinition() );
-        target.setReleases( source.getReleaseSchemes( ).contains( ReleaseScheme.RELEASE ) );
+        if (source.getIndexPath()!=null)
+            target.setIndexDir( source.getIndexPath() );
+        if (source.getLayout()!=null)
+            target.setLayout( source.getLayout() );
+        if (source.getLocation()!=null)
+            target.setLocation( source.getLocation() );
+        if (source.getPackedIndexPath()!=null)
+            target.setPackedIndexDir( source.getPackedIndexPath() );
+        if (source.getSchedulingDefinition()!=null)
+            target.setRefreshCronExpression( source.getSchedulingDefinition() );
+        target.setReleases( source.getReleaseSchemes( ).contains( ReleaseScheme.RELEASE.name() ) );
         target.setRetentionCount( source.getRetentionCount() );
         target.setRetentionPeriod( source.getRetentionPeriod().getDays() );
         target.setScanned( source.isScanned() );
         target.setSkipPackedIndexCreation( source.isSkipPackedIndexCreation() );
-        target.setSnapshots( source.getReleaseSchemes( ).contains( ReleaseScheme.SNAPSHOT ) );
+        target.setSnapshots( source.getReleaseSchemes( ).contains( ReleaseScheme.SNAPSHOT.name() ) );
         target.setStageRepoNeeded( source.hasStagingRepository() );
 
     }
@@ -74,18 +83,40 @@ public class MavenRepositoryMapper extends RestServiceMapper<MavenManagedReposit
     public MavenManagedRepository reverseMap( ManagedRepository source )
     {
         MavenManagedRepository result = new MavenManagedRepository( );
-        StagingRepositoryFeature srf = source.getFeature( StagingRepositoryFeature.class );
-        ArtifactCleanupFeature acf = source.getFeature( ArtifactCleanupFeature.class );
-        result.setHasStagingRepository( srf.isStageRepoNeeded() );
-        result.setBlocksRedeployments( source.blocksRedeployments() );
-        result.setIndex( source.hasIndex() );
-        result.setStagingRepository( srf.getStagingRepository().getId() );
-        return null;
+        reverseUpdate( source, result );
+        return result;
     }
 
     @Override
     public void reverseUpdate( ManagedRepository source, MavenManagedRepository target )
     {
+        StagingRepositoryFeature srf = source.getFeature( StagingRepositoryFeature.class );
+        ArtifactCleanupFeature acf = source.getFeature( ArtifactCleanupFeature.class );
+        IndexCreationFeature icf = source.getFeature( IndexCreationFeature.class );
+
+
+        target.setId( source.getId( ) );
+        target.setName( source.getName( ) );
+        target.setDescription( source.getDescription() );
+
+        target.setBlocksRedeployments( source.blocksRedeployments() );
+        target.setDeleteSnapshotsOfRelease( acf.isDeleteReleasedSnapshots() );
+        target.setIndex( source.hasIndex() );
+        target.setIndexPath( icf.getIndexPath().toString() );
+        target.setLayout( source.getLayout() );
+        target.setLocation( source.getLocation().toString() );
+        target.setPackedIndexPath( icf.getPackedIndexPath().toString() );
+        target.setSchedulingDefinition( source.getSchedulingDefinition() );
+        for ( ReleaseScheme scheme: source.getActiveReleaseSchemes() ) {
+            target.addReleaseScheme( scheme.toString() );
+        }
+        target.setRetentionCount( acf.getRetentionCount() );
+        target.setRetentionPeriod( acf.getRetentionPeriod() );
+        target.setScanned( source.isScanned() );
+        target.setSkipPackedIndexCreation( icf.isSkipPackedIndexCreation() );
+        if (srf.getStagingRepository()!=null)
+            target.setStagingRepository( srf.getStagingRepository().getId() );
+        target.setHasStagingRepository( srf.isStageRepoNeeded() );
 
     }
 
