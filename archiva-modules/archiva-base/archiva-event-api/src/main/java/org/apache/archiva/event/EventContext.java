@@ -33,10 +33,10 @@ import java.util.Map;
 public interface EventContext
 {
     /**
-     * Returns the prefix used for entry keys in the repository data map.
-     * @return the prefix string for this context
+     * Returns the id which is also used as prefix for keys in the repository data map.
+     * @return the identifier of this context
      */
-    String getPrefix();
+    String getId();
 
     /**
      * Returns the context data as map of strings. Each entry key is prefixed with

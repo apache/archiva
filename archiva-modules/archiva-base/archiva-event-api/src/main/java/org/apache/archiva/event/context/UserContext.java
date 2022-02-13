@@ -32,7 +32,7 @@ public class UserContext implements EventContext, Serializable
 {
     private static final long serialVersionUID = -3499164111736559781L;
 
-    private static final String PREFIX = "user";
+    private static final String ID = "user";
 
     private final String userId;
     private final String remoteAddress;
@@ -58,14 +58,14 @@ public class UserContext implements EventContext, Serializable
     public Map<String, String> getData( )
     {
         Map<String, String> values = new HashMap<>( );
-        values.put( PREFIX+".user_id", userId );
-        values.put( PREFIX+".remote_address", remoteAddress );
+        values.put( ID +".user_id", userId );
+        values.put( ID +".remote_address", remoteAddress );
         return values;
     }
 
     @Override
-    public String getPrefix( )
+    public String getId( )
     {
-        return PREFIX;
+        return ID;
     }
 }

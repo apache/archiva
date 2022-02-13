@@ -32,15 +32,15 @@ public class RepositoryContext implements EventContext, Serializable
 {
     private static final long serialVersionUID = -4172663291198878307L;
 
-    private static final String PREFIX = "repository";
+    private static final String ID = "repository";
 
-    private final String id;
+    private final String repositoryId;
     private final String type;
     private final String flavour;
 
-    public RepositoryContext( String id, String type, String flavour )
+    public RepositoryContext( String repositoryId, String type, String flavour )
     {
-        this.id = id;
+        this.repositoryId = repositoryId;
         this.type = type;
         this.flavour = flavour;
     }
@@ -49,9 +49,9 @@ public class RepositoryContext implements EventContext, Serializable
      * Returns the repository id
      * @return the repository id
      */
-    public String getId( )
+    public String getRepositoryId( )
     {
-        return id;
+        return repositoryId;
     }
 
     /**
@@ -76,15 +76,15 @@ public class RepositoryContext implements EventContext, Serializable
     public Map<String, String> getData( )
     {
         Map<String, String> values = new HashMap<>( );
-        values.put( PREFIX+".id", id );
-        values.put( PREFIX+".type", type );
-        values.put( PREFIX+".flavour", flavour );
+        values.put( ID +".repositoryId", repositoryId );
+        values.put( ID +".type", type );
+        values.put( ID +".flavour", flavour );
         return values;
     }
 
     @Override
-    public String getPrefix( )
+    public String getId( )
     {
-        return PREFIX;
+        return ID;
     }
 }

@@ -21,6 +21,9 @@ import org.apache.archiva.event.context.RepositoryContext;
 import org.apache.archiva.event.context.RestContext;
 import org.apache.archiva.event.context.UserContext;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Static helper class that allows to set certain context data
  *
@@ -34,8 +37,9 @@ public class EventContextBuilder
         evt.setContext( UserContext.class, new UserContext( user, remoteAddress ) );
     }
 
-    public static void setRestcontext(Event evt, String service, String path, String operation, int resultCode, String... parameters ) {
-        evt.setContext( RestContext.class, new RestContext( service, path, operation, resultCode, parameters ) );
+    public static void setRestContext( Event evt,  String path, String service, String operation,
+                                       String requestMethod, int resultCode, Map<String, List<String>> pathParameter) {
+        evt.setContext( RestContext.class, new RestContext( path, service, operation, requestMethod, resultCode, pathParameter ) );
     }
 
     public static void setRepositoryContext(Event evt, String id, String type, String flavour ) {
@@ -56,8 +60,9 @@ public class EventContextBuilder
         return this;
     }
 
-    public EventContextBuilder witRest( String service, String path, String operation, int resultCode, String... parameters) {
-        setRestcontext( this.evt, service, path, operation, resultCode, parameters );
+    public EventContextBuilder witRest( String path, String service, String operation, String requestMethod,
+        int resultCode, Map<String,List<String>> pathParameter) {
+        setRestContext( this.evt, path, service,  operation, requestMethod, resultCode, pathParameter );
         return this;
     }
 

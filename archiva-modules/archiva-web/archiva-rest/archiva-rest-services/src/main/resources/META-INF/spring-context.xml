@@ -74,6 +74,7 @@
       <ref bean="requestValidationInterceptor#rest" />
       <ref bean="archivaRestServiceExceptionMapper"/>
       <ref bean="threadLocalUserCleaner#rest" />
+      <ref bean="restInterceptor#audit" />
     </jaxrs:providers>
 
     <jaxrs:serviceBeans>

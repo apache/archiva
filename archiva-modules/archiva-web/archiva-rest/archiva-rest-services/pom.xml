@@ -252,7 +252,11 @@
 
     <dependency>
        <groupId>jakarta.inject</groupId>
-<artifactId>jakarta.inject-api</artifactId>
+      <artifactId>jakarta.inject-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
@@ -492,11 +496,6 @@
 
 
     <!-- Needed for JDK >= 9 -->
-    <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-runtime</artifactId>

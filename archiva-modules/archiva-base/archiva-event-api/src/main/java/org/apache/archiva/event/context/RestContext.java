@@ -20,7 +20,6 @@ package org.apache.archiva.event.context;
 import org.apache.archiva.event.EventContext;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,22 +33,25 @@ public class RestContext implements EventContext, Serializable
 {
     private static final long serialVersionUID = -4109505194250928317L;
 
-    public static final String PREFIX = "rest";
+    public static final String ID = "rest";
 
     private final String service;
     private final String path;
     private final String operation;
-    private final List<String> parameters;
+    private final String requestMethod;
     private final int resultCode;
+    private final Map<String, List<String>> pathParameter;
 
 
-    public RestContext( String service, String path, String operation, int resultCode, String... parameters )
+    public RestContext( String path, String service, String operation, String requestMethod, int resultCode,
+                        Map<String, List<String>> pathParameter)
     {
         this.service = service;
         this.path = path;
         this.operation = operation;
         this.resultCode = resultCode;
-        this.parameters = Arrays.asList( parameters );
+        this.requestMethod = requestMethod;
+        this.pathParameter = pathParameter;
     }
 
     public String getService( )
@@ -67,9 +69,9 @@ public class RestContext implements EventContext, Serializable
         return operation;
     }
 
-    public List<String> getParameters( )
+    public String getRequestMethod( )
     {
-        return parameters;
+        return requestMethod;
     }
 
     public int getResultCode( )
@@ -77,20 +79,33 @@ public class RestContext implements EventContext, Serializable
         return resultCode;
     }
 
+    public Map<String, List<String>> getPathParameter() {
+        return pathParameter;
+    }
+
     @Override
     public Map<String, String> getData( )
     {
         Map<String, String> values = new HashMap<>( );
-        values.put( PREFIX+".service", service );
-        values.put( PREFIX+".path", path );
-        values.put( PREFIX+".operation", operation );
-        values.put( PREFIX+".parameter", String.join( ",", parameters ) );
+        values.put( ID +".service", service );
+        values.put( ID +".path", path );
+        values.put( ID +".operation", operation );
+        values.put( ID +".requestMethod", requestMethod );
+        values.put( ID + ".pathParameter", getParamString( ) );
         return values;
     }
 
     @Override
-    public String getPrefix( )
+    public String getId( )
     {
-        return PREFIX;
+        return ID;
+    }
+
+    private String getParamString() {
+        StringBuilder sb = new StringBuilder( );
+        for(Map.Entry<String, List<String>> entry : pathParameter.entrySet()) {
+            sb.append( entry.getKey( ) ).append( String.join( ",", entry.getValue( ) ) );
+        }
+        return sb.toString( );
     }
 }

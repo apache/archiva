@@ -22,6 +22,7 @@ package org.apache.archiva.repository.event;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventContextBuilder;
 import org.apache.archiva.event.EventType;
+import org.apache.archiva.event.context.RepositoryContext;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.Repository;
@@ -31,7 +32,7 @@ import org.apache.archiva.repository.RepositoryGroup;
  * A repository event is specific to a repository and holds a reference to the repository that
  * is related to this event.
  */
-public class RepositoryEvent extends Event
+public class RepositoryEvent extends Event<RepositoryContext>
 {
 
     private static final long serialVersionUID = 4676673476606414834L;
@@ -53,6 +54,17 @@ public class RepositoryEvent extends Event
 
     public Repository getRepository() {
         return repository;
+    }
+
+    @Override
+    public RepositoryContext getContext() {
+        return getContext( RepositoryContext.class );
+    }
+
+    @Override
+    public void setContext( RepositoryContext context )
+    {
+        setContext( RepositoryContext.class, context );
     }
 
     @Override

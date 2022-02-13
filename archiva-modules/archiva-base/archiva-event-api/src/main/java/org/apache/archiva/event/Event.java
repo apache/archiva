@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * Events can be chained, which means a event listener can catch events and rethrow them as its own event.
  *
  */
-public class Event extends EventObject implements Cloneable {
+public class Event<C extends EventContext> extends EventObject implements Cloneable {
 
     private static final long serialVersionUID = -7171846575892044990L;
 
@@ -95,6 +95,10 @@ public class Event extends EventObject implements Cloneable {
         throw new IllegalArgumentException( "No matching event context registered for " + contextClazz );
     }
 
+    public C getContext() {
+        throw new UnsupportedOperationException( );
+    }
+
     public Map<String, String> getContextData() {
         return contextMap.entrySet( ).stream( ).flatMap( ctx -> ctx.getValue( ).getData( ).entrySet( ).stream( ) )
             .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
@@ -104,8 +108,8 @@ public class Event extends EventObject implements Cloneable {
         this.contextMap.put( clazz, context );
     }
 
-    public <T extends EventContext> void setContext( T context) {
-        this.contextMap.put( context.getClass(), context );
+    public void setContext( C context) {
+        throw new UnsupportedOperationException( );
     }
 
     /**
