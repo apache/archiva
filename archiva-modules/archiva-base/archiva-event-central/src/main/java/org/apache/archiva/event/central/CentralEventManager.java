@@ -1,4 +1,4 @@
-package org.apache.archiva.rest.api.v2.model;
+package org.apache.archiva.event.central;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,28 +17,26 @@ package org.apache.archiva.rest.api.v2.model;
  * under the License.
  */
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import org.apache.archiva.repository.ManagedRepository;
-
-import java.io.Serializable;
+import org.apache.archiva.event.AbstractEventManager;
+import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
- * @author Martin Stockhammer <martin_s@apache.org>
+ * Event manager that collects all events from archiva subsystems.
+ *
+ * @author Martin Schreier <martin_s@apache.org>
  */
-@Schema(name="MavenManagedRepositoryUpdate",description = "Data object for updating maven managed repositories")
-public class MavenManagedRepositoryUpdate extends MavenManagedRepository implements Serializable
+@Service("eventManager#archiva")
+public class CentralEventManager extends AbstractEventManager implements EventHandler<Event>
 {
-    private static final long serialVersionUID = -9181643343284109862L;
-    private boolean resetStats = false;
+    private static final Logger log = LoggerFactory.getLogger( CentralEventManager.class );
 
-    @Schema(name="reset_stats",description = "True, if statistics should be reset after update")
-    public boolean isResetStats( )
+    @Override
+    public void handle( Event event )
     {
-        return resetStats;
-    }
-
-    public void setResetStats( boolean resetStats )
-    {
-        this.resetStats = resetStats;
+        log.info( "Event: type={}, sourceClass={}, source={}", event.getType( ), event.getSource().getClass(), event.getSource() );
     }
 }

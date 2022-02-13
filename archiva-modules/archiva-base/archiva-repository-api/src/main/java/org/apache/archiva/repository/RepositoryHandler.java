@@ -277,11 +277,11 @@ public interface RepositoryHandler<R extends Repository, C extends AbstractRepos
      * Returns the repository variant, this handler manages.
      * @return the concrete variant class
      */
-    Class<R> getVariant();
+    Class<R> getFlavour();
 
     /**
      * Returns the repository configuration variant, this handler manages.
      * @return the concrete configuration variant class
      */
-    Class<C> getConfigurationVariant();
+    Class<C> getConfigurationFlavour();
 }

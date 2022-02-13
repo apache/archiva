@@ -118,6 +118,16 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         return repo;
     }
 
+    private Path getBaseDir(String location) {
+        String lPathStr = location == null ? "" : location;
+        Path lPath = Paths.get( lPathStr );
+        if (lPath.isAbsolute()) {
+            return lPath.getParent( );
+        } else {
+            return archivaConfiguration.getRepositoryBaseDir( ).resolve( lPath );
+        }
+    }
+
     @Override
     public MavenRemoteRepository createRemoteInstance(String id, String name) {
         return createRemoteInstance(id, name, archivaConfiguration.getRemoteRepositoryBaseDir());
@@ -194,7 +204,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Override
     public ManagedRepository createManagedInstance(ManagedRepositoryConfiguration cfg) throws RepositoryException {
-        MavenManagedRepository repo = createManagedInstance(cfg.getId(), cfg.getName(), Paths.get(cfg.getLocation()).getParent());
+        MavenManagedRepository repo = createManagedInstance( cfg.getId( ), cfg.getName( ), getBaseDir( cfg.getLocation( ) ) );
         updateManagedInstance(repo, cfg);
         return repo;
     }

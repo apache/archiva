@@ -141,6 +141,51 @@ class MavenRepositoryMapperTest
     }
 
     @Test
+    void updateWithNullValues( )
+    {
+        MavenRepositoryMapper mapper = new MavenRepositoryMapper( );
+        MavenManagedRepository repo = new MavenManagedRepository( );
+        ManagedRepositoryConfiguration result = new ManagedRepositoryConfiguration( );
+        repo.setId( "repo01" );
+        repo.setName( "Repo 01" );
+        repo.setDescription( "This is repo 01" );
+        repo.setLocation( null );
+        repo.setHasStagingRepository( true );
+        repo.setSchedulingDefinition( "0,1,2 * * * *" );
+        repo.setPackedIndexPath( null );
+        repo.setIndexPath( null );
+        repo.setIndex( true );
+        repo.setDeleteSnapshotsOfRelease( false );
+        repo.setBlocksRedeployments( false );
+        repo.setReleaseSchemes( Arrays.asList( ReleaseScheme.RELEASE.name(), ReleaseScheme.SNAPSHOT.name() ) );
+        repo.setCharacteristic( Repository.CHARACTERISTIC_MANAGED );
+        repo.setScanned( true );
+        repo.setRetentionPeriod( null );
+        repo.setRetentionCount( 15 );
+        repo.setSkipPackedIndexCreation( false );
+        repo.setStagingRepository( null );
+        mapper.update( repo, result );
+
+        assertNotNull( result );
+        assertEquals( "repo01", result.getId( ) );
+        assertEquals( "Repo 01", result.getName( ) );
+        assertEquals( "This is repo 01", result.getDescription( ) );
+        assertNotNull( result.getLocation( ) );
+        assertTrue( result.isStageRepoNeeded( ) );
+        assertEquals( "0,1,2 * * * *", result.getRefreshCronExpression( ) );
+        assertEquals( "", result.getIndexDir( ) );
+        assertEquals( "", result.getPackedIndexDir( ) );
+        assertFalse( result.isDeleteReleasedSnapshots( ) );
+        assertFalse( result.isBlockRedeployments( ) );
+        assertTrue( result.isSnapshots( ) );
+        assertTrue( result.isReleases( ) );
+        assertTrue( result.isScanned( ) );
+        assertEquals( 100, result.getRetentionPeriod( ) );
+        assertEquals( 15, result.getRetentionCount( ) );
+        assertFalse( result.isSkipPackedIndexCreation( ) );
+    }
+
+    @Test
     void reverseMap( ) throws IOException, URISyntaxException, UnsupportedURIException
     {
         MavenRepositoryMapper mapper = new MavenRepositoryMapper( );

@@ -20,8 +20,12 @@ package org.apache.archiva.repository.event;
  */
 
 import org.apache.archiva.event.Event;
+import org.apache.archiva.event.EventContextBuilder;
 import org.apache.archiva.event.EventType;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryGroup;
 
 /**
  * A repository event is specific to a repository and holds a reference to the repository that
@@ -39,6 +43,12 @@ public class RepositoryEvent extends Event
     public RepositoryEvent(EventType<? extends RepositoryEvent> type, Object origin, Repository repository) {
         super(type, origin);
         this.repository = repository;
+        EventContextBuilder builder = EventContextBuilder.withEvent( this );
+        if (repository!=null)
+        {
+            builder.withRepository( repository.getId( ), repository.getType( ).name( ), getFlavour( repository ) );
+        }
+        builder.apply( );
     }
 
     public Repository getRepository() {
@@ -48,5 +58,17 @@ public class RepositoryEvent extends Event
     @Override
     public EventType<? extends RepositoryEvent> getType() {
         return (EventType<? extends RepositoryEvent>) super.getType();
+    }
+
+    private String getFlavour(Repository repository) {
+        if (repository instanceof RemoteRepository ) {
+            return RemoteRepository.class.getName( );
+        } else if (repository instanceof ManagedRepository ) {
+            return ManagedRepository.class.getName( );
+        } else if ( repository instanceof RepositoryGroup ) {
+            return RepositoryGroup.class.getName( );
+        } else {
+            return "UNKNOWN";
+        }
     }
 }

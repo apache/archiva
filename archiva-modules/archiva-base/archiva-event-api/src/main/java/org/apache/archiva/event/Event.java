@@ -9,8 +9,7 @@ package org.apache.archiva.event;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,6 +20,9 @@ package org.apache.archiva.event;
 
 import java.time.LocalDateTime;
 import java.util.EventObject;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Base class for events. Events have a type and a source.
@@ -41,6 +43,8 @@ public class Event extends EventObject implements Cloneable {
     private final EventType<? extends Event> type;
     private final LocalDateTime createTime;
 
+    private HashMap<Class<? extends EventContext>, EventContext> contextMap = new HashMap<>( );
+
     public Event(EventType<? extends Event> type, Object originator) {
         super(originator);
         this.type = type;
@@ -52,6 +56,7 @@ public class Event extends EventObject implements Cloneable {
         this.previous = previous;
         this.type = previous.getType();
         this.createTime = previous.getCreateTime();
+        this.contextMap = previous.contextMap;
     }
 
     /**
@@ -70,6 +75,38 @@ public class Event extends EventObject implements Cloneable {
         return createTime;
     }
 
+    public <T extends EventContext> T getContext(Class<T> contextClazz) throws IllegalArgumentException {
+        if (contextMap.containsKey( contextClazz )) {
+            return (T) contextMap.get( contextClazz );
+        } else {
+            T ctx = null;
+            for ( Map.Entry<Class<? extends EventContext>, EventContext> clazzEntry : contextMap.entrySet()) {
+                if ( contextClazz.isAssignableFrom( clazzEntry.getKey() ) )
+                {
+                    ctx = (T) clazzEntry.getValue( );
+                    break;
+                }
+            }
+            if (ctx!=null) {
+                contextMap.put( contextClazz, ctx );
+                return ctx;
+            }
+        }
+        throw new IllegalArgumentException( "No matching event context registered for " + contextClazz );
+    }
+
+    public Map<String, String> getContextData() {
+        return contextMap.entrySet( ).stream( ).flatMap( ctx -> ctx.getValue( ).getData( ).entrySet( ).stream( ) )
+            .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) );
+    }
+
+    public <T extends EventContext> void setContext( Class<T> clazz, T context) {
+        this.contextMap.put( clazz, context );
+    }
+
+    public <T extends EventContext> void setContext( T context) {
+        this.contextMap.put( context.getClass(), context );
+    }
 
     /**
      * Recreates the event with the given instance as the new source. The
@@ -81,6 +118,7 @@ public class Event extends EventObject implements Cloneable {
         Event newEvent = (Event) this.clone();
         newEvent.previous = this;
         newEvent.source = newSource;
+        newEvent.contextMap = this.contextMap;
         return newEvent;
     }
 

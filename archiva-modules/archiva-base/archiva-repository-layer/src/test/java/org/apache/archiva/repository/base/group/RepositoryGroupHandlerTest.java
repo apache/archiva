@@ -148,7 +148,7 @@ class RepositoryGroupHandlerTest
 
     private RepositoryGroupHandler createHandler( )
     {
-        Mockito.when( managedRepositoryHandler.getVariant( ) ).thenReturn( ManagedRepository.class );
+        Mockito.when( managedRepositoryHandler.getFlavour( ) ).thenReturn( ManagedRepository.class );
         final ManagedRepository internalRepo;
         try
         {
@@ -161,7 +161,7 @@ class RepositoryGroupHandlerTest
         Mockito.when( managedRepositoryHandler.get( ArgumentMatchers.eq("internal") ) ).thenReturn( internalRepo );
         repositoryRegistry.registerHandler( managedRepositoryHandler );
 
-        Mockito.when( remoteRepositoryHandler.getVariant( ) ).thenReturn( RemoteRepository.class );
+        Mockito.when( remoteRepositoryHandler.getFlavour( ) ).thenReturn( RemoteRepository.class );
         final RemoteRepository centralRepo;
         try
         {

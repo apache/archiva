@@ -31,8 +31,10 @@ import org.apache.archiva.configuration.model.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.model.RepositoryGroupConfiguration;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventHandler;
-import org.apache.archiva.event.EventManager;
+import org.apache.archiva.event.BasicEventManager;
+import org.apache.archiva.event.EventSource;
 import org.apache.archiva.event.EventType;
+import org.apache.archiva.event.central.CentralEventManager;
 import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
@@ -65,6 +67,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -111,9 +114,13 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     @Inject
     List<RepositoryValidator<? extends Repository>> repositoryValidatorList;
 
+    @Inject
+    @Named("eventManager#archiva")
+    CentralEventManager centralEventManager;
+
     private boolean ignoreIndexing = false;
 
-    private final EventManager eventManager;
+    private final BasicEventManager eventManager;
 
 
     private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock( );
@@ -133,7 +140,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
 
     public ArchivaRepositoryRegistry( ConfigurationHandler configurationHandler, List<RepositoryValidator<? extends Repository>> validatorList )
     {
-        this.eventManager = new EventManager( this );
+        this.eventManager = new BasicEventManager( this );
         this.configurationHandler = configurationHandler;
         this.validators = initValidatorList( validatorList );
     }
@@ -172,6 +179,7 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
                 provider.addRepositoryEventHandler( this );
             }
             this.configurationHandler.addListener( this );
+            registerEventHandler( EventType.ROOT, centralEventManager );
         }
         finally
         {
@@ -1162,15 +1170,15 @@ public class ArchivaRepositoryRegistry implements ConfigurationListener, EventHa
     @Override
     public void registerHandler( RepositoryHandler<?, ?> handler )
     {
-        if ( handler.getVariant( ).isAssignableFrom( RepositoryGroup.class ) )
+        if ( handler.getFlavour( ).isAssignableFrom( RepositoryGroup.class ) )
         {
             registerGroupHandler( (RepositoryHandler<RepositoryGroup, RepositoryGroupConfiguration>) handler );
         }
-        else if ( handler.getVariant( ).isAssignableFrom( ManagedRepository.class ) )
+        else if ( handler.getFlavour( ).isAssignableFrom( ManagedRepository.class ) )
         {
             registerManagedRepositoryHandler( (RepositoryHandler<ManagedRepository, ManagedRepositoryConfiguration>) handler );
         }
-        else if ( handler.getVariant().isAssignableFrom( RemoteRepository.class )) {
+        else if ( handler.getFlavour().isAssignableFrom( RemoteRepository.class )) {
             registerRemoteRepositoryHandler( (RepositoryHandler<RemoteRepository, RemoteRepositoryConfiguration>) handler );
         }
     }

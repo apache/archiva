@@ -9,8 +9,7 @@ package org.apache.archiva.event;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -80,6 +79,18 @@ public class EventType<T extends Event> implements Serializable  {
 
     public EventType<? super T> getSuperType() {
         return superType;
+    }
+
+    public String getPath() {
+        List<String> path = new ArrayList<>( );
+        EventType eventType = this;
+        while(eventType!=ROOT)
+        {
+            path.add( eventType.name( ) );
+            eventType = this.getSuperType( );
+        }
+        Collections.reverse( path );
+        return String.join( "/", path );
     }
 
     private void register(EventType<? extends T> subType) {

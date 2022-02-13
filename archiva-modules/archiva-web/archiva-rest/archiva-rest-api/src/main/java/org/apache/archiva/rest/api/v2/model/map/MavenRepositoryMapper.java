@@ -64,14 +64,22 @@ public class MavenRepositoryMapper extends RestServiceMapper<MavenManagedReposit
         if (source.getLayout()!=null)
             target.setLayout( source.getLayout() );
         if (source.getLocation()!=null)
-            target.setLocation( source.getLocation() );
+        {
+            target.setLocation( source.getLocation( ) );
+        } else {
+            if (target.getLocation()==null) {
+                target.setLocation( "" );
+            }
+        }
+
         if (source.getPackedIndexPath()!=null)
             target.setPackedIndexDir( source.getPackedIndexPath() );
         if (source.getSchedulingDefinition()!=null)
             target.setRefreshCronExpression( source.getSchedulingDefinition() );
         target.setReleases( source.getReleaseSchemes( ).contains( ReleaseScheme.RELEASE.name() ) );
         target.setRetentionCount( source.getRetentionCount() );
-        target.setRetentionPeriod( source.getRetentionPeriod().getDays() );
+        if (source.getRetentionPeriod()!=null)
+            target.setRetentionPeriod( source.getRetentionPeriod().getDays() );
         target.setScanned( source.isScanned() );
         target.setSkipPackedIndexCreation( source.isSkipPackedIndexCreation() );
         target.setSnapshots( source.getReleaseSchemes( ).contains( ReleaseScheme.SNAPSHOT.name() ) );

@@ -33,6 +33,7 @@
     <site.staging.base>${project.parent.basedir}</site.staging.base>
   </properties>
   <modules>
+    <module>archiva-event-api</module>
     <module>archiva-test-utils</module>
     <module>archiva-common</module>
     <module>archiva-mock</module>
@@ -53,5 +54,6 @@
     <module>archiva-security-common</module>
     <module>archiva-storage-api</module>
     <module>archiva-storage-fs</module>
+    <module>archiva-event-central</module>
   </modules>
 </project>

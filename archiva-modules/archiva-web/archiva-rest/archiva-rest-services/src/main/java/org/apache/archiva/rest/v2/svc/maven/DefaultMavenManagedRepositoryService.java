@@ -20,13 +20,12 @@ package org.apache.archiva.rest.v2.svc.maven;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.common.MultiModelMapper;
 import org.apache.archiva.components.rest.model.PagedResult;
 import org.apache.archiva.components.rest.util.QueryHelper;
 import org.apache.archiva.configuration.model.ManagedRepositoryConfiguration;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
-import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
-import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
@@ -36,6 +35,7 @@ import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.ContentItem;
@@ -44,10 +44,12 @@ import org.apache.archiva.repository.storage.fs.FsStorageUtil;
 import org.apache.archiva.rest.api.v2.model.FileInfo;
 import org.apache.archiva.rest.api.v2.model.MavenManagedRepository;
 import org.apache.archiva.rest.api.v2.model.MavenManagedRepositoryUpdate;
+import org.apache.archiva.rest.api.v2.model.map.ServiceMapperFactory;
 import org.apache.archiva.rest.api.v2.svc.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.v2.svc.ErrorKeys;
 import org.apache.archiva.rest.api.v2.svc.ErrorMessage;
 import org.apache.archiva.rest.api.v2.svc.maven.MavenManagedRepositoryService;
+import org.apache.archiva.rest.v2.svc.AbstractService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,20 +67,22 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static org.apache.archiva.security.common.ArchivaRoleConstants.OPERATION_READ_REPOSITORY;
 import static org.apache.archiva.security.common.ArchivaRoleConstants.OPERATION_ADD_ARTIFACT;
+import static org.apache.archiva.security.common.ArchivaRoleConstants.OPERATION_READ_REPOSITORY;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
 @Service("v2.managedMavenRepositoryService#rest")
-public class DefaultMavenManagedRepositoryService implements MavenManagedRepositoryService
+public class DefaultMavenManagedRepositoryService extends AbstractService implements MavenManagedRepositoryService
 {
     @Context
     HttpServletResponse httpServletResponse;
 
     @Context
     UriInfo uriInfo;
+
+
 
     private static final Logger log = LoggerFactory.getLogger( DefaultMavenManagedRepositoryService.class );
     private static final QueryHelper<ManagedRepository> QUERY_HELPER = new QueryHelper<>( new String[]{"id", "name"} );
@@ -96,36 +100,20 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
     private final ManagedRepositoryAdmin managedRepositoryAdmin;
     private final RepositoryRegistry repositoryRegistry;
     private final SecuritySystem securitySystem;
+    private final ServiceMapperFactory serviceMapperFactory;
+    private final MultiModelMapper<MavenManagedRepository, ManagedRepositoryConfiguration, ManagedRepository> mapper;
+
 
     public DefaultMavenManagedRepositoryService( SecuritySystem securitySystem,
                                                  RepositoryRegistry repositoryRegistry,
-                                                 ManagedRepositoryAdmin managedRepositoryAdmin )
+                                                 ManagedRepositoryAdmin managedRepositoryAdmin,
+                                                 ServiceMapperFactory serviceMapperFactory ) throws IllegalArgumentException
     {
         this.securitySystem = securitySystem;
         this.repositoryRegistry = repositoryRegistry;
         this.managedRepositoryAdmin = managedRepositoryAdmin;
-    }
-
-    protected AuditInformation getAuditInformation( )
-    {
-        RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get( );
-        User user;
-        String remoteAddr;
-        if (redbackRequestInformation==null) {
-            user = null;
-            remoteAddr = null;
-        } else
-        {
-            user = redbackRequestInformation.getUser( );
-            remoteAddr = redbackRequestInformation.getRemoteAddr( );
-        }
-        return new AuditInformation( user, remoteAddr );
-    }
-
-    public static ManagedRepositoryConfiguration toConfig(MavenManagedRepository repo) {
-        ManagedRepositoryConfiguration cfg = new ManagedRepositoryConfiguration( );
-        return cfg;
-
+        this.serviceMapperFactory = serviceMapperFactory;
+        this.mapper = serviceMapperFactory.getMapper( MavenManagedRepository.class, ManagedRepositoryConfiguration.class, ManagedRepository.class );
     }
 
     @Override
@@ -140,7 +128,7 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
             final Comparator<ManagedRepository> comparator = QUERY_HELPER.getComparator( orderBy, order );
             int totalCount = Math.toIntExact( repos.stream( ).filter( queryFilter ).count( ) );
             return PagedResult.of( totalCount, offset, limit, repos.stream( ).filter( queryFilter ).sorted( comparator )
-                .map( MavenManagedRepository::of ).skip( offset ).limit( limit ).collect( Collectors.toList( ) ) );
+                .map( mapper::reverseMap ).skip( offset ).limit( limit ).collect( Collectors.toList( ) ) );
         }
         catch (ArithmeticException e) {
             log.error( "Invalid number of repositories detected." );
@@ -158,7 +146,7 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         if (repo.getType()!=RepositoryType.MAVEN) {
             throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_WRONG_TYPE, repositoryId, repo.getType().name() ), 404 );
         }
-        return MavenManagedRepository.of( repo );
+        return mapper.reverseMap( repo );
     }
 
     @Override
@@ -220,13 +208,14 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
         }
         try
         {
-            managedRepositoryAdmin.addManagedRepository( convert( managedRepository ), managedRepository.hasStagingRepository(), getAuditInformation() );
+            repositoryRegistry.putRepository( mapper.map( managedRepository ) );
             httpServletResponse.setStatus( 201 );
-            return MavenManagedRepository.of( repositoryRegistry.getManagedRepository( repoId ) );
+            return mapper.reverseMap( repositoryRegistry.getManagedRepository( repoId ) );
         }
-        catch ( RepositoryAdminException e )
+        catch ( RepositoryException e )
         {
-            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_ADMIN_ERROR, e.getMessage( ) ) );
+            log.error( "Could not create repository: {}", e.getMessage( ), e );
+            throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_ADD_FAILED, repoId ) );
         }
     }
 
@@ -241,7 +230,7 @@ public class DefaultMavenManagedRepositoryService implements MavenManagedReposit
             if (newRepo==null) {
                 throw new ArchivaRestServiceException( ErrorMessage.of( ErrorKeys.REPOSITORY_UPDATE_FAILED, repositoryId ) );
             }
-            return MavenManagedRepository.of( newRepo );
+            return mapper.reverseMap( newRepo );
         }
         catch ( RepositoryAdminException e )
         {

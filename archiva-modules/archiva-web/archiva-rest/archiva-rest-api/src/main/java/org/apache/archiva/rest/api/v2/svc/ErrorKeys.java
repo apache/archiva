@@ -122,4 +122,10 @@ public interface ErrorKeys
      * When the operation needs authentication, but not authenticated user was found in the request context.
      */
     String NOT_AUTHENTICATED = PREFIX + "user.not_authenticated";
+
+    /**
+     * Repository add action failed
+     */
+    String REPOSITORY_ADD_FAILED = PREFIX + "add.failed";
+    
 }

@@ -73,37 +73,6 @@ public class MavenManagedRepository extends Repository
         super.setType( RepositoryType.MAVEN.name( ) );
     }
 
-    protected static void update(MavenManagedRepository repo, ManagedRepository beanRepo) {
-        repo.setDescription( beanRepo.getDescription() );
-        repo.setId( beanRepo.getId() );
-        repo.setIndex( true );
-        repo.setLayout( beanRepo.getLayout() );
-        repo.setBlocksRedeployments( beanRepo.blocksRedeployments() );
-        repo.setReleaseSchemes( beanRepo.getActiveReleaseSchemes().stream().map( Objects::toString).collect( Collectors.toList()) );
-        repo.setLocation( beanRepo.getLocation().toString() );
-        repo.setName( beanRepo.getName());
-        repo.setScanned( beanRepo.isScanned() );
-        repo.setSchedulingDefinition( beanRepo.getSchedulingDefinition() );
-        ArtifactCleanupFeature artifactCleanupFeature = beanRepo.getFeature( ArtifactCleanupFeature.class );
-        repo.setDeleteSnapshotsOfRelease( artifactCleanupFeature.isDeleteReleasedSnapshots());
-        repo.setRetentionCount( artifactCleanupFeature.getRetentionCount());
-        repo.setRetentionPeriod( artifactCleanupFeature.getRetentionPeriod() );
-        IndexCreationFeature icf = beanRepo.getFeature( IndexCreationFeature.class );
-        repo.setIndex( icf.hasIndex( ) );
-        repo.setIndexPath( icf.getIndexPath( ).getPath( ) );
-        repo.setPackedIndexPath( icf.getPackedIndexPath( ).getPath( ) );
-        repo.setSkipPackedIndexCreation( icf.isSkipPackedIndexCreation() );
-        StagingRepositoryFeature srf = beanRepo.getFeature( StagingRepositoryFeature.class );
-        repo.setHasStagingRepository( srf.isStageRepoNeeded( ) );
-        repo.setStagingRepository( srf.getStagingRepository()!=null?srf.getStagingRepository().getId():"" );
-    }
-
-    public static MavenManagedRepository of( ManagedRepository beanRepo ) {
-        MavenManagedRepository repo = new MavenManagedRepository( );
-        update( repo, beanRepo );
-        return repo;
-    }
-
     @Schema(name="blocks_redeployments",description = "True, if redeployments to this repository are not allowed")
     public boolean isBlocksRedeployments( )
     {

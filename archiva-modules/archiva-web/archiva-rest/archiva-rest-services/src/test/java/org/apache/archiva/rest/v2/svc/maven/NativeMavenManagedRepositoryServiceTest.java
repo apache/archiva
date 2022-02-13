@@ -100,7 +100,6 @@ public class NativeMavenManagedRepositoryServiceTest extends AbstractNativeRestS
     }
 
 
-    @Disabled
     @Test
     @Order( 2 )
     void testCreateRepository() {
@@ -111,7 +110,7 @@ public class NativeMavenManagedRepositoryServiceTest extends AbstractNativeRestS
         assertNotNull( json );
         assertEquals( "repo001", json.get( "id" ) );
         assertEquals( "Repository 001", json.get( "name" ) );
-        assertEquals( "maven", json.get( "type" ) );
+        assertEquals( "MAVEN", json.get( "type" ) );
         assertEquals( "This is repository 001", json.get( "description" ) );
     }
 

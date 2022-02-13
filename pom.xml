@@ -237,6 +237,16 @@
 
 
       <dependency>
+        <groupId>org.apache.archiva.event</groupId>
+        <artifactId>archiva-event-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.event</groupId>
+        <artifactId>archiva-event-central</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.archiva.maven</groupId>
         <artifactId>archiva-maven-common</artifactId>
         <version>${project.version}</version>

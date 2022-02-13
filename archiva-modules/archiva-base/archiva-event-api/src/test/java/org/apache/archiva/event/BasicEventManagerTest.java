@@ -9,8 +9,7 @@ package org.apache.archiva.event;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -29,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class EventManagerTest
+public class BasicEventManagerTest
 {
 
     private class TestHandler implements EventHandler<Event> {
@@ -53,7 +52,7 @@ public class EventManagerTest
     @Test
     public void registerEventHandler( )
     {
-        EventManager eventManager = new EventManager( this );
+        BasicEventManager eventManager = new BasicEventManager( this );
         TestHandler handler1 = new TestHandler( );
         TestHandler handler2 = new TestHandler( );
         TestHandler handler3 = new TestHandler( );
@@ -92,7 +91,7 @@ public class EventManagerTest
     @Test
     public void unregisterEventHandler( )
     {
-        EventManager eventManager = new EventManager( this );
+        BasicEventManager eventManager = new BasicEventManager( this );
         TestHandler handler1 = new TestHandler( );
         TestHandler handler2 = new TestHandler( );
         TestHandler handler3 = new TestHandler( );
@@ -124,7 +123,7 @@ public class EventManagerTest
     public void fireEvent( )
     {
         Object other = new Object( );
-        EventManager eventManager = new EventManager( this );
+        BasicEventManager eventManager = new BasicEventManager( this );
         assertThrows( NullPointerException.class, ( ) -> eventManager.fireEvent( null ) );
         Event event = new Event( EventType.ROOT, other );
         assertEquals( other, event.getSource( ) );

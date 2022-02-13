@@ -24,7 +24,7 @@ import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import org.apache.archiva.event.Event;
 import org.apache.archiva.event.EventHandler;
-import org.apache.archiva.event.EventManager;
+import org.apache.archiva.event.BasicEventManager;
 import org.apache.archiva.event.EventType;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.EditableRepository;
@@ -86,7 +86,7 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
     public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
     private RepositoryState state;
 
-    private final EventManager eventManager;
+    private final BasicEventManager eventManager;
 
     Map<Class<? extends RepositoryFeature<?>>, RepositoryFeature<?>> featureMap = new HashMap<>(  );
 
@@ -100,7 +100,7 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
         this.storage = repositoryStorage;
         this.location = repositoryStorage.getLocation();
         this.openStatus.compareAndSet(false, true);
-        this.eventManager = new EventManager(this);
+        this.eventManager = new BasicEventManager(this);
     }
 
     public AbstractRepository(Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage repositoryStorage) {
@@ -111,7 +111,7 @@ public abstract class AbstractRepository implements EditableRepository, EventHan
         this.storage = repositoryStorage;
         this.location = repositoryStorage.getLocation();
         this.openStatus.compareAndSet(false, true);
-        this.eventManager = new EventManager(this);
+        this.eventManager = new BasicEventManager(this);
     }
 
     protected void setPrimaryLocale(Locale locale) {

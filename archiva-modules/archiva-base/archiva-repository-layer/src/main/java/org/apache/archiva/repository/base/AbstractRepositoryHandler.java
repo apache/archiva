@@ -22,7 +22,7 @@ import org.apache.archiva.configuration.model.AbstractRepositoryConfiguration;
 import org.apache.archiva.configuration.model.Configuration;
 import org.apache.archiva.configuration.provider.IndeterminateConfigurationException;
 import org.apache.archiva.event.Event;
-import org.apache.archiva.event.EventManager;
+import org.apache.archiva.event.BasicEventManager;
 import org.apache.archiva.event.EventType;
 import org.apache.archiva.repository.EditableRepository;
 import org.apache.archiva.repository.Repository;
@@ -61,14 +61,14 @@ public abstract class AbstractRepositoryHandler<R extends Repository, C extends 
     private CombinedValidator<R> combinedValidator;
     private final Class<R> repositoryClazz;
     private final Class<C> configurationClazz;
-    private final EventManager eventManager;
+    private final BasicEventManager eventManager;
     private final Map<String, R> repositoryMap  = new HashMap<>(  );
     private final ConfigurationHandler configurationHandler;
 
     public AbstractRepositoryHandler(Class<R> repositoryClazz, Class<C> configurationClazz, ConfigurationHandler configurationHandler) {
         this.repositoryClazz = repositoryClazz;
         this.configurationClazz = configurationClazz;
-        this.eventManager = new EventManager( this );
+        this.eventManager = new BasicEventManager( this );
         this.configurationHandler = configurationHandler;
     }
 
@@ -142,13 +142,13 @@ public abstract class AbstractRepositoryHandler<R extends Repository, C extends 
     }
 
     @Override
-    public Class<R> getVariant( )
+    public Class<R> getFlavour( )
     {
         return this.repositoryClazz;
     }
 
     @Override
-    public Class<C> getConfigurationVariant( )
+    public Class<C> getConfigurationFlavour( )
     {
         return this.configurationClazz;
     }

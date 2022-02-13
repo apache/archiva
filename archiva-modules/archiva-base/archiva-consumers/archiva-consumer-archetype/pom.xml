@@ -76,6 +76,12 @@
       <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
 
+    <!-- Test scope -->
+    <dependency>
+      <groupId>org.apache.archiva.event</groupId>
+      <artifactId>archiva-event-api</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-consumer-api</artifactId>
