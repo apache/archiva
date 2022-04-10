@@ -19,7 +19,6 @@ version: 2
 updates:
   - package-ecosystem: "maven"
     directory: "/"
-<<<<<<< HEAD
     target-branch: "master"
     schedule:
       interval: "daily"
@@ -32,14 +31,7 @@ updates:
 
   - package-ecosystem: "github-actions"
     directory: "/"
-=======
     target-branch: "archiva-2.x"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "maven"
-    directory: "/"
-    target-branch: "master"
     schedule:
       interval: "daily"
 
@@ -49,9 +41,3 @@ updates:
     schedule:
       interval: "daily"
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    target-branch: "archiva-2.x"
->>>>>>> e6b45b54b (add gh action, dependabot and release-drafter and get rid of travis)
-    schedule:
-      interval: "daily"

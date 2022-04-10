@@ -16,7 +16,4 @@
 # under the License.
 
 _extends: archiva-parent
-<<<<<<< HEAD
-=======
 tag-template: archiva-$NEXT_MINOR_VERSION
->>>>>>> e6b45b54b (add gh action, dependabot and release-drafter and get rid of travis)
