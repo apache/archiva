@@ -106,7 +106,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn ${cmdLine} -B -U -e -fae -Dorg.slf4j.simpleLogger.showThreadName=true -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
+                                sh "mvn ${cmdLine} -B -U -e -fae -Dorg.slf4j.simpleLogger.showThreadName=true -Pci-build -T${THREADS}"
                             }
                 }
             }
