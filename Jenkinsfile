@@ -50,6 +50,7 @@ pipeline {
                             mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: ".repository",
                             mavenOpts:'-XX:MaxPermSize=128m -Xmx1024m',
+                            publisherStrategy: 'EXPLICIT',
                             options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
                                       findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
                                       invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
