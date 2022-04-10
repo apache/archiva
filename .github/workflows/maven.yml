@@ -14,30 +14,35 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-<<<<<<< HEAD
-   
-=======
 
->>>>>>> e6b45b54b (add gh action, dependabot and release-drafter and get rid of travis)
-name: Release Drafter
+name: GitHub CI
+
 on:
   push:
-    branches:
-      - master
-<<<<<<< HEAD
-=======
-      - archiva-2.x
->>>>>>> e6b45b54b (add gh action, dependabot and release-drafter and get rid of travis)
+  pull_request:
+
+
 jobs:
-  update_release_draft:
-    runs-on: ubuntu-latest
+  build:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        java: [8, 11]
+      fail-fast: true
+
+    runs-on: ${{ matrix.os }}
+
     steps:
-<<<<<<< HEAD
-      - uses: release-drafter/release-drafter@v5.18.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-=======
-      - uses: release-drafter/release-drafter@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
->>>>>>> e6b45b54b (add gh action, dependabot and release-drafter and get rid of travis)
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2.3.1
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: mvn -e -B -V install
