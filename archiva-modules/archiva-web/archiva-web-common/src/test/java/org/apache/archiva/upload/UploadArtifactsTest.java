@@ -19,19 +19,13 @@ package org.apache.archiva.upload;
  */
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.redback.rest.api.model.User;
-import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.redback.rest.api.services.UserService;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
-import org.apache.archiva.remotedownload.AbstractDownloadTest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.web.api.FileUploadService;
-import org.apache.archiva.web.api.RuntimeInfoService;
-import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.archiva.web.model.FileMetadata;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -48,38 +42,22 @@ import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.servlet.CXFServlet;
-import org.apache.maven.wagon.providers.http.HttpWagon;
-import org.apache.maven.wagon.repository.Repository;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.web.context.ContextLoaderListener;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ClientErrorException;
-import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.sql.DriverManager;
 import java.util.Collections;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * @author Olivier Lamy
@@ -98,6 +76,10 @@ public class UploadArtifactsTest
         System.setProperty( "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true" );
         System.setProperty("appserver.base", Paths.get("target/appserver-base").toAbsolutePath().toString());
         Path appServerBase = Paths.get("target/appserver-base");
+        // trying to shutdown derby for file leak
+        DriverManager.getDriver("jdbc:derby:;shutdown=true");
+        // to help cleaning files on Windows....
+        System.gc();
         FileUtils.deleteDirectory(appServerBase.toAbsolutePath().toFile());
         Path confDir = appServerBase.resolve( "conf" );
         if ( !Files.exists(confDir))
@@ -154,8 +136,8 @@ public class UploadArtifactsTest
         if (this.tomcat != null) {
             try {
                 this.tomcat.stop();
-            } catch (LifecycleException e) {
-                //
+            } catch (Exception e) {
+                log.info("ignore fail to stop Tomcat: " + e.getMessage(), e);
             }
         }
         System.clearProperty( "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH" );
@@ -305,7 +287,7 @@ public class UploadArtifactsTest
             final Attachment fileAttachment = new AttachmentBuilder( ).object( Files.newInputStream( file ) ).contentDisposition( new ContentDisposition( "form-data; filename=\"" + file.getFileName( ).toString( ) + "\"; name=\"files[]\"" ) ).build( );
             MultipartBody body = new MultipartBody( fileAttachment );
             service.post( body );
-            String relativePathEncoded = URLEncoder.encode( "../target/" + relativePath.toString( ), "UTF-8" );
+            String relativePathEncoded = URLEncoder.encode( "../target/" + relativePath, "UTF-8" );
             log.debug( "Trying to delete with path traversal: {}, {}", relativePath, relativePathEncoded );
             try
             {

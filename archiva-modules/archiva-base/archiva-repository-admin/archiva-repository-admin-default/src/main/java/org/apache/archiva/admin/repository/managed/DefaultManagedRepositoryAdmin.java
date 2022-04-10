@@ -78,7 +78,7 @@ public class DefaultManagedRepositoryAdmin
     implements ManagedRepositoryAdmin
 {
 
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    private final Logger log = LoggerFactory.getLogger( getClass() );
 
     public static final String STAGE_REPO_ID_END = "-stage";
 
@@ -169,7 +169,7 @@ public class DefaultManagedRepositoryAdmin
             return Collections.emptyList();
         }
 
-        List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( managedRepoConfigs.size() );
+        List<ManagedRepository> managedRepos = new ArrayList<>( managedRepoConfigs.size() );
 
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {
@@ -314,8 +314,7 @@ public class DefaultManagedRepositoryAdmin
         }
         catch ( Exception e )
         {
-            log.warn( new StringBuilder( "Unable to scan repository [" ).append( repoId ).append( "]: " ).append(
-                e.getMessage() ).toString(), e );
+            log.warn("Unable to scan repository [" + repoId + "]: " + e.getMessage(), e );
         }
 
         return repository;
@@ -377,18 +376,13 @@ public class DefaultManagedRepositoryAdmin
                                                     deleteContent && context.getIndexDirectoryFile().exists() );
             }
         }
-        catch ( PlexusSisuBridgeException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( IOException e )
+        catch ( PlexusSisuBridgeException | IOException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
         if ( !stagedOne )
         {
-            RepositorySession repositorySession = getRepositorySessionFactory().createSession();
-            try
+            try (RepositorySession repositorySession = getRepositorySessionFactory().createSession())
             {
                 MetadataRepository metadataRepository = repositorySession.getRepository();
                 metadataRepository.removeRepository( repository.getId() );
@@ -402,10 +396,6 @@ public class DefaultManagedRepositoryAdmin
             {
                 //throw new RepositoryAdminException( e.getMessage(), e );
                 log.warn( "skip error during removing repository from MetadataRepository:{}", e.getMessage(), e );
-            }
-            finally
-            {
-                repositorySession.close();
             }
         }
         config.removeManagedRepository( repository );
@@ -514,9 +504,8 @@ public class DefaultManagedRepositoryAdmin
                                   auditInformation, getArchivaConfiguration().getConfiguration() );
 
         // Save the repository configuration.
-        RepositorySession repositorySession = getRepositorySessionFactory().createSession();
 
-        try
+        try (RepositorySession repositorySession = getRepositorySessionFactory().createSession())
         {
             triggerAuditEvent( managedRepositoryConfiguration.getId(), null, AuditEvent.MODIFY_MANAGED_REPO,
                                auditInformation );
@@ -534,10 +523,6 @@ public class DefaultManagedRepositoryAdmin
         catch ( MetadataRepositoryException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        finally
-        {
-            repositorySession.close();
         }
 
         if ( updateIndexContext )
@@ -669,15 +654,7 @@ public class DefaultManagedRepositoryAdmin
             }
             return context;
         }
-        catch ( MalformedURLException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( UnsupportedExistingLuceneIndexException e )
+        catch ( IOException | UnsupportedExistingLuceneIndexException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
@@ -736,7 +713,7 @@ public class DefaultManagedRepositoryAdmin
         }
         catch ( TaskQueueException e )
         {
-            log.error( "failed to schedule scanning of repo with id {}", repositoryId, e );
+            log.error( "failed to schedule scanning of repo with id " + repositoryId, e );
             return false;
         }
         return true;
