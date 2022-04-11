@@ -371,27 +371,27 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>testResources</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>testCompile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+<!--      <plugin>-->
+<!--        <artifactId>maven-resources-plugin</artifactId>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>testResources</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-compiler-plugin</artifactId>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <goals>-->
+<!--              <goal>testCompile</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -547,7 +547,7 @@
               </dependency>
               <dependency>
                 <groupId>jakarta.mail</groupId>
-      <artifactId>jakarta.mail-api</artifactId>
+                <artifactId>jakarta.mail-api</artifactId>
                 <version>${jakarta.mail.version}</version>
               </dependency>
               <dependency>
