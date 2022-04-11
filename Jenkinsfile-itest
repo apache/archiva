@@ -91,7 +91,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Compile in a separate forked process
                                 // -Pci-server: Profile for CI-Server
                                 // -Pit-js: Run the selenium test
-                                sh "mvn clean verify -B -V -U -e -fae -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -Djava.io.tmpdir=.tmp -pl :archiva-webapp-test"
+                                sh "mvn clean verify -X -B -V -U -e -fae -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -Djava.io.tmpdir=.tmp -pl :archiva-webapp-test"
 
                             }
                 }
