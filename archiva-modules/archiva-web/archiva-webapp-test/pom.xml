@@ -325,6 +325,19 @@
         <includes>
           <include>**/*</include>
         </includes>
+        <excludes>
+          <exclude>**/index/**</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/index/**</include>
+        </includes>
+        <excludes>
+          <exclude>**/**</exclude>
+        </excludes>
       </testResource>
     </testResources>
     <pluginManagement>
