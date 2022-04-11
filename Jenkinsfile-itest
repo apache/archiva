@@ -70,6 +70,7 @@ pipeline {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: localRepository,
+                            publisherStrategy: 'EXPLICIT',
                             options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
                                       findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
                                       invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
@@ -91,7 +92,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Compile in a separate forked process
                                 // -Pci-server: Profile for CI-Server
                                 // -Pit-js: Run the selenium test
-                                sh "mvn clean verify -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -Djava.io.tmpdir=.tmp -pl :archiva-webapp-test"
+                                sh "mvn clean verify -B -V -U -e -fae -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -Djava.io.tmpdir=.tmp -pl :archiva-webapp-test"
 
                             }
                 }
@@ -116,11 +117,12 @@ pipeline {
             }
             steps {
                 timeout(120) {
-                    withCredentials([[$class          : 'UsernamePasswordMultiBinding', credentialsId: DOCKERHUB_CREDS,
+                    withCredentials([[$class : 'UsernamePasswordMultiBinding', credentialsId: DOCKERHUB_CREDS,
                                       usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PW']]) {
                         withMaven(maven: buildMvn, jdk: buildJdk,
                                 mavenSettingsConfig: deploySettings,
                                 mavenLocalRepo: localRepository,
+                                publisherStrategy: 'EXPLICIT',
                                 options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
                                           findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
                                           invokerPublisher(disabled: true), jgivenPublisher(disabled: true),

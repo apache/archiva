@@ -396,7 +396,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.20</version>
+        <version>2.22.2</version>
         <configuration>
           <redirectTestOutputToFile>false</redirectTestOutputToFile>
           <runOrder>alphabetical</runOrder>
@@ -483,7 +483,7 @@
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <tasks>
+                  <target>
                     <copy overwrite="true" todir="${webappDirectory}/WEB-INF/classes">
                       <fileset dir="src/test/resources/logging"/>
                     </copy>
@@ -517,7 +517,7 @@
                     <copy todir="${project.build.directory}/errorshtmlsnap/images">
                       <fileset dir="${webappDirectory}/images"/>
                     </copy>
-                  </tasks>
+                  </target>
                 </configuration>
               </execution>
             </executions>
