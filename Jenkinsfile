@@ -149,7 +149,7 @@ pipeline {
                                         {
                                             sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
                                             sh "./src/ci/scripts/prepareWorkspace.sh"
-                                            sh "mvn clean install -U -B -e -fae -Dorg.slf4j.simpleLogger.showThreadName=true -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
+                                            sh "mvn clean install -U -B -e -fae -Dorg.slf4j.simpleLogger.showThreadName=true -Pci-build -T${THREADS}"
                                         }
                             }
                         }

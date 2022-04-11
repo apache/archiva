@@ -840,30 +840,6 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
-
-
-
-
-      <plugin>
-        <groupId>org.owasp</groupId>
-        <artifactId>dependency-check-maven</artifactId>
-        <version>6.0.4</version>
-        <configuration>
-          <skipProvidedScope>true</skipProvidedScope>
-          <failBuildOnCVSS>8</failBuildOnCVSS>
-          <suppressionFile>${project.basedir}/src/main/resources/META-INF/owasp/cve-suppressions.xml</suppressionFile>
-          <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
-          <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-          <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
@@ -873,6 +849,33 @@
       <properties>
         <archiva.repositorySessionFactory.id>cassandra</archiva.repositorySessionFactory.id>
       </properties>
+    </profile>
+    <profile>
+      <id>owasp</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>6.0.4</version>
+            <configuration>
+              <skipProvidedScope>true</skipProvidedScope>
+              <failBuildOnCVSS>8</failBuildOnCVSS>
+              <suppressionFile>${project.basedir}/src/main/resources/META-INF/owasp/cve-suppressions.xml</suppressionFile>
+              <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+              <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+              <nodeAnalyzerEnabled>false</nodeAnalyzerEnabled>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 
