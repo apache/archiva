@@ -67,73 +67,78 @@ pipeline {
 
 
     stages {
-        stage("Builds") {
-            parallel {
-                stage('BuildAndDeploy Jdk 8') {
-                    agent {
-                        label "${LABEL}"
-                    }
-                    environment {
-                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml'
-                    }
 
-                    steps {
-                        timeout(120) {
-                            script {
-                              if(params.PRECLEANUP) {
-                                sh "rm -rf ${env.LOCAL_REPOSITORY}"
-                              }
-                            }
-                            withMaven(maven: buildMvn, jdk: buildJdk,
-                                    mavenLocalRepo: env.LOCAL_REPOSITORY,
-                                    publisherStrategy: 'EXPLICIT',
-                                    mavenOpts: mavenOpts,
-                                    options: publishers )
-                                    {
-                                        sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
-                                        sh "./src/ci/scripts/prepareWorkspace.sh"
-                                        // Needs a lot of time to reload the repository files, try without cleanup
-                                        // Not sure, but maybe
-                                        // sh "rm -rf .repository"
+        stage('PreCleanup') {
+            when {
+                expression {
+                    params.PRECLEANUP
+                }
+            }
+            steps {
+                sh "rm -rf ${env.LOCAL_REPOSITORY}"
+            }
+        }
 
-                                        // Run test phase / ignore test failures
-                                        // -B: Batch mode
-                                        // -U: Force snapshot update
-                                        // -e: Produce execution error messages
-                                        // -fae: Fail at the end
-                                        // -Dmaven.compiler.fork=true: Do compile in a separate forked process
-                                        // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
-                                        // -Pci-build: Profile for CI-Server
-                                        sh "mvn ${cmdLine} -B -U -e -fae -Dorg.slf4j.simpleLogger.showThreadName=true -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
-                                    }
-                        }
-                    }
-                    post {
-                        always {
-                            sh "rm -f /tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml"
-                        }
-                        failure {
-                            script{
-                                asfStandardBuild.notifyBuild("Failure in BuildAndDeploy stage")
+        stage('BuildAndDeploy') {
+            environment {
+                ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml'
+            }
+
+            steps {
+                timeout(120) {
+                    withMaven(maven: buildMvn, jdk: buildJdk,
+                            mavenLocalRepo: env.LOCAL_REPOSITORY,
+                            publisherStrategy: 'EXPLICIT',
+                            mavenOpts: mavenOpts,
+                            options: publishers )
+                            {
+                                sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                                sh "./src/ci/scripts/prepareWorkspace.sh"
+                                // Needs a lot of time to reload the repository files, try without cleanup
+                                // Not sure, but maybe
+                                // sh "rm -rf .repository"
+
+                                // Run test phase / ignore test failures
+                                // -B: Batch mode
+                                // -U: Force snapshot update
+                                // -e: Produce execution error messages
+                                // -fae: Fail at the end
+                                // -Dmaven.compiler.fork=true: Do compile in a separate forked process
+                                // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
+                                // -Pci-build: Profile for CI-Server
+                                sh "mvn ${cmdLine} -B -U -e -fae -Dorg.slf4j.simpleLogger.showThreadName=true -Dmaven.compiler.fork=true -Pci-build -T${THREADS}"
                             }
-                        }
+                }
+            }
+            post {
+                always {
+                    sh "rm -f /tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml"
+                }
+                failure {
+                    script{
+                        asfStandardBuild.notifyBuild("Failure in BuildAndDeploy stage")
                     }
                 }
-                stage('JDK11') {
-                    agent {
-                        label "${LABEL}"
+            }
+        }
+
+
+
+        stage('Postbuild') {
+            parallel {
+                stage('IntegrationTest') {
+                    steps {
+                        build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 5, wait: false)
                     }
+                }
+
+                stage('JDK11') {
                     environment {
                         ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml'
                     }
                     steps {
                         ws("${env.JOB_NAME}-JDK11") {
                             checkout scm
-                            script {
-                              if(params.PRECLEANUP) {
-                                sh "rm -rf ${env.LOCAL_REPOSITORY}"
-                              }
-                            }
                             timeout(120) {
                                 withMaven(maven: buildMvn, jdk: buildJdk11,
                                           mavenLocalRepo: ".repository",
@@ -157,14 +162,6 @@ pipeline {
                             cleanWs()
                         }
                     }
-                }
-            }
-        }
-
-        stage('Postbuild') {
-            stage('IntegrationTest') {
-                steps {
-                    build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 5, wait: false)
                 }
             }
         }
