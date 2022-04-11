@@ -68,6 +68,19 @@ pipeline {
 
     stages {
 
+        stage('Setup THREADS number') {
+            when {
+                expression {
+                  !params.THREADS
+                }
+            }
+            steps {
+                script {
+                    THREADS = "2"
+                }
+            }
+        }
+
         stage('PreCleanup') {
             when {
                 expression {
