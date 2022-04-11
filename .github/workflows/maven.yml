@@ -45,4 +45,4 @@ jobs:
           cache: 'maven'
 
       - name: Build with Maven
-        run: mvn -e -B -V install -Pci-build
+        run: mvn -e -B -V install -Pci-build -T2
