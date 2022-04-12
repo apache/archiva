@@ -52,16 +52,11 @@
 
     <!-- Java Enterprise APIs -->
 
-
-
     <maven3x.version>3.8.1</maven3x.version>
     <maven.resolver.version>1.4.1</maven.resolver.version>
     <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
     <maven-model-converter.version>2.3</maven-model-converter.version>
     <wagon.version>3.3.3</wagon.version>
-
-
-
 
     <!-- dependencies of maven modules -->
     <jsoup.version>1.14.2</jsoup.version>
@@ -113,8 +108,7 @@
     <openjpa.Log>DefaultLevel=INFO,Runtime=ERROR,Tool=ERROR,SQL=ERROR,Schema=ERROR,MetaData=ERROR</openjpa.Log>
 
     <jacocoproperty/>
-
-
+    <skipTests></skipTests>
   </properties>
 
   <dependencyManagement>

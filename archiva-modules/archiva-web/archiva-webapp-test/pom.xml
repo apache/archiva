@@ -327,6 +327,7 @@
         </includes>
         <excludes>
           <exclude>**/index/**</exclude>
+          <exclude>**/*.jar</exclude>
         </excludes>
       </testResource>
       <testResource>
@@ -334,6 +335,7 @@
         <filtering>false</filtering>
         <includes>
           <include>**/index/**</include>
+          <include>**/*.jar</include>
         </includes>
         <excludes>
           <exclude>**/**</exclude>

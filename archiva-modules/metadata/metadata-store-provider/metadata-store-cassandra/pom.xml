@@ -340,7 +340,7 @@ num_tokens: 1
       <activation>
         <jdk>[1.9,)</jdk>
       </activation>
-      <properties >
+      <properties>
         <cassandra.addJdk11Options>true</cassandra.addJdk11Options>
       </properties>
     </profile>

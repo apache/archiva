@@ -182,6 +182,7 @@
           <configuration>
             <settingsFile>${basedir}/src/test/test-settings.xml</settingsFile>
             <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+            <skip>${skipTests}</skip>
           </configuration>
           <dependencies>
             <dependency>
