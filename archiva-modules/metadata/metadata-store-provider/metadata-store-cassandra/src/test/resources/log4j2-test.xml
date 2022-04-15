@@ -21,11 +21,8 @@
 
 <configuration status="debug">
 
-
-
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
-      <!--PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/-->
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}" />
     </Console>
 
@@ -34,7 +31,7 @@
 
 
     <logger name="org.apache.archiva.metadata.repository.cassandra" level="debug"/>
-
+    <logger name="org.apache.archiva.metadata.repository.cassandra.logs" level="debug"/>
     <root level="debug" includeLocation="true">
       <appender-ref ref="console"/>
     </root>

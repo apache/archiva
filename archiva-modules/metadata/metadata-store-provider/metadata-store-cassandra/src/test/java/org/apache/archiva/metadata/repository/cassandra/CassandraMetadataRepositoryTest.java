@@ -27,13 +27,19 @@ import org.apache.archiva.metadata.repository.MetadataService;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.CassandraContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.utility.DockerImageName;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -70,6 +76,9 @@ public class CassandraMetadataRepositoryTest
 
     RepositorySession session;
 
+    private static final CassandraContainer CASSANDRA =
+            new CassandraContainer(DockerImageName.parse("cassandra").withTag("3.11.2"));
+
     long cTime;
     int testNum = 0;
     final AtomicBoolean clearedTables = new AtomicBoolean( false );
@@ -85,6 +94,21 @@ public class CassandraMetadataRepositoryTest
     protected MetadataRepository getRepository( )
     {
         return cmr;
+    }
+
+    @BeforeAll
+    public static void initCassandra()
+            throws Exception {
+        CASSANDRA.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("org.apache.archiva.metadata.repository.cassandra.logs")));
+        CASSANDRA.start();
+        System.setProperty("cassandra.host", CASSANDRA.getHost());
+        System.setProperty("cassandra.port", CASSANDRA.getMappedPort(9042).toString());
+    }
+
+    @AfterAll
+    public static void stopCassandra()
+            throws Exception {
+        CASSANDRA.close();
     }
 
     @BeforeEach
