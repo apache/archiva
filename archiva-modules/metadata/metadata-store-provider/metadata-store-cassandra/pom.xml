@@ -31,8 +31,8 @@
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
-    <cassandraVersion>3.11.11</cassandraVersion>
-    <datastax.driver.version>4.13.0</datastax.driver.version>
+    <cassandraVersion>3.11.12</cassandraVersion>
+    <datastax.driver.version>4.14.0</datastax.driver.version>
   </properties>
 
   <dependencies>
