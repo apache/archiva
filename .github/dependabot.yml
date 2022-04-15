@@ -21,7 +21,9 @@ registries:
   maven-central:
     type: maven-repository
     url: https://repo.maven.apache.org/maven2
-
+    username: ""
+    password: ""
+    
 updates:
   - package-ecosystem: "maven"
     directory: "/"
