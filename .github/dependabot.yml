@@ -16,15 +16,25 @@
 # under the License.
 
 version: 2
+
+registries:
+  maven-central:
+    type: maven-repository
+    url: https://repo.maven.apache.org/maven2
+
 updates:
   - package-ecosystem: "maven"
     directory: "/"
+    registries:
+      - maven-central
     target-branch: "master"
     schedule:
       interval: "daily"
       
   - package-ecosystem: "maven"
     directory: "/"
+    registries:
+      - maven-central
     target-branch: "archiva-2.x"
     schedule:
       interval: "daily"      
