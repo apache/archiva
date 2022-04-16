@@ -51,17 +51,11 @@
     <redback.version>3.0.0-SNAPSHOT</redback.version>
 
     <!-- Java Enterprise APIs -->
-
-
-
     <maven3x.version>3.8.1</maven3x.version>
     <maven.resolver.version>1.4.1</maven.resolver.version>
-    <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
+    <maven.indexer.version>6.0.0</maven.indexer.version>
     <maven-model-converter.version>2.3</maven-model-converter.version>
     <wagon.version>3.3.3</wagon.version>
-
-
-
 
     <!-- dependencies of maven modules -->
     <jsoup.version>1.14.2</jsoup.version>
@@ -74,7 +68,6 @@
          to adapt to dependency changes -->
     <jcr-oak.version>1.40.0</jcr-oak.version>
     <netty.version>4.1.50.Final</netty.version>
-
 
     <!-- Jackrabbit classes are still used for webdav -->
     <jackrabbit.version>2.15.4</jackrabbit.version>
