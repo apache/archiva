@@ -48,6 +48,10 @@
   </scm>
 
   <properties>
+
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+
     <commons-codec.version>1.6</commons-codec.version>
     <commons-collections.version>3.2.1</commons-collections.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>

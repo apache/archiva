@@ -150,22 +150,27 @@ public class RepositoryScannerInstance
         // consume files regardless - the predicate will check the timestamp
         BaseFile basefile = new BaseFile( repository.getLocation(), file );
 
-        // Timestamp finished points to the last successful scan, not this current one.
-        if ( file.lastModified() >= changesSince )
+        // Safety check, if a parallel process removes the file
+        if (basefile.exists())
         {
-            stats.increaseNewFileCount();
-        }
 
-        consumerProcessFile.setBasefile( basefile );
-        consumerWantsFile.setBasefile( basefile );
+            // Timestamp finished points to the last successful scan, not this current one.
+            if ( file.lastModified( ) >= changesSince )
+            {
+                stats.increaseNewFileCount( );
+            }
 
-        Closure processIfWanted = IfClosure.getInstance( consumerWantsFile, consumerProcessFile );
-        CollectionUtils.forAllDo( this.knownConsumers, processIfWanted );
+            consumerProcessFile.setBasefile( basefile );
+            consumerWantsFile.setBasefile( basefile );
 
-        if ( consumerWantsFile.getWantedFileCount() <= 0 )
-        {
-            // Nothing known processed this file.  It is invalid!
-            CollectionUtils.forAllDo( this.invalidConsumers, consumerProcessFile );
+            Closure processIfWanted = IfClosure.getInstance( consumerWantsFile, consumerProcessFile );
+            CollectionUtils.forAllDo( this.knownConsumers, processIfWanted );
+
+            if ( consumerWantsFile.getWantedFileCount( ) <= 0 )
+            {
+                // Nothing known processed this file.  It is invalid!
+                CollectionUtils.forAllDo( this.invalidConsumers, consumerProcessFile );
+            }
         }
     }
 

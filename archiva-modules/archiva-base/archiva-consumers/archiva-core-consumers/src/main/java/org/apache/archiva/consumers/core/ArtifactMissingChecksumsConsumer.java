@@ -155,46 +155,50 @@ public class ArtifactMissingChecksumsConsumer
         File artifactFile = new File( this.repositoryDir, path );
         File checksumFile = new File( this.repositoryDir, path + "." + checksumAlgorithm.getExt( ) );
 
-        if ( checksumFile.exists( ) )
+        // Checking for existence
+        if (artifactFile.exists())
         {
-            checksum = new ChecksummedFile( artifactFile );
-            try
+            if ( checksumFile.exists( ) )
             {
-                if ( !checksum.isValidChecksum( checksumAlgorithm ) )
+                checksum = new ChecksummedFile( artifactFile );
+                try
                 {
-                    checksum.fixChecksums( new ChecksumAlgorithm[]{checksumAlgorithm} );
-                    log.info( "Fixed checksum file {}", checksumFile.getAbsolutePath( ) );
-                    triggerConsumerInfo( "Fixed checksum file " + checksumFile.getAbsolutePath( ) );
+                    if ( !checksum.isValidChecksum( checksumAlgorithm ) )
+                    {
+                        checksum.fixChecksums( new ChecksumAlgorithm[]{checksumAlgorithm} );
+                        log.info( "Fixed checksum file {}", checksumFile.getAbsolutePath( ) );
+                        triggerConsumerInfo( "Fixed checksum file " + checksumFile.getAbsolutePath( ) );
+                    }
+                }
+                catch ( IOException e )
+                {
+                    log.error( "Cannot calculate checksum for file {} :", checksumFile, e );
+                    triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC, "Cannot calculate checksum for file " + checksumFile +
+                        ": " + e.getMessage( ) );
                 }
             }
-            catch ( IOException e )
+            else if ( !checksumFile.exists( ) )
             {
-                log.error( "Cannot calculate checksum for file {} :", checksumFile, e );
-                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC, "Cannot calculate checksum for file " + checksumFile +
-                    ": " + e.getMessage( ) );
+                checksum = new ChecksummedFile( artifactFile );
+                try
+                {
+                    checksum.createChecksum( checksumAlgorithm );
+                    log.info( "Created missing checksum file {}", checksumFile.getAbsolutePath( ) );
+                    triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath( ) );
+                }
+                catch ( IOException e )
+                {
+                    log.error( "Cannot create {} checksum for file {} :", checksumAlgorithm, artifactFile, e );
+                    triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE, "Cannot create checksum for file " + checksumFile +
+                        ": " + e.getMessage( ) );
+                }
             }
-        }
-        else if ( !checksumFile.exists( ) )
-        {
-            checksum = new ChecksummedFile( artifactFile );
-            try
+            else
             {
-                checksum.createChecksum( checksumAlgorithm );
-                log.info( "Created missing checksum file {}", checksumFile.getAbsolutePath( ) );
-                triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath( ) );
+                log.warn( "Checksum file {} is not a file. ", checksumFile.getAbsolutePath( ) );
+                triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE,
+                    "Checksum file " + checksumFile.getAbsolutePath( ) + " is not a file." );
             }
-            catch ( IOException e )
-            {
-                log.error( "Cannot create checksum for file {} :", checksumFile, e );
-                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE, "Cannot create checksum for file " + checksumFile +
-                    ": " + e.getMessage( ) );
-            }
-        }
-        else
-        {
-            log.warn( "Checksum file {} is not a file. ", checksumFile.getAbsolutePath( ) );
-            triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE,
-                "Checksum file " + checksumFile.getAbsolutePath( ) + " is not a file." );
         }
     }
 

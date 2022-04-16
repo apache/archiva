@@ -128,7 +128,7 @@ public class ConsumerWantsFilePredicate
             {
                 if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
                 {
-                    // Definately does NOT WANT FILE.
+                    // Definitely does NOT WANT FILE.
                     return false;
                 }
             }

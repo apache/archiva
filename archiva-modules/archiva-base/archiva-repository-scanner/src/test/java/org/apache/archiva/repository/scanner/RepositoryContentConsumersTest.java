@@ -26,6 +26,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.easymock.IMocksControl;
 import org.junit.Test;
@@ -272,7 +273,10 @@ public class RepositoryContentConsumersTest
         consumers.setSelectedInvalidConsumers( Collections.singletonList( selectedInvalidConsumer ) );
 
         ManagedRepository repo = createRepository( "id", "name", new File( "target/test-repo" ) );
-        File testFile = new File( "target/test-repo/path/to/test-file.txt" );
+        File testDir = new File( "target/test-repo/path/to" );
+        FileUtils.forceMkdir( testDir );
+        File testFile = new File( testDir, "test-file.txt" );
+        FileUtils.touch( testFile );
 
         Date startTime = new Date( System.currentTimeMillis() );
         startTime.setTime( 12345678 );
@@ -295,6 +299,8 @@ public class RepositoryContentConsumersTest
         invalidControl.reset();
 
         File notIncludedTestFile = new File( "target/test-repo/path/to/test-file.xml" );
+        FileUtils.touch( notIncludedTestFile );
+
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
         expect( selectedKnownConsumer.getExcludes() ).andReturn( Collections.<String>emptyList() );

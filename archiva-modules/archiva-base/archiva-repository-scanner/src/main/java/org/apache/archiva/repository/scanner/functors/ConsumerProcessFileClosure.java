@@ -54,22 +54,26 @@ public class ConsumerProcessFileClosure
             String id = consumer.getId();
             try
             {
-                log.debug( "Sending to consumer: {}", id );
-
-                long startTime = System.currentTimeMillis();
-                consumer.processFile( basefile.getRelativePath(), executeOnEntireRepo );
-                long endTime = System.currentTimeMillis();
-
-                if ( consumerTimings != null )
+                // Safety check to avoid errors, if a parallel process removes files
+                if (basefile.exists())
                 {
-                    Long value = consumerTimings.get( id );
-                    consumerTimings.put( id, ( value != null ? value : 0 ) + endTime - startTime );
-                }
+                    log.debug( "Sending to consumer: {}", id );
 
-                if ( consumerCounts != null )
-                {
-                    Long value = consumerCounts.get( id );
-                    consumerCounts.put( id, ( value != null ? value : 0 ) + 1 );
+                    long startTime = System.currentTimeMillis( );
+                    consumer.processFile( basefile.getRelativePath( ), executeOnEntireRepo );
+                    long endTime = System.currentTimeMillis( );
+
+                    if ( consumerTimings != null )
+                    {
+                        Long value = consumerTimings.get( id );
+                        consumerTimings.put( id, ( value != null ? value : 0 ) + endTime - startTime );
+                    }
+
+                    if ( consumerCounts != null )
+                    {
+                        Long value = consumerCounts.get( id );
+                        consumerCounts.put( id, ( value != null ? value : 0 ) + 1 );
+                    }
                 }
             }
             catch ( Exception e )
