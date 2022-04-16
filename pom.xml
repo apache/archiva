@@ -61,7 +61,7 @@
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>5.1.1</maven.indexer.version>
     <wagon.version>2.9</wagon.version>
-    <redback.version>2.6.1</redback.version>
+    <redback.version>2.6.2-SNAPSHOT</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
     <redback.quartz.version>2.1</redback.quartz.version>
     <redback.registry.version>2.4</redback.registry.version>
@@ -1828,6 +1828,7 @@
               <exclude>*.sh</exclude>
               <exclude>.git/**</exclude>
               <exclude>src/test/resources/projects/compile/goal.txt</exclude>
+              <exclude>src/test/sh/*.sh</exclude>
               <exclude>**/*.iml</exclude>
               <exclude>build-number.txt</exclude>
               <exclude>.idea/**</exclude>
