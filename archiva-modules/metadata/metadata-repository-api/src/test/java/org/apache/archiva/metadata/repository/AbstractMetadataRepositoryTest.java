@@ -234,20 +234,14 @@ public abstract class AbstractMetadataRepositoryTest
     {
         try ( RepositorySession session = getSessionFactory( ).createSession( ) )
         {
-            tryAssert( ( ) -> {
-                assertThat( getRepository( ).getRootNamespaces( session, TEST_REPO_ID ) ).isNotNull( ).isEmpty( );
-            } );
+            tryAssert( ( ) -> assertThat( getRepository( ).getRootNamespaces( session, TEST_REPO_ID ) ).isNotNull( ).isEmpty( ));
             getRepository( ).updateNamespace( session, TEST_REPO_ID, TEST_NAMESPACE );
 
-            tryAssert( ( ) -> {
-                assertThat( getRepository( ).getRootNamespaces( session, TEST_REPO_ID ) ).isNotNull( ).isNotEmpty( ).contains(
-                    TEST_NAMESPACE ).hasSize( 1 );
-            } );
+            tryAssert( ( ) -> assertThat( getRepository( ).getRootNamespaces( session, TEST_REPO_ID ) ).isNotNull( ).isNotEmpty( )
+                                .contains( TEST_NAMESPACE ).hasSize( 1 ));
             getRepository( ).removeNamespace( session, TEST_REPO_ID, TEST_NAMESPACE );
 
-            tryAssert( ( ) -> {
-                assertThat( getRepository( ).getRootNamespaces( session, TEST_REPO_ID ) ).isNotNull( ).isEmpty( );
-            } );
+            tryAssert( ( ) -> assertThat( getRepository( ).getRootNamespaces( session, TEST_REPO_ID ) ).isNotNull( ).isEmpty( ));
         }
     }
 

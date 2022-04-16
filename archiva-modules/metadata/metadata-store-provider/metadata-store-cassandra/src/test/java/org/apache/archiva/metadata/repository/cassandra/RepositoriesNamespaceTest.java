@@ -39,6 +39,9 @@ import org.testcontainers.utility.DockerImageName;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import java.net.URL;
+import java.util.Enumeration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -52,7 +55,8 @@ public class RepositoriesNamespaceTest
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoriesNamespaceTest.class );
 
     private static final CassandraContainer CASSANDRA =
-            new CassandraContainer(DockerImageName.parse("cassandra").withTag("3.11.2"));
+            new CassandraContainer(DockerImageName.parse("cassandra")
+                    .withTag(System.getProperty("cassandraVersion","3.11.2")));
 
     @Inject
     @Named( value = "archivaEntityManagerFactory#cassandra" )
@@ -63,6 +67,7 @@ public class RepositoriesNamespaceTest
     @BeforeAll
     public static void initCassandra()
             throws Exception {
+        Enumeration<URL> urls = CassandraMetadataRepositoryTest.class.getClassLoader().getResources("log4j2.xml");
         CASSANDRA.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("org.apache.archiva.metadata.repository.cassandra.logs")));
         CASSANDRA.start();
         System.setProperty("cassandra.host", CASSANDRA.getHost());

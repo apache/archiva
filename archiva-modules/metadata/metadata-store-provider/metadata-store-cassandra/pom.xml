@@ -46,12 +46,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-repository-api</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
@@ -78,7 +72,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
     </dependency>
-
 
     <dependency>
       <groupId>jakarta.annotation</groupId>
@@ -119,11 +112,11 @@
       <version>${datastax.driver.version}</version>
     </dependency>
 
-
     <!-- TEST Scope -->
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-api</artifactId>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -171,12 +164,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>cassandra</artifactId>
       <version>1.17.1</version>
@@ -195,6 +182,7 @@
             <systemPropertyVariables>
               <archiva.repositorySessionFactory.id>cassandra</archiva.repositorySessionFactory.id>
               <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+              <cassandraVersion>${cassandraVersion}</cassandraVersion>
             </systemPropertyVariables>
           </configuration>
         </plugin>

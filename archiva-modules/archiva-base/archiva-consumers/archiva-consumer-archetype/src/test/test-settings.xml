@@ -24,7 +24,7 @@ under the License.
   xmlns="http://maven.apache.org/SETTINGS/1.0.0">
   <mirrors>
     <mirror>
-      <mirrorOf>external:*</mirrorOf>
+      <mirrorOf>external:*,!central</mirrorOf>
       <id>local-mirror</id>
       <name>local-mirror</name>
       <url>@localRepositoryUrl@</url>
@@ -60,6 +60,16 @@ under the License.
             <enabled>true</enabled>
           </snapshots>
         </repository>
+        <repository>
+          <id>central</id>
+          <url>https://repo.maven.apache.org/maven2</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
       </repositories>
       <pluginRepositories>
         <pluginRepository>
@@ -70,6 +80,16 @@ under the License.
           </releases>
           <snapshots>
             <enabled>true</enabled>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>central</id>
+          <url>https://repo.maven.apache.org/maven2</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
           </snapshots>
         </pluginRepository>
       </pluginRepositories>

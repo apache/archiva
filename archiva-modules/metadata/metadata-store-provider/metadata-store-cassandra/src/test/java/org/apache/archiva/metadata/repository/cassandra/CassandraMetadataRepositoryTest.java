@@ -29,14 +29,10 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.utility.DockerImageName;
@@ -61,11 +57,12 @@ import static org.mockito.Mockito.when;
 /**
  * @author Olivier Lamy
  */
-@ExtendWith( SpringExtension.class )
-@TestInstance( TestInstance.Lifecycle.PER_CLASS )
 public class CassandraMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( CassandraMetadataRepositoryTest.class );
+
     @Inject
     @Named(value = "archivaEntityManagerFactory#cassandra")
     CassandraArchivaManager cassandraArchivaManager;
@@ -77,7 +74,17 @@ public class CassandraMetadataRepositoryTest
     RepositorySession session;
 
     private static final CassandraContainer CASSANDRA =
-            new CassandraContainer(DockerImageName.parse("cassandra").withTag("3.11.2"));
+            new CassandraContainer(DockerImageName.parse("cassandra")
+                    .withTag(System.getProperty("cassandraVersion","3.11.2")));
+
+    // because of @ExtendWith( SpringExtension.class ) @BeforeAll will not be executed before spring resolution so need to use this...
+    static {
+        LOGGER.info("initCassandra");
+        CASSANDRA.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("org.apache.archiva.metadata.repository.cassandra.logs")));
+        CASSANDRA.start();
+        System.setProperty("cassandra.host", CASSANDRA.getHost());
+        System.setProperty("cassandra.port", CASSANDRA.getMappedPort(9042).toString());
+    }
 
     long cTime;
     int testNum = 0;
@@ -96,15 +103,6 @@ public class CassandraMetadataRepositoryTest
         return cmr;
     }
 
-    @BeforeAll
-    public static void initCassandra()
-            throws Exception {
-        CASSANDRA.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("org.apache.archiva.metadata.repository.cassandra.logs")));
-        CASSANDRA.start();
-        System.setProperty("cassandra.host", CASSANDRA.getHost());
-        System.setProperty("cassandra.port", CASSANDRA.getMappedPort(9042).toString());
-    }
-
     @AfterAll
     public static void stopCassandra()
             throws Exception {
@@ -112,7 +110,8 @@ public class CassandraMetadataRepositoryTest
     }
 
     @BeforeEach
-    public void setUp( TestInfo testInfo )
+    @Override
+    public void setUp()
         throws Exception
     {
         cTime = System.currentTimeMillis( );
@@ -176,7 +175,7 @@ public class CassandraMetadataRepositoryTest
 
 
     @AfterEach
-    public void shutdown(TestInfo testInfo)
+    public void shutdown()
         throws Exception
     {
         clearReposAndNamespace( cassandraArchivaManager, clearedTables );
@@ -201,7 +200,8 @@ public class CassandraMetadataRepositoryTest
                     cassandraArchivaManager.getLicenseFamilyName( ),
                     cassandraArchivaManager.getDependencyFamilyName( )
                 );
-                CompletableFuture.allOf( tables.stream( ).map( table -> session.executeAsync( truncate( table ).build( ) ) )
+                CompletableFuture.allOf(tables.stream()
+                                .map(table -> session.executeAsync(truncate(table).build()))
                         .map( CompletionStage::toCompletableFuture ).collect( Collectors.toList( ) ).toArray( new CompletableFuture[0] ) )
                     .whenComplete( ( c, e ) -> {
                         if ( clearedFlag != null ) clearedFlag.set( true );
