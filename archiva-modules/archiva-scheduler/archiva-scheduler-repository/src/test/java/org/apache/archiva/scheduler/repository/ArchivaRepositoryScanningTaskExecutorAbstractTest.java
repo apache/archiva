@@ -96,15 +96,12 @@ public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
         // set the timestamps to a time well in the past
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.YEAR, -1 );
-        for ( File f : (List<File>) FileUtils.getFiles( repoDir, "**", null ) )
+        for ( File f : FileUtils.getFiles( repoDir, "**", null ) )
         {
             f.setLastModified( cal.getTimeInMillis() );
         }
-        // TODO: test they are excluded instead
-        for ( String dir : (List<String>) FileUtils.getDirectoryNames( repoDir, "**/.svn", null, false ) )
-        {
-            FileUtils.deleteDirectory( new File( repoDir, dir ) );
-        }
+
+        FileUtils.deleteDirectory(new File(repoDir, ".indexer"));
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
