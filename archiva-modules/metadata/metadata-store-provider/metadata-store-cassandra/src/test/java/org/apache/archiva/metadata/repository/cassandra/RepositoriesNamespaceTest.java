@@ -39,16 +39,13 @@ import org.testcontainers.utility.DockerImageName;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import java.net.URL;
-import java.util.Enumeration;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
  */
 @ExtendWith( SpringExtension.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
 public class RepositoriesNamespaceTest
 {
 
@@ -67,7 +64,6 @@ public class RepositoriesNamespaceTest
     @BeforeAll
     public static void initCassandra()
             throws Exception {
-        Enumeration<URL> urls = CassandraMetadataRepositoryTest.class.getClassLoader().getResources("log4j2.xml");
         CASSANDRA.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("org.apache.archiva.metadata.repository.cassandra.logs")));
         CASSANDRA.start();
         System.setProperty("cassandra.host", CASSANDRA.getHost());

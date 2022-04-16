@@ -31,8 +31,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.utility.DockerImageName;
@@ -57,6 +61,9 @@ import static org.mockito.Mockito.when;
 /**
  * @author Olivier Lamy
  */
+@ExtendWith( SpringExtension.class )
+@TestInstance( TestInstance.Lifecycle.PER_CLASS )
+@ContextConfiguration( locations = {"classpath*:/META-INF/spring-context.xml"} )
 public class CassandraMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
 {
