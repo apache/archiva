@@ -46,7 +46,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -73,17 +72,6 @@ public abstract class AbstractArchivaRestTest
     private AtomicReference<Path> projectDir = new AtomicReference<>();
     private AtomicReference<Path> appServerBase = new AtomicReference<>( );
     private AtomicReference<Path> basePath = new AtomicReference<>( );
-
-    private boolean reuseServer = true;
-
-
-    protected void setReuseServer(boolean value) {
-        this.reuseServer = value;
-    }
-
-    protected boolean isReuseServer() {
-        return this.reuseServer;
-    }
 
     /*
      * Used by tryAssert to allow to throw exceptions in the lambda expression.
@@ -179,31 +167,13 @@ public abstract class AbstractArchivaRestTest
     public void startServer()
         throws Exception
     {
-        if ( (!isReuseServer()) || (isReuseServer() && !isServerRunning())) {
-            log.info("Starting new server reuse={}, running={}, instance={}, server={}", isReuseServer(), isServerRunning(), this.hashCode(), getServer()==null ? "" : getServer().hashCode());
-            Path appServerBase = getAppserverBase( );
 
-            removeAppsubFolder(appServerBase, "jcr");
-            removeAppsubFolder(appServerBase, "conf");
-            removeAppsubFolder(appServerBase, "data");
-            super.startServer();
-        } else {
-            log.info("Reusing running server instance reuse={}, running={}", isReuseServer(), isServerRunning());
-        }
-    }
+        Path appServerBase = getAppserverBase();
+        removeAppsubFolder(appServerBase, "jcr");
+        removeAppsubFolder(appServerBase, "conf");
+        removeAppsubFolder(appServerBase, "data");
+        super.startServer();
 
-    @Override
-    @After
-    public void stopServer()
-            throws Exception
-    {
-        if ( !isReuseServer() )
-        {
-            log.info("Stopping server reuse={}, running={}, instance={}, server={}", isReuseServer(), isServerRunning(), this.hashCode(), getServer()==null ? "" : getServer().hashCode());
-            super.stopServer();
-        } else {
-            log.info("Server not stopping reuse={}, running={}", isReuseServer(), isServerRunning());
-        }
     }
 
 
