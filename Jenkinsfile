@@ -42,8 +42,7 @@ publishers = [artifactsPublisher(disabled: false),
 
 cmdLine = (env.NONAPACHEORG_RUN != 'y' && env.BRANCH_NAME == 'master') ? "clean deploy" : "clean install"
 
-
-        INTEGRATION_PIPELINE = "/Archiva/Archiva-IntegrationTests-Gitbox"
+INTEGRATION_PIPELINE = "/Archiva/Archiva-IntegrationTests"
 
 pipeline {
     agent {
@@ -51,7 +50,7 @@ pipeline {
     }
     // Build should also start, if redback has been built successfully
     triggers { 
-        upstream(upstreamProjects: 'Archiva/Archiva-TLP-Gitbox/archiva-redback-core/master,Archiva/Archiva-TLP-Gitbox/archiva-components/master,Archiva/Archiva-TLP-Gitbox/archiva-parent/master', threshold: hudson.model.Result.SUCCESS) 
+        upstream(upstreamProjects: 'Archiva/archiva-projects/archiva-redback-core/master,Archiva/archiva-projects/archiva-components/master,Archiva/archiva-projects/archiva-parent/master', threshold: hudson.model.Result.SUCCESS)
     }
     options {
         disableConcurrentBuilds()
