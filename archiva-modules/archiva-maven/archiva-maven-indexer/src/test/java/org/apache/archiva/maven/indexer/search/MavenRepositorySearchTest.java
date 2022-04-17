@@ -109,7 +109,7 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( false );
 
-        List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
+        List<String> selectedRepos = Collections.singletonList(TEST_REPO_1);
 
         // search artifactId
         when( archivaConfig.getDefaultLocale() ).thenReturn( Locale.getDefault( ) );
@@ -685,7 +685,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMoreArtifacts( true );
 
-        List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
+        List<String> selectedRepos = Collections.singletonList(TEST_REPO_1);
 
         SearchFields searchFields = new SearchFields();
         searchFields.setClassName( "com.classname.search.App" );
@@ -733,7 +733,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMoreArtifacts( true );
 
-        List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
+        List<String> selectedRepos = Collections.singletonList(TEST_REPO_1);
 
         SearchFields searchFields = new SearchFields();
         searchFields.setClassName( "SomeClass" );
@@ -755,7 +755,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMoreArtifacts( true );
 
-        List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
+        List<String> selectedRepos = Collections.singletonList(TEST_REPO_1);
 
         when( archivaConfig.getConfiguration() ).thenReturn( config );
 
@@ -775,7 +775,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMoreArtifacts( true );
 
-        List<String> selectedRepos = Arrays.asList( "foo" );
+        List<String> selectedRepos = Collections.singletonList("foo");
 
         SearchFields searchFields = new SearchFields();
         searchFields.setClassName( "SomeClass" );
@@ -821,7 +821,7 @@ public class MavenRepositorySearchTest
 
             SearchFields searchFields = new SearchFields();
             searchFields.setGroupId("org.example");
-            searchFields.setRepositories(Arrays.asList(REPO_RELEASE));
+            searchFields.setRepositories(Collections.singletonList(REPO_RELEASE));
 
             searchResults = search.search(null, searchFields, limits);
 

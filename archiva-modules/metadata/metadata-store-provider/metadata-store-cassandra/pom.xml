@@ -264,11 +264,6 @@ num_tokens: 1
             <artifactId>jna</artifactId>
             <version>4.2.2</version>
           </dependency>
-            <dependency>
-              <groupId>org.apache.cassandra</groupId>
-              <artifactId>cassandra-all</artifactId>
-              <version>${cassandraVersion}</version>
-            </dependency>
         </dependencies>
       </plugin>
       <plugin>

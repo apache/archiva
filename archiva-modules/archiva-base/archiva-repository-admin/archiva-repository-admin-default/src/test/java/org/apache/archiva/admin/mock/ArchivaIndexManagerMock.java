@@ -176,7 +176,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
             active = activeContexts.add( ctxPath );
             try
             {
-                Thread.currentThread( ).sleep( WAIT_TIME );
+                Thread.currentThread().sleep(WAIT_TIME);
             }
             catch ( InterruptedException e )
             {
@@ -229,11 +229,12 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
             DefaultScannerListener listener = new DefaultScannerListener( indexingContext, indexerEngine, true, null );
             ScanningRequest request = new ScanningRequest( indexingContext, listener );
             ScanningResult result = scanner.scan( request );
-            if ( result.hasExceptions( ) )
+            if (result.hasExceptions() && log.isErrorEnabled())
             {
                 log.error( "Exceptions occured during index scan of " + context.getId( ) );
-                result.getExceptions( ).stream( ).map( e -> e.getMessage( ) ).distinct( ).limit( 5 ).forEach(
-                        s -> log.error( "Message: " + s )
+                result.getExceptions().stream().map(Throwable::getMessage)
+                        .distinct().limit(5)
+                        .forEach(s -> log.error("Message: {}", s)
                 );
             }
 
@@ -302,7 +303,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
                                 httpMethodConfiguration.setUsePreemptive( true );
                                 httpMethodConfiguration.setReadTimeout( readTimeout );
                                 httpConfiguration.setGet( httpMethodConfiguration );
-                                AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
+                                ((AbstractHttpClientWagon)wagon).setHttpConfiguration(httpConfiguration );
                             }
 
                             wagon.addTransferListener( new DownloadListener( ) );
@@ -672,7 +673,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
     private static final class DownloadListener
             implements TransferListener
     {
-        private Logger log = LoggerFactory.getLogger( getClass( ) );
+        private final Logger log = LoggerFactory.getLogger( getClass( ) );
 
         private String resourceName;
 
@@ -763,7 +764,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
 
         @Override
         public InputStream retrieve(String name )
-                throws IOException, FileNotFoundException
+                throws IOException
         {
             try
             {
@@ -780,8 +781,8 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
             }
             catch ( ResourceDoesNotExistException e )
             {
-                FileNotFoundException fnfe = new FileNotFoundException( e.getMessage( ) );
-                fnfe.initCause( e );
+                FileNotFoundException fnfe = new FileNotFoundException(e.getMessage( ));
+                fnfe.initCause(e);
                 throw fnfe;
             }
         }

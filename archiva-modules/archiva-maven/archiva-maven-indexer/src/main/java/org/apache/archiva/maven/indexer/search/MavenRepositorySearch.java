@@ -20,7 +20,6 @@ package org.apache.archiva.maven.indexer.search;
 
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.indexer.search.ArtifactInfoFilter;
-import org.apache.archiva.maven.indexer.search.NoClassifierArtifactInfoFilter;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -73,7 +72,7 @@ import java.util.Set;
 public class MavenRepositorySearch
     implements RepositorySearch
 {
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    private final Logger log = LoggerFactory.getLogger( getClass() );
 
     private Indexer indexer;
 
@@ -273,13 +272,13 @@ public class MavenRepositorySearch
             throw new RepositorySearchException( "No search fields set." );
         }
         if (qu.clauses()!=null) {
-            log.debug("CLAUSES ", qu.clauses());
+            log.debug("CLAUSES {}", qu.clauses());
             for (BooleanClause cl : qu.clauses()) {
-                log.debug("Clause ",cl);
+                log.debug("Clause {}",cl);
             }
         }
 
-        return search( limits, qu, indexingContextIds, Collections.<ArtifactInfoFilter>emptyList(),
+        return search( limits, qu, indexingContextIds, Collections.emptyList(),
                        searchFields.getRepositories(), searchFields.isIncludePomArtifacts() );
     }
 
@@ -435,10 +434,8 @@ public class MavenRepositorySearch
             {
                 log.warn( "RepositorySearchException occured while accessing index of repository '{}' : {}", repo,
                     e.getMessage() );
-                continue;
             } catch (UnsupportedBaseContextException e) {
                 log.error("Fatal situation: Maven repository without IndexingContext found.");
-                continue;
             }
         }
 
