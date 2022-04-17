@@ -72,7 +72,13 @@ pipeline {
                                 // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean install -B -U -e -fae -T2 -Pci-build"
+                                script {
+                                    if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'archiva-2.x') {
+                                        sh "mvn clean deploy -B -U -e -fae -T2 -Pci-build"
+                                    } else {
+                                        sh "mvn clean install -B -U -e -fae -T2 -Pci-build"
+                                    }
+                                }
                             }
                 }
             }
