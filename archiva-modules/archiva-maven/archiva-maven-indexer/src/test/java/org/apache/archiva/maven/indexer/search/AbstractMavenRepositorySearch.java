@@ -32,7 +32,6 @@ import org.apache.archiva.repository.base.ArchivaRepositoryRegistry;
 import org.apache.archiva.repository.base.RepositoryHandlerDependencies;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.ArtifactScanningListener;
@@ -346,7 +345,7 @@ public abstract class AbstractMavenRepositorySearch
         StringBuilder sb = new StringBuilder();
         for ( SearchResultHit hit : searchResults.getHits() )
         {
-            sb.append( hit.toString() ).append( SystemUtils.LINE_SEPARATOR );
+            sb.append( hit.toString() ).append( System.lineSeparator() );
         }
         return sb.toString();
     }

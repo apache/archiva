@@ -156,7 +156,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
      */
     private void executeUpdateFunction( ArchivaIndexingContext context, IndexUpdateConsumer function ) throws IndexUpdateFailedException
     {
-        IndexingContext indexingContext = null;
+        IndexingContext indexingContext;
         try
         {
             indexingContext = getMvnContext( context );
@@ -226,11 +226,12 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
             DefaultScannerListener listener = new DefaultScannerListener( indexingContext, indexerEngine, true, null );
             ScanningRequest request = new ScanningRequest( indexingContext, listener );
             ScanningResult result = scanner.scan( request );
-            if ( result.hasExceptions( ) )
+            if (result.hasExceptions() && log.isErrorEnabled())
             {
-                log.error( "Exceptions occured during index scan of " + context.getId( ) );
-                result.getExceptions( ).stream( ).map( e -> e.getMessage( ) ).distinct( ).limit( 5 ).forEach(
-                        s -> log.error( "Message: " + s )
+                log.error("Exceptions occured during index scan of {}", context.getId());
+                result.getExceptions().stream()
+                        .map(Throwable::getMessage).distinct()
+                        .limit(5).forEach(s -> log.error( "Message: {}", s )
                 );
             }
 
@@ -659,7 +660,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
     private static final class DownloadListener
             implements TransferListener
     {
-        private Logger log = LoggerFactory.getLogger( getClass( ) );
+        private final Logger log = LoggerFactory.getLogger( getClass( ) );
 
         private String resourceName;
 
