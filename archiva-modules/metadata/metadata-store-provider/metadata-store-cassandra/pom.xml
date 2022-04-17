@@ -46,12 +46,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-repository-api</artifactId>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
@@ -78,7 +72,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
     </dependency>
-
 
     <dependency>
       <groupId>jakarta.annotation</groupId>
@@ -119,11 +112,11 @@
       <version>${datastax.driver.version}</version>
     </dependency>
 
-
     <!-- TEST Scope -->
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-api</artifactId>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -165,158 +158,32 @@
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-1.2-api</artifactId>
+      <artifactId>log4j-core</artifactId>
       <version>${log4j.version}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>cassandra</artifactId>
+      <version>1.17.1</version>
       <scope>test</scope>
     </dependency>
-
 
   </dependencies>
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/filtered-resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>reserve-ports</id>
-            <phase>process-test-resources</phase>
-            <goals>
-              <goal>reserve-network-port</goal>
-            </goals>
-            <configuration>
-              <portNames>
-                <portName>cassandra.rpcPort</portName>
-                <portName>cassandra.storagePort</portName>
-                <portName>cassandra.stopPort</portName>
-                <portName>cassandra.jmxPort</portName>
-                <portName>cassandra.nativeTransportPort</portName>
-              </portNames>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cassandra-maven-plugin</artifactId>
-        <version>3.7-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <id>start-cassandra</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>start</goal>
-            </goals>
-            <configuration>
-              <nativeTransportPort>${cassandra.nativeTransportPort}</nativeTransportPort>
-              <rpcPort>${cassandra.rpcPort}</rpcPort>
-              <storagePort>${cassandra.storagePort}</storagePort>
-              <stopPort>${cassandra.stopPort}</stopPort>
-              <jmxPort>${cassandra.jmxPort}</jmxPort>
-              <addMainClasspath>false</addMainClasspath>
-              <addTestClasspath>false</addTestClasspath>
-              <startWaitSeconds>500</startWaitSeconds>
-              <startNativeTransport>true</startNativeTransport>
-              <logLevel>INFO</logLevel>
-              <loadAfterFirstStart>false</loadAfterFirstStart>
-              <systemPropertyVariables>
-                <cassandra.jmx.local.port>${cassandra.jmxPort}</cassandra.jmx.local.port>
-              </systemPropertyVariables>
-              <yaml><![CDATA[rpc_address: 127.0.0.1
-broadcast_rpc_address: 127.0.0.1
-listen_address: 127.0.0.1
-auto_snapshot: false
-snapshot_before_compaction: false
-num_tokens: 1
-]]></yaml>
-            </configuration>
-          </execution>
-          <execution>
-            <id>stop-cassandra</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>stop</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>4.2.2</version>
-          </dependency>
-            <dependency>
-              <groupId>org.apache.cassandra</groupId>
-              <artifactId>cassandra-all</artifactId>
-              <version>${cassandraVersion}</version>
-            </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.0.0-M5</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>**/*Test.java</include>
-          </includes>
-          <systemPropertyVariables>
-            <cassandra.port>${cassandra.nativeTransportPort}</cassandra.port>
-            <cassandra.host>127.0.0.1</cassandra.host>
-            <archiva.repositorySessionFactory.id>cassandra</archiva.repositorySessionFactory.id>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
-          </systemPropertyVariables>
-          <trimStackTrace>false</trimStackTrace>
-          <skip>false</skip>
-          <classesDirectory>${project.build.outputDirectory}</classesDirectory>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.jupiter.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <executions>
-          </executions>
           <configuration>
-            <skip>true</skip>
+            <systemPropertyVariables>
+              <archiva.repositorySessionFactory.id>cassandra</archiva.repositorySessionFactory.id>
+              <appserver.base>${project.build.directory}/appserver-base</appserver.base>
+              <cassandraVersion>${cassandraVersion}</cassandraVersion>
+            </systemPropertyVariables>
           </configuration>
         </plugin>
 
@@ -326,7 +193,6 @@ num_tokens: 1
           <configuration>
             <excludes>
               <exclude>src/cassandra/**</exclude>
-              <exclude>src/test/resources/cassandra-test.yaml</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -334,15 +200,4 @@ num_tokens: 1
     </pluginManagement>
   </build>
 
-  <profiles>
-    <profile>
-      <id>jdk9+</id>
-      <activation>
-        <jdk>[1.9,)</jdk>
-      </activation>
-      <properties >
-        <cassandra.addJdk11Options>true</cassandra.addJdk11Options>
-      </properties>
-    </profile>
-  </profiles>
 </project>

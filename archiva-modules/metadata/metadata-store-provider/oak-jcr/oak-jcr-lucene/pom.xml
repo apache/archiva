@@ -182,7 +182,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
         <executions>
           <!-- Run shade goal on package phase -->
           <execution>
@@ -191,6 +190,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>

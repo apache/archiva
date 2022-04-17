@@ -182,7 +182,6 @@ public class DefaultCassandraArchivaManager
         hostNames.add( cassandraHost + ":" + cassandraPort );
         configLoader =
             DriverConfigLoader.programmaticBuilder( )
-
                 .withStringList( DefaultDriverOption.CONTACT_POINTS, hostNames )
                 .withInt( DefaultDriverOption.CONNECTION_POOL_LOCAL_SIZE, maxActive )
                 .withInt( DefaultDriverOption.CONNECTION_POOL_REMOTE_SIZE, maxActive )
