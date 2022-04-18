@@ -24,33 +24,21 @@
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%L] [%t] %-5level %logger{6} - %msg%n}" />
     </Console>
-    <RollingRandomAccessFile name="rolling" fileName="/tmp/archiva.log"
-                             filePattern="/tmp/archiva-%d{yyyyMMdd}.log"
-                             immediateFlush="true" append="true">
-      <PatternLayout>
-        <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
-      </PatternLayout>
-      <Policies>
-        <TimeBasedTriggeringPolicy />
-      </Policies>
-    </RollingRandomAccessFile>
   </appenders>
 
   <loggers>
 
     <logger name="jaxrs" level="info" />
-    <logger name="org.apache.cxf" level="debug" />
-    <logger name="org.apache.archiva" level="debug" />
-    <logger name="org.apache.archiva.redback" level="debug"/>
+    <logger name="org.apache.cxf" level="info" />
+    <logger name="org.apache.archiva" level="info" />
+    <logger name="org.apache.archiva.redback" level="info"/>
     <logger name="com.fasterxml.jackson" level="info" />
     <logger name="org.apache.archiva.components" level="error" />
 
-    <logger name="JPOX" level="error"/>
     <logger name="org.apache.archiva.rest.services" level="info"/>
     <logger name="org.springframework" level="error"/>
     <logger name="org.apache.commons.configuration" level="info"/>
     <logger name="org.apache.archiva.metadata" level="error" />
-    <logger name="org.apache.cxf" level="debug" />
 
     <root level="info">
       <appender-ref ref="console"/>

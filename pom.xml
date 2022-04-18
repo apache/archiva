@@ -51,17 +51,11 @@
     <redback.version>3.0.0-SNAPSHOT</redback.version>
 
     <!-- Java Enterprise APIs -->
-
-
-
     <maven3x.version>3.8.1</maven3x.version>
     <maven.resolver.version>1.4.1</maven.resolver.version>
     <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
     <maven-model-converter.version>2.3</maven-model-converter.version>
     <wagon.version>3.3.3</wagon.version>
-
-
-
 
     <!-- dependencies of maven modules -->
     <jsoup.version>1.14.2</jsoup.version>
@@ -1551,26 +1545,11 @@
 
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
+        <artifactId>jetty-bom</artifactId>
         <version>${jetty.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-plus</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlet</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-
 
       <!-- JCR -->
       <dependency>

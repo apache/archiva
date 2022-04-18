@@ -24,16 +24,6 @@
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%L] [%t] %-5level %logger{3} - %msg%n}" />
     </Console>
-    <RollingRandomAccessFile name="rolling" fileName="/tmp/archiva.log"
-                             filePattern="/tmp/archiva-%d{yyyyMMdd}.log"
-                             immediateFlush="true" append="true">
-      <PatternLayout>
-        <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
-      </PatternLayout>
-      <Policies>
-        <TimeBasedTriggeringPolicy />
-      </Policies>
-    </RollingRandomAccessFile>
   </appenders>
 
   <loggers>
