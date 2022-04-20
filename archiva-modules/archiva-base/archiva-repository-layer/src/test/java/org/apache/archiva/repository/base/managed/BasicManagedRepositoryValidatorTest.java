@@ -30,6 +30,8 @@ import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.repository.mock.ManagedRepositoryContentMock;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
 import org.apache.archiva.repository.validation.ValidationResponse;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.remote.RemoteRepositoryHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,6 +63,12 @@ class BasicManagedRepositoryValidatorTest
     @SuppressWarnings( "unused" )
     @Inject
     RepositoryGroupHandler repositoryGroupHandler;
+
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
+    @Inject
+    RemoteRepositoryHandler remoteRepositoryHandler;
 
     Path repoBaseDir;
 
