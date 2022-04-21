@@ -26,6 +26,8 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.base.ConfigurationHandler;
+import org.apache.archiva.repository.base.managed.ManagedRepositoryHandler;
+import org.apache.archiva.repository.base.remote.RemoteRepositoryHandler;
 import org.apache.archiva.repository.base.group.RepositoryGroupHandler;
 import org.apache.archiva.repository.mock.ManagedRepositoryContentMock;
 import org.apache.archiva.repository.storage.fs.FilesystemStorage;
@@ -61,6 +63,12 @@ class BasicManagedRepositoryValidatorTest
     @SuppressWarnings( "unused" )
     @Inject
     RepositoryGroupHandler repositoryGroupHandler;
+
+    @Inject
+    ManagedRepositoryHandler managedRepositoryHandler;
+
+    @Inject
+    RemoteRepositoryHandler remoteRepositoryHandler;
 
     Path repoBaseDir;
 
