@@ -49,3 +49,5 @@ jobs:
 
       - name: Publish Test Report
         uses: scacap/action-surefire-report@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
