@@ -540,7 +540,7 @@
             with surefire and OpenJDK 8 181b13 on Debian/Ubuntu,
             @see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=911925
           -->
-          <argLine>-Xms256m -Xmx512m -server -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+          <argLine>-Xms2048m -Xmx2048m -server -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
           <systemPropertyVariables>
             <mvn.project.base.dir>${project.basedir}</mvn.project.base.dir>
             <appserver.base>${project.build.directory}/appserver-base-${surefire.forkNumber}</appserver.base>
