@@ -54,7 +54,7 @@ pipeline {
     }
     options {
         disableConcurrentBuilds()
-        buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '5'))
+        buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '2'))
     }
     parameters {
         booleanParam(name: 'PRECLEANUP', defaultValue: false, description: 'Clears the local maven repository before build.')
