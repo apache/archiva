@@ -39,6 +39,7 @@ under the License.
       <repositories>
         <!--
         Uncomment if you have some redback librairies staged and want to cut a release
+        -->
         <repository>
           <id>archiva-repository.apache.org.stage</id>
           <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</url>
@@ -49,7 +50,7 @@ under the License.
             <enabled>false</enabled>
           </snapshots>
         </repository>
-        -->
+
         <repository>
           <id>local-central</id>
           <url>@localRepositoryUrl@</url>

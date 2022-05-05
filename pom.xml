@@ -65,7 +65,7 @@
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>5.1.1</maven.indexer.version>
     <wagon.version>2.9</wagon.version>
-    <redback.version>2.6.2-SNAPSHOT</redback.version>
+    <redback.version>2.6.2</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
     <redback.quartz.version>2.1</redback.quartz.version>
     <redback.registry.version>2.4</redback.registry.version>
@@ -1985,6 +1985,17 @@
   </profiles>
 
   <repositories>
+    <repository>
+      <id>archiva.staged</id>
+      <name>Archiva VM Stages Repository</name>
+      <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>archiva.snapshots</id>
       <name>Archiva VM Snapshots Repository</name>
