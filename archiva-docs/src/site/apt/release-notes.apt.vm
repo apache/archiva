@@ -32,7 +32,7 @@ Release Notes for Archiva ${project.version}
 
     * the web site: {{http://archiva.apache.org/}}
 
-    * the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
+    * the archiva-user mailing list: {{http://archiva.apache.org/mailing-lists.html}}
 
 * New in Archiva ${project.version}
 
