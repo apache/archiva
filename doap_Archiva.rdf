@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl"?>
 <rdf:RDF xml:lang="en"
-         xmlns="http://usefulinc.com/ns/doap#" 
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+         xmlns="http://usefulinc.com/ns/doap#"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
          xmlns:asfext="http://projects.apache.org/ns/asfext#"
          xmlns:foaf="http://xmlns.com/foaf/0.1/">
 <!--
@@ -12,94 +12,41 @@
     The ASF licenses this file to You under the Apache License, Version 2.0
     (the "License"); you may not use this file except in compliance with
     the License.  You may obtain a copy of the License at
-   
+
          http://www.apache.org/licenses/LICENSE-2.0
-   
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-  <Project rdf:about="http://archiva.apache.org">
+  <Project rdf:about="https://archiva.apache.org">
     <created>2012-04-14</created>
     <license rdf:resource="http://usefulinc.com/doap/licenses/asl20" />
     <name>Apache Archiva</name>
-    <homepage rdf:resource="http://archiva.apache.org" />
-    <asfext:pmc rdf:resource="http://archiva.apache.org" />
+    <homepage rdf:resource="https://archiva.apache.org" />
+    <asfext:pmc rdf:resource="https://archiva.apache.org" />
     <shortdesc>Apache Archiva software is an extensible repository management tool that helps taking care of your own personal or enterprise-wide build artifact repository.</shortdesc>
     <description>Archiva is the perfect companion for build tools such as Maven, Continuum, and ANT. Archiva offers several capabilities, amongst which remote repository proxying,
 security access management, build artifact storage, delivery, browsing, indexing and usage reporting, extensible scanning functionality and many more!</description>
-    <bug-database rdf:resource="http://issues.apache.org/jira/browse/MRM" />
-    <mailing-list rdf:resource="http://archiva.apache.org/mail-lists.html" />
-    <download-page rdf:resource="http://archiva.apache.org/download.html" />
+    <bug-database rdf:resource="https://issues.apache.org/jira/browse/MRM" />
+    <mailing-list rdf:resource="https://archiva.apache.org/mailing-lists.html" />
+    <download-page rdf:resource="https://archiva.apache.org/download.html" />
     <programming-language>Java</programming-language>
     <category rdf:resource="http://projects.apache.org/category/build-management" />
 
     <release>
       <Version>
-        <name>Apache Archiva 2.2.5</name>
-        <created>2020-06-19</created>
-        <revision>2.2.5</revision>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.5/binaries/apache-archiva-2.2.5-bin.zip</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.5/binaries/apache-archiva-2.2.5-bin.tar.gz</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.5/binaries/apache-archiva-2.2.5.war</file-release>
-      </Version>
-    </release>
- 
-    <release>
-      <Version>
-        <name>Apache Archiva 2.2.4</name>
-        <created>2019-04-30</created>
-        <revision>2.2.4</revision>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.4/binaries/apache-archiva-2.2.4-bin.zip</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.4/binaries/apache-archiva-2.2.4-bin.tar.gz</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.4/binaries/apache-archiva-2.2.4.war</file-release>
-      </Version>
-    </release>
-           
-    <release>
-      <Version>
-        <name>Apache Archiva 2.2.3</name>
-        <created>2017-05-16</created>
-        <revision>2.2.3</revision>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.3/binaries/apache-archiva-2.2.3-bin.zip</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.3/binaries/apache-archiva-2.2.3-bin.tar.gz</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.3/binaries/apache-archiva-2.2.3.war</file-release>
+        <name>Apache Archiva 2.2.7</name>
+        <created>2021-12-19</created>
+        <revision>2.2.7</revision>
+        <file-release>https://archive.apache.org/dist/archiva/2.2.7/binaries/apache-archiva-2.2.7-bin.zip</file-release>
+        <file-release>https://archive.apache.org/dist/archiva/2.2.7/binaries/apache-archiva-2.2.7-bin.tar.gz</file-release>
+        <file-release>https://archive.apache.org/dist/archiva/2.2.7/binaries/apache-archiva-2.2.7.war</file-release>
       </Version>
     </release>
 
-
-    <release>
-      <Version>
-        <name>Apache Archiva 2.2.x</name>
-        <created>2015-03-02</created>
-        <revision>2.2.0</revision>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.0/binaries/apache-archiva-2.2.0-bin.zip</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/2.2.0/binaries/apache-archiva-2.2.0.war</file-release>
-      </Version>
-    </release>
-
-    <release>
-      <Version>
-        <name>Apache Archiva 2.1.x</name>
-        <created>2014-09-04</created>
-        <revision>2.1.1</revision>
-        <file-release>http://archive.apache.org/dist/archiva/2.1.1/binaries/apache-archiva-2.1.1-bin.zip</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/2.1.1/binaries/apache-archiva-2.1.1.war</file-release>
-      </Version>
-    </release>
-
-    <release>
-      <Version>
-        <name>Apache Archiva 1.3.x</name>
-        <created>2014-07-01</created>
-        <revision>1.3.9</revision>
-        <file-release>http://archive.apache.org/dist/archiva/1.3.9/binaries/apache-archiva-1.3.9.1-bin.zip</file-release>
-        <file-release>http://archive.apache.org/dist/archiva/1.3.9/binaries/apache-archiva-1.3.9.war</file-release>
-      </Version>
-    </release>
-    
     <repository>
       <!-- git first as archiva migrated core to this place-->
       <GitRepository>
@@ -109,10 +56,10 @@ security access management, build artifact storage, delivery, browsing, indexing
     </repository>
     <repository>
       <!-- archiva parent pom is located here -->
-      <SVNRepository>
-        <location rdf:resource="https://svn.apache.org/viewvc/archiva/parent/"/>
-        <browse rdf:resource="https://svn.apache.org/viewvc/archiva/parent/"/>
-      </SVNRepository>    
+      <GitRepository>
+        <location rdf:resource="https://gitbox.apache.org/repos/asf/archiva-parent.git"/>
+        <browse rdf:resource="https://gitbox.apache.org/repos/asf?p=archiva-parent.git"/>
+      </GitRepository>
     </repository>
     <maintainer>
       <foaf:Person>
