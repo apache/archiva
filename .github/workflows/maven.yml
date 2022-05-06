@@ -46,8 +46,3 @@ jobs:
 
       - name: Build with Maven
         run: mvn -e -B -V install -Pci-build -T2
-
-      - name: Publish Test Report
-        uses: scacap/action-surefire-report@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
