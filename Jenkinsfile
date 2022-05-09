@@ -74,7 +74,7 @@ pipeline {
                                 // -Pci-build: Profile for CI-Server
                                 script {
                                     if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'archiva-2.x') {
-                                        sh "mvn clean deploy -B -U -e -fae -T2 -Pci-build"
+                                        sh "mvn clean deploy -B -U -e -fae -T2 -Pci-build -DretryFailedDeploymentCount=5"
                                     } else {
                                         sh "mvn clean install -B -U -e -fae -T2 -Pci-build"
                                     }
