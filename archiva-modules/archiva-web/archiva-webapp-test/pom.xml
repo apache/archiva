@@ -37,7 +37,7 @@
 
     <seleniumPluginVersion>2.3</seleniumPluginVersion>
     <selenium-server.version>2.53.1</selenium-server.version>
-    <fluentlenium.version>0.10.2</fluentlenium.version>
+    <fluentlenium.version>0.13.2</fluentlenium.version>
 
     <browserPath></browserPath>
   </properties>
