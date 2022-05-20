@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>archiva</artifactId>
-  <version>2.2.8-SNAPSHOT</version>
+  <version>2.2.8</version>
   <packaging>pom</packaging>
 
   <name>Apache Archiva</name>
