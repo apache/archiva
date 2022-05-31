@@ -214,7 +214,9 @@ public class XMLReader
         while ( attributeIterator.hasNext() )
         {
             attribute = attributeIterator.next();
-            attribute.setNamespace( Namespace.NO_NAMESPACE );
+            if (!attribute.getNamespace().equals(Namespace.NO_NAMESPACE)) {
+                attribute.setNamespace( Namespace.NO_NAMESPACE );
+            }
         }
     }
 
