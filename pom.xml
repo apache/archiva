@@ -67,7 +67,7 @@
     <!-- If you change the JCR OAK version, you may have to update the pom.xml in the module oak-jcr-lucene
          to adapt to dependency changes -->
     <jcr-oak.version>1.40.0</jcr-oak.version>
-    <netty.version>4.1.50.Final</netty.version>
+    <netty.version>4.1.68.Final</netty.version>
 
 
     <!-- Jackrabbit classes are still used for webdav -->
