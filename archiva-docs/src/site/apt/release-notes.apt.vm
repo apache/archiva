@@ -36,7 +36,147 @@ Release Notes for Archiva ${project.version}
 
 * New in Archiva ${project.version}
 
+<<<<<<< Updated upstream
   Apache Archiva ${project.version} is a bug fix release:
+=======
+ Apache Archiva ${project.version} is a security fix release:
+
+** Compatibility Changes
+
+  * There are no compatibility changes
+
+** New Feature
+
+  * There are no new features in this release.
+
+** Improvements
+
+  * There are no improvements
+
+** Bug/Security Fix
+
+  * CVE-2022-29405 Apache Archiva Arbitrary user password reset vulnerability
+
+
+Previous Release Notes
+
+* Release Notes for Archiva 2.2.7
+
+ Apache Archiva 2.2.7 is a security fix release:
+
+ Released: 2022-12-22
+
+** Compatibility Changes
+
+  * [MRM-2021] There is a new flag 'literalVersion=true/false' for service archivaServices/searchService/artifact
+    which allows to change the behaviour for v=LATEST search.
+
+** New Feature
+
+  * There are no new features in this release.
+
+** Improvements
+
+  * There are no improvements
+
+** Bug/Security Fix
+
+  * [MRM-2027] Update of the log4j2 version to 2.17.0
+
+  * [MRM-2020] Fixed the behaviour of the startup script, if ARCHIVA_BASE is set (separating installation and data directory)
+
+  * [MRM-2022] Fixed the handling of X-XSRF-TOKEN header in Javascript calls
+
+
+* Release Notes for Archiva 2.2.6
+
+ Apache Archiva 2.2.6 is a security fix release:
+
+ Released: 2021-12-15
+
+** Compatibility Changes
+
+  * No API changes or known side effects.
+
+** New Feature
+
+  * There are no new features in this release.
+
+** Improvements
+
+  * There are no improvements
+
+** Bug/Security Fix
+
+  * Update of the log4j2 version to mitigate the log4j2 vulnerability (CVE-2021-44228)
+
+  * Deactivated directory listings by the file servlet
+
+
+* Release Notes for Archiva 2.2.5
+
+ Apache Archiva 2.2.5 is a bug fix release:
+
+ Released: 2020-06-19
+
+** Compatibility Changes
+
+  * No API changes or known side effects.
+
+** New Feature
+
+  * There are no new features in this release.
+
+** Improvements
+
+  * There are no improvements
+
+** Bug Fix
+ 
+  * [MRM-2008] Fix for group names with slashes
+
+  * Better handling of LDAP filter 
+
+
+* Release Notes for Archiva 2.2.4
+
+ Apache Archiva 2.2.4 is a bug fix release:
+
+  * Fixes for handling of artifacts
+
+  * Improved validation of REST calls
+
+** Compatibility Changes
+
+ No API changes or known side effects.
+
+ Released: 2019-04-30
+
+** New Feature
+
+  *  There are no new features in this release.
+
+** Improvements
+
+  * Adding additional validation to REST service calls for artifact upload
+
+** Bug Fix
+
+  * [MRM-1972] Stored XSS in Web UI Organization Name
+
+  * [MRM-1966] Repository-purge not working
+
+  * [MRM-1958] Purge by retention count deletes files but leaves history on website.
+
+  * [MRM-1929] Repository purge is not reflected in index
+
+
+* Release Notes for Archiva 2.2.3
+
+** New in Archiva 2.2.3
+
+  Apache Archiva 2.2.3 is a bug fix release:
+>>>>>>> Stashed changes
 
   * Some fixes for the REST API were added to detect requests from unknown origin
 
