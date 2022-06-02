@@ -681,7 +681,7 @@ public class Maven2RepositoryMetadataResolverTest
 
         assertArtifact( artifacts.get( 0 ), "plexus-spring-1.2-sources.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
         assertArtifact( artifacts.get( 1 ), "plexus-spring-1.2.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
-        assertArtifact( artifacts.get( 2 ), "plexus-spring-1.2.pom", 7422, "ac54312a724733a2eb7a9db1a5b8a0ec7671a814",
+        assertArtifact( artifacts.get( 2 ), "plexus-spring-1.2.pom", 7273, "ac54312a724733a2eb7a9db1a5b8a0ec7671a814",
                         "38aa7a946d1ee14fae9bf6a17c603eb8" );
     }
 
