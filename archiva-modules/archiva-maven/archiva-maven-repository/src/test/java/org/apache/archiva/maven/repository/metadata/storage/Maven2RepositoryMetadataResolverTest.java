@@ -218,7 +218,7 @@ public class Maven2RepositoryMetadataResolverTest
                            "http://www.nabble.com/Archiva---Issues-f29617.html" );
 
         List<Dependency> dependencies = metadata.getDependencies();
-        assertEquals( 10, dependencies.size() );
+        assertEquals( 9, dependencies.size() );
         assertDependency( dependencies.get( 0 ), "commons-lang", "commons-lang", "2.2" );
         assertDependency( dependencies.get( 1 ), "commons-io", "commons-io", "1.4" );
         assertDependency( dependencies.get( 2 ), "org.slf4j", "slf4j-api", "1.5.0" );
@@ -681,8 +681,8 @@ public class Maven2RepositoryMetadataResolverTest
 
         assertArtifact( artifacts.get( 0 ), "plexus-spring-1.2-sources.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
         assertArtifact( artifacts.get( 1 ), "plexus-spring-1.2.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
-        assertArtifact( artifacts.get( 2 ), "plexus-spring-1.2.pom", 7422, "28e86d3e2723e4894587e4b758231f76febce942",
-                        "9f663d8e7adf6adff4133653b59d1e28" );
+        assertArtifact( artifacts.get( 2 ), "plexus-spring-1.2.pom", 7422, "ac54312a724733a2eb7a9db1a5b8a0ec7671a814",
+                        "38aa7a946d1ee14fae9bf6a17c603eb8" );
     }
 
     @Test
