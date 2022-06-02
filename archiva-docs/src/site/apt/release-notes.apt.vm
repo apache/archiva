@@ -36,9 +36,6 @@ Release Notes for Archiva ${project.version}
 
 * New in Archiva ${project.version}
 
-<<<<<<< Updated upstream
-  Apache Archiva ${project.version} is a bug fix release:
-=======
  Apache Archiva ${project.version} is a security fix release:
 
 ** Compatibility Changes
