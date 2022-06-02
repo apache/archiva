@@ -34,9 +34,9 @@
       <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>dom4j</groupId>
+      <groupId>org.dom4j</groupId>
       <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
+      <version>${dom4j.version}</version>
     </dependency>
     <dependency>
       <groupId>jaxen</groupId>
