@@ -225,10 +225,9 @@ public class Maven2RepositoryMetadataResolverTest
         assertDependency( dependencies.get( 3 ), "org.codehaus.plexus", "plexus-component-api", "1.0-alpha-22" );
         assertDependency( dependencies.get( 4 ), "org.codehaus.plexus", "plexus-spring", "1.2", "test" );
         assertDependency( dependencies.get( 5 ), "xalan", "xalan", "2.7.0" );
-        assertDependency( dependencies.get( 6 ), "org.dom4j", "dom4j", "${dom4j.version}", "test" );
-        assertDependency( dependencies.get( 7 ), "junit", "junit", "3.8.1", "test" );
-        assertDependency( dependencies.get( 8 ), "easymock", "easymock", "1.2_Java1.3", "test" );
-        assertDependency( dependencies.get( 9 ), "easymock", "easymockclassextension", "1.2", "test" );
+        assertDependency( dependencies.get( 6 ), "junit", "junit", "3.8.1", "test" );
+        assertDependency( dependencies.get( 7 ), "easymock", "easymock", "1.2_Java1.3", "test" );
+        assertDependency( dependencies.get( 8 ), "easymock", "easymockclassextension", "1.2", "test" );
 
         assertEquals( 8, metadata.getProperties().size() );
         assertEquals( "http://www.apache.org/images/asf_logo_wide.gif", metadata.getProperties().get("organization.logo") );
