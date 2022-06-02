@@ -40,6 +40,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -211,12 +212,15 @@ public class XMLReader
 
         Attribute attribute;
         Iterator<Attribute> attributeIterator = elem.attributeIterator();
+        LinkedHashMap<String, String> newAttributes = new LinkedHashMap<>();
         while ( attributeIterator.hasNext() )
         {
             attribute = attributeIterator.next();
-            if (!attribute.getNamespace().equals(Namespace.NO_NAMESPACE)) {
-                attribute.setNamespace( Namespace.NO_NAMESPACE );
-            }
+            newAttributes.put(attribute.getName(), attribute.getValue());
+        }
+        elem.setAttributes(new ArrayList<Attribute>());
+        for (Map.Entry<String, String> entry : newAttributes.entrySet()) {
+            elem.addAttribute(entry.getKey(), entry.getValue());
         }
     }
 
