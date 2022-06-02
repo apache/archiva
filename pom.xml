@@ -75,7 +75,7 @@
     <jackrabbit.version>2.15.4</jackrabbit.version>
     <metrics-core.version>3.1.0</metrics-core.version>
 
-    <derbyVersion>10.13.1.1</derbyVersion>
+    <derbyVersion>10.15.2.0</derbyVersion>
     <httpclient.version>4.5.13</httpclient.version>
     <httpclient.core.version>4.4.15</httpclient.core.version>
 
