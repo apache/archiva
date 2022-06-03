@@ -54,7 +54,7 @@ pipeline {
     }
     options {
         disableConcurrentBuilds()
-        buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '2'))
+        buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '1'))
     }
     parameters {
         booleanParam(name: 'PRECLEANUP', defaultValue: false, description: 'Clears the local maven repository before build.')
@@ -121,16 +121,103 @@ pipeline {
             }
         }
 
+        stage('Test htmlunit') {
+            steps {
+                timeout(120) {
+                    withMaven(maven: buildMvn, jdk: buildJdk,
+                            mavenSettingsConfig: deploySettings,
+                            mavenLocalRepo: localRepository,
+                            publisherStrategy: 'EXPLICIT',
+                            options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
+                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
+                                      invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
+                                      junitPublisher(disabled: true, ignoreAttachments: false),
+                                      openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                    )
+                            {
+                                sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                                sh "./src/ci/scripts/prepareWorkspace.sh -d '.repository'"
+                                // Needs a lot of time to reload the repository files, try without cleanup
+                                // Not sure, but maybe
+                                // sh "rm -rf .repository"
+
+                                // Run test phase / ignore test failures
+                                // -B: Batch mode
+                                // -U: Force snapshot update
+                                // -e: Produce execution error messages
+                                // -fae: Fail at the end
+                                // -Dmaven.compiler.fork=true: Compile in a separate forked process
+                                // -Pci-server: Profile for CI-Server
+                                // -Pit-js: Run the selenium test
+                                sh "mvn clean verify -B -V -U -e -fae -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -Djava.io.tmpdir=.tmp -pl :archiva-webapp-test"
+
+                            }
+                }
+            }
+            post {
+                always {
+                    junit testResults: '**/target/failsafe-reports/TEST-*.xml'
+                }
+                failure {
+                    notifyBuild("Failure in Htmlunit test stage")
+                }
+            }
+        }
+
+        // Uses a docker container that is started by script. Maybe we could use the docker functionality
+        // of the jenkins pipeline in the future.
+        stage('Test chrome') {
+            steps {
+                timeout(120) {
+                    withCredentials([[$class : 'UsernamePasswordMultiBinding', credentialsId: DOCKERHUB_CREDS,
+                                      usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PW']]) {
+                        withMaven(maven: buildMvn, jdk: buildJdk,
+                                mavenSettingsConfig: deploySettings,
+                                mavenLocalRepo: localRepository,
+                                publisherStrategy: 'EXPLICIT',
+                                options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
+                                          findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
+                                          invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
+                                          junitPublisher(disabled: true, ignoreAttachments: false),
+                                          openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                        )
+                                {
+                                    sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                                    sh "./src/ci/scripts/prepareWorkspace.sh"
+                                    sh "chmod 755 src/ci/scripts/container_webtest.sh"
+                                    sh "src/ci/scripts/container_webtest.sh start"
+                                    // Needs a lot of time to reload the repository files, try without cleanup
+                                    // Not sure, but maybe
+                                    // sh "rm -rf .repository"
+
+                                    // Run test phase / ignore test failures
+                                    // -B: Batch mode
+                                    // -U: Force snapshot update
+                                    // -e: Produce execution error messages
+                                    // -fae: Fail at the end
+                                    // -Pci-server: Profile for CI Server
+                                    // -Pit-js: Runs the Selenium tests
+                                    // -Pchrome: Activates the Selenium Chrome Test Agent
+                                    sh "mvn clean verify -B -V -e -fae -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
+                                }
+                    }
+                }
+            }
+            post {
+                always {
+                    sh "src/ci/scripts/container_webtest.sh stop"
+                    junit testResults: '**/target/failsafe-reports/TEST-*.xml'
+                }
+                failure {
+                    notifyBuild("Failure in Chrome test stage")
+                }
+            }
+        }
+
 
 
         stage('Postbuild') {
             parallel {
-                stage('IntegrationTest') {
-                    steps {
-                        build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 5, wait: false)
-                    }
-                }
-
                 stage('JDK11') {
                     environment {
                         ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml'
