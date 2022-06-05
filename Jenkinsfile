@@ -271,4 +271,28 @@ pipeline {
     }
 }
 
+// Send a notification about the build status
+def notifyBuild(String buildStatus) {
+    // default the value
+    buildStatus = buildStatus ?: "UNKNOWN"
+
+    def email = "notifications@archiva.apache.org"
+    def summary = "${env.JOB_NAME}#${env.BUILD_NUMBER} - ${buildStatus} - ${currentBuild?.currentResult}"
+    def detail = """<h4>Job: <a href='${env.JOB_URL}'>${env.JOB_NAME}</a> [#${env.BUILD_NUMBER}]</h4>
+  <p><b>${buildStatus}</b></p>
+  <table>
+    <tr><td>Build</td><td><a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></td><tr>
+    <tr><td>Console</td><td><a href='${env.BUILD_URL}console'>${env.BUILD_URL}console</a></td><tr>
+    <tr><td>Test Report</td><td><a href='${env.BUILD_URL}testReport/'>${env.BUILD_URL}testReport/</a></td><tr>
+  </table>
+  """
+
+    emailext(
+            to: email,
+            subject: summary,
+            body: detail,
+            mimeType: 'text/html'
+    )
+}
+
 // vim: et:ts=4:sw=4:ft=groovy
