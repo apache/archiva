@@ -985,11 +985,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
-        <version>${ehcache.version}</version>
-      </dependency>
-      <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${commons.codec.version}</version>
@@ -1713,13 +1708,17 @@
       </dependency>
 
       <dependency>
-        <groupId>net.sf.ehcache</groupId>
+        <groupId>org.ehcache</groupId>
         <artifactId>ehcache</artifactId>
         <version>${ehcache.version}</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
