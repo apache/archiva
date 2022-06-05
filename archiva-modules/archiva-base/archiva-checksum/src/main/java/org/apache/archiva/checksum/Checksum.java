@@ -19,6 +19,9 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -55,7 +58,7 @@ public class Checksum
         if (this.result.length==0) {
             finish();
         }
-        return Hex.encode( this.result );
+        return Hex.encodeHexString( this.result );
     }
 
     public byte[] getChecksumBytes() {
@@ -110,6 +113,10 @@ public class Checksum
         if (this.result == null || this.result.length==0) {
             finish();
         }
-        return MessageDigest.isEqual(this.result, Hex.decode( hexString ));
+        try {
+            return MessageDigest.isEqual(this.result, Hex.decodeHex( hexString ));
+        } catch (DecoderException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
