@@ -36,6 +36,7 @@ buildMvn = 'maven_3.8.5'
 //localRepository = ".repository"
 //localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
 mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'
+deploySettings = 'archiva-uid-jenkins'
 publishers = [artifactsPublisher(disabled: false),
               junitPublisher(disabled: false, ignoreAttachments: false),
               pipelineGraphPublisher(disabled: false),mavenLinkerPublisher(disabled: false)]
