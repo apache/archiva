@@ -92,7 +92,7 @@
     <commons.text.version>1.9</commons.text.version>
     <commons.configuration.version>2.7</commons.configuration.version>
 
-    <maven3x.version>3.8.1</maven3x.version>
+    <maven3x.version>3.8.5</maven3x.version>
     <maven.resolver.version>1.6.2</maven.resolver.version>
     <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
     <maven-model-converter.version>2.3</maven-model-converter.version>
