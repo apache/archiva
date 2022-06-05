@@ -50,7 +50,47 @@
   <properties>
     <redback.version>3.0.0-SNAPSHOT</redback.version>
 
+    <slf4j.version>1.7.32</slf4j.version>
+    <jetty.version>9.4.43.v20210629</jetty.version>
+    <ehcache.version>3.9.9</ehcache.version>
+    <spring.version>5.3.19</spring.version>
+    <openjpa.version>3.1.1</openjpa.version>
+    <log4j.version>2.17.1</log4j.version>
+    <jackson.version>2.11.0</jackson.version>
+    <cxf.version>3.3.11</cxf.version>
+    <io.swagger.version>2.1.10</io.swagger.version>
+
+    <!-- junit -->
+    <junit.platform.version>1.5.2</junit.platform.version>
+    <junit.jupiter.version>5.5.2</junit.jupiter.version>
+    <mockito.version>3.4.0</mockito.version>
+    <assertj.version>3.22.0</assertj.version>
+    <xmlunit.version>2.8.4</xmlunit.version>
+    <hsqldb.version>2.5.0</hsqldb.version>
+    <rest-assured.version>4.3.1</rest-assured.version>
+
     <!-- Java Enterprise APIs -->
+    <jakarta.mail.version>1.6.5</jakarta.mail.version>
+    <jakarta.persistence.version>2.2.3</jakarta.persistence.version>
+    <jakarta.servlet.version>4.0.4</jakarta.servlet.version>
+    <jakarta.inject.version>1.0</jakarta.inject.version>
+    <jakarta.annotation.version>1.3.5</jakarta.annotation.version>
+    <jakarta.xml.bind.version>2.3.3</jakarta.xml.bind.version>
+    <jakarta.transaction.version>1.3.3</jakarta.transaction.version>
+    <jakarta.validation.version>2.0.2</jakarta.validation.version>
+    <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
+    <jakarta.activation.version>1.2.2</jakarta.activation.version>
+
+    <!-- apache commons -->
+    <commons.lang3.version>3.12.0</commons.lang3.version>
+    <commons.io.version>2.11.0</commons.io.version>
+    <commons.logging.version>1.2</commons.logging.version>
+    <commons.codec.version>1.15</commons.codec.version>
+    <commons.collections.version>4.4</commons.collections.version>
+    <commons.beanutils.version>1.9.4</commons.beanutils.version>
+    <commons.text.version>1.9</commons.text.version>
+    <commons.configuration.version>2.7</commons.configuration.version>
+
     <maven3x.version>3.8.1</maven3x.version>
     <maven.resolver.version>1.4.1</maven.resolver.version>
     <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
@@ -1942,7 +1982,7 @@
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-utils</artifactId>
-              <version>${plexusUtilsPluginsVersion}</version>
+              <version>${plexus-utils.version}</version>
             </dependency>
           </dependencies>
         </plugin>
