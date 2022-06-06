@@ -40,6 +40,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -201,22 +202,25 @@ public class XMLReader
     {
         elem.setQName( QName.get( elem.getName(), Namespace.NO_NAMESPACE, elem.getQualifiedName() ) );
 
-        Node n;
-
-        Iterator<Node> it = elem.elementIterator();
-        while ( it.hasNext() )
+        Element e;
+        Iterator<Element> elementIterator = elem.elementIterator();
+        while ( elementIterator.hasNext() )
         {
-            n = it.next();
+            e = elementIterator.next();
+            removeNamespaces(e);
+        }
 
-            switch ( n.getNodeType() )
-            {
-                case Node.ATTRIBUTE_NODE:
-                    ( (Attribute) n ).setNamespace( Namespace.NO_NAMESPACE );
-                    break;
-                case Node.ELEMENT_NODE:
-                    removeNamespaces( (Element) n );
-                    break;
-            }
+        Attribute attribute;
+        Iterator<Attribute> attributeIterator = elem.attributeIterator();
+        LinkedHashMap<String, String> newAttributes = new LinkedHashMap<>();
+        while ( attributeIterator.hasNext() )
+        {
+            attribute = attributeIterator.next();
+            newAttributes.put(attribute.getName(), attribute.getValue());
+        }
+        elem.setAttributes(new ArrayList<Attribute>());
+        for (Map.Entry<String, String> entry : newAttributes.entrySet()) {
+            elem.addAttribute(entry.getKey(), entry.getValue());
         }
     }
 

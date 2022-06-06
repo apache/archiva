@@ -44,7 +44,7 @@
         <dependency>
             <groupId>qdox</groupId>
             <artifactId>qdox</artifactId>
-            <version>1.6.1</version>
+            <version>${dom4j.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

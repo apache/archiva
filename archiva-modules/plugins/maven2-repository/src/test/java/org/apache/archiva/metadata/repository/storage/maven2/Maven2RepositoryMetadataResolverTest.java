@@ -211,7 +211,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertDependency( dependencies.get( 3 ), "org.codehaus.plexus", "plexus-component-api", "1.0-alpha-22" );
         assertDependency( dependencies.get( 4 ), "org.codehaus.plexus", "plexus-spring", "1.2", "test" );
         assertDependency( dependencies.get( 5 ), "xalan", "xalan", "2.7.0" );
-        assertDependency( dependencies.get( 6 ), "dom4j", "dom4j", "1.6.1", "test" );
+        assertDependency( dependencies.get( 6 ), "org.dom4j", "dom4j", "${dom4j.version}", "test" );
         assertDependency( dependencies.get( 7 ), "junit", "junit", "3.8.1", "test" );
         assertDependency( dependencies.get( 8 ), "easymock", "easymock", "1.2_Java1.3", "test" );
         assertDependency( dependencies.get( 9 ), "easymock", "easymockclassextension", "1.2", "test" );
@@ -668,8 +668,8 @@ public class Maven2RepositoryMetadataResolverTest
 
         assertArtifact( artifacts.get( 0 ), "plexus-spring-1.2-sources.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
         assertArtifact( artifacts.get( 1 ), "plexus-spring-1.2.jar", 0, EMPTY_SHA1, EMPTY_MD5 );
-        assertArtifact( artifacts.get( 2 ), "plexus-spring-1.2.pom", 7407, "96b14cf880e384b2d15e8193c57b65c5420ca4c5",
-                        "f83aa25f016212a551a4b2249985effc" );
+        assertArtifact( artifacts.get( 2 ), "plexus-spring-1.2.pom", 7422, "28e86d3e2723e4894587e4b758231f76febce942",
+                "9f663d8e7adf6adff4133653b59d1e28" );
     }
 
     @Test
