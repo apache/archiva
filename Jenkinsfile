@@ -111,7 +111,6 @@ pipeline {
             }
             post {
                 always {
-                    sh "cat archiva-cli/target/rat.txt"
                     sh "rm -f /tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml"
                 }
                 failure {
