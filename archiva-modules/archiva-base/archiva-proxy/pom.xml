@@ -181,7 +181,7 @@
         <!-- Needed for JDK >= 9 -->
         <dependency>
           <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
+          <artifactId>jakarta.xml.bind-api</artifactId>
           <scope>test</scope>
         </dependency>
       </dependencies>

@@ -343,7 +343,7 @@ Using provided scope to avoid adding it to packaging.
       <dependencies>
         <dependency>
           <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
+          <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
       </dependencies>
     </profile>

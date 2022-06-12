@@ -154,7 +154,7 @@
       <dependencies>
         <dependency>
           <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
+          <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
       </dependencies>
     </profile>

@@ -166,11 +166,6 @@
       <artifactId>plexus-utils</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <!-- normally not needed as we are 1.6 required
-      but due to http://jira.codehaus.org/browse/MODELLO-266
-      and we use stax reader produced by modello
-      ibm jdk stax impl won't work with
-     -->
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>
       <artifactId>indexer-core</artifactId>

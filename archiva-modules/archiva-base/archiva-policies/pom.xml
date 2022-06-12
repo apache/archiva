@@ -147,13 +147,13 @@
         <!-- Needed for JDK >= 9 -->
         <dependency>
           <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
+          <artifactId>jakarta.annotation-api</artifactId>
           <scope>test</scope>
         </dependency>
 
         <dependency>
           <groupId>jakarta.xml.bind</groupId>
-      <artifactId>jakarta.xml.bind-api</artifactId>
+          <artifactId>jakarta.xml.bind-api</artifactId>
           <scope>test</scope>
         </dependency>
       </dependencies>
