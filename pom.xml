@@ -1878,6 +1878,17 @@
         <version>${cxf.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.compendium</artifactId>
+        <version>5.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.graalvm.nativeimage</groupId>
+        <artifactId>svm</artifactId>
+        <version>21.0.0.2</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
