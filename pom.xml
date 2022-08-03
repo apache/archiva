@@ -2068,6 +2068,7 @@
           <configuration>
             <excludes>
               <exclude>.gitignore</exclude>
+              <exclude>.gitattributes</exclude>
               <exclude>DEPENDENCIES</exclude>
               <exclude>README.*</exclude>
               <exclude>*.sh</exclude>
