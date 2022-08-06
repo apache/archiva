@@ -57,11 +57,6 @@
       <version>1.0-alpha-22</version>
     </dependency>
     <dependency>
-      <groupId>org.dom4j</groupId>
-      <artifactId>dom4j</artifactId>
-      <version>${dom4j.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.opensymphony</groupId>
       <artifactId>webwork</artifactId>
       <version>2.2.6</version>
