@@ -50,7 +50,7 @@
   <properties>
     <redback.version>3.0.0-SNAPSHOT</redback.version>
 
-    <slf4j.version>1.7.35</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
     <jetty.version>9.4.43.v20210629</jetty.version>
     <ehcache.version>3.9.9</ehcache.version>
     <spring.version>5.3.22</spring.version>
