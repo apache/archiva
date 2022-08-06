@@ -56,29 +56,17 @@
       <artifactId>log4j-jcl</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <scope>test</scope>
+    </dependency>
 
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>jdk9+</id>
-      <activation>
-        <jdk>[1.9,)</jdk>
-      </activation>
-      <dependencies>
-        <!-- Needed for JDK >= 9 -->
-        <dependency>
-          <groupId>jakarta.annotation</groupId>
-          <artifactId>jakarta.annotation-api</artifactId>
-          <scope>test</scope>
-        </dependency>
-
-        <dependency>
-          <groupId>jakarta.xml.bind</groupId>
-          <artifactId>jakarta.xml.bind-api</artifactId>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 </project>

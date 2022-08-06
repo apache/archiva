@@ -104,24 +104,24 @@
       <groupId>jakarta.inject</groupId>
       <artifactId>jakarta.inject-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
 
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-jaxrs2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+    </dependency>
 
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-core</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-jaxrs2</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger.core.v3</groupId>
-        <artifactId>swagger-annotations</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.xml.bind</groupId>
-        <artifactId>jakarta.xml.bind-api</artifactId>
-      </dependency>
   </dependencies>
 
   <build>
@@ -139,26 +139,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <!-- 
-    The jaxb dependency is needed by the enunciate plugin starting with JDK9. 
-    Adding to the plugin dependency is not sufficient, so I have to add it as project dependency. 
-    Using provided scope to avoid adding it to packaging.
-  -->
-  <profiles>
-    <profile>
-      <id>jdk9+</id>
-      <activation>
-        <jdk>[1.9,)</jdk>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>jakarta.xml.bind</groupId>
-          <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
 
 </project>

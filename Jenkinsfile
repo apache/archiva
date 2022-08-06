@@ -28,10 +28,8 @@
  * Only the war and zip artifacts are archived in the jenkins build archive.
  */
 LABEL = 'ubuntu && !H23'
-buildJdk = 'jdk_1.8_latest'
-buildJdk9 = 'jdk_1.9_latest'
-buildJdk10 = 'jdk_10_latest'
-buildJdk11 = 'jdk_11_latest'
+buildJdk = 'jdk_11_latest'
+buildJdk17 = 'jdk_17_latest'
 buildMvn = 'maven_3.8.5'
 //localRepository = ".repository"
 //localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
@@ -131,15 +129,15 @@ pipeline {
                     }
                 }
 
-                stage('JDK11') {
+                stage('JDK17') {
                     environment {
-                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml'
+                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-17-${env.JOB_NAME}.xml'
                     }
                     steps {
                         ws("${env.JOB_NAME}-JDK11") {
                             checkout scm
                             timeout(120) {
-                                withMaven(maven: buildMvn, jdk: buildJdk11,
+                                withMaven(maven: buildMvn, jdk: buildJdk17,
                                           mavenLocalRepo: ".repository",
                                           publisherStrategy: 'EXPLICIT',
                                           mavenOpts: mavenOpts,
@@ -155,7 +153,7 @@ pipeline {
                     }
                     post {
                         always {
-                            sh "rm -f /tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml"
+                            sh "rm -f /tmp/archiva-master-jdk-17-${env.JOB_NAME}.xml"
                         }
                         success {
                             cleanWs()

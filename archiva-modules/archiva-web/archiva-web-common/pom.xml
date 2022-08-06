@@ -377,14 +377,16 @@
       <artifactId>jackson-jaxrs-json-provider</artifactId>
     </dependency>
 
-
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>jakarta.mail</groupId>
       <artifactId>jakarta.mail-api</artifactId>
       <scope>provided</scope>
     </dependency>
-
 
     <dependency>
       <groupId>jakarta.annotation</groupId>
@@ -596,26 +598,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <!-- 
-    The jaxb dependency is needed by the enunciate plugin starting with JDK9. 
-    Adding to the plugin dependency is not sufficient, so I have to add it as project dependency. 
-    Using provided scope to avoid adding it to packaging.
-  -->
-  <profiles>
-    <profile>
-      <id>jdk9+</id>
-      <activation>
-        <jdk>[1.9,)</jdk>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>jakarta.xml.bind</groupId>
-          <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
-
 </project>
