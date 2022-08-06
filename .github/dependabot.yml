@@ -32,20 +32,6 @@ updates:
     target-branch: "master"
     schedule:
       interval: "daily"
-      
-  - package-ecosystem: "maven"
-    directory: "/"
-    registries:
-      - maven-central
-    target-branch: "archiva-2.x"
-    schedule:
-      interval: "daily"      
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    target-branch: "archiva-2.x"
-    schedule:
-      interval: "daily"
 
   - package-ecosystem: "github-actions"
     directory: "/"
