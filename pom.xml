@@ -99,7 +99,7 @@
     <wagon.version>3.3.3</wagon.version>
 
     <!-- dependencies of maven modules -->
-    <jsoup.version>1.14.2</jsoup.version>
+    <jsoup.version>1.15.3</jsoup.version>
     <rome.version>1.16.0</rome.version>
     <cronutils.version>9.1.6</cronutils.version>
 
