@@ -91,6 +91,13 @@ public class ManagedDefaultRepositoryContent
         {
             throw new ContentNotFoundException( "cannot found project " + namespace + ":" + projectId );
         }
+        try {
+            if (!directory.getCanonicalPath().equals(directory.getAbsolutePath())) {
+                throw new ContentNotFoundException( "Invalid directory for project " + namespace + ":" + projectId );
+            }
+        } catch (IOException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }
         if ( directory.isDirectory() )
         {
             try
