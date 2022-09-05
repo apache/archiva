@@ -46,18 +46,13 @@ pipeline {
         stage('BuildAndDeploy') {
             steps {
                 timeout(120) {
-                    withMaven(maven: buildMvn, jdk: buildJdk,
-                            mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: ".repository",
-                            mavenOpts:'-XX:MaxPermSize=128m -Xmx1024m',
-                            publisherStrategy: 'EXPLICIT',
-                            options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
-                                      invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
-                                      junitPublisher(disabled: true, ignoreAttachments: false),
-                                      openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
-                    )
-                            {
+
+                      withEnv(["JAVA_HOME=${ tool "$buildJdk" }",
+                               "PATH+MAVEN=${ tool "$buildJdk" }/bin:${tool "buildMvn"}/bin",
+                               "MAVEN_OPTS=-Xms2g -Xmx4g -Djava.awt.headless=true"]) {
+                        configFileProvider(
+                                [configFile(fileId: 'archiva-uid-jenkins', variable: 'GLOBAL_MVN_SETTINGS')]) {
+
                                 // Needs a lot of time to reload the repository files, try without cleanup
                                 // Not sure, but maybe
                                 // sh "rm -rf .repository"
@@ -74,12 +69,13 @@ pipeline {
                                 // -Pci-build: Profile for CI-Server
                                 script {
                                     if (env.BRANCH_NAME == 'master' || env.BRANCH_NAME == 'archiva-2.x') {
-                                        sh "mvn clean deploy -B -U -e -fae -T2 -Pci-build -DretryFailedDeploymentCount=5"
+                                        sh "mvn clean deploy -B -U -e -fae -T2 -Pci-build -DretryFailedDeploymentCount=5 -s $GLOBAL_MVN_SETTINGS -Dmaven.repo.local=.repository"
                                     } else {
-                                        sh "mvn clean install -B -U -e -fae -T2 -Pci-build"
+                                        sh "mvn clean install -B -U -e -fae -T2 -Pci-build -s $GLOBAL_MVN_SETTINGS -Dmaven.repo.local=.repository"
                                     }
                                 }
-                            }
+
+                        }
                 }
             }
             post {
