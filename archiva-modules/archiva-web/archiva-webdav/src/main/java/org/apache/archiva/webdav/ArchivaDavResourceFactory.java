@@ -330,7 +330,7 @@ public class ArchivaDavResourceFactory
                     new File( managedRepositoryContent.getRepoRoot(), logicalResource ).getAbsolutePath() );
 
             }
-            catch ( RepositoryAdminException e )
+            catch ( RepositoryAdminException | IOException e )
             {
                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
             }
@@ -478,10 +478,6 @@ public class ArchivaDavResourceFactory
                 {
                     managedRepositoryContent = repositoryFactory.getManagedRepositoryContent( repositoryId );
                 }
-                catch ( RepositoryNotFoundException e )
-                {
-                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-                }
                 catch ( RepositoryException e )
                 {
                     throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
@@ -510,7 +506,7 @@ public class ArchivaDavResourceFactory
                 {
                     storedExceptions.add( e );
                 }
-                catch ( RepositoryAdminException e )
+                catch ( IOException | RepositoryAdminException e )
                 {
                     storedExceptions.add( new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e ) );
                 }
@@ -588,7 +584,7 @@ public class ArchivaDavResourceFactory
     private DavResource processRepository( final DavServletRequest request, ArchivaDavResourceLocator archivaLocator,
                                            String activePrincipal, ManagedRepositoryContent managedRepositoryContent,
                                            ManagedRepository managedRepository )
-        throws DavException
+        throws DavException, IOException
     {
         DavResource resource = null;
         if ( isAuthorized( request, managedRepositoryContent.getId() ) )
@@ -606,6 +602,10 @@ public class ArchivaDavResourceFactory
             }
             LogicalResource logicalResource = new LogicalResource( path );
             File resourceFile = new File( managedRepositoryContent.getRepoRoot(), path );
+            if(!resourceFile.getCanonicalPath().equals(resourceFile.getAbsolutePath()))
+            {
+                throw new DavException( HttpServletResponse.SC_BAD_REQUEST );
+            }
             resource =
                 new ArchivaDavResource( resourceFile.getAbsolutePath(), path, managedRepositoryContent.getRepository(),
                                         request.getRemoteAddr(), activePrincipal, request.getDavSession(),
@@ -1342,7 +1342,7 @@ public class ArchivaDavResourceFactory
                 }
             }
 
-            Set<String> authzRepos = new HashSet<String>();
+            Set<String> authzRepos = new HashSet<>();
 
             String permission = WebdavMethodUtil.getMethodPermission( request.getMethod() );
 
@@ -1393,15 +1393,7 @@ public class ArchivaDavResourceFactory
                                   temporaryGroupIndexMap );
             return mergedRepoDir;
         }
-        catch ( RepositoryAdminException e )
-        {
-            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-        }
-        catch ( IndexMergerException e )
-        {
-            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-        }
-        catch ( IOException e )
+        catch ( RepositoryAdminException | IndexMergerException | IOException e )
         {
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
         }
