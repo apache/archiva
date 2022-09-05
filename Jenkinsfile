@@ -48,7 +48,7 @@ pipeline {
                 timeout(120) {
 
                   withEnv(["JAVA_HOME=${ tool "$buildJdk" }",
-                           "PATH+MAVEN=${ tool "$buildJdk" }/bin:${tool "buildMvn"}/bin",
+                           "PATH+MAVEN=${ tool "$buildJdk" }/bin:${tool "$buildMvn"}/bin",
                            "MAVEN_OPTS=-Xms2g -Xmx4g -Djava.awt.headless=true"]) {
                     configFileProvider(
                             [configFile(fileId: 'archiva-uid-jenkins', variable: 'GLOBAL_MVN_SETTINGS')]) {
