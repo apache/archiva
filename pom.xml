@@ -27,7 +27,7 @@
   </parent>
 
   <artifactId>archiva</artifactId>
-  <version>2.2.9-SNAPSHOT</version>
+  <version>2.2.9</version>
   <packaging>pom</packaging>
 
   <name>Apache Archiva</name>
@@ -44,7 +44,7 @@
     <connection>scm:git:https://github.com/apache/archiva</connection>
     <developerConnection>scm:git:https://github.com/apache/archiva</developerConnection>
     <url>https://github.com/apache/archiva</url>
-    <tag>archiva-2.2.8</tag>
+    <tag>archiva-2.2.9</tag>
   </scm>
 
   <properties>
@@ -104,7 +104,7 @@
     <asfTomcatMavenPluginVersion>2.2</asfTomcatMavenPluginVersion>
     <tomcat7Version>7.0.54</tomcat7Version>
 
-    <arguments></arguments>
+    <arguments />
     <release.preparationGoals>clean install</release.preparationGoals>
     <release.arguments>-DretryFailedDeploymentCount=5 ${arguments}</release.arguments>
     <springockito.version>1.0.9</springockito.version>
