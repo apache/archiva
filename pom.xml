@@ -104,7 +104,9 @@
     <asfTomcatMavenPluginVersion>2.2</asfTomcatMavenPluginVersion>
     <tomcat7Version>7.0.54</tomcat7Version>
 
+    <arguments></arguments>
     <release.preparationGoals>clean install</release.preparationGoals>
+    <release.arguments>-DretryFailedDeploymentCount=5 ${arguments}</release.arguments>
     <springockito.version>1.0.9</springockito.version>
     <mockito.version>1.9.5</mockito.version>
   </properties>
@@ -1805,8 +1807,9 @@
             <useReleaseProfile>false</useReleaseProfile>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <goals>deploy</goals>
+            <releaseProfiles>release</releaseProfiles>
             <preparationGoals>${release.preparationGoals}</preparationGoals>
-            <arguments>-Prelease -DretryFailedDeploymentCount=5</arguments>
+            <arguments>${release.arguments}</arguments>
           </configuration>
         </plugin>
         <plugin>
