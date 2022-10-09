@@ -52,10 +52,24 @@ Release Notes for Archiva ${project.version}
 
 ** Bug/Security Fix
 
-  * CVE-2022-29405 Apache Archiva Arbitrary user password reset vulnerability
+  * [MRM-2051}: upgrade dom4j (v2 branch)
+  * upgrade spring 4.2.9
+  * [MRM-2050]: upgrade commons-fileupload and commons-io due to cves
+  * [MRM-2049]: upgrade httpclient due to cves
+  * [MRM-2048]- upgrade xerces due to CVE
 
 
 Previous Release Notes
+
+* Release Notes for Archiva 2.2.8
+
+ Apache Archiva 2.2.8 is a security fix release:
+
+ Released: 2022-05-25
+
+88 Bug/Security Fix
+
+  * CVE-2022-29405 Apache Archiva Arbitrary user password reset vulnerability
 
 * Release Notes for Archiva 2.2.7
 
