@@ -50,6 +50,7 @@ import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -279,11 +280,11 @@ public class DefaultFileUploadService
                          boolean generatePom )
         throws ArchivaRestServiceException
     {
-        repositoryId = StringUtils.trim( repositoryId );
-        groupId = StringUtils.trim( groupId );
-        artifactId = StringUtils.trim( artifactId );
-        version = StringUtils.trim( version );
-        packaging = StringUtils.trim( packaging );
+        repositoryId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( repositoryId ) );
+        groupId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( groupId ) );
+        artifactId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( artifactId ) );
+        version = StringEscapeUtils.escapeJavaScript( StringUtils.trim( version ) );
+        packaging = StringEscapeUtils.escapeJavaScript( StringUtils.trim( packaging ) );
 
         checkParamChars("repositoryId", repositoryId);
         checkParamChars("groupId", groupId);
@@ -376,6 +377,12 @@ public class DefaultFileUploadService
                 !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
 
             ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
+
+            repositoryId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( repositoryId ) );
+            groupId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( groupId ) );
+            artifactId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( artifactId ) );
+            version = StringEscapeUtils.escapeJavaScript( StringUtils.trim( version ) );
+            packaging = StringEscapeUtils.escapeJavaScript( StringUtils.trim( packaging ) );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifactId );

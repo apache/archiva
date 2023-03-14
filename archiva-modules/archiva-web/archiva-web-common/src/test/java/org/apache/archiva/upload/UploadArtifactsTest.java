@@ -28,7 +28,6 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.web.api.FileUploadService;
 import org.apache.archiva.web.model.FileMetadata;
 import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
@@ -337,7 +336,9 @@ public class UploadArtifactsTest
             meta = service.post( body );
             log.debug( "Metadata {}", meta.toString( ) );
             try {
-                service.save("internal", "org", URLEncoder.encode("../../../test", "UTF-8"), URLEncoder.encode("testSave", "UTF-8"), "4", true);
+                service.save("internal", "org",
+                        URLEncoder.encode("../../../test", "UTF-8"),
+                        URLEncoder.encode("testSave", "UTF-8"), "4", true);
                 fail("Error expected, if the content contains bad characters.");
             } catch (ClientErrorException e) {
                 assertEquals(422, e.getResponse().getStatus());
