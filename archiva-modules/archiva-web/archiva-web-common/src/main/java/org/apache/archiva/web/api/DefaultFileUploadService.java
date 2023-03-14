@@ -262,6 +262,15 @@ public class DefaultFileUploadService
         if (checkString.contains("/..")) {
             return false;
         }
+        if (checkString.contains("<")) {
+            return false;
+        }
+        if (checkString.contains(">")) {
+            return false;
+        }
+        if (checkString.contains("&")) {
+            return false;
+        }
         return true;
     }
 
@@ -280,11 +289,11 @@ public class DefaultFileUploadService
                          boolean generatePom )
         throws ArchivaRestServiceException
     {
-        repositoryId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( repositoryId ) );
-        groupId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( groupId ) );
-        artifactId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( artifactId ) );
-        version = StringEscapeUtils.escapeJavaScript( StringUtils.trim( version ) );
-        packaging = StringEscapeUtils.escapeJavaScript( StringUtils.trim( packaging ) );
+        repositoryId = StringEscapeUtils.escapeHtml( StringUtils.trim( repositoryId ) );
+        groupId = StringEscapeUtils.escapeHtml( StringUtils.trim( groupId ) );
+        artifactId = StringEscapeUtils.escapeHtml( StringUtils.trim( artifactId ) );
+        version = StringEscapeUtils.escapeHtml( StringUtils.trim( version ) );
+        packaging = StringEscapeUtils.escapeHtml( StringUtils.trim( packaging ) );
 
         checkParamChars("repositoryId", repositoryId);
         checkParamChars("groupId", groupId);
@@ -378,11 +387,11 @@ public class DefaultFileUploadService
 
             ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
 
-            repositoryId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( repositoryId ) );
-            groupId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( groupId ) );
-            artifactId = StringEscapeUtils.escapeJavaScript( StringUtils.trim( artifactId ) );
-            version = StringEscapeUtils.escapeJavaScript( StringUtils.trim( version ) );
-            packaging = StringEscapeUtils.escapeJavaScript( StringUtils.trim( packaging ) );
+            repositoryId = StringEscapeUtils.escapeHtml( StringUtils.trim( repositoryId ) );
+            groupId = StringEscapeUtils.escapeHtml( StringUtils.trim( groupId ) );
+            artifactId = StringEscapeUtils.escapeHtml( StringUtils.trim( artifactId ) );
+            version = StringEscapeUtils.escapeHtml( StringUtils.trim( version ) );
+            packaging = StringEscapeUtils.escapeHtml( StringUtils.trim( packaging ) );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifactId );
