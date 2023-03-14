@@ -94,7 +94,7 @@
 
     <maven3x.version>3.8.1</maven3x.version>
     <maven.resolver.version>1.6.2</maven.resolver.version>
-    <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
+    <maven.indexer.version>6.2.2</maven.indexer.version>
     <maven-model-converter.version>2.3</maven-model-converter.version>
     <wagon.version>3.3.3</wagon.version>
 
