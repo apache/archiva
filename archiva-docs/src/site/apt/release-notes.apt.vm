@@ -36,7 +36,7 @@ Release Notes for Archiva ${project.version}
 
 * New in Archiva ${project.version}
 
- Apache Archiva ${project.version} is a security fix release:
+ Apache Archiva ${project.version} is a bug fix release:
 
 ** Compatibility Changes
 
@@ -52,14 +52,24 @@ Release Notes for Archiva ${project.version}
 
 ** Bug/Security Fix
 
+  * Potential NPE when using the upload file service
+
+
+Previous Release Notes
+
+* Release Notes for Archiva 2.2.9
+
+ Apache Archiva 2.2.9 is a security fix release:
+
+ Released: 2022-10-09
+
+** Bug/Security Fix
+
   * [MRM-2051}: upgrade dom4j (v2 branch)
   * upgrade spring 4.2.9
   * [MRM-2050]: upgrade commons-fileupload and commons-io due to cves
   * [MRM-2049]: upgrade httpclient due to cves
   * [MRM-2048]- upgrade xerces due to CVE
-
-
-Previous Release Notes
 
 * Release Notes for Archiva 2.2.8
 
@@ -143,10 +153,10 @@ Previous Release Notes
   * There are no improvements
 
 ** Bug Fix
- 
+
   * [MRM-2008] Fix for group names with slashes
 
-  * Better handling of LDAP filter 
+  * Better handling of LDAP filter
 
 
 * Release Notes for Archiva 2.2.4
@@ -247,9 +257,9 @@ Previous Release Notes
      * [MRM-1926] - Invalid checksum files in Archiva repository after download from remote repository
 
      * [MRM-1928] - Bad redirect URL when using Archiva through HTTP reverse proxy
- 
+
      * [MRM-1933] - No message body writer has been found for class org.apache.archiva.rest.services.ArchivaRestError
- 
+
      * [MRM-1940] - Slashes appended to remote repo url
 
 
@@ -270,4 +280,3 @@ Previous Release Notes
   was made to release the 1.0 version.
 
   Archiva became an Apache "top level project" in March 2008.
-
