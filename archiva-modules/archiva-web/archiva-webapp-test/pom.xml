@@ -34,7 +34,7 @@
     <container.propertiesPortFilePath>${project.build.directory}/container-port.properties
     </container.propertiesPortFilePath>
     <maxWaitTimeInMs>10000</maxWaitTimeInMs>
-    <selenium-server.version>3.4.0</selenium-server.version>
+    <selenium-server.version>3.141.59</selenium-server.version>
     <fluentlenium.version>3.2.0</fluentlenium.version>
     <fluentlenium.festassert.version>0.13.2</fluentlenium.festassert.version>
     <browserPath/>
