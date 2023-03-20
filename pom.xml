@@ -115,7 +115,7 @@
     <jackrabbit.version>2.20.2</jackrabbit.version>
     <metrics-core.version>4.1.18</metrics-core.version>
 
-    <derbyVersion>10.13.1.1</derbyVersion>
+    <derbyVersion>10.14.2.0</derbyVersion>
     <httpclient.version>4.5.13</httpclient.version>
     <httpclient.core.version>4.4.15</httpclient.core.version>
 
