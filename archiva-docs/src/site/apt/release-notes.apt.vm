@@ -2,22 +2,22 @@
  Release Notes for Archiva ${project.version}
  -----
 
-~~ Licensed to the Apache Software Foundation (ASF) under one                      
-~~ or more contributor license agreements.  See the NOTICE file                    
-~~ distributed with this work for additional information                           
-~~ regarding copyright ownership.  The ASF licenses this file                      
-~~ to you under the Apache License, Version 2.0 (the                               
-~~ "License"); you may not use this file except in compliance                      
-~~ with the License.  You may obtain a copy of the License at                      
-~~                                                                                 
-~~   http://www.apache.org/licenses/LICENSE-2.0                                    
-~~                                                                                 
-~~ Unless required by applicable law or agreed to in writing,                      
-~~ software distributed under the License is distributed on an                     
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY                          
-~~ KIND, either express or implied.  See the License for the                       
-~~ specific language governing permissions and limitations                         
-~~ under the License.                                                              
+~~ Licensed to the Apache Software Foundation (ASF) under one
+~~ or more contributor license agreements.  See the NOTICE file
+~~ distributed with this work for additional information
+~~ regarding copyright ownership.  The ASF licenses this file
+~~ to you under the Apache License, Version 2.0 (the
+~~ "License"); you may not use this file except in compliance
+~~ with the License.  You may obtain a copy of the License at
+~~
+~~   http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing,
+~~ software distributed under the License is distributed on an
+~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~~ KIND, either express or implied.  See the License for the
+~~ specific language governing permissions and limitations
+~~ under the License.
 
 Release Notes for Archiva ${project.version}
 
@@ -57,6 +57,7 @@ Release Notes for Archiva ${project.version}
 
 Previous Release Notes
 
+
 * Release Notes for Archiva 2.2.9
 
  Apache Archiva 2.2.9 is a security fix release:
@@ -65,11 +66,16 @@ Previous Release Notes
 
 ** Bug/Security Fix
 
-  * [MRM-2051}: upgrade dom4j (v2 branch)
+  * [MRM-2051]: upgrade dom4j (v2 branch)
+
   * upgrade spring 4.2.9
+
   * [MRM-2050]: upgrade commons-fileupload and commons-io due to cves
+
   * [MRM-2049]: upgrade httpclient due to cves
+
   * [MRM-2048]- upgrade xerces due to CVE
+
 
 * Release Notes for Archiva 2.2.8
 
@@ -77,9 +83,10 @@ Previous Release Notes
 
  Released: 2022-05-25
 
-88 Bug/Security Fix
+** Bug/Security Fix
 
   * CVE-2022-29405 Apache Archiva Arbitrary user password reset vulnerability
+
 
 * Release Notes for Archiva 2.2.7
 
@@ -197,7 +204,6 @@ Previous Release Notes
 ** New in Archiva 2.2.3
 
   Apache Archiva 2.2.3 is a bug fix release:
->>>>>>> Stashed changes
 
   * Some fixes for the REST API were added to detect requests from unknown origin
 
