@@ -39,6 +39,9 @@
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
     <webdav.argLine>-Xmx512m -Xms512m -client</webdav.argLine>
+    <htmlunit.version>2.13</htmlunit.version>
+    <!-- TODO remove this once we've been able to upgrade htmlunit with removing xercesImpl.. -->
+    <enforcer.skip>true</enforcer.skip>
   </properties>
 
   <dependencies>
@@ -166,6 +169,11 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
       <scope>test</scope>
     </dependency>
@@ -183,13 +191,28 @@
     <dependency>
       <groupId>net.sourceforge.htmlunit</groupId>
       <artifactId>htmlunit</artifactId>
-      <version>2.13</version>
+      <version>${htmlunit.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.4.01</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- only test because htmlunit really need it -->
+    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
+      <version>2.12.2</version>
       <scope>test</scope>
     </dependency>
 

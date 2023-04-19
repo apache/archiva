@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.DavResourceFactory;
@@ -117,6 +118,7 @@ public class DavResourceTest
     public void testDeleteNonExistantResourceShould404()
         throws Exception
     {
+
         File dir = new File( baseDir, "testdir" );
         try
         {
