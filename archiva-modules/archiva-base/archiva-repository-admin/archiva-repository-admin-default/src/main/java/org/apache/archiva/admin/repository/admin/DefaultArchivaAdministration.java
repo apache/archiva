@@ -27,6 +27,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.UserInterfaceOptions;
 import org.apache.archiva.configuration.WebappConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -60,6 +61,7 @@ public class DefaultArchivaAdministration
         // setup wagon on start with initial values
         NetworkConfiguration networkConfiguration = getNetworkConfiguration();
         setupWagon( networkConfiguration );
+        System.setProperty(UserConfiguration.USER_REGISTRATION_DISABLE_KEY, Boolean.toString(getUiConfiguration().isDisableRegistration()));
     }
 
     @PreDestroy
@@ -389,7 +391,6 @@ public class DefaultArchivaAdministration
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         if ( uiConfiguration != null )
         {
-
             UserInterfaceOptions userInterfaceOptions =
                 getModelMapper().map( uiConfiguration, UserInterfaceOptions.class );
             configuration.getWebapp().setUi( userInterfaceOptions );
@@ -397,6 +398,15 @@ public class DefaultArchivaAdministration
         else
         {
             configuration.getWebapp().setUi( null );
+        }
+
+        if( uiConfiguration != null && uiConfiguration.isDisableRegistration() )
+        {
+            System.setProperty(UserConfiguration.USER_REGISTRATION_DISABLE_KEY, Boolean.TRUE.toString());
+        }
+        if( uiConfiguration != null && !uiConfiguration.isDisableRegistration() )
+        {
+            System.setProperty(UserConfiguration.USER_REGISTRATION_DISABLE_KEY, Boolean.FALSE.toString());
         }
         saveConfiguration( configuration );
 

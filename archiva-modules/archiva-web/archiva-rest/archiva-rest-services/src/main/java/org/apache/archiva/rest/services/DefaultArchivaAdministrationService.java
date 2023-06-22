@@ -269,7 +269,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            return new ArrayList<String>( archivaAdministration.getKnownContentConsumers() );
+            return new ArrayList<>( archivaAdministration.getKnownContentConsumers() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -283,7 +283,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            return new ArrayList<String>( archivaAdministration.getInvalidContentConsumers() );
+            return new ArrayList<>( archivaAdministration.getInvalidContentConsumers() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -351,6 +351,7 @@ public class DefaultArchivaAdministrationService
             uiConfiguration.setApplicationUrl(StringUtils.stripEnd(uiConfiguration.getApplicationUrl(), "/"));
 
             archivaAdministration.updateUiConfiguration( uiConfiguration );
+
         }
         catch ( RepositoryAdminException e )
         {
